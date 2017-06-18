@@ -7,6 +7,7 @@ TODO list :
 - améliorer Kraken (objectif : 500 ms max)
 - tourelles de visée ToF longue portée (HL donne la position, LL gère la tourelle qui pointe)
 - outils de debug HL et LL
-- faire dépendre la vitesse de la courbure et de la marge latérale (autoriser à racler les bords ?) + courbure max augmentée dans Kraken
+- faire dépendre la vitesse de la courbure et de la marge latérale (autoriser à racler les bords ?). Attention à la vitesse minimale !
+- courbure max augmentée dans Kraken
 - préparer des démos à l'avance
 - mettre des boutons pour actionneurs sur la méca
