@@ -10,4 +10,7 @@ TODO list :
 - faire dépendre la vitesse de la courbure et de la marge latérale (autoriser à racler les bords ?). Attention à la vitesse minimale !
 - courbure max augmentée dans Kraken
 - préparer des démos à l'avance
+- autocomplétion de tests + zsh + boot rapide sur linux
 - mettre des boutons pour actionneurs sur la méca
+- communication par socket TCP/IP (serveur : LL)
+- hardware HL : à définir (GPU ?)
