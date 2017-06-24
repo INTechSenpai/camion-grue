@@ -20,11 +20,10 @@ mécanique/
 *.psd
 
 
+# à déplacer dans le sous dossier approprié...
 *.user
 *.project
 build/
-
-
 pc/config.ini
 pc/logs/
 pc/junit/
@@ -38,6 +37,5 @@ project.properties
 *.aux
 *.log
 *.out
-
 *.toc
 
