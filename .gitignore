@@ -1,15 +1,30 @@
 *~
 *.o
 *.so
+*.gz
+
+
+# Dossiers top secrets
+tmp/
+regles/
+mécanique/
+
+
+# Documentation
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.ppt
+*.pptx
+*.psd
+
+
 *.user
 *.project
 build/
-tmp/
-stl/
-affiche/
-factures/
-regles/
-Mécanique.lnk
+
+
 pc/config.ini
 pc/logs/
 pc/junit/
@@ -23,34 +38,6 @@ project.properties
 *.aux
 *.log
 *.out
-*.gz
+
 *.toc
 
-
-# Pour les IDE fancy
-/**/.idea/
-/**/.vs/
-/teensy/**/Debug/
-*.sln
-/**/__vm/
-*.vcxproj
-*.vcxproj.filters
-*.vscode
-
-# Pour le python
-/**/__pycache__/
-*.pyc
-
-# Documentation
-*.doc
-*.docx
-*.xls
-*.xlsx
-*.ppt
-*.pptx
-*.psd
-
-# Eagle
-*.b#?
-*.s#?
-*.l#?
