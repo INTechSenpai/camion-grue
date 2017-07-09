@@ -1,4 +1,4 @@
-#Eurobotruck
+# Eurobotruck
 
 Eurobotruck est le successeur du moon-rover.
 
@@ -14,3 +14,5 @@ TODO list :
 - mettre des boutons pour actionneurs sur la méca
 - communication par socket TCP/IP (serveur : LL)
 - hardware HL : à définir (GPU ?)
+- outil de debug de trajectoire courbe (créer facilement des trajectoires)
+- télécommande HL ?
