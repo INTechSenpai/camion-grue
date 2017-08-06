@@ -1,3 +1,5 @@
+#include <EEPROM.h>
+
 void setup()
 {
 
