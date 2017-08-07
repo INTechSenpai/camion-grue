@@ -14,19 +14,13 @@
 
 package threads.serie;
 
-import config.Config;
-import config.ConfigInfo;
-import container.dependances.SerialClass;
 import exceptions.serie.ClosedSerialException;
+import pfg.log.Log;
 import serie.BufferIncomingBytes;
 import serie.BufferOutgoingOrder;
-import serie.SerieCoucheTrame;
 import serie.Ticket;
 import serie.SerialProtocol.OutOrder;
 import serie.trame.Order;
-import threads.ThreadService;
-import utils.Log;
-import utils.Log.Verbose;
 
 /**
  * Thread qui vérifie s'il faut envoyer des ordres
@@ -35,7 +29,7 @@ import utils.Log.Verbose;
  *
  */
 
-public class ThreadSerialOutputOrder extends ThreadService implements SerialClass
+public class ThreadSerialOutputOrder extends Thread
 {
 	protected Log log;
 	private SerieCoucheTrame serie;

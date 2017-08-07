@@ -14,11 +14,10 @@
 
 package threads.serie;
 
-import container.dependances.SerialClass;
 import exceptions.serie.ClosedSerialException;
+import pfg.log.Log;
+import senpai.LogCategorySenpai;
 import serie.BufferOutgoingBytes;
-import threads.ThreadService;
-import utils.Log;
 
 /**
  * Thread qui vérifie s'il faut envoyer des choses sur la série
@@ -27,7 +26,7 @@ import utils.Log;
  *
  */
 
-public class ThreadSerialOutputBytes extends ThreadService implements SerialClass
+public class ThreadSerialOutputBytes extends Thread
 {
 	protected Log log;
 	private BufferOutgoingBytes serie;
@@ -42,7 +41,7 @@ public class ThreadSerialOutputBytes extends ThreadService implements SerialClas
 	public void run()
 	{
 		Thread.currentThread().setName(getClass().getSimpleName());
-		log.debug("Démarrage de " + Thread.currentThread().getName());
+		log.write("Démarrage de " + Thread.currentThread().getName(), LogCategorySenpai.DUMMY);
 
 		try
 		{
@@ -58,12 +57,12 @@ public class ThreadSerialOutputBytes extends ThreadService implements SerialClas
 		}
 		catch(InterruptedException | ClosedSerialException e)
 		{
-			log.debug("Arrêt de " + Thread.currentThread().getName()+" : "+e);
+			log.write("Arrêt de " + Thread.currentThread().getName()+" : "+e, LogCategorySenpai.DUMMY);
 			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)
 		{
-			log.debug("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e);
+			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, LogCategorySenpai.DUMMY);
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
 			Thread.currentThread().interrupt();

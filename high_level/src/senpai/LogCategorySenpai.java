@@ -25,7 +25,8 @@ import pfg.log.LogCategory;
 public enum LogCategorySenpai implements LogCategory
 {
 	DUMMY,
-	CAPTEURS;
+	CAPTEURS,
+	COMM;
 	
 	@Override
 	public int getMask()

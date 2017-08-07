@@ -14,8 +14,6 @@
 
 package serie;
 
-import serie.trame.Order.Type;
-
 /**
  * Protocole série entre le bas niveau et la Java
  * 
@@ -40,11 +38,9 @@ public class SerialProtocol
 		;
 
 		public final byte code;
-		public final Type type;
-
-		private OutOrder(int code, Type type)
+		
+		private OutOrder(int code)
 		{
-			this.type = type;
 			this.code = (byte) code;
 		}
 	}

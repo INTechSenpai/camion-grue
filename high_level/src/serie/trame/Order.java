@@ -14,7 +14,6 @@
 
 package serie.trame;
 
-import serie.Ticket;
 import java.nio.ByteBuffer;
 import serie.SerialProtocol.OutOrder;
 
@@ -27,38 +26,14 @@ import serie.SerialProtocol.OutOrder;
 
 public class Order
 {
-	public enum Type
-	{
-		SHORT,
-		LONG;
-	}
-
 	public ByteBuffer message;
-	public Ticket ticket;
 	public OutOrder ordre;
 
-	public Order(ByteBuffer message, OutOrder ordre, Ticket ticket)
+	public Order(ByteBuffer message, OutOrder ordre)
 	{
 		if(message != null)
 			message.flip();
 		this.message = message;
-		this.ticket = ticket;
 		this.ordre = ordre;
 	}
-
-	public Order(ByteBuffer message, OutOrder ordre)
-	{
-		this(message, ordre, new Ticket());
-	}
-
-	public Order(OutOrder ordre)
-	{
-		this(null, ordre, new Ticket());
-	}
-
-	public Order(OutOrder ordre, Ticket t)
-	{
-		this(null, ordre, t);
-	}
-
 }

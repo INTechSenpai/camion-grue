@@ -14,14 +14,14 @@
 
 package serie;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import utils.Log;
-import utils.Log.Verbose;
-import container.Service;
-import container.dependances.SerialClass;
 import exceptions.serie.ClosedSerialException;
 import exceptions.serie.MissingCharacterException;
+import pfg.log.Log;
+import senpai.LogCategorySenpai;
+import senpai.SeverityCategorySenpai;
 
 /**
  * Buffer très bas niveau qui récupère les octets sur la série
@@ -30,11 +30,11 @@ import exceptions.serie.MissingCharacterException;
  *
  */
 
-public class BufferIncomingBytes implements Service, SerialClass
+public class BufferIncomingBytes
 {
 	private Log log;
 
-	private InputStream input;
+	private DataInputStream input;
 	private volatile boolean ping = false; // y a-t-il eu le ping initial avec le LL ?
 	private volatile boolean closed = false;
 	
@@ -60,7 +60,7 @@ public class BufferIncomingBytes implements Service, SerialClass
 	
 	public void setInput(InputStream input)
 	{
-		this.input = input;
+		this.input = new DataInputStream(input);
 	}
 
 	/**
@@ -78,7 +78,7 @@ public class BufferIncomingBytes implements Service, SerialClass
 					indexBufferStop &= 0x3FFF;
 
 					if(indexBufferStart == indexBufferStop)
-						log.critical("Overflow du buffer de réception série !");
+						log.write("Overflow du buffer de réception série !", SeverityCategorySenpai.CRITICAL, LogCategorySenpai.COMM);
 
 					notifyAll();
 				}
@@ -87,7 +87,7 @@ public class BufferIncomingBytes implements Service, SerialClass
 		}
 		catch(IOException e)
 		{
-			log.critical(e);
+			log.write(e, SeverityCategorySenpai.CRITICAL, LogCategorySenpai.COMM);
 		}
 	}
 
@@ -129,7 +129,7 @@ public class BufferIncomingBytes implements Service, SerialClass
 		indexBufferStart &= 0x3FFF;
 
 		String s = Integer.toHexString(out).toUpperCase();
-		if(s.length() == 1)
+/*		if(s.length() == 1)
 		{
 			if(out >= 32 && out < 127)
 				log.debug("Reçu : " + "0" + s + " (" + (char) (out) + ")", Verbose.TRAME.masque);
@@ -142,7 +142,7 @@ public class BufferIncomingBytes implements Service, SerialClass
 				log.debug("Reçu : " + s.substring(s.length() - 2, s.length()) + " (" + (char) (out) + ")", Verbose.TRAME.masque);
 			else
 				log.debug("Reçu : " + s.substring(s.length() - 2, s.length()), Verbose.TRAME.masque);
-		}
+		}*/
 
 		return out;
 	}
