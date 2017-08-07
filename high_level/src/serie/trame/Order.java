@@ -16,7 +16,7 @@ package serie.trame;
 
 import serie.Ticket;
 import java.nio.ByteBuffer;
-import serie.SerialProtocol.OutOrder;
+import serie.SerialProtocol.Id;
 
 /**
  * Un ordre à envoyer sur la série
@@ -27,32 +27,51 @@ import serie.SerialProtocol.OutOrder;
 
 public class Order
 {
-	public ByteBuffer message;
 	public Ticket ticket;
-	public OutOrder ordre;
-
-	public Order(ByteBuffer message, OutOrder ordre, Ticket ticket)
+	public Id ordre;
+	public final byte[] trame = new byte[256]; // la taille maximale
+	public int tailleTrame;
+	
+	public Order(ByteBuffer message, Id ordre, Ticket ticket)
 	{
 		if(message != null)
 			message.flip();
-		this.message = message;
 		this.ticket = ticket;
 		this.ordre = ordre;
+		update(message);
 	}
 
-	public Order(ByteBuffer message, OutOrder ordre)
+	public Order(ByteBuffer message, Id ordre)
 	{
 		this(message, ordre, new Ticket());
 	}
 
-	public Order(OutOrder ordre)
+	public Order(Id ordre)
 	{
 		this(null, ordre, new Ticket());
 	}
 
-	public Order(OutOrder ordre, Ticket t)
+	public Order(Id ordre, Ticket t)
 	{
 		this(null, ordre, t);
 	}
 
+	private void update(ByteBuffer message)
+	{
+		int tailleMessage;
+		if(message == null)
+			tailleMessage = 0;
+		else
+			tailleMessage = message.limit();
+		tailleTrame = tailleMessage + 3;
+		if(tailleTrame > 254)
+			throw new IllegalArgumentException("La trame est trop grande ! (" + tailleTrame + " octets)");
+		trame[0] = (byte) 0xFF;
+		trame[1] = ordre.code;
+		trame[2] = (byte) (tailleTrame);
+
+		for(int i = 0; i < tailleMessage; i++)
+			trame[i + 3] = message.get();
+	}
+	
 }

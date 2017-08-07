@@ -16,6 +16,7 @@ package capteurs;
 
 import robot.Cinematique;
 import robot.RobotReal;
+import senpai.ConfigInfoSenpai;
 import serie.BufferOutgoingOrder;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,19 +71,19 @@ public class CapteursProcess
 		this.robot = robot;
 		this.serie = serie;
 
-		largeurEnnemi = config.getInt(ConfigInfo.LARGEUR_OBSTACLE_ENNEMI);
-		longueurEnnemi = config.getInt(ConfigInfo.LONGUEUR_OBSTACLE_ENNEMI);
-		distanceApproximation = config.getInt(ConfigInfo.DISTANCE_MAX_ENTRE_MESURE_ET_OBJET);
+		largeurEnnemi = config.getInt(ConfigInfoSenpai.LARGEUR_OBSTACLE_ENNEMI);
+		longueurEnnemi = config.getInt(ConfigInfoSenpai.LONGUEUR_OBSTACLE_ENNEMI);
+		distanceApproximation = config.getInt(ConfigInfoSenpai.DISTANCE_MAX_ENTRE_MESURE_ET_OBJET);
 		nbCapteurs = CapteursRobot.values().length;
-		imprecisionMaxPos = config.getDouble(ConfigInfo.IMPRECISION_MAX_POSITION);
-		imprecisionMaxAngle = config.getDouble(ConfigInfo.IMPRECISION_MAX_ORIENTATION);
-		bufferCorrection = new Cinematique[config.getInt(ConfigInfo.TAILLE_BUFFER_RECALAGE)];
-		peremptionCorrection = config.getInt(ConfigInfo.PEREMPTION_CORRECTION);
-		enableCorrection = config.getBoolean(ConfigInfo.ENABLE_CORRECTION);
+		imprecisionMaxPos = config.getDouble(ConfigInfoSenpai.IMPRECISION_MAX_POSITION);
+		imprecisionMaxAngle = config.getDouble(ConfigInfoSenpai.IMPRECISION_MAX_ORIENTATION);
+		bufferCorrection = new Cinematique[config.getInt(ConfigInfoSenpai.TAILLE_BUFFER_RECALAGE)];
+		peremptionCorrection = config.getInt(ConfigInfoSenpai.PEREMPTION_CORRECTION);
+		enableCorrection = config.getBoolean(ConfigInfoSenpai.ENABLE_CORRECTION);
 
-		int demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE) / 2;
-		int demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
-		int demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
+		int demieLargeurNonDeploye = config.getInt(ConfigInfoSenpai.LARGEUR_NON_DEPLOYE) / 2;
+		int demieLongueurArriere = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
+		int demieLongueurAvant = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
 
 		// on ne veut pas prendre en compte la marge quand on vérifie qu'on
 		// collisionne un élément de jeu
@@ -103,7 +104,7 @@ public class CapteursProcess
 			log.critical(e);
 		}
 
-		if(config.getBoolean(ConfigInfo.GRAPHIC_ROBOT_AND_SENSORS))
+		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS))
 			for(Capteur c : capteurs)
 				buffer.add(c);
 	}

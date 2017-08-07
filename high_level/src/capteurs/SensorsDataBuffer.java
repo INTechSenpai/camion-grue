@@ -18,8 +18,8 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import pfg.log.Log;
-import senpai.LogCategorySenpai;
-import senpai.SeverityCategorySenpai;
+import senpai.Subject;
+import senpai.Severity;
 
 /**
  * Buffer qui contient les infos provenant des capteurs de la STM
@@ -60,7 +60,7 @@ public class SensorsDataBuffer
 		if(buffer.size() > 5)
 		{
 			buffer.poll(); // on évacue une ancienne valeur
-			log.write("Capteurs traités trop lentement !", SeverityCategorySenpai.CRITICAL, LogCategorySenpai.CAPTEURS);
+			log.write("Capteurs traités trop lentement !", Severity.CRITICAL, Subject.CAPTEURS);
 		}
 		notify();
 	}

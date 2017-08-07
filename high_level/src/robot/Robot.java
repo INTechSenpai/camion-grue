@@ -17,6 +17,7 @@ package robot;
 import exceptions.ActionneurException;
 import exceptions.MemoryManagerException;
 import exceptions.UnableToMoveException;
+import pfg.config.Config;
 import pfg.log.Log;
 import serie.Ticket;
 
@@ -26,7 +27,7 @@ import serie.Ticket;
  * @author pf
  */
 
-public abstract class Robot implements DynamicConfigurable
+public abstract class Robot
 {
 	/*
 	 * DÉPLACEMENT HAUT NIVEAU
@@ -72,12 +73,12 @@ public abstract class Robot implements DynamicConfigurable
 		rc.date = getTempsDepuisDebutMatch();
 	}
 
-	@Override
 	public synchronized void updateConfig(Config config)
 	{
-		Boolean sym = config.getSymmetry();
-		if(sym != null)
-			symetrie = sym;
+		// TODO
+//		Boolean sym = config.getSymmetry();
+//		if(sym != null)
+//			symetrie = sym;
 	}
 
 	@Override
@@ -89,125 +90,6 @@ public abstract class Robot implements DynamicConfigurable
 	public void setCinematique(Cinematique cinematique)
 	{
 		cinematique.copy(this.cinematique);
-	}
-
-	/**
-	 * Méthode bloquante qui baisse le filet
-	 * 
-	 * @throws InterruptedException
-	 * @throws ActionneurException
-	 */
-	public void baisseFilet() throws InterruptedException, ActionneurException
-	{
-		filetBaisse = true;
-		bloque("baisseFilet");
-	}
-
-	public void bougeFiletMiChemin() throws InterruptedException, ActionneurException
-	{
-		filetBaisse = true;
-		bloque("bougeFiletMiChemin");
-	}
-
-	public void leveFilet() throws InterruptedException, ActionneurException
-	{
-		bloque("leveFilet");
-		filetBaisse = false;
-	}
-
-	public void verrouilleFilet() throws InterruptedException
-	{
-		try
-		{
-			bloque("verrouilleFilet");
-		}
-		catch(ActionneurException e)
-		{
-			log.critical(e);
-			// impossible
-		}
-	}
-
-	public boolean isFiletBaisse()
-	{
-		return filetBaisse;
-	}
-
-	public void ouvreFilet() throws InterruptedException
-	{
-		try
-		{
-			bloque("ouvreFilet");
-		}
-		catch(ActionneurException e)
-		{
-			log.critical(e);
-			// impossible
-		}
-		setFiletPlein(false);
-	}
-	
-	public void fermeFiletForce() throws InterruptedException
-	{
-		try
-		{
-			bloque("fermeFiletForce");
-		}
-		catch(ActionneurException e)
-		{
-			log.critical(e);
-			// impossible
-		}
-	}
-
-	public void fermeFilet() throws InterruptedException
-	{
-		try
-		{
-			bloque("fermeFilet");
-		}
-		catch(ActionneurException e)
-		{
-			log.critical(e);
-			// impossible
-		}
-	}
-
-	public void ejecteBalles() throws InterruptedException, ActionneurException
-	{
-		bloque("ejecteBalles", !symetrie);
-		setFiletPlein(false);
-	}
-
-	public void ejecteBallesAutreCote() throws InterruptedException, ActionneurException
-	{
-		bloque("ejecteBalles", symetrie);
-		setFiletPlein(false);
-	}
-
-	public void rearme() throws InterruptedException, ActionneurException
-	{
-		bloque("rearme", !symetrie);
-	}
-
-	public void rearmeAutreCote() throws InterruptedException, ActionneurException
-	{
-		bloque("rearme", symetrie);
-	}
-
-	public abstract Ticket traverseBascule() throws InterruptedException, ActionneurException;
-
-	/**
-	 * On est sûr que le filet est vide
-	 */
-	public void setFiletPlein(boolean etat)
-	{
-		filetPlein = etat;
-	}
-	
-	public boolean isFiletPlein()
-	{
-		return filetPlein;
 	}
 
 	public abstract boolean isArrivedAsser();

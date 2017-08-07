@@ -81,7 +81,7 @@ public abstract class Capteur implements Printable
 		if(robot.isCinematiqueInitialised())
 		{
 			double orientation = robot.getCinematique().orientationReelle;
-			computePosOrientationRelative(robot.getCinematique(), robot.getAngleRoueGauche(), robot.getAngleRoueDroite());
+			computePosOrientationRelative(robot.getCinematique(), 0, 0);
 			Vec2RW p1 = positionRelativeRotate.clone();
 			p1.rotate(orientation);
 			p1.plus(robot.getCinematique().getPosition());

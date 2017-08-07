@@ -15,9 +15,11 @@
 package threads;
 
 import obstacles.memory.ObstaclesMemory;
+import pfg.config.Config;
 import pfg.kraken.dstarlite.DStarLite;
 import pfg.log.Log;
-import senpai.LogCategorySenpai;
+import senpai.ConfigInfoSenpai;
+import senpai.Subject;
 
 /**
  * Thread qui gère la péremption des obstacles en dormant
@@ -31,40 +33,41 @@ public class ThreadPeremption extends Thread
 {
 	private ObstaclesMemory memory;
 	protected Log log;
-	private PrintBufferInterface buffer;
+//	private PrintBufferInterface buffer;
 	private DStarLite dstarlite;
 
 	private int dureePeremption;
 	private boolean printProxObs;
 
-	public ThreadPeremption(Log log, ObstaclesMemory memory, PrintBufferInterface buffer, DStarLite dstarlite, Config config)
+	public ThreadPeremption(Log log, ObstaclesMemory memory, DStarLite dstarlite, Config config)
 	{
 		this.log = log;
 		this.memory = memory;
-		this.buffer = buffer;
+//		this.buffer = buffer;
 		this.dstarlite = dstarlite;
-		printProxObs = config.getBoolean(ConfigInfo.GRAPHIC_PROXIMITY_OBSTACLES);
-		dureePeremption = config.getInt(ConfigInfo.DUREE_PEREMPTION_OBSTACLES);
+//		printProxObs = config.getBoolean(ConfigInfo.GRAPHIC_PROXIMITY_OBSTACLES);
+		dureePeremption = config.getInt(ConfigInfoSenpai.DUREE_PEREMPTION_OBSTACLES);
 	}
 
 	@Override
 	public void run()
 	{
 		Thread.currentThread().setName(getClass().getSimpleName());
-		log.write("Démarrage de " + Thread.currentThread().getName(), LogCategorySenpai.DUMMY);
+		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.DUMMY);
 		try
 		{
 			while(true)
 			{
-				if(memory.deleteOldObstacles())
-					dstarlite.updateObstaclesEnnemi();
+				// TODO
+//				if(memory.deleteOldObstacles())
+//					dstarlite.updateObstaclesEnnemi();
 
 				// mise à jour des obstacles : on réaffiche
-				if(printProxObs)
+/*				if(printProxObs)
 					synchronized(buffer)
 					{
 						buffer.notify();
-					}
+					}*/
 
 				long prochain = memory.getNextDeathDate();
 
@@ -82,12 +85,12 @@ public class ThreadPeremption extends Thread
 		}
 		catch(InterruptedException e)
 		{
-			log.debug("Arrêt de " + Thread.currentThread().getName());
+			log.write("Arrêt de " + Thread.currentThread().getName(), Subject.DUMMY);
 			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)
 		{
-			log.debug("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e);
+			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, Subject.DUMMY);
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
 			Thread.currentThread().interrupt();

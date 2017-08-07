@@ -17,23 +17,19 @@ package threads.serie;
 import capteurs.CapteursRobot;
 import capteurs.SensorsData;
 import capteurs.SensorsDataBuffer;
-import config.Config;
-import config.ConfigInfo;
-import container.Container;
-import container.Container.ErrorCode;
-import container.dependances.SerialClass;
+import pfg.config.Config;
+import pfg.log.Log;
 import robot.Cinematique;
 import robot.RobotColor;
 import robot.RobotReal;
+import senpai.Senpai;
+import senpai.Senpai.ErrorCode;
+import senpai.Severity;
+import senpai.Subject;
 import serie.BufferIncomingOrder;
 import serie.SerialProtocol.InOrder;
-import serie.SerialProtocol.OutOrder;
-import serie.trame.Frame.IncomingCode;
+import serie.SerialProtocol.Id;
 import serie.trame.Paquet;
-import threads.ThreadService;
-import utils.Log;
-import utils.Log.Verbose;
-import pathfinding.chemin.CheminPathfinding;
 
 /**
  * Thread qui écoute la série et appelle qui il faut.
@@ -42,21 +38,20 @@ import pathfinding.chemin.CheminPathfinding;
  *
  */
 
-public class ThreadSerialInputCoucheOrdre extends ThreadService
+public class ThreadSerialInputCoucheOrdre extends Thread
 {
 	protected Log log;
 	protected Config config;
 	private BufferIncomingOrder serie;
 	private SensorsDataBuffer buffer;
 	private RobotReal robot;
-	private CheminPathfinding chemin;
-	private Container container;
+	private Senpai container;
 	private Cinematique current = new Cinematique();
 
 	public static boolean capteursOn = false;
 	private int nbCapteurs;
 
-	public ThreadSerialInputCoucheOrdre(Log log, Config config, BufferIncomingOrder serie, SensorsDataBuffer buffer, RobotReal robot, CheminPathfinding chemin, Container container)
+	public ThreadSerialInputCoucheOrdre(Log log, Config config, BufferIncomingOrder serie, SensorsDataBuffer buffer, RobotReal robot, Senpai container)
 	{
 		this.container = container;
 		this.log = log;
@@ -64,14 +59,13 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 		this.serie = serie;
 		this.buffer = buffer;
 		this.robot = robot;
-		this.chemin = chemin;
 	}
 
 	@Override
 	public void run()
 	{
 		Thread.currentThread().setName(getClass().getSimpleName());
-		log.debug("Démarrage de " + Thread.currentThread().getName());
+		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.DUMMY);
 
 		nbCapteurs = CapteursRobot.values().length;
 		try
@@ -89,7 +83,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 					paquet = serie.poll();
 				}
 
-				log.debug("Durée avant obtention du paquet : " + (System.currentTimeMillis() - avant) + ". Traitement de " + paquet, Verbose.SERIE.masque);
+				log.write("Durée avant obtention du paquet : " + (System.currentTimeMillis() - avant) + ". Traitement de " + paquet, Subject.COMM);
 
 				avant = System.currentTimeMillis();
 				int[] data = paquet.message;
@@ -97,30 +91,30 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 				/**
 				 * Couleur du robot
 				 */
-				if(paquet.origine == OutOrder.ASK_COLOR)
+				if(paquet.origine == Id.ASK_COLOR)
 				{
 					if(data[0] == InOrder.COULEUR_BLEU.codeInt)
 					{
 						paquet.ticket.set(InOrder.COULEUR_BLEU);
-						config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(true));
+//						config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(true));
 					}
 					else if(data[0] == InOrder.COULEUR_JAUNE.codeInt)
 					{
 						paquet.ticket.set(InOrder.COULEUR_JAUNE);
-						config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(false));
+//						config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(false));
 					}
 					else
 					{
 						paquet.ticket.set(InOrder.COULEUR_ROBOT_INCONNU);
 						if(data[0] != InOrder.COULEUR_ROBOT_INCONNU.codeInt)
-							log.critical("Code couleur inconnu : " + data[0]);
+							log.write("Code couleur inconnu : " + data[0], Severity.CRITICAL, Subject.COMM);
 					}
 				}
 
 				/**
 				 * Capteurs
 				 */
-				else if(paquet.origine == OutOrder.START_STREAM_ALL && paquet.code == IncomingCode.STATUS_UPDATE)
+				else if(paquet.origine == Id.SENSORS_CHANNEL)
 				{
 					/**
 					 * Récupération de la position et de l'orientation
@@ -139,7 +133,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 					int indexTrajectory = data[5];
 					// log.debug("Index trajectory : "+indexTrajectory);
 
-					Cinematique theorique = chemin.setCurrentIndex(indexTrajectory);
+					Cinematique theorique = null;// TODO = chemin.setCurrentIndex(indexTrajectory);
 
 					if(theorique == null)
 					{
@@ -154,7 +148,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 
 					robot.setCinematique(current);
 
-					log.debug("Le robot est en " + current.getPosition() + ", orientation : " + orientationRobot + ", index : " + indexTrajectory, Verbose.ASSER.masque);
+					log.write("Le robot est en " + current.getPosition() + ", orientation : " + orientationRobot + ", index : " + indexTrajectory, Subject.CAPTEURS);
 
 					boolean envoi = false;
 
@@ -165,7 +159,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 						double angleRoueGauche = -(data[6] - 150.) * Math.PI / 180.;
 						double angleRoueDroite = -(data[7] - 150.) * Math.PI / 180.;
 
-						robot.setAngleRoues(angleRoueGauche, angleRoueDroite);
+//						robot.setAngleRoues(angleRoueGauche, angleRoueDroite);
 //						log.debug("Angle roues : à gauche " + data[6] + ", à droite " + data[7], Verbose.ASSER.masque);
 
 						/**
@@ -175,7 +169,7 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 						for(int i = 0; i < nbCapteurs; i++)
 						{
 							mesures[i] = data[8 + i] * CapteursRobot.values[i].type.conversion;
-							log.debug("Capteur " + CapteursRobot.values[i].name() + " : " + mesures[i], Verbose.CAPTEURS.masque);
+							log.write("Capteur " + CapteursRobot.values[i].name() + " : " + mesures[i], Subject.CAPTEURS);
 						}
 
 						if(capteursOn)
@@ -192,32 +186,33 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 				/**
 				 * Démarrage du match
 				 */
-				else if(paquet.origine == OutOrder.WAIT_FOR_JUMPER)
+				else if(paquet.origine == Id.WAIT_FOR_JUMPER)
 				{
 					capteursOn = true;
 					synchronized(config)
 					{
-						config.set(ConfigInfo.DATE_DEBUT_MATCH, System.currentTimeMillis());
-						config.set(ConfigInfo.MATCH_DEMARRE, true);
-						paquet.ticket.set(InOrder.LONG_ORDER_ACK);
+						// TODO
+//						config.set(ConfigInfo.DATE_DEBUT_MATCH, System.currentTimeMillis());
+//						config.set(ConfigInfo.MATCH_DEMARRE, true);
+						paquet.ticket.set(InOrder.ACK_SUCCESS);
 					}
 				}
 
-				else if(paquet.origine == OutOrder.SEND_ARC)
+				else if(paquet.origine == Id.SEND_ARC)
 				{
-					paquet.ticket.set(InOrder.ORDER_ACK);
+					paquet.ticket.set(InOrder.ACK_SUCCESS);
 				}
 
 				/**
 				 * Fin du match, on coupe la série et on arrête ce thread
 				 */
-				else if(paquet.origine == OutOrder.START_MATCH_CHRONO)
+				else if(paquet.origine == Id.START_MATCH_CHRONO)
 				{
-					log.debug("Fin du Match !");
+					log.write("Fin du Match !", Subject.DUMMY);
 
 					if(data[0] == InOrder.ARRET_URGENCE.codeInt)
 					{
-						log.critical("Arrêt d'urgence provenant du bas niveau !");
+						log.write("Arrêt d'urgence provenant du bas niveau !", Severity.CRITICAL, Subject.DUMMY);
 						paquet.ticket.set(InOrder.ARRET_URGENCE);
 						// On arrête le thread principal
 						container.interruptWithCodeError(ErrorCode.EMERGENCY_STOP);
@@ -237,9 +232,10 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 				/**
 				 * Le robot est arrivé après un arrêt demandé par le haut niveau
 				 */
-				else if(paquet.origine == OutOrder.FOLLOW_TRAJECTORY && paquet.code == IncomingCode.EXECUTION_END)
+				else if(paquet.origine == Id.FOLLOW_TRAJECTORY)
 				{
-					chemin.setCurrentIndex(data[1]); // on a l'index courant
+					// TODO
+//					chemin.setCurrentIndex(data[1]); // on a l'index courant
 
 					if(data[0] == InOrder.ROBOT_ARRIVE.codeInt)
 						paquet.ticket.set(InOrder.ROBOT_ARRIVE);
@@ -260,37 +256,23 @@ public class ThreadSerialInputCoucheOrdre extends ThreadService
 				 */
 
 				/**
-				 * Actionneurs avec code de retour (forcément EXECUTION_END)
-				 */
-				else if(paquet.origine == OutOrder.PULL_DOWN_NET || paquet.origine == OutOrder.PULL_UP_NET || paquet.origine == OutOrder.PUT_NET_HALFWAY || paquet.origine == OutOrder.CROSS_FLIP_FLOP || paquet.origine == OutOrder.EJECT_LEFT_SIDE || paquet.origine == OutOrder.EJECT_RIGHT_SIDE || paquet.origine == OutOrder.REARM_LEFT_SIDE || paquet.origine == OutOrder.REARM_RIGHT_SIDE)
-				{
-					if(data[0] == InOrder.ACT_SUCCESS.codeInt)
-						paquet.ticket.set(InOrder.ACT_SUCCESS);
-					else
-						paquet.ticket.set(InOrder.ACT_FAILURE);
-				}
-
-				else if(paquet.code == IncomingCode.EXECUTION_END)
-					paquet.ticket.set(InOrder.LONG_ORDER_ACK);
-
-				/**
 				 * Les paquets dont l'état n'importe pas et sans donnée (par
 				 * exemple PING ou STOP) n'ont pas besoin d'être traités
 				 */
 				else if(data.length != 0)
-					log.critical("On a ignoré un paquet d'origine " + paquet.origine + " (taille : " + data.length + ")");
+					log.write("On a ignoré un paquet d'origine " + paquet.origine + " (taille : " + data.length + ")", Severity.CRITICAL, Subject.COMM);
 
-				log.debug("Durée de traitement de " + paquet.origine + " : " + (System.currentTimeMillis() - avant), Verbose.SERIE.masque);
+				log.write("Durée de traitement de " + paquet.origine + " : " + (System.currentTimeMillis() - avant), Subject.COMM);
 			}
 		}
 		catch(InterruptedException e)
 		{
-			log.debug("Arrêt de " + Thread.currentThread().getName());
+			log.write("Arrêt de " + Thread.currentThread().getName(), Subject.DUMMY);
 			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)
 		{
-			log.debug("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e);
+			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, Subject.DUMMY);
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
 			Thread.currentThread().interrupt();

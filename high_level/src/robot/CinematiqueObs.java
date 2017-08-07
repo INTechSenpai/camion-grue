@@ -16,7 +16,7 @@ package robot;
 
 import java.io.Serializable;
 import memory.Memorizable;
-import obstacles.types.ObstacleRobot;
+import pfg.kraken.obstacles.ObstacleRobot;
 
 /**
  * Une cinématique + un obstacle associé

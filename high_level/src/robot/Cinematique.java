@@ -18,10 +18,9 @@ import java.awt.Graphics;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import graphic.Fenetre;
-import graphic.printable.Layer;
-import graphic.printable.Printable;
-import pathfinding.dstarlite.gridspace.PointGridSpace;
+import pfg.graphic.Fenetre;
+import pfg.graphic.printable.Layer;
+import pfg.graphic.printable.Printable;
 import utils.Vec2RO;
 import utils.Vec2RW;
 
@@ -245,9 +244,9 @@ public class Cinematique implements Printable, Serializable
 	}
 
 	@Override
-	public void print(Graphics g, Fenetre f, RobotReal robot)
+	public void print(Graphics g, Fenetre f)
 	{
-		double n = PointGridSpace.DISTANCE_ENTRE_DEUX_POINTS / 2;
+		double n = 20;
 		Vec2RW point1 = new Vec2RW(n, 0), point2 = new Vec2RW(-n / 2, n / 2), point3 = new Vec2RW(-n / 2, -n / 2);
 		point1.rotate(orientationGeometrique).plus(position);
 		point2.rotate(orientationGeometrique).plus(position);
@@ -270,9 +269,9 @@ public class Cinematique implements Printable, Serializable
 	}
 
 	@Override
-	public Layer getLayer()
+	public int getLayer()
 	{
-		return Layer.FOREGROUND;
+		return Layer.FOREGROUND.ordinal();
 	}
 
 }

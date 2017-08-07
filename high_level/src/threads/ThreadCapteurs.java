@@ -18,7 +18,7 @@ import capteurs.CapteursProcess;
 import capteurs.SensorsData;
 import capteurs.SensorsDataBuffer;
 import pfg.log.Log;
-import senpai.LogCategorySenpai;
+import senpai.Subject;
 
 /**
  * Thread qui gère les entrées des capteurs
@@ -45,7 +45,7 @@ public class ThreadCapteurs extends Thread
 	public void run()
 	{
 		Thread.currentThread().setName(getClass().getSimpleName());
-		log.write("Démarrage de " + Thread.currentThread().getName(), LogCategorySenpai.DUMMY);
+		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.DUMMY);
 		try
 		{
 			while(true)
@@ -63,12 +63,12 @@ public class ThreadCapteurs extends Thread
 		}
 		catch(InterruptedException e)
 		{
-			log.write("Arrêt de " + Thread.currentThread().getName(), LogCategorySenpai.DUMMY);
+			log.write("Arrêt de " + Thread.currentThread().getName(), Subject.DUMMY);
 			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)
 		{
-			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, LogCategorySenpai.DUMMY);
+			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, Subject.DUMMY);
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
 			Thread.currentThread().interrupt();

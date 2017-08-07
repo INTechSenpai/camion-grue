@@ -29,11 +29,9 @@ import threads.serie.ThreadSerialOutputOrder;
 public enum ThreadName
 {
 	CAPTEURS(ThreadCapteurs.class),
-	CONFIG(ThreadConfig.class),
 	FENETRE(ThreadFenetre.class),
 	PRINT_SERVER(ThreadPrintServer.class),
 	REMOTE_CONTROL(ThreadRemoteControl.class),
-	PREPARE_PATHFINDING(ThreadPreparePathfinding.class),
 	PEREMPTION(ThreadPeremption.class),
 	SERIAL_INPUT_ORDRE(ThreadSerialInputCoucheOrdre.class),
 	SERIAL_INPUT_TRAME(ThreadSerialInputCoucheTrame.class),

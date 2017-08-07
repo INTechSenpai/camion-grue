@@ -16,12 +16,14 @@ package serie;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Enumeration;
-import java.util.TooManyListenersException;
+import java.net.InetAddress;
+import java.net.Socket;
 import exceptions.serie.ClosedSerialException;
-import pfg.config.Config;
 import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
+import senpai.ConfigSenpai;
+import senpai.Severity;
+import senpai.Subject;
 
 /**
  * La connexion série
@@ -34,98 +36,64 @@ public class SerieCouchePhysique
 {
 	protected Log log;
 	private BufferIncomingBytes buffer;
-	private SerialListener listener;
+//	private SerialListener listener;
+	
+	private int port;
+	private InetAddress adresse;
+	private Socket socket;
 
-	protected volatile boolean isClosed;
-	private int baudrate;
 	private boolean simuleSerie;
-
-	private String portName;
+	private boolean mustClose = false;
 
 	/** The output stream to the port */
 	private OutputStream output;
-
-	// Permet d'ouvrir le port à la première utilisation de la série
-	protected volatile boolean portOuvert = false;
-
-	/** Milliseconds to block while waiting for port open */
-	private static final int TIME_OUT = 2000;
 
 	/**
 	 * Constructeur pour la série de test
 	 * 
 	 * @param log
 	 */
-	public SerieCouchePhysique(Log log, BufferIncomingBytes buffer, Config config, SerialListener listener)
+	public SerieCouchePhysique(Log log, BufferIncomingBytes buffer, ConfigSenpai config)
 	{
 		this.log = log;
 		this.buffer = buffer;
-		this.listener = listener;
+//		this.listener = listener;
 
-		portName = config.getString(ConfigInfoSenpai.SERIAL_PORT);
-		baudrate = config.getInt(ConfigInfo.BAUDRATE);
-		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
+		adresse = config.getAdresse();
+		port = config.getInt(ConfigInfoSenpai.LL_PORT_NUMBER);
+		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_SERIE);
 
 		if(simuleSerie)
-			log.critical("SÉRIE SIMULÉE !");
+			log.write("SÉRIE SIMULÉE !", Severity.CRITICAL, Subject.DUMMY);
+		
+		initialize();
 	}
 
 	/**
 	 * Ouverture du port
 	 * 
 	 * @throws InterruptedException
+	 * @throws ClosedSerialException 
 	 */
-	protected synchronized void openPort() throws InterruptedException
+	protected synchronized void openSocket(int delay) throws InterruptedException, ClosedSerialException
 	{
-		// TODO ouverture du socket
-	}
+		if(mustClose)
+			throw new ClosedSerialException("La série est fermée et ne peut envoyer un message");
 
-	/**
-	 * Recherche du port
-	 * 
-	 * @return
-	 */
-	protected synchronized boolean searchPort()
-	{
-		if(simuleSerie)
-			return true;
-
-		portOuvert = false;
-		CommPortIdentifier port;
-		try
+		if(!socket.isConnected() || socket.isClosed())
 		{
-			port = CommPortIdentifier.getPortIdentifier(portName);
-			log.debug("Port " + port.getName() + " trouvé !");
-
-			if(port.isCurrentlyOwned())
-			{
-				log.warning("Port déjà utilisé par " + port.getCurrentOwner());
-				return false;
-			}
-
-			if(!initialize(port, baudrate))
-				return false;
-
-			portOuvert = true;
-			return true;
-
-		}
-		catch(NoSuchPortException e)
-		{
-			log.warning("Port " + portName + " introuvable : " + e);
-			String out = "Les ports disponibles sont : ";
-
-			Enumeration<?> ports = CommPortIdentifier.getPortIdentifiers();
-
-			while(ports.hasMoreElements())
-			{
-				out += ((CommPortIdentifier) ports.nextElement()).getName();
-				if(ports.hasMoreElements())
-					out += ", ";
-			}
-
-			log.debug(out);
-			return false;
+			socket = null;
+			do {
+				try
+				{
+					socket = new Socket(adresse, port);
+				}
+				catch(IOException e)
+				{
+					log.write("Erreur lors de la connexion au LL", Severity.WARNING, Subject.COMM);
+					Thread.sleep(delay);
+				}
+			} while(socket == null);
 		}
 	}
 
@@ -137,43 +105,28 @@ public class SerieCouchePhysique
 	 * @param baudrate
 	 * Le baudrate que la carte utilise
 	 */
-	private boolean initialize(CommPortIdentifier portId, int baudrate)
+	private boolean initialize()
 	{
 		if(simuleSerie)
 			return true;
 
-		try
-		{
-			serialPort = (SerialPort) portId.open("MoonRover", TIME_OUT);
-			// set port parameters
-			serialPort.setSerialPortParams(baudrate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-			// serialPort.setInputBufferSize(100);
-			// serialPort.setOutputBufferSize(100);
-			// serialPort.enableReceiveTimeout(100);
-			// serialPort.enableReceiveThreshold(1);
-
+		try {
+			openSocket(500);
+			
 			// open the streams
-			buffer.setInput(serialPort.getInputStream());
-			output = serialPort.getOutputStream();
-
-			// Configuration du Listener
-			serialPort.addEventListener(listener);
-
-			serialPort.notifyOnDataAvailable(true); // activation du listener
-													// pour vérifier qu'on a des
-													// données disponible
-			serialPort.notifyOnOutputEmpty(true); // activation du listener pour
-													// vérifier que l'envoi est
-													// fini
-
-			isClosed = false;
+			buffer.setInput(socket.getInputStream());
+			output = socket.getOutputStream();
+	
+			// Configuration du listener TODO
+	
 			return true;
 		}
-		catch(TooManyListenersException | PortInUseException | UnsupportedCommOperationException | IOException e2)
+		catch(IOException | InterruptedException | ClosedSerialException e)
 		{
-			log.critical(e2);
+			e.printStackTrace();
+			assert false : e;
 			return false;
-		}
+		}		
 	}
 
 	/**
@@ -184,26 +137,25 @@ public class SerieCouchePhysique
 		if(simuleSerie)
 			return;
 
-		if(!isClosed && portOuvert)
+		if(socket.isConnected() && !socket.isClosed())
 		{
 			try
 			{
-				log.debug("Fermeture de la carte");
-				serialPort.removeEventListener();
-				serialPort.close();
+				log.write("Fermeture de la carte", Subject.COMM);
+				socket.close();
 				buffer.close();
 				output.close();
+				mustClose = false;
 			}
 			catch(IOException e)
 			{
-				log.warning(e);
+				log.write(e, Severity.WARNING, Subject.COMM);
 			}
-			isClosed = true;
 		}
-		else if(isClosed)
-			log.warning("Carte déjà fermée");
-		else
-			log.warning("Carte jamais ouverte");
+		else if(socket.isClosed())
+			log.write("Carte déjà fermée", Severity.WARNING, Subject.COMM);
+		else// if(!socket.isConnected())
+			log.write("Carte jamais ouverte", Severity.WARNING, Subject.COMM);
 	}
 
 	/**
@@ -219,40 +171,14 @@ public class SerieCouchePhysique
 		if(simuleSerie)
 			return;
 
-		openPort();
-
 		/**
 		 * Un appel à une série fermée ne devrait jamais être effectué.
 		 */
-		if(isClosed)
-			throw new ClosedSerialException("La série est fermée et ne peut envoyer un message");
 
 		try
 		{
-			// On vérifie bien que toutes les données précédentes ont été
-			// envoyées
-			synchronized(listener)
-			{
-				if(!listener.isOutputEmpty())
-					listener.wait();
-
-				listener.setOutputNonEmpty();
-
-				output.write(bufferWriting, offset, length);
-				output.flush();
-
-				String aff = "";
-				for(int i = offset; i < offset + length; i++)
-				{
-					int out = bufferWriting[i];
-					String s = Integer.toHexString(out).toUpperCase();
-					if(s.length() == 1)
-						aff += "0" + s + " ";
-					else
-						aff += s.substring(s.length() - 2, s.length()) + " ";
-				}
-				log.debug("Envoi terminé de " + aff, Verbose.SERIE.masque);
-			}
+			output.write(bufferWriting, offset, length);
+			output.flush();
 		}
 		catch(IOException e)
 		{
@@ -261,13 +187,8 @@ public class SerieCouchePhysique
 			 * infinie.
 			 * De toute façon, on n'a pas d'autre choix...
 			 */
-			log.critical("Ne peut pas parler à la carte. Tentative de reconnexion.");
-			while(!searchPort())
-			{
-				log.critical("Pas trouvé... On recommence");
-				// On laisse la série respirer un peu
-				Thread.sleep(100);
-			}
+			log.write("Ne peut pas parler à la carte. Tentative de reconnexion.", Severity.WARNING, Subject.COMM);
+			openSocket(50);
 			// On a retrouvé la série, on renvoie le message
 			communiquer(bufferWriting, offset, length);
 		}
@@ -275,12 +196,6 @@ public class SerieCouchePhysique
 
 	public boolean isClosed()
 	{
-		return isClosed;
+		return mustClose;
 	}
-	
-	public void init() throws InterruptedException
-	{
-		openPort();
-	}
-
 }

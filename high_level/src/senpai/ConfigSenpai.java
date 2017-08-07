@@ -15,7 +15,7 @@ public class ConfigSenpai extends Config
 	{
 		try
 		{
-			String[] s = getString(ConfigInfoSenpai.HOSTNAME_SERVEUR).split("\\."); // on découpe
+			String[] s = getString(ConfigInfoSenpai.LL_HOSTNAME_SERVER).split("\\."); // on découpe
 			// avec les
 			// points
 			if(s.length == 4) // une adresse ip,
@@ -30,7 +30,7 @@ public class ConfigSenpai extends Config
 			else // le nom du serveur, probablement
 			{
 	//			log.debug("Recherche du serveur à partir de son nom : " + args[i]);
-				return InetAddress.getByName(getString(ConfigInfoSenpai.HOSTNAME_SERVEUR));
+				return InetAddress.getByName(getString(ConfigInfoSenpai.LL_HOSTNAME_SERVER));
 			}
 		}
 		catch(UnknownHostException e)

@@ -21,11 +21,10 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
-import config.Config;
-import config.ConfigInfo;
-import container.dependances.GUIClass;
-import graphic.ExternalPrintBuffer;
-import utils.Log;
+import pfg.config.Config;
+import pfg.graphic.ExternalPrintBuffer;
+import pfg.log.Log;
+import senpai.Subject;
 
 /**
  * Thread du serveur d'affichage
@@ -34,7 +33,7 @@ import utils.Log;
  *
  */
 
-public class ThreadPrintServer extends ThreadService implements GUIClass
+public class ThreadPrintServer extends Thread
 {
 
 	/**
@@ -44,7 +43,7 @@ public class ThreadPrintServer extends ThreadService implements GUIClass
 	 * @author pf
 	 *
 	 */
-	private class ThreadSocket implements GUIClass, Runnable
+	private class ThreadSocket implements Runnable
 	{
 		protected Log log;
 		private ExternalPrintBuffer buffer;
@@ -63,7 +62,7 @@ public class ThreadPrintServer extends ThreadService implements GUIClass
 		public void run()
 		{
 			Thread.currentThread().setName(getClass().getSimpleName() + "-" + nb);
-			log.debug("Connexion d'un client au serveur d'affichage");
+			log.write("Connexion d'un client au serveur d'affichage", Subject.DUMMY);
 			try
 			{
 				ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
@@ -75,14 +74,14 @@ public class ThreadPrintServer extends ThreadService implements GUIClass
 			}
 			catch(InterruptedException | IOException e)
 			{
-				log.debug("Arrêt de " + Thread.currentThread().getName());
+				log.write("Arrêt de " + Thread.currentThread().getName(), Subject.DUMMY);
 				Thread.currentThread().interrupt();
 			}
 		}
 
 	}
 
-	private class ThreadDifferential implements GUIClass, Runnable
+	private class ThreadDifferential implements Runnable
 	{
 		protected Log log;
 		private ExternalPrintBuffer buffer;
@@ -97,7 +96,7 @@ public class ThreadPrintServer extends ThreadService implements GUIClass
 		public void run()
 		{
 			Thread.currentThread().setName(getClass().getSimpleName());
-			log.debug("Démarrage de " + Thread.currentThread().getName());
+			log.write("Démarrage de " + Thread.currentThread().getName(), Subject.DUMMY);
 			try
 			{
 				while(true)
@@ -112,7 +111,7 @@ public class ThreadPrintServer extends ThreadService implements GUIClass
 			}
 			catch(InterruptedException | IOException e)
 			{
-				log.debug("Arrêt de " + Thread.currentThread().getName());
+				log.write("Arrêt de " + Thread.currentThread().getName(), Subject.DUMMY);
 				Thread.currentThread().interrupt();
 			}
 		}
@@ -130,7 +129,7 @@ public class ThreadPrintServer extends ThreadService implements GUIClass
 	{
 		this.log = log;
 		this.buffer = buffer;
-		print = config.getBoolean(ConfigInfo.GRAPHIC_ENABLE);
+/*		print = config.getBoolean(ConfigInfo.GRAPHIC_ENABLE);
 		deporte = config.getBoolean(ConfigInfo.GRAPHIC_EXTERNAL);
 		file = config.getBoolean(ConfigInfo.GRAPHIC_DIFFERENTIAL);
 		try {
@@ -144,22 +143,22 @@ public class ThreadPrintServer extends ThreadService implements GUIClass
 			Thread t = new Thread(new ThreadDifferential(log, buffer));
 			t.start();
 			threads.add(t);
-		}
+		}*/
 	}
 
 	@Override
 	public void run()
 	{
 		Thread.currentThread().setName(getClass().getSimpleName());
-		log.debug("Démarrage de " + Thread.currentThread().getName());
+		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.DUMMY);
 		try
 		{
-			if(!print || !deporte)
+/*			if(!print || !deporte)
 			{
 				log.debug(getClass().getSimpleName() + " annulé (" + ConfigInfo.GRAPHIC_ENABLE + " = " + print + ", " + ConfigInfo.GRAPHIC_EXTERNAL + " = " + deporte + ")");
 				while(true)
 					Thread.sleep(10000);
-			}
+			}*/
 
 			ssocket = new ServerSocket(13370);
 			while(true)
@@ -174,7 +173,7 @@ public class ThreadPrintServer extends ThreadService implements GUIClass
 				{}
 			}
 		}
-		catch(InterruptedException | IOException e)
+		catch(IOException e)
 		{
 			if(ssocket != null && !ssocket.isClosed())
 				try
@@ -192,7 +191,7 @@ public class ThreadPrintServer extends ThreadService implements GUIClass
 			 */
 			for(Thread t : threads)
 				t.interrupt();
-			log.debug("Arrêt de " + Thread.currentThread().getName());
+			log.write("Arrêt de " + Thread.currentThread().getName(), Subject.DUMMY);
 			Thread.currentThread().interrupt();
 		}
 	}

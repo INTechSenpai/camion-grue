@@ -14,14 +14,13 @@
 
 package serie;
 
-import java.util.ArrayList;
-import java.util.List;
 import exceptions.serie.ClosedSerialException;
 import pfg.log.Log;
-import serie.trame.Paquet;
+import senpai.Severity;
+import senpai.Subject;
 
 /**
- * Buffer très bas niveau qui envoie les octets sur la série
+ * Buffer très bas niveau qui envoie les octets sur le socket
  * 
  * @author pf
  *
@@ -33,7 +32,6 @@ public class BufferOutgoingBytes
 	private SerieCouchePhysique serie;
 
 	private byte bufferWriting[] = new byte[16384];
-	private List<Paquet> waitingForSending = new ArrayList<Paquet>();
 
 	private volatile int indexBufferStart = 0;
 	private volatile int indexBufferStop = 0;
@@ -44,13 +42,11 @@ public class BufferOutgoingBytes
 		this.serie = serie;
 	}
 
-	public synchronized void add(Conversation c, byte[] b, int taille) throws ClosedSerialException
+	public synchronized void add(byte[] b, int taille) throws ClosedSerialException
 	{
 		if(serie.isClosed())
-			throw new ClosedSerialException("Série fermée !");
-			
-		if(c != null)
-			waitingForSending.add(c);
+			throw new ClosedSerialException("Communication fermée !");
+
 
 		int diffOld = (indexBufferStop - indexBufferStart + 16384) & 0x3FFF;
 		if(taille + indexBufferStop <= 16384)
@@ -70,21 +66,9 @@ public class BufferOutgoingBytes
 
 		if(diffNew < diffOld) // cette différence ne peut diminuer qu'en cas
 								// d'overflow
-			log.critical("Overflow du buffer d'envoi série !");
+			log.write("Overflow du buffer d'envoi !", Severity.CRITICAL, Subject.COMM);
 		notify();
 	}
-
-/*	public synchronized void add(byte b) throws ClosedSerialException
-	{
-		if(serie.isClosed())
-			throw new ClosedSerialException("Série fermée !");
-
-		bufferWriting[indexBufferStop++] = b;
-		indexBufferStop &= 0x3FFF;
-		if(isEmpty())
-			log.critical("Overflow du buffer d'envoi série !");
-		notify();
-	}*/
 
 	/**
 	 * Lit un octet
@@ -108,10 +92,6 @@ public class BufferOutgoingBytes
 					serie.communiquer(bufferWriting, 0, indexBufferStop);
 			}
 			indexBufferStart = indexBufferStop;
-
-			for(Conversation c : waitingForSending)
-				c.updateResendDate();
-			waitingForSending.clear();
 		}
 	}
 
@@ -122,12 +102,7 @@ public class BufferOutgoingBytes
 	{
 		serie.close();
 	}
-
-	public void init() throws InterruptedException
-	{
-		serie.init();
-	}
-
+	
 	public synchronized boolean isEmpty()
 	{
 		return indexBufferStart == indexBufferStop;

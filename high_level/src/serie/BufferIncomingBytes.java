@@ -20,8 +20,9 @@ import java.io.InputStream;
 import exceptions.serie.ClosedSerialException;
 import exceptions.serie.MissingCharacterException;
 import pfg.log.Log;
-import senpai.LogCategorySenpai;
-import senpai.SeverityCategorySenpai;
+import senpai.Subject;
+import serie.trame.Paquet;
+import senpai.Severity;
 
 /**
  * Buffer très bas niveau qui récupère les octets sur la série
@@ -78,7 +79,7 @@ public class BufferIncomingBytes
 					indexBufferStop &= 0x3FFF;
 
 					if(indexBufferStart == indexBufferStop)
-						log.write("Overflow du buffer de réception série !", SeverityCategorySenpai.CRITICAL, LogCategorySenpai.COMM);
+						log.write("Overflow du buffer de réception série !", Severity.CRITICAL, Subject.COMM);
 
 					notifyAll();
 				}
@@ -87,7 +88,7 @@ public class BufferIncomingBytes
 		}
 		catch(IOException e)
 		{
-			log.write(e, SeverityCategorySenpai.CRITICAL, LogCategorySenpai.COMM);
+			log.write(e, Severity.CRITICAL, Subject.COMM);
 		}
 	}
 
@@ -97,6 +98,12 @@ public class BufferIncomingBytes
 	public final synchronized boolean available()
 	{
 		return indexBufferStart != indexBufferStop;
+	}
+	
+	public final synchronized Paquet readPaquet() throws MissingCharacterException, InterruptedException, ClosedSerialException
+	{
+		read();
+		return null;
 	}
 
 	/**
@@ -110,7 +117,7 @@ public class BufferIncomingBytes
 	 * @throws InterruptedException
 	 * @throws ClosedSerialException 
 	 */
-	public final synchronized int read() throws MissingCharacterException, InterruptedException, ClosedSerialException
+	private final synchronized int read() throws MissingCharacterException, InterruptedException, ClosedSerialException
 	{
 		int essai = 0;
 		while(indexBufferStart == indexBufferStop && essai < 100)
@@ -127,22 +134,6 @@ public class BufferIncomingBytes
 
 		int out = bufferReading[indexBufferStart++];
 		indexBufferStart &= 0x3FFF;
-
-/*		String s = Integer.toHexString(out).toUpperCase();
-		if(s.length() == 1)
-		{
-			if(out >= 32 && out < 127)
-				log.debug("Reçu : " + "0" + s + " (" + (char) (out) + ")", Verbose.TRAME.masque);
-			else
-				log.debug("Reçu : " + "0" + s, Verbose.TRAME.masque);
-		}
-		else
-		{
-			if(out >= 32 && out < 127)
-				log.debug("Reçu : " + s.substring(s.length() - 2, s.length()) + " (" + (char) (out) + ")", Verbose.TRAME.masque);
-			else
-				log.debug("Reçu : " + s.substring(s.length() - 2, s.length()), Verbose.TRAME.masque);
-		}*/
 
 		return out;
 	}

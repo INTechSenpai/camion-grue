@@ -14,10 +14,10 @@
 
 package threads;
 
-import utils.Log;
-import container.Container;
-import container.Container.ErrorCode;
-import container.Service;
+import pfg.log.Log;
+import senpai.Subject;
+import senpai.Senpai;
+import senpai.Senpai.ErrorCode;
 
 /**
  * Thread qui sera exécuté à la fin du programme
@@ -26,12 +26,12 @@ import container.Service;
  *
  */
 
-public class ThreadShutdown extends Thread implements Service
+public class ThreadShutdown extends Thread
 {
-	protected Container container;
+	protected Senpai container;
 	protected Log log;
 
-	public ThreadShutdown(Container container, Log log)
+	public ThreadShutdown(Senpai container, Log log)
 	{
 		this.container = container;
 		this.log = log;
@@ -44,7 +44,7 @@ public class ThreadShutdown extends Thread implements Service
 			Thread.currentThread().setName(getClass().getSimpleName());
 			if(!container.isShutdownInProgress())
 			{
-				log.debug("Appel prématuré à " + Thread.currentThread().getName());
+				log.write("Appel prématuré à " + Thread.currentThread().getName(), Subject.DUMMY);
 				container.interruptWithCodeError(ErrorCode.TERMINATION_SIGNAL);
 				// c'est le thread principal qui va terminer ce thread
 				while(true)

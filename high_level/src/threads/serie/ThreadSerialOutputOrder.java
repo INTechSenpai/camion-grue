@@ -15,12 +15,13 @@
 package threads.serie;
 
 import exceptions.serie.ClosedSerialException;
+import pfg.config.Config;
 import pfg.log.Log;
-import senpai.LogCategorySenpai;
+import senpai.ConfigInfoSenpai;
+import senpai.Subject;
 import serie.BufferIncomingBytes;
+import serie.BufferOutgoingBytes;
 import serie.BufferOutgoingOrder;
-import serie.Ticket;
-import serie.SerialProtocol.OutOrder;
 import serie.trame.Order;
 
 /**
@@ -33,27 +34,25 @@ import serie.trame.Order;
 public class ThreadSerialOutputOrder extends Thread
 {
 	protected Log log;
-	private SerieCoucheTrame serie;
+	private BufferOutgoingBytes serie;
 	private BufferOutgoingOrder data;
-	private int sleep;
 	private BufferIncomingBytes input;
 	private boolean simuleSerie;
 
-	public ThreadSerialOutputOrder(Log log, SerieCoucheTrame serie, BufferIncomingBytes input, BufferOutgoingOrder data, Config config)
+	public ThreadSerialOutputOrder(Log log, BufferOutgoingBytes serie, BufferIncomingBytes input, BufferOutgoingOrder data, Config config)
 	{
 		this.log = log;
 		this.serie = serie;
 		this.data = data;
 		this.input = input;
-		sleep = config.getInt(ConfigInfo.SLEEP_ENTRE_TRAMES);
-		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
+		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_SERIE);
 	}
 
 	@Override
 	public void run()
 	{
 		Thread.currentThread().setName(getClass().getSimpleName());
-		log.write("Démarrage de " + Thread.currentThread().getName(), LogCategorySenpai.DUMMY);
+		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.DUMMY);
 		Order message;
 
 		// On envoie d'abord le ping long initial
@@ -63,19 +62,16 @@ public class ThreadSerialOutputOrder extends Thread
 				while(true)
 					Thread.sleep(10000);
 
-			serie.init();
-			Thread.sleep(50); // on attend que la série soit bien prête
-			synchronized(input)
+/*			synchronized(input)
 			{
 				serie.sendOrder(new Order(OutOrder.PING));
 				log.debug("Ping envoyé : attente de réception");
 				input.wait(); // on est notifié dès qu'on reçoit quelque chose
 								// sur la série
 				log.debug("Pong reçu : la connexion série est OK");
-			}
+			}*/
 			
 			input.setPingDone();
-			Ticket t = new Ticket();
 			
 			while(true)
 			{
@@ -88,40 +84,24 @@ public class ThreadSerialOutputOrder extends Thread
 
 					message = null;
 					if(data.isEmpty()) // pas de message ? On attend
-						data.wait(500);
+						data.wait();
 
-					if(data.isEmpty()) // si c'est le timeout qui nous a
-										// réveillé, on envoie un ping
-					{
-						synchronized(t)
-						{
-							if(!t.isEmpty())
-							{
-								t.attendStatus(); // pas besoin d'attendre
-								message = new Order(OutOrder.PING, t);
-								log.debug("Envoi d'un ping pour vérifier la connexion", Verbose.SERIE.masque);
-							}
-						}
-					}
-					else
-						message = data.poll();
+					message = data.poll();
 				}
 				if(message != null)
 				{
-					serie.sendOrder(message);
-					Thread.sleep(sleep); // laisse un peu de temps entre deux trames
-											// si besoin est
+					serie.add(message.trame, message.tailleTrame);
 				}
 			}
 		}
 		catch(InterruptedException | ClosedSerialException e)
 		{
-			log.debug("Arrêt de " + Thread.currentThread().getName()+" : "+e);
+			log.write("Arrêt de " + Thread.currentThread().getName()+" : "+e, Subject.DUMMY);
 			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)
 		{
-			log.debug("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e);
+			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, Subject.DUMMY);
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
 			Thread.currentThread().interrupt();

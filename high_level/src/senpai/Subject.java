@@ -12,16 +12,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package serie.trame;
+package senpai;
+
+import pfg.log.LogCategory;
 
 /**
- * Une trame série
- * 
+ * Les différents sujets de log
  * @author pf
  *
  */
 
-public abstract class Frame
+public enum Subject implements LogCategory
 {
-	public int id;
+	DUMMY,
+	CAPTEURS,
+	COMM,
+	REMOTE_CONTROL;
+	
+	@Override
+	public int getMask()
+	{
+		return 1 << ordinal();
+	}
+
+
 }

@@ -15,8 +15,10 @@
 package threads.serie;
 
 import exceptions.serie.ClosedSerialException;
+import pfg.log.Log;
+import senpai.Subject;
+import serie.BufferIncomingBytes;
 import serie.BufferIncomingOrder;
-import threads.ThreadService;
 
 /**
  * Thread qui s'occupe de la partie bas niveau du protocole série
@@ -25,14 +27,14 @@ import threads.ThreadService;
  *
  */
 
-public class ThreadSerialInputCoucheTrame extends ThreadService
+public class ThreadSerialInputCoucheTrame extends Thread
 {
 
 	protected Log log;
-	private SerieCoucheTrame serie;
+	private BufferIncomingBytes serie;
 	private BufferIncomingOrder buffer;
 	
-	public ThreadSerialInputCoucheTrame(Log log, SerieCoucheTrame serie, BufferIncomingOrder buffer)
+	public ThreadSerialInputCoucheTrame(Log log, BufferIncomingBytes serie, BufferIncomingOrder buffer)
 	{
 		this.log = log;
 		this.serie = serie;
@@ -43,20 +45,20 @@ public class ThreadSerialInputCoucheTrame extends ThreadService
 	public void run()
 	{
 		Thread.currentThread().setName(getClass().getSimpleName());
-		log.debug("Démarrage de " + Thread.currentThread().getName());
+		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.DUMMY);
 		try
 		{
 			while(true)
-				buffer.add(serie.readData());
+				buffer.add(serie.readPaquet());
 		}
 		catch(InterruptedException | ClosedSerialException e)
 		{
-			log.debug("Arrêt de " + Thread.currentThread().getName()+" : "+e);
+			log.write("Arrêt de " + Thread.currentThread().getName()+" : "+e, Subject.DUMMY);
 			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)
 		{
-			log.debug("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e);
+			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, Subject.DUMMY);
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
 			Thread.currentThread().interrupt();

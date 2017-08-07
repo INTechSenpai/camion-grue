@@ -12,28 +12,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package exceptions;
+package senpai;
+
+import pfg.log.SeverityCategory;
 
 /**
- * Exception levée par le container
- * 
+ * Les différents niveaux de sévérité
  * @author pf
  *
  */
 
-public class ContainerException extends Exception
+public enum Severity implements SeverityCategory
 {
-
-	private static final long serialVersionUID = -960091158805232282L;
-
-	public ContainerException()
-	{
-		super();
-	}
-
-	public ContainerException(String m)
-	{
-		super(m);
-	}
-
+	INFO, WARNING, CRITICAL;
 }

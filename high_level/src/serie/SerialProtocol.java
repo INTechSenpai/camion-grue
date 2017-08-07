@@ -14,6 +14,8 @@
 
 package serie;
 
+import serie.SerialProtocol.State;
+
 /**
  * Protocole série entre le bas niveau et la Java
  * 
@@ -38,7 +40,7 @@ public class SerialProtocol
 		public final byte code = (byte) ordinal();		
 	}
 
-	public enum OutOrder
+	public enum Id
 	{
 		/**
 		 * Protocole Java vers bas niveau
@@ -60,9 +62,10 @@ public class SerialProtocol
 		SET_SENSOR_MODE(0x5F),
 		SET_POSITION(0x60),
 		SET_CURVATURE(0x61);
+		
 		public final byte code;
 		
-		private OutOrder(int code)
+		private Id(int code)
 		{
 			this.code = (byte) code;
 		}
@@ -70,7 +73,29 @@ public class SerialProtocol
 
 	public enum InOrder
 	{
-		;
+		/**
+		 * Protocole bas niveau vers Java
+		 */
+
+		// Réponse à "FollowTrajectory"
+		ROBOT_ARRIVE(0x00, State.OK),
+		ROBOT_BLOCAGE_EXTERIEUR(0x01, State.KO),
+		ROBOT_BLOCAGE_INTERIEUR(0x02, State.KO),
+		PLUS_DE_POINTS(0x03, State.KO),
+		STOP_REQUIRED(0x04, State.KO),
+		TROP_LOIN(0x05, State.KO),
+
+		// Couleur
+		COULEUR_BLEU(0x00, State.OK),
+		COULEUR_JAUNE(0x01, State.OK),
+		COULEUR_ROBOT_INCONNU(0x02, State.KO),
+
+		// Réponse à "StartMatchChrono"
+		MATCH_FINI(0x00, State.OK),
+		ARRET_URGENCE(0x01, State.KO),
+
+		ACK_SUCCESS(0x00, State.OK),
+		ACK_FAILURE(0x01, State.KO);
 
 		public final int codeInt;
 		public final State etat;

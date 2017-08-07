@@ -20,15 +20,16 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import config.Config;
-import config.ConfigInfo;
-import container.Container;
-import container.Container.ErrorCode;
-import container.dependances.GUIClass;
+import pfg.config.Config;
+import pfg.log.Log;
 import remoteControl.Commandes;
+import senpai.Subject;
+import senpai.ConfigInfoSenpai;
+import senpai.Senpai;
+import senpai.Senpai.ErrorCode;
+import senpai.Severity;
 import serie.BufferOutgoingOrder;
 import serie.Ticket;
-import utils.Log;
 
 /**
  * Thread du contrôle à distance
@@ -37,12 +38,11 @@ import utils.Log;
  *
  */
 
-public class ThreadRemoteControl extends ThreadService implements GUIClass
+public class ThreadRemoteControl extends Thread
 {
 	private Log log;
-	private Config config;
 	private BufferOutgoingOrder data;
-	private Container container;
+	private Senpai container;
 	private ServerSocket ssocket = null;
 	private boolean remote;
 	private double l;
@@ -87,7 +87,7 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 		public void run()
 		{
 			Thread.currentThread().setName(getClass().getSimpleName());
-			log.debug("Démarrage de " + Thread.currentThread().getName());
+			log.write("Démarrage de " + Thread.currentThread().getName(), Subject.DUMMY);
 			try
 			{
 				while(true)
@@ -107,7 +107,7 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 			}
 			catch(IOException | InterruptedException e)
 			{
-				log.debug("Arrêt de " + Thread.currentThread().getName());
+				log.write("Arrêt de " + Thread.currentThread().getName(), Subject.DUMMY);
 				Thread.currentThread().interrupt();
 			}
 		}
@@ -115,32 +115,31 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 	}
 
 	
-	public ThreadRemoteControl(Log log, Config config, BufferOutgoingOrder data, Container container)
+	public ThreadRemoteControl(Log log, Config config, BufferOutgoingOrder data, Senpai container)
 	{
 		this.log = log;
-		this.config = config;
 		this.data = data;
 		this.container = container;
-		remote = config.getBoolean(ConfigInfo.REMOTE_CONTROL);
-		l = config.getDouble(ConfigInfo.CENTRE_ROTATION_ROUE_X) / 1000.;
+		remote = config.getBoolean(ConfigInfoSenpai.REMOTE_CONTROL);
+		l = config.getDouble(ConfigInfoSenpai.CENTRE_ROTATION_ROUE_X) / 1000.;
 	}
 
 	@Override
 	public void run()
 	{
 		Thread.currentThread().setName(getClass().getSimpleName());
-		log.debug("Démarrage de " + Thread.currentThread().getName());
+		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.DUMMY);
 		try
 		{
 			if(!remote)
 			{
-				log.debug(getClass().getSimpleName() + " annulé");
+				log.write(getClass().getSimpleName() + " annulé", Subject.DUMMY);
 				while(true)
 					Thread.sleep(10000);
 			}
 
 			ssocket = new ServerSocket(13371);
-			control(ssocket.accept(), config);
+			control(ssocket.accept());
 		}
 		catch(InterruptedException | IOException | ClassNotFoundException e)
 		{			
@@ -158,7 +157,7 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 			/*
 			 * On arrête tous les threads de socket en cours
 			 */
-			log.debug("Arrêt de " + Thread.currentThread().getName()+" : "+e);
+			log.write("Arrêt de " + Thread.currentThread().getName()+" : "+e, Subject.DUMMY);
 			Thread.currentThread().interrupt();
 		}
 	}
@@ -182,17 +181,13 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 		super.interrupt();
 	}
 
-	private void control(Socket socket, Config config) throws IOException, ClassNotFoundException, InterruptedException
+	private void control(Socket socket) throws IOException, ClassNotFoundException, InterruptedException
 	{
-		log.debug("Connexion d'un client !");
+		log.write("Connexion d'un client !", Subject.REMOTE_CONTROL);
 		short vitesse = 0;
-		short vitesseMax = 1000;
-		short pasVitesse = config.getShort(ConfigInfo.DELTA_VITESSE);
-		double pasAngle = config.getDouble(ConfigInfo.DELTA_ANGLE_ROUES);
 		double courbure = 0;
 		Ticket run = null;
 		double angleRoues = 0;
-		double courbureMax = 5;
 		InputStream in = socket.getInputStream();
 		int autostopseuil = 100;
 		int autostopcompteur = 0;
@@ -215,7 +210,7 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 				if(autostopcompteur == autostopseuil)
 				{
 					cp = new CommandesParam(Commandes.STOP, 0);
-					log.critical("Timeout télécommande !");
+					log.write("Timeout télécommande !", Severity.CRITICAL, Subject.REMOTE_CONTROL);
 				}
 				Thread.sleep(5);
 			}
@@ -225,7 +220,7 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 			
 			if(cp != null)
 			{
-				log.debug("On exécute : "+cp.com+", param = "+cp.param);
+				log.write("On exécute : "+cp.com+", param = "+cp.param, Subject.REMOTE_CONTROL);
 				c = cp.com;
 			}
 			
@@ -250,31 +245,6 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 				if(vitesse != 0 && run == null)
 					run = data.run();
 			}
-			else if(c == Commandes.SPEED_UP || c == Commandes.SPEED_DOWN)
-			{
-				short nextVitesse;
-				if(c == Commandes.SPEED_UP)
-				{
-					nextVitesse = (short) (vitesse + pasVitesse);
-					if(vitesse < 0)
-						nextVitesse = (short) (vitesse + pasVitesse);
-				}
-				else
-				{
-					nextVitesse = (short) (vitesse - pasVitesse);
-					if(vitesse > 0)
-						nextVitesse = (short) (vitesse - pasVitesse);
-				}
-					
-				if(nextVitesse <= vitesseMax && nextVitesse >= -vitesseMax)
-				{
-					vitesse = nextVitesse;
-					data.setMaxSpeed(vitesse);
-				}
-				
-				if(vitesse != 0 && run == null)
-					run = data.run();
-			}
 			else if(c == Commandes.STOP)
 			{
 				if(run != null)
@@ -290,25 +260,6 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 				angleRoues = 0;
 				data.setCurvature(0);
 			}
-			else if(c == Commandes.TURN_LEFT || c == Commandes.TURN_RIGHT)
-			{
-				double prochainAngleRoues;
-				double pasAngleTmp = (pasAngle / 2. - 2. * pasAngle) * Math.abs(vitesse) / 1000. + 2 * pasAngle;
-				
-				if(c == Commandes.TURN_LEFT)		
-					prochainAngleRoues = angleRoues + pasAngleTmp;
-				else
-					prochainAngleRoues = angleRoues - pasAngleTmp;
-				
-				double nextCourbure = Math.tan(prochainAngleRoues) / l;
-			
-				if(nextCourbure <= courbureMax && nextCourbure >= -courbureMax)
-				{
-					angleRoues = prochainAngleRoues;
-					courbure = nextCourbure;
-					data.setCurvature(courbure);
-				}
-			}
 			else if(c == Commandes.SET_DIRECTION)
 			{
 				double nextAnglesRoues = cp.param * Math.PI / 180.;
@@ -319,22 +270,6 @@ public class ThreadRemoteControl extends ThreadService implements GUIClass
 					data.setCurvature(courbure);
 				}
 			}
-			else if(c == Commandes.BAISSE_FILET)
-				data.baisseFilet();
-			else if(c == Commandes.LEVE_FILET)
-				data.leveFilet();
-			else if(c == Commandes.OUVRE_FILET)
-				data.ouvreFilet();
-			else if(c == Commandes.FERME_FILET)
-				data.fermeFilet();
-			else if(c == Commandes.EJECTE_DROITE)
-				data.ejecteBalles(true);
-			else if(c == Commandes.EJECTE_GAUCHE)
-				data.ejecteBalles(false);
-			else if(c == Commandes.REARME_GAUCHE)
-				data.rearme(false);
-			else if(c == Commandes.REARME_DROITE)
-				data.rearme(true);
 			
 			else if(c == Commandes.SHUTDOWN)
 			{

@@ -18,35 +18,18 @@ import java.awt.Graphics;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import capteurs.SensorMode;
-import obstacles.types.ObstacleRobot;
-import pathfinding.astar.arcs.ArcCourbeDynamique;
-import pathfinding.astar.arcs.ArcManager;
-import pathfinding.astar.arcs.BezierComputer;
-import pathfinding.chemin.CheminPathfinding;
 import serie.BufferOutgoingOrder;
 import serie.SerialProtocol;
 import serie.SerialProtocol.InOrder;
 import serie.SerialProtocol.State;
 import serie.Ticket;
-import config.Config;
-import config.ConfigInfo;
-import container.Service;
-import container.dependances.CoreClass;
 import exceptions.ActionneurException;
 import exceptions.MemoryManagerException;
 import exceptions.PathfindingException;
 import exceptions.UnableToMoveException;
-import utils.Log;
+import pfg.graphic.Fenetre;
 import utils.Vec2RO;
 import utils.Vec2RW;
-import utils.Log.Verbose;
-import graphic.Fenetre;
-import graphic.PrintBufferInterface;
-import graphic.printable.Couleur;
-import graphic.printable.Layer;
-import graphic.printable.Printable;
-import graphic.printable.Segment;
-import graphic.printable.Vector;
 
 /**
  * Effectue le lien entre le code et la réalité (permet de parler à la carte bas
@@ -56,7 +39,7 @@ import graphic.printable.Vector;
  *
  */
 
-public class RobotReal extends Robot implements Service, Printable, CoreClass
+public class RobotReal extends Robot
 {
 	protected volatile boolean matchDemarre = false;
 	protected volatile long dateDebutMatch;
@@ -85,49 +68,33 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 		
 		// c'est le LL qui fournira la position
 		cinematique = new Cinematique(0, 300, 0, true, 3);
-		print = config.getBoolean(ConfigInfo.GRAPHIC_ROBOT_AND_SENSORS);
-		demieLargeurNonDeploye = config.getInt(ConfigInfo.LARGEUR_NON_DEPLOYE) / 2;
-		demieLongueurArriere = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
-		demieLongueurAvant = config.getInt(ConfigInfo.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
-		marge = config.getInt(ConfigInfo.DILATATION_OBSTACLE_ROBOT);
-		printTrace = config.getBoolean(ConfigInfo.GRAPHIC_TRACE_ROBOT);
+		print = config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS);
+		demieLargeurNonDeploye = config.getInt(ConfigInfoSenpai.LARGEUR_NON_DEPLOYE) / 2;
+		demieLongueurArriere = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
+		demieLongueurAvant = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
+		marge = config.getInt(ConfigInfoSenpai.DILATATION_OBSTACLE_ROBOT);
+		printTrace = config.getBoolean(ConfigInfoSenpai.GRAPHIC_TRACE_ROBOT);
 
-		simuleSerie = config.getBoolean(ConfigInfo.SIMULE_SERIE);
+		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_SERIE);
 
 		if(print || printTrace)
 			buffer.add(this);
 	}
-
-	public double getAngleRoueGauche()
-	{
-		return angles.angleRoueGauche;
-	}
-
-	public double getAngleRoueDroite()
-	{
-		return angles.angleRoueDroite;
-	}
-
-	public void setAngleRoues(double angleRoueGauche, double angleRoueDroite)
-	{
-		angles.angleRoueDroite = angleRoueDroite;
-		angles.angleRoueGauche = angleRoueGauche;
-	}
-
+	
 	/*
 	 * MÉTHODES PUBLIQUES
 	 */
 
-	@Override
 	public synchronized void updateConfig(Config config)
 	{
-		super.updateConfig(config);
-		Long date = config.getLong(ConfigInfo.DATE_DEBUT_MATCH);
+		// TODO
+/*		super.updateConfig(config);
+		Long date = config.getLong(ConfigInfoSenpai.DATE_DEBUT_MATCH);
 		if(date != null)
 			dateDebutMatch = date;
-		Boolean m = config.getBoolean(ConfigInfo.MATCH_DEMARRE);
+		Boolean m = config.getBoolean(ConfigInfoSenpai.MATCH_DEMARRE);
 		if(m != null)
-			matchDemarre = m;
+			matchDemarre = m;*/
 	}
 
 	public void setEnMarcheAvance(boolean enMarcheAvant)
@@ -172,7 +139,7 @@ public class RobotReal extends Robot implements Service, Printable, CoreClass
 	}
 
 	@Override
-	public void print(Graphics g, Fenetre f, RobotReal robot)
+	public void print(Graphics g, Fenetre f)
 	{
 		if(print)
 		{

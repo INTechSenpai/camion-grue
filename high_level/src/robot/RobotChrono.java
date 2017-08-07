@@ -17,10 +17,7 @@ package robot;
 import exceptions.ActionneurException;
 import exceptions.MemoryManagerException;
 import exceptions.UnableToMoveException;
-import pathfinding.astar.arcs.ArcCourbe;
-import pathfinding.chemin.CheminPathfinding;
 import serie.Ticket;
-import utils.Log;
 import utils.Vec2RO;
 
 /**
