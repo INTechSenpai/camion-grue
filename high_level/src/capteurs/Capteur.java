@@ -15,11 +15,11 @@
 package capteurs;
 
 import java.awt.Graphics;
-import config.Config;
-import config.ConfigInfo;
-import graphic.Fenetre;
-import graphic.printable.Layer;
-import graphic.printable.Printable;
+
+import pfg.config.Config;
+import pfg.graphic.Fenetre;
+import pfg.graphic.printable.Layer;
+import pfg.graphic.printable.Printable;
 import robot.Cinematique;
 import robot.RobotReal;
 import utils.Vec2RO;
@@ -34,17 +34,20 @@ import utils.Vec2RW;
 
 public abstract class Capteur implements Printable
 {
+	private static final long serialVersionUID = 1L;
+	
 	public boolean sureleve;
 	protected final Vec2RO positionRelative;
 	protected final double orientationRelative;
 	public final double angleCone; // angle du cône (en radians)
 	public final int portee;
 	public final int distanceMin;
-	protected int L, d;
-	protected Vec2RO centreRotationGauche, centreRotationDroite;
+//	protected int L, d;
+//	protected Vec2RO centreRotationGauche, centreRotationDroite;
 	protected double orientationRelativeRotate;
 	protected Vec2RW positionRelativeRotate;
 	private TypeCapteur type;
+	private RobotReal robot;
 
 	public Capteur(Config config, Vec2RO positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
 	{
@@ -57,10 +60,10 @@ public abstract class Capteur implements Printable
 		this.portee = type.portee;
 		this.sureleve = sureleve;
 
-		L = config.getInt(ConfigInfo.CENTRE_ROTATION_ROUE_X);
+/*		L = config.getInt(ConfigInfo.CENTRE_ROTATION_ROUE_X);
 		d = config.getInt(ConfigInfo.CENTRE_ROTATION_ROUE_Y);
 		centreRotationGauche = new Vec2RO(L, d);
-		centreRotationDroite = new Vec2RO(L, -d);
+		centreRotationDroite = new Vec2RO(L, -d);*/
 	}
 
 	/**
@@ -73,7 +76,7 @@ public abstract class Capteur implements Printable
 	public abstract void computePosOrientationRelative(Cinematique c, double angleRoueGauche, double angleRoueDroite);
 
 	@Override
-	public void print(Graphics g, Fenetre f, RobotReal robot)
+	public void print(Graphics g, Fenetre f)
 	{
 		if(robot.isCinematiqueInitialised())
 		{
@@ -106,9 +109,9 @@ public abstract class Capteur implements Printable
 	}
 
 	@Override
-	public Layer getLayer()
+	public int getLayer()
 	{
-		return Layer.FOREGROUND;
+		return Layer.FOREGROUND.ordinal();
 	}
 
 }

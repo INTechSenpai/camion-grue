@@ -12,16 +12,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package threads;
+package senpai;
 
-import container.Service;
+import pfg.log.LogCategory;
 
 /**
- * Une sur-classe pratique pour typer
- * 
+ * Les différents niveaux de sévérité
  * @author pf
  *
  */
 
-public abstract class ThreadService extends Thread implements Service
-{}
+public enum LogCategorySenpai implements LogCategory
+{
+	DUMMY,
+	CAPTEURS;
+	
+	@Override
+	public int getMask()
+	{
+		return 1 << ordinal();
+	}
+
+
+}

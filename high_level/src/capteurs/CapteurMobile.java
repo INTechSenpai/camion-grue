@@ -14,7 +14,7 @@
 
 package capteurs;
 
-import config.Config;
+import pfg.config.Config;
 import robot.Cinematique;
 import utils.Vec2RO;
 
@@ -43,7 +43,7 @@ public class CapteurMobile extends Capteur
 	@Override
 	public void computePosOrientationRelative(Cinematique c, double angleRoueGauche, double angleRoueDroite)
 	{
-		if(roueDroite)
+/*		if(roueDroite)
 			orientationRelativeRotate = orientationRelative + angleRoueDroite;
 		else
 			orientationRelativeRotate = orientationRelative + angleRoueGauche;
@@ -60,7 +60,7 @@ public class CapteurMobile extends Capteur
 			positionRelativeRotate.minus(centreRotationGauche);
 			positionRelativeRotate.rotate(orientationRelativeRotate);
 			positionRelativeRotate.plus(centreRotationGauche);
-		}
+		}*/
 	}
 
 }

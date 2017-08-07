@@ -17,9 +17,9 @@ package capteurs;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import utils.Log;
-import container.Service;
-import container.dependances.SerialClass;
+import pfg.log.Log;
+import senpai.LogCategorySenpai;
+import senpai.SeverityCategorySenpai;
 
 /**
  * Buffer qui contient les infos provenant des capteurs de la STM
@@ -28,7 +28,7 @@ import container.dependances.SerialClass;
  *
  */
 
-public class SensorsDataBuffer implements Service, SerialClass
+public class SensorsDataBuffer
 {
 	protected Log log;
 
@@ -60,7 +60,7 @@ public class SensorsDataBuffer implements Service, SerialClass
 		if(buffer.size() > 5)
 		{
 			buffer.poll(); // on évacue une ancienne valeur
-			log.critical("Capteurs traités trop lentement !");
+			log.write("Capteurs traités trop lentement !", SeverityCategorySenpai.CRITICAL, LogCategorySenpai.CAPTEURS);
 		}
 		notify();
 	}

@@ -42,7 +42,7 @@ import pathfinding.chemin.CheminPathfinding;
  *
  */
 
-public class ThreadSerialInputCoucheOrdre extends ThreadService implements SerialClass
+public class ThreadSerialInputCoucheOrdre extends ThreadService
 {
 	protected Log log;
 	protected Config config;

@@ -12,18 +12,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package robot;
+package senpai;
 
-import java.io.Serializable;
+import pfg.log.SeverityCategory;
 
 /**
- * Les angles des roues du robot.
+ * Les différents niveaux de sévérité
  * @author pf
  *
  */
 
-public class AnglesRoues implements Serializable
+public enum SeverityCategorySenpai implements SeverityCategory
 {
-	private static final long serialVersionUID = 3691445199447393768L;
-	public volatile double angleRoueGauche, angleRoueDroite;
+	INFO, WARNING, CRITICAL;
 }

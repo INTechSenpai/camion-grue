@@ -14,12 +14,9 @@
 
 package threads.serie;
 
-import container.dependances.SerialClass;
 import exceptions.serie.ClosedSerialException;
 import serie.BufferIncomingOrder;
-import serie.SerieCoucheTrame;
 import threads.ThreadService;
-import utils.Log;
 
 /**
  * Thread qui s'occupe de la partie bas niveau du protocole série
@@ -28,7 +25,7 @@ import utils.Log;
  *
  */
 
-public class ThreadSerialInputCoucheTrame extends ThreadService implements SerialClass
+public class ThreadSerialInputCoucheTrame extends ThreadService
 {
 
 	protected Log log;

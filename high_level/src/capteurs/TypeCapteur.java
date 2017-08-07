@@ -14,8 +14,9 @@
 
 package capteurs;
 
-import graphic.printable.Couleur;
 import java.awt.Color;
+
+import senpai.CouleurSenpai;
 
 /**
  * Les différents types de capteurs
@@ -30,17 +31,17 @@ public enum TypeCapteur
 	// ToF : cône de 0.1°, horizon à 254mm, distance min 0mm
 	// ToF longue portée : cône de 0.1°, horizon à 500mm
 
-	ToF_COURT(0.01, 1, 254, Couleur.ToF_COURT, 1),
-	ToF_LONG(0.01, 1, 500, Couleur.ToF_LONG, 2),
-	IR(5. / 180 * Math.PI, 100, 630, Couleur.IR, 10);
+	ToF_COURT(0.01, 1, 254, CouleurSenpai.ToF_COURT, 1),
+	ToF_LONG(0.01, 1, 500, CouleurSenpai.ToF_LONG, 2),
+	IR(5. / 180 * Math.PI, 100, 630, CouleurSenpai.IR, 10);
 
 	public final double angleCone; // ne sert qu'à l'affichage
 	public final int distanceMin, portee;
 	public final int conversion; // le coeff pour passer en mm
 	public Color couleur, couleurTransparente;
-	public Couleur couleurOrig;
+	public CouleurSenpai couleurOrig;
 
-	private TypeCapteur(double angleCone, int distanceMin, int portee, Couleur c, int conversion)
+	private TypeCapteur(double angleCone, int distanceMin, int portee, CouleurSenpai c, int conversion)
 	{
 		this.conversion = conversion;
 		couleurOrig = c;

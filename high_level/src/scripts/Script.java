@@ -17,10 +17,8 @@ package scripts;
 import exceptions.ActionneurException;
 import exceptions.MemoryManagerException;
 import exceptions.UnableToMoveException;
-import pathfinding.RealGameState;
-import pathfinding.astar.arcs.CercleArrivee;
+import pfg.log.Log;
 import robot.Cinematique;
-import utils.Log;
 
 /**
  * Script abstrait
@@ -31,15 +29,8 @@ import utils.Log;
 
 public abstract class Script
 {
-	protected static Log log;
-	protected static CercleArrivee cercle;
+	protected Log log;
 	
-	public static void setLogCercle(Log log, CercleArrivee cercle)
-	{
-		Script.log = log;
-		Script.cercle = cercle;
-	}
-
 	public abstract Cinematique getPointEntree();
 
 	public abstract void setUpCercleArrivee();

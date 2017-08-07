@@ -14,31 +14,17 @@
 
 package capteurs;
 
-import graphic.PrintBufferInterface;
-import graphic.printable.Couleur;
-import obstacles.types.ObstacleRectangular;
-import obstacles.types.ObstacleRobot;
-import obstacles.types.ObstaclesFixes;
-import pathfinding.chemin.CheminPathfinding;
-import pathfinding.dstarlite.DStarLite;
-import pathfinding.dstarlite.gridspace.GridSpace;
 import robot.Cinematique;
 import robot.RobotReal;
 import serie.BufferOutgoingOrder;
 import java.util.ArrayList;
 import java.util.List;
-import config.Config;
-import config.ConfigInfo;
-import container.Container;
-import container.Service;
-import container.dependances.HighPFClass;
-import container.dependances.LowPFClass;
 import exceptions.ContainerException;
+import pfg.kraken.obstacles.ObstacleRobot;
+import pfg.log.Log;
 import table.GameElementNames;
 import table.RealTable;
 import table.EtatElement;
-import utils.Log;
-import utils.Log.Verbose;
 import utils.Vec2RO;
 import utils.Vec2RW;
 
@@ -50,13 +36,10 @@ import utils.Vec2RW;
  *
  */
 
-public class CapteursProcess implements Service, LowPFClass, HighPFClass
+public class CapteursProcess
 {
 	protected Log log;
-	private GridSpace gridspace;
 	private RealTable table;
-	private DStarLite dstarlite;
-	private CheminPathfinding chemin;
 	private RobotReal robot;
 	private BufferOutgoingOrder serie;
 

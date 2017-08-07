@@ -14,7 +14,7 @@
 
 package capteurs;
 
-import config.Config;
+import pfg.config.Config;
 import robot.Cinematique;
 import utils.Vec2RO;
 
@@ -27,6 +27,8 @@ import utils.Vec2RO;
 
 public class CapteurImmobile extends Capteur
 {
+	private static final long serialVersionUID = 1L;
+
 	public CapteurImmobile(Config config, Vec2RO positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
 	{
 		super(config, positionRelative, orientationRelative, type, sureleve);
