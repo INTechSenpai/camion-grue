@@ -16,10 +16,9 @@ package serie;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import utils.Log;
-import container.Service;
-import container.dependances.SerialClass;
+import pfg.log.Log;
+import senpai.LogCategorySenpai;
+import senpai.SeverityCategorySenpai;
 import serie.trame.Paquet;
 
 /**
@@ -29,7 +28,7 @@ import serie.trame.Paquet;
  *
  */
 
-public class BufferIncomingOrder implements Service, SerialClass
+public class BufferIncomingOrder
 {
 	protected Log log;
 
@@ -59,9 +58,9 @@ public class BufferIncomingOrder implements Service, SerialClass
 	{
 		buffer.add(elem);
 		if(buffer.size() > 20)
-			log.critical("Ordres entrants traités trop lentement ! Taille buffer : " + buffer.size());
+			log.write("Ordres entrants traités trop lentement ! Taille buffer : " + buffer.size(), SeverityCategorySenpai.CRITICAL, LogCategorySenpai.COMM);
 		else if(buffer.size() > 5)
-			log.warning("Ordres entrants traités trop lentement ! Taille buffer : " + buffer.size());
+			log.write("Ordres entrants traités trop lentement ! Taille buffer : " + buffer.size(), SeverityCategorySenpai.WARNING, LogCategorySenpai.COMM);
 
 		notify();
 	}

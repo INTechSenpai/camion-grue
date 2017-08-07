@@ -14,14 +14,13 @@
 
 package threads;
 
-import config.Config;
-import config.ConfigInfo;
-import container.Container;
-import container.dependances.GUIClass;
-import exceptions.ContainerException;
-import graphic.Fenetre;
-import graphic.PrintBuffer;
-import utils.Log;
+import pfg.config.Config;
+import pfg.graphic.ConfigInfoGraphic;
+import pfg.graphic.Fenetre;
+import pfg.graphic.PrintBuffer;
+import pfg.log.Log;
+import senpai.LogCategorySenpai;
+import senpai.Senpai;
 
 /**
  * S'occupe de la mise à jour graphique
@@ -30,7 +29,7 @@ import utils.Log;
  *
  */
 
-public class ThreadFenetre extends ThreadService implements GUIClass
+public class ThreadFenetre extends Thread
 {
 
 	protected Log log;
@@ -40,14 +39,13 @@ public class ThreadFenetre extends ThreadService implements GUIClass
 	private long derniereSauv = 0;
 	private String giffile;
 
-	public ThreadFenetre(Log log, Container container, PrintBuffer buffer, Config config)
+	public ThreadFenetre(Log log, Senpai container, PrintBuffer buffer, Config config)
 	{
 		this.log = log;
 		this.buffer = buffer;
-		gif = config.getBoolean(ConfigInfo.GRAPHIC_PRODUCE_GIF);
-		print = config.getBoolean(ConfigInfo.GRAPHIC_ENABLE);
-		deporte = config.getBoolean(ConfigInfo.GRAPHIC_EXTERNAL);
-		giffile = config.getString(ConfigInfo.GIF_FILENAME);
+/*		print = config.getBoolean(ConfigInfoGraphic.GRAPHIC_ENABLE);
+		deporte = config.getBoolean(ConfigInfoGraphic.GRAPHIC_EXTERNAL);
+		giffile = config.getString(ConfigInfoGraphic.GIF_FILENAME);
 		if(print && !deporte)
 			try
 			{
@@ -56,22 +54,22 @@ public class ThreadFenetre extends ThreadService implements GUIClass
 			catch(ContainerException e)
 			{
 				e.printStackTrace();
-			}
+			}*/
 	}
 
 	@Override
 	public void run()
 	{
 		Thread.currentThread().setName(getClass().getSimpleName());
-		log.debug("Démarrage de " + Thread.currentThread().getName());
+		log.write("Démarrage de " + Thread.currentThread().getName(), LogCategorySenpai.DUMMY);
 		try
 		{
-			if(!print || deporte)
+/*			if(!print || deporte)
 			{
 				log.debug(getClass().getSimpleName() + " annulé (" + ConfigInfo.GRAPHIC_ENABLE + " = " + print + ", " + ConfigInfo.GRAPHIC_EXTERNAL + " = " + deporte + ")");
 				while(true)
 					Thread.sleep(10000);
-			}
+			}*/
 
 			while(true)
 			{
@@ -92,14 +90,12 @@ public class ThreadFenetre extends ThreadService implements GUIClass
 		}
 		catch(InterruptedException e)
 		{
-			log.debug("Arrêt de " + Thread.currentThread().getName());
-			if(gif)
-				fenetre.saveGif(giffile, 200);
+			log.write("Arrêt de " + Thread.currentThread().getName(), LogCategorySenpai.DUMMY);
 			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)
 		{
-			log.debug("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e);
+			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, LogCategorySenpai.DUMMY);
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
 			Thread.currentThread().interrupt();

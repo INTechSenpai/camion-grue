@@ -14,13 +14,11 @@
 
 package serie;
 
-import utils.Log;
 import java.util.ArrayList;
 import java.util.List;
-import container.Service;
-import container.dependances.SerialClass;
 import exceptions.serie.ClosedSerialException;
-import serie.trame.Conversation;
+import pfg.log.Log;
+import serie.trame.Paquet;
 
 /**
  * Buffer très bas niveau qui envoie les octets sur la série
@@ -29,13 +27,13 @@ import serie.trame.Conversation;
  *
  */
 
-public class BufferOutgoingBytes implements Service, SerialClass
+public class BufferOutgoingBytes
 {
 	protected Log log;
 	private SerieCouchePhysique serie;
 
 	private byte bufferWriting[] = new byte[16384];
-	private List<Conversation> waitingForSending = new ArrayList<Conversation>();
+	private List<Paquet> waitingForSending = new ArrayList<Paquet>();
 
 	private volatile int indexBufferStart = 0;
 	private volatile int indexBufferStop = 0;

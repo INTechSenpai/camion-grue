@@ -14,13 +14,10 @@
 
 package threads;
 
-import config.Config;
-import config.ConfigInfo;
-import container.dependances.LowPFClass;
-import graphic.PrintBufferInterface;
 import obstacles.memory.ObstaclesMemory;
-import pathfinding.dstarlite.DStarLite;
-import utils.Log;
+import pfg.kraken.dstarlite.DStarLite;
+import pfg.log.Log;
+import senpai.LogCategorySenpai;
 
 /**
  * Thread qui gère la péremption des obstacles en dormant
@@ -30,7 +27,7 @@ import utils.Log;
  *
  */
 
-public class ThreadPeremption extends ThreadService implements LowPFClass
+public class ThreadPeremption extends Thread
 {
 	private ObstaclesMemory memory;
 	protected Log log;
@@ -54,7 +51,7 @@ public class ThreadPeremption extends ThreadService implements LowPFClass
 	public void run()
 	{
 		Thread.currentThread().setName(getClass().getSimpleName());
-		log.debug("Démarrage de " + Thread.currentThread().getName());
+		log.write("Démarrage de " + Thread.currentThread().getName(), LogCategorySenpai.DUMMY);
 		try
 		{
 			while(true)

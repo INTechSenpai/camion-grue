@@ -29,14 +29,37 @@ public class SerialProtocol
 		OK,
 		KO;
 	}
+	
+	public enum Channel
+	{
+		DESINSCRIPTION,
+		INSCRIPTION;
+		
+		public final byte code = (byte) ordinal();		
+	}
 
 	public enum OutOrder
 	{
 		/**
 		 * Protocole Java vers bas niveau
 		 */
-		;
+		FOLLOW_TRAJECTORY(0x38),
+		STOP(0x39),
+		WAIT_FOR_JUMPER(0x3A),
+		START_MATCH_CHRONO(0x3B),
+		SCAN(0x49),
+		RUN(0x4B),
+		SENSORS_CHANNEL(0x00),
 
+		ASK_COLOR(0x59),
+		PING(0x5A),
+		SEND_ARC(0x5B),
+		SET_MAX_SPEED(0x5C),
+		EDIT_POSITION(0x5D),
+		STOP_STREAM_ALL(0x5E),
+		SET_SENSOR_MODE(0x5F),
+		SET_POSITION(0x60),
+		SET_CURVATURE(0x61);
 		public final byte code;
 		
 		private OutOrder(int code)

@@ -36,15 +36,11 @@ import exceptions.ContainerException;
 import pfg.config.Config;
 import pfg.graphic.DebugTool;
 import pfg.injector.Injector;
-import pfg.kraken.ConfigInfoKraken;
-import pfg.kraken.SeverityCategoryKraken;
+import pfg.injector.InjectorException;
 import pfg.log.Log;
 import robot.Speed;
 import scripts.Script;
-import senpai.Service;
-import serie.SerieCoucheTrame;
 import threads.ThreadName;
-import threads.ThreadService;
 import threads.ThreadShutdown;
 
 /**
@@ -197,8 +193,8 @@ public class Senpai
 		printMessage("intro.txt");
 
 		DebugTool debug = new DebugTool();
-		log = debug.getLog(SeverityCategoryKraken.INFO);
-		config = new Config(ConfigInfoKraken.values(), "senpai.conf", false);
+		log = debug.getLog(SeverityCategorySenpai.INFO);
+		config = new ConfigSenpai(ConfigInfoSenpai.values(), "senpai.conf", false);
 
 		injector.addService(Log.class, log);
 		injector.addService(Config.class, config);
@@ -240,12 +236,14 @@ public class Senpai
 		log.write("Java : " + System.getProperty("java.vendor") + " " + System.getProperty("java.version") + ", mémoire max : " + Math.round(100. * Runtime.getRuntime().maxMemory() / (1024. * 1024. * 1024.)) / 100. + "G, coeurs : " + Runtime.getRuntime().availableProcessors(), LogCategorySenpai.DUMMY);
 		log.write("Date : " + new SimpleDateFormat("E dd/MM à HH:mm").format(new Date()), LogCategorySenpai.DUMMY);
 
+		assert checkAssert();
+		
 		/**
 		 * Planification du hook de fermeture
 		 */
 		try
 		{
-			log.write("Mise en place du hook d'arrêt", LogCategorySenpai.DUMMY););
+			log.write("Mise en place du hook d'arrêt", LogCategorySenpai.DUMMY);
 			Runtime.getRuntime().addShutdownHook(injector.getService(ThreadShutdown.class));
 		}
 		catch(ContainerException e)
@@ -254,11 +252,6 @@ public class Senpai
 			e.printStackTrace(log.getPrintWriter());
 		}
 		
-		if(config.getBoolean(ConfigInfo.GRAPHIC_EXTERNAL))
-			instanciedServices.put(PrintBufferInterface.class.getSimpleName(), getService(ExternalPrintBuffer.class));
-		else
-			instanciedServices.put(PrintBufferInterface.class.getSimpleName(), getService(PrintBuffer.class));
-
 		Obstacle.set(log, getService(PrintBufferInterface.class));
 		Obstacle.useConfig(config);
 		ArcCourbe.useConfig(config);
@@ -267,11 +260,17 @@ public class Senpai
 		startAllThreads();
 	}
 
+	private boolean checkAssert()
+	{
+		log.write("Assertions vérifiées -- à ne pas utiliser en match !", SeverityCategorySenpai.CRITICAL, LogCategorySenpai.DUMMY);
+		return true;
+	}
+
 	public void restartThread(ThreadName n) throws InterruptedException
 	{
 		try
 		{
-			ThreadService t = injector.getService(n.c);
+			Thread t = injector.getService(n.c);
 			if(t.isAlive()) // s'il est encore en vie, on le tue
 			{
 				t.interrupt();
@@ -280,10 +279,11 @@ public class Senpai
 			injector.removeService(n.c);
 			injector.getService(n.c).start(); // et on le redémarre
 		}
-		catch(ContainerException e)
+		catch(InjectorException e)
 		{
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
+			assert false;
 		}
 	}
 
@@ -298,7 +298,7 @@ public class Senpai
 			{
 				injector.getService(n.c).start();
 			}
-			catch(ContainerException | IllegalThreadStateException e)
+			catch(InjectorException | IllegalThreadStateException e)
 			{
 				log.write("Erreur lors de la création de thread " + n + " : " + e, SeverityCategorySenpai.CRITICAL, LogCategorySenpai.DUMMY);
 				e.printStackTrace();

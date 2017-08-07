@@ -24,6 +24,9 @@ import pfg.config.ConfigInfo;
 
 public enum ConfigInfoSenpai implements ConfigInfo
 {
+	// soit un hostname, soit l'adresse ip
+	HOSTNAME_SERVEUR("127.0.0.1"), // TODO
+	
 	VITESSE_ROBOT_TEST(0),
 	VITESSE_ROBOT_REPLANIF(0),
 	VITESSE_ROBOT_STANDARD(0);

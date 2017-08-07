@@ -14,13 +14,11 @@
 
 package robot;
 
-import config.Config;
-import config.DynamicConfigurable;
 import exceptions.ActionneurException;
 import exceptions.MemoryManagerException;
 import exceptions.UnableToMoveException;
+import pfg.log.Log;
 import serie.Ticket;
-import utils.Log;
 
 /**
  * Classe abstraite du robot, dont héritent RobotVrai et RobotChrono

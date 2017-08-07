@@ -17,9 +17,8 @@ package threads;
 import capteurs.CapteursProcess;
 import capteurs.SensorsData;
 import capteurs.SensorsDataBuffer;
-import container.dependances.HighPFClass;
-import container.dependances.LowPFClass;
-import utils.Log;
+import pfg.log.Log;
+import senpai.LogCategorySenpai;
 
 /**
  * Thread qui gère les entrées des capteurs
@@ -28,7 +27,7 @@ import utils.Log;
  *
  */
 
-public class ThreadCapteurs extends ThreadService implements LowPFClass, HighPFClass
+public class ThreadCapteurs extends Thread
 {
 	private SensorsDataBuffer buffer;
 	private CapteursProcess capteurs;
@@ -46,7 +45,7 @@ public class ThreadCapteurs extends ThreadService implements LowPFClass, HighPFC
 	public void run()
 	{
 		Thread.currentThread().setName(getClass().getSimpleName());
-		log.debug("Démarrage de " + Thread.currentThread().getName());
+		log.write("Démarrage de " + Thread.currentThread().getName(), LogCategorySenpai.DUMMY);
 		try
 		{
 			while(true)
@@ -64,12 +63,12 @@ public class ThreadCapteurs extends ThreadService implements LowPFClass, HighPFC
 		}
 		catch(InterruptedException e)
 		{
-			log.debug("Arrêt de " + Thread.currentThread().getName());
+			log.write("Arrêt de " + Thread.currentThread().getName(), LogCategorySenpai.DUMMY);
 			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)
 		{
-			log.debug("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e);
+			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, LogCategorySenpai.DUMMY);
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
 			Thread.currentThread().interrupt();

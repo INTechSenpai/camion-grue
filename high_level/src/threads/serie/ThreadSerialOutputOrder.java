@@ -16,6 +16,7 @@ package threads.serie;
 
 import exceptions.serie.ClosedSerialException;
 import pfg.log.Log;
+import senpai.LogCategorySenpai;
 import serie.BufferIncomingBytes;
 import serie.BufferOutgoingOrder;
 import serie.Ticket;
@@ -52,7 +53,7 @@ public class ThreadSerialOutputOrder extends Thread
 	public void run()
 	{
 		Thread.currentThread().setName(getClass().getSimpleName());
-		log.debug("Démarrage de " + Thread.currentThread().getName());
+		log.write("Démarrage de " + Thread.currentThread().getName(), LogCategorySenpai.DUMMY);
 		Order message;
 
 		// On envoie d'abord le ping long initial

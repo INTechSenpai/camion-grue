@@ -128,8 +128,8 @@ public class BufferIncomingBytes
 		int out = bufferReading[indexBufferStart++];
 		indexBufferStart &= 0x3FFF;
 
-		String s = Integer.toHexString(out).toUpperCase();
-/*		if(s.length() == 1)
+/*		String s = Integer.toHexString(out).toUpperCase();
+		if(s.length() == 1)
 		{
 			if(out >= 32 && out < 127)
 				log.debug("Reçu : " + "0" + s + " (" + (char) (out) + ")", Verbose.TRAME.masque);

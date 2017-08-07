@@ -14,9 +14,10 @@
 
 package threads;
 
-import config.Config;
-import container.Container;
-import utils.Log;
+import pfg.config.Config;
+import pfg.log.Log;
+import senpai.LogCategorySenpai;
+import senpai.Senpai;
 
 /**
  * S'occupe de la mise a jour de la config. Surveille config
@@ -25,14 +26,14 @@ import utils.Log;
  *
  */
 
-public class ThreadConfig extends ThreadService
+public class ThreadConfig extends Thread
 {
 
 	protected Log log;
 	protected Config config;
-	private Container container;
+	private Senpai container;
 
-	public ThreadConfig(Log log, Config config, Container container)
+	public ThreadConfig(Log log, Config config, Senpai container)
 	{
 		this.log = log;
 		this.container = container;
@@ -43,7 +44,7 @@ public class ThreadConfig extends ThreadService
 	public void run()
 	{
 		Thread.currentThread().setName(getClass().getSimpleName());
-		log.debug("Démarrage de " + Thread.currentThread().getName());
+		log.write("Démarrage de " + Thread.currentThread().getName(), LogCategorySenpai.DUMMY);
 		try
 		{
 			while(true)
@@ -58,12 +59,12 @@ public class ThreadConfig extends ThreadService
 		}
 		catch(InterruptedException e)
 		{
-			log.debug("Arrêt de " + Thread.currentThread().getName());
+			log.write("Arrêt de " + Thread.currentThread().getName(), LogCategorySenpai.DUMMY);
 			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)
 		{
-			log.debug("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e);
+			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, LogCategorySenpai.DUMMY);
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
 			Thread.currentThread().interrupt();

@@ -40,9 +40,9 @@ public enum ThreadName
 	SERIAL_OUTPUT_BYTES(ThreadSerialOutputBytes.class),
 	SERIAL_OUTPUT_ORDER(ThreadSerialOutputOrder.class);
 
-	public Class<? extends ThreadService> c;
+	public Class<? extends Thread> c;
 
-	private ThreadName(Class<? extends ThreadService> c)
+	private ThreadName(Class<? extends Thread> c)
 	{
 		this.c = c;
 	}

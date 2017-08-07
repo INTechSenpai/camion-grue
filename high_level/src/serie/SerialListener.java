@@ -14,11 +14,7 @@
 
 package serie;
 
-import container.Service;
-import container.dependances.SerialClass;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
-import utils.Log;
+import pfg.log.Log;
 
 /**
  * Un listener sur la série
@@ -27,7 +23,7 @@ import utils.Log;
  *
  */
 
-public class SerialListener implements Service, SerialPortEventListener, SerialClass
+public class SerialListener// implements SerialPortEventListener
 {
 	private BufferIncomingBytes bufferIn;
 	private Log log;
@@ -49,7 +45,7 @@ public class SerialListener implements Service, SerialPortEventListener, SerialC
 		return outputEmpty;
 	}
 
-	@Override
+/*	@Override
 	public synchronized void serialEvent(SerialPortEvent oEvent)
 	{
 		if(oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE)
@@ -61,6 +57,6 @@ public class SerialListener implements Service, SerialPortEventListener, SerialC
 		}
 		else
 			log.warning(oEvent.getEventType());
-	}
+	}*/
 
 }

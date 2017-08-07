@@ -20,16 +20,14 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import capteurs.SensorMode;
+import pfg.log.Log;
 import robot.CinematiqueObs;
 import robot.Speed;
+import senpai.LogCategorySenpai;
+import senpai.SeverityCategorySenpai;
+import serie.SerialProtocol.Channel;
 import serie.SerialProtocol.OutOrder;
 import serie.trame.Order;
-import config.Config;
-import config.ConfigInfo;
-import container.Service;
-import container.dependances.SerialClass;
-import utils.Log;
-import utils.Log.Verbose;
 import utils.Vec2RO;
 import utils.Vec2RW;
 
@@ -44,18 +42,13 @@ import utils.Vec2RW;
  *
  */
 
-public class BufferOutgoingOrder implements Service, SerialClass
+public class BufferOutgoingOrder
 {
 	protected Log log;
-	private byte prescaler;
-	private short sendPeriod;
-	private boolean streamStarted = false;
 
-	public BufferOutgoingOrder(Log log, Config config)
+	public BufferOutgoingOrder(Log log)
 	{
 		this.log = log;
-		sendPeriod = config.getShort(ConfigInfo.SENSORS_SEND_PERIOD);
-		prescaler = config.getByte(ConfigInfo.SENSORS_PRESCALER);
 	}
 
 	private Queue<Order> bufferBassePriorite = new ConcurrentLinkedQueue<Order>();
@@ -81,12 +74,12 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	public synchronized Order poll()
 	{
 		if(bufferTrajectoireCourbe.size() + bufferBassePriorite.size() > 10)
-			log.warning("On n'arrive pas à envoyer les ordres assez vites (ordres TC en attente : " + bufferTrajectoireCourbe.size() + ", autres en attente : " + bufferBassePriorite.size() + ")");
+			log.write("On n'arrive pas à envoyer les ordres assez vites (ordres TC en attente : " + bufferTrajectoireCourbe.size() + ", autres en attente : " + bufferBassePriorite.size() + ")", SeverityCategorySenpai.WARNING, LogCategorySenpai.COMM);
 
 		if(sendStop)
 		{
 			bufferTrajectoireCourbe.clear(); // on annule tout mouvement
-			Order out = new Order(OutOrder.STOP, stop);
+			Order out = new Order(OutOrder.STOP);
 			sendStop = false;
 			return out;
 		}
@@ -97,17 +90,6 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	}
 
 	/**
-	 * Scan en tournant les roues
-	 */
-	public synchronized Ticket doScan()
-	{
-		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(OutOrder.SCAN, t));
-		notify();
-		return t;
-	}
-
-	/**
 	 * Signale la vitesse max au bas niveau
 	 * 
 	 * @param vitesse signée
@@ -115,7 +97,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 */
 	public synchronized void setMaxSpeed(Speed vitesseInitiale, boolean marcheAvant)
 	{
-		log.debug("Envoi d'un ordre de vitesse max : " + vitesseInitiale+". Marche avant : "+marcheAvant, Verbose.SERIE.masque);
+		log.write("Envoi d'un ordre de vitesse max : " + vitesseInitiale+". Marche avant : "+marcheAvant, LogCategorySenpai.COMM);
 
 		short vitesseTr; // vitesse signée
 		if(marcheAvant)
@@ -166,7 +148,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 			vitesseTr = (short) (vitesseInitiale.translationalSpeed * 1000);
 		else
 			vitesseTr = (short) (-vitesseInitiale.translationalSpeed * 1000);
-		log.debug("On commence à suivre la trajectoire. Vitesse : "+vitesseTr, Verbose.SERIE.masque);
+		log.write("On commence à suivre la trajectoire. Vitesse : "+vitesseTr, LogCategorySenpai.COMM);
 
 		ByteBuffer data = ByteBuffer.allocate(2);
 		data.putShort(vitesseTr);
@@ -182,135 +164,10 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 */
 	public synchronized void immobilise()
 	{
-		log.warning("Stop !");
+		log.write("Stop !", SeverityCategorySenpai.WARNING, LogCategorySenpai.COMM);
 		sendStop = true;
 		stop = new Ticket();
 		notify();
-	}
-
-	/**
-	 * Demande la couleur au bas niveau
-	 */
-	public synchronized Ticket demandeCouleur()
-	{
-		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(OutOrder.ASK_COLOR, t));
-		notify();
-		return t;
-	}
-
-	/**
-	 * Lève le filet
-	 */
-	public synchronized Ticket leveFilet()
-	{
-		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(OutOrder.PULL_UP_NET, t));
-		notify();
-		return t;
-	}
-
-	/**
-	 * Baisse le filet
-	 */
-	public synchronized Ticket baisseFilet()
-	{
-		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(OutOrder.PULL_DOWN_NET, t));
-		notify();
-		return t;
-	}
-
-	/**
-	 * Met le filet en position intermédiaire
-	 */
-	public synchronized Ticket bougeFiletMiChemin()
-	{
-		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(OutOrder.PUT_NET_HALFWAY, t));
-		notify();
-		return t;
-	}
-
-	/**
-	 * Abaisse la bascule avec le filet
-	 */
-	public synchronized Ticket traverseBascule()
-	{
-		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(OutOrder.CROSS_FLIP_FLOP, t));
-		notify();
-		return t;
-	}
-
-	/**
-	 * Ouvre le filet
-	 */
-	public synchronized Ticket ouvreFilet()
-	{
-		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(OutOrder.OPEN_NET, t));
-		notify();
-		return t;
-	}
-
-	/**
-	 * Verrouille le filet
-	 */
-	public synchronized Ticket verrouilleFilet()
-	{
-		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(OutOrder.LOCK_NET, t));
-		notify();
-		return t;
-	}
-
-	/**
-	 * Ferme le filet
-	 */
-	public synchronized Ticket fermeFilet()
-	{
-		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(OutOrder.CLOSE_NET, t));
-		notify();
-		return t;
-	}
-	
-	/**
-	 * Ferme le filet en forçant
-	 */
-	public synchronized Ticket fermeFiletForce()
-	{
-		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(OutOrder.CLOSE_NET_FORCE, t));
-		notify();
-		return t;
-	}
-
-	/**
-	 * Ejecte les balles
-	 */
-	public synchronized Ticket ejecteBalles(Boolean droite) // la réflectivité
-															// demande
-															// d'utiliser
-															// Boolean et pas
-															// boolean
-	{
-		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(droite ? OutOrder.EJECT_RIGHT_SIDE : OutOrder.EJECT_LEFT_SIDE, t));
-		notify();
-		return t;
-	}
-
-	/**
-	 * Réarme le filet
-	 */
-	public synchronized Ticket rearme(Boolean droite)
-	{
-		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(droite ? OutOrder.REARM_RIGHT_SIDE : OutOrder.REARM_LEFT_SIDE, t));
-		notify();
-		return t;
 	}
 
 	Vec2RW tmp = new Vec2RW();
@@ -405,30 +262,10 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 */
 	public synchronized void startStream()
 	{
-		if(streamStarted)
-			log.warning("Le stream est déjà lancé !");
-		else
-		{
-			streamStarted = true;
-			ByteBuffer data = ByteBuffer.allocate(3);
-			data.putShort(sendPeriod);
-			data.put(prescaler);
-			bufferBassePriorite.add(new Order(data, OutOrder.START_STREAM_ALL));
-			notify();
-		}
-	}
-
-	/**
-	 * Arrête le stream
-	 */
-	public synchronized void stopStream()
-	{
-		if(streamStarted)
-		{
-			streamStarted = false;
-			bufferBassePriorite.add(new Order(OutOrder.STOP_STREAM_ALL));
-			notify();
-		}
+		ByteBuffer data = ByteBuffer.allocate(1);
+		data.put(Channel.INSCRIPTION.code);
+		bufferBassePriorite.add(new Order(data, OutOrder.SENSORS_CHANNEL));
+		notify();
 	}
 
 	/**
@@ -441,7 +278,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 */
 	public synchronized void makeNextObsolete(CinematiqueObs c, int indexTrajectory)
 	{
-		log.debug("Envoi d'un arc d'obsolescence", Verbose.SERIE.masque);
+		log.write("Envoi d'un arc d'obsolescence", LogCategorySenpai.COMM);
 
 		ByteBuffer data = ByteBuffer.allocate(8);
 		data.put((byte) indexTrajectory);
@@ -464,7 +301,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 	 */
 	public synchronized Ticket[] envoieArcCourbe(List<CinematiqueObs> points, int indexTrajectory)
 	{
-		log.debug("Envoi de " + points.size() + " points à partir de l'index " + indexTrajectory, Verbose.SERIE.masque | Verbose.PF.masque);
+		log.write("Envoi de " + points.size() + " points à partir de l'index " + indexTrajectory, LogCategorySenpai.COMM);
 
 		int index = indexTrajectory;
 		int nbEnvoi = (points.size() >> 5) + 1;
@@ -495,7 +332,7 @@ public class BufferOutgoingOrder implements Service, SerialClass
 															// façon ce sera un
 															// STOP_POINT
 
-				log.debug("Point " + k + " : " + c, Verbose.PF.masque);
+				log.write("Point " + k + " : " + c, LogCategorySenpai.COMM);
 				addXYO(data, c.getPosition(), c.orientationReelle, true);
 				short courbure = (short) ((Math.round(Math.abs(c.courbureReelle) * 100)) & 0x7FFF);
 
@@ -520,12 +357,12 @@ public class BufferOutgoingOrder implements Service, SerialClass
 
 	public void waitStop() throws InterruptedException
 	{
-		log.debug("Attente de la réception de la réponse au stop", Verbose.REPLANIF.masque);
+		log.write("Attente de la réception de la réponse au stop", LogCategorySenpai.COMM);
 		if(stop != null)
 		{
 			stop.attendStatus(1500);
 			if(stop.isEmpty())
-				log.warning("Timeout d'attente du stop dépassé !");
+				log.write("Timeout d'attente du stop dépassé !", SeverityCategorySenpai.WARNING, LogCategorySenpai.COMM);
 			stop = null;
 		}
 	}
