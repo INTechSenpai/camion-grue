@@ -1,0 +1,14 @@
+language : java
+install :
+    - cd high_level
+    - echo "SIMULE_SERIE = true" > senpai.conf
+script :
+    - ant
+jdk :
+    - oraclejdk8
+notifications:
+    slack: intech-sudparis:Z3xKQEmZT2a9BFBqouokQ6J7
+    on_success: change
+    on_failure: always
+branches:
+    only : master

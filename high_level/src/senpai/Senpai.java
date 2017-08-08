@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import comm.SerieCouchePhysique;
 import pfg.config.Config;
 import pfg.graphic.AbstractPrintBuffer;
 import pfg.graphic.DebugTool;
@@ -87,26 +88,23 @@ public class Senpai
 	 */
 	public synchronized ErrorCode destructor() throws InterruptedException
 	{
-		assert Thread.currentThread().getId() == mainThread.getId();
+		assert Thread.currentThread().getId() == mainThread.getId() : "Appel au destructeur depuis un thread !";
 
 		/*
 		 * Il ne faut pas appeler deux fois le destructeur
 		 */
-		assert nbInstances > 0 : "Double appel au destructor !";
+		assert nbInstances == 1 : "Double appel au destructor !";
 	
 		shutdown = true;
 
-		/**
-		 * Mieux vaut écrire SerieCouchePhysique.class.getSimpleName()) que
-		 * "SerieCouchePhysique",
-		 * car en cas de refactor, le premier est automatiquement ajusté
-		 */
-//		if(instanciedServices.containsKey(SerieCoucheTrame.class.getSimpleName()))
-//			((SerieCoucheTrame) instanciedServices.get(SerieCoucheTrame.class.getSimpleName())).close();
+		SerieCouchePhysique s = injector.getExistingService(SerieCouchePhysique.class);
+		if(s != null)
+			s.close();
 
 		// On appelle le destructeur du PrintBuffer
-//		if(instanciedServices.containsKey(PrintBufferInterface.class.getSimpleName()))
-//			((PrintBufferInterface) instanciedServices.get(PrintBufferInterface.class.getSimpleName())).destructor();
+		Fenetre f = injector.getExistingService(Fenetre.class);
+		if(f != null)
+			f.close();
 
 		// arrêt des threads
 		try {

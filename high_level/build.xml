@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-    <project basedir="." default="build" name="moonrover">
+    <project basedir="." default="build" name="Eurobotruck">
     <property environment="env"/>
     <property name="debuglevel" value="source,lines,vars"/>
-    <property name="target" value="1.7"/>
-    <property name="source" value="1.7"/>
+    <property name="target" value="1.8"/>
+    <property name="source" value="1.8"/>
     <property name="junit.output.dir" value="junit"/>
-    <path id="JUnit 4.libraryclasspath">
-        <pathelement location="lib/junit.jar"/>
-        <pathelement location="lib/hamcrest-core-1.3.jar"/>
-    </path>
-    <path id="moonrover.classpath">
+    <path id="Eurobotruck.classpath">
         <pathelement location="bin"/>
-        <pathelement location="lib/RXTXcomm.jar"/>
-        <pathelement location="lib/junit.jar"/>
+        <pathelement location="lib/config.jar"/>
+        <pathelement location="lib/injector.jar"/>
+        <pathelement location="lib/graphic.jar"/>
         <pathelement location="lib/hamcrest-core-1.3.jar"/>
+        <pathelement location="lib/junit.jar"/>
+        <pathelement location="lib/kraken.jar"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
@@ -27,38 +26,28 @@
         <delete dir="bin"/>
     </target>
     <target depends="clean" name="cleanall"/>
-    <target depends="build-subprojects,build-project" name="build"/>
+    <target depends="build-subprojects,build-project" name="build">
+    </target>
     <target name="build-subprojects"/>
     <target depends="init" name="build-project">
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
             <src path="src"/>
-            <classpath refid="moonrover.classpath"/>
+            <classpath refid="Eurobotruck.classpath"/>
         </javac>
     </target>
     <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
     <target name="tests">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr" haltonfailure="no" failureproperty="test.failed">
-            <formatter type="xml"/>
-            <formatter type="plain" usefile="false" />
-            <test name="tests.JUnit_Capteurs" todir="${junit.output.dir}"/>
-            <test name="tests.JUnit_CheminPF" todir="${junit.output.dir}"/>
-            <test name="tests.JUnit_Config" todir="${junit.output.dir}"/>
-            <test name="tests.JUnit_Container" todir="${junit.output.dir}"/>
-            <test name="tests.JUnit_DStarLite" todir="${junit.output.dir}"/>
-            <test name="tests.JUnit_EPriorityQueue" todir="${junit.output.dir}"/>
-            <test name="tests.JUnit_GridSpace" todir="${junit.output.dir}"/>
-            <test name="tests.JUnit_Math" todir="${junit.output.dir}"/>
-            <test name="tests.JUnit_Obstacle" todir="${junit.output.dir}"/>
-            <test name="tests.JUnit_OMMemory" todir="${junit.output.dir}"/>
+        <formatter type="xml"/>
+        <formatter type="plain" usefile="false" />
             <test name="tests.JUnit_Table" todir="${junit.output.dir}"/>
-            <classpath refid="moonrover.classpath"/>
+            <classpath refid="Eurobotruck.classpath"/>
         </junit>
         <fail message="Test failure detected, check test results." if="test.failed" />
     </target>
-  <!-- Generate javadocs for current project into ${doc.dir} -->
   <target name="doc" depends="init" description="generate documentation">
-    <javadoc sourcepath="src" destdir="docs"/>
+      <javadoc sourcepath="src" destdir="../docs"/>
   </target>
 </project>

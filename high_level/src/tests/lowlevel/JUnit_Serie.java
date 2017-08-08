@@ -42,11 +42,6 @@ public class JUnit_Serie extends JUnit_Test
 		super.setUp();
 		data = container.getService(BufferOutgoingOrder.class);
 	}
-
-	@Test
-	public void empty() throws Exception
-	{
-	}
 	
 	/**
 	 * Un test pour vérifie la connexion

@@ -2,7 +2,7 @@
 *.o
 *.so
 *.gz
-
+*.jar
 
 # Dossiers top secrets
 tmp/
