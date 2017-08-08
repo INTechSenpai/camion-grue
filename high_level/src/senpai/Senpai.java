@@ -24,6 +24,8 @@ import java.util.Date;
 import pfg.config.Config;
 import pfg.graphic.AbstractPrintBuffer;
 import pfg.graphic.DebugTool;
+import pfg.graphic.Fenetre;
+import pfg.graphic.Vec2RO;
 import pfg.injector.Injector;
 import pfg.injector.InjectorException;
 import pfg.kraken.Kraken;
@@ -47,7 +49,7 @@ import threads.ThreadShutdown;
 public class Senpai
 {
 	private Log log;
-	private Config config;
+	private ConfigSenpai config;
 	private Injector injector;
 
 	private static int nbInstances = 0;
@@ -181,17 +183,18 @@ public class Senpai
 		printMessage("intro.txt");
 
 		injector = new Injector();
-		
+
 		DebugTool debug = new DebugTool();
 		log = debug.getLog(Severity.INFO);
 		config = new ConfigSenpai(ConfigInfoSenpai.values(), "senpai.conf", false);
 
+		injector.addService(Senpai.class, this);
 		injector.addService(Log.class, log);
 		injector.addService(Config.class, config);
-		
-		Kraken k = Kraken.getKraken(null);
-		
-		injector.addService(TentacularAStar.class, k.getAStar());
+		injector.addService(ConfigSenpai.class, config);
+		Fenetre f = debug.getFenetre(new Vec2RO(0,1000));
+		injector.addService(Fenetre.class, f);
+		injector.addService(AbstractPrintBuffer.class, f.getPrintBuffer());
 		
 
 		Speed.TEST.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_TEST) / 1000.;
@@ -233,6 +236,10 @@ public class Senpai
 
 		assert checkAssert();
 		
+		Kraken k = Kraken.getKraken(null);
+		
+		injector.addService(TentacularAStar.class, k.getAStar());
+		
 		/**
 		 * Planification du hook de fermeture
 		 */
@@ -247,7 +254,7 @@ public class Senpai
 		{
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
-			assert false;
+			assert false : e;
 		}
 		
 		startAllThreads();

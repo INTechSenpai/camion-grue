@@ -14,13 +14,13 @@
 
 package robot;
 
+import comm.Ticket;
 import exceptions.ActionneurException;
 import exceptions.UnableToMoveException;
 import pfg.kraken.astar.tentacles.Tentacle;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.utils.XY;
 import pfg.log.Log;
-import serie.Ticket;
 
 /**
  * Robot particulier qui fait pas bouger le robot réel, mais détermine la durée

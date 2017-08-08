@@ -12,44 +12,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package serie.trame;
-
-import serie.Ticket;
-import serie.SerialProtocol.Id;
+package exceptions;
 
 /**
- * Paquet série haut niveau reçu
+ * Exception levée par SerialConnexion
  * 
  * @author pf
  *
  */
 
-public class Paquet
+public class MissingCharacterException extends Exception
 {
-	public Id origine;
-	public int[] message;
-	public Ticket ticket;
 
-	public Paquet(int[] message, Ticket ticket, Id origine)
+	private static final long serialVersionUID = -960091158805232282L;
+
+	public MissingCharacterException()
 	{
-		this.origine = origine;
-		this.message = message;
-		this.ticket = ticket;
+		super();
 	}
 
-	@Override
-	public String toString()
+	public MissingCharacterException(String s)
 	{
-		String aff = "";
-		for(int i = 0; i < message.length; i++)
-		{
-			int out = message[i];
-			String s = Integer.toHexString(out).toUpperCase();
-			if(s.length() == 1)
-				aff += "0" + s + " ";
-			else
-				aff += s.substring(s.length() - 2, s.length()) + " ";
-		}
-		return origine + " " + aff;
+		super(s);
 	}
+
 }

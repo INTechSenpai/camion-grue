@@ -12,27 +12,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package capteurs;
+
+package comm.buffer;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import pfg.log.Log;
-import senpai.Subject;
 import senpai.Severity;
+import senpai.Subject;
 
-/**
- * Buffer qui contient les infos provenant des capteurs de la STM
- * 
- * @author pf
- *
- */
+public class IncomingBuffer<T> {
 
-public class SensorsDataBuffer
-{
 	protected Log log;
-
-	public SensorsDataBuffer(Log log)
+	
+	public IncomingBuffer(Log log)
 	{
 		this.log = log;
 	}
@@ -47,21 +41,21 @@ public class SensorsDataBuffer
 		return buffer.isEmpty();
 	}
 
-	private Queue<SensorsData> buffer = new ConcurrentLinkedQueue<SensorsData>();
+	private Queue<T> buffer = new ConcurrentLinkedQueue<T>();
 
 	/**
-	 * Ajout d'un élément dans le buffer et provoque un "notifyAll"
+	 * Ajout d'un élément dans le buffer et provoque un "notify"
 	 * 
 	 * @param elem
 	 */
-	public synchronized void add(SensorsData elem)
+	public synchronized void add(T elem)
 	{
 		buffer.add(elem);
-		if(buffer.size() > 5)
-		{
-			buffer.poll(); // on évacue une ancienne valeur
-			log.write("Capteurs traités trop lentement !", Severity.CRITICAL, Subject.CAPTEURS);
-		}
+		if(buffer.size() > 20)
+			log.write("Buffer de "+elem.getClass().getSimpleName()+" traités trop lentement ! Taille buffer : " + buffer.size(), Severity.CRITICAL, Subject.COMM);
+		else if(buffer.size() > 5)
+			log.write("Buffer de "+elem.getClass().getSimpleName()+" traités trop lentement ! Taille buffer : " + buffer.size(), Severity.WARNING, Subject.COMM);
+
 		notify();
 	}
 
@@ -70,9 +64,8 @@ public class SensorsDataBuffer
 	 * 
 	 * @return
 	 */
-	public synchronized SensorsData poll()
+	public synchronized T poll()
 	{
 		return buffer.poll();
 	}
-
 }

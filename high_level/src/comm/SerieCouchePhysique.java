@@ -12,13 +12,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package serie;
+package comm;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import exceptions.serie.ClosedSerialException;
+
+import comm.buffer.BufferIncomingBytes;
+import exceptions.ClosedSerialException;
 import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
 import senpai.ConfigSenpai;

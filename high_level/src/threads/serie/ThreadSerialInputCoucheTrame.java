@@ -14,11 +14,11 @@
 
 package threads.serie;
 
-import exceptions.serie.ClosedSerialException;
+import comm.buffer.BufferIncomingBytes;
+import comm.buffer.BufferIncomingOrder;
+import exceptions.ClosedSerialException;
 import pfg.log.Log;
 import senpai.Subject;
-import serie.BufferIncomingBytes;
-import serie.BufferIncomingOrder;
 
 /**
  * Thread qui s'occupe de la partie bas niveau du protocole série

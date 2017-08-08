@@ -14,15 +14,15 @@
 
 package threads.serie;
 
-import exceptions.serie.ClosedSerialException;
+import comm.Order;
+import comm.buffer.BufferIncomingBytes;
+import comm.buffer.BufferOutgoingBytes;
+import comm.buffer.BufferOutgoingOrder;
+import exceptions.ClosedSerialException;
 import pfg.config.Config;
 import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
 import senpai.Subject;
-import serie.BufferIncomingBytes;
-import serie.BufferOutgoingBytes;
-import serie.BufferOutgoingOrder;
-import serie.trame.Order;
 
 /**
  * Thread qui vérifie s'il faut envoyer des ordres

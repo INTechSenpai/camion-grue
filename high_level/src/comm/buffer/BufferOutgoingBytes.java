@@ -12,9 +12,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package serie;
+package comm.buffer;
 
-import exceptions.serie.ClosedSerialException;
+import comm.SerieCouchePhysique;
+import exceptions.ClosedSerialException;
 import pfg.log.Log;
 import senpai.Severity;
 import senpai.Subject;

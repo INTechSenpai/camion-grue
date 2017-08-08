@@ -12,7 +12,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package serie;
+package comm;
 
 /**
  * Protocole série entre le bas niveau et la Java
@@ -49,8 +49,7 @@ public class SerialProtocol
 		START_MATCH_CHRONO(0x3B),
 		SCAN(0x49),
 		RUN(0x4B),
-		SENSORS_CHANNEL(0x00),
-
+		SENSORS_CHANNEL(0x00), // TODO
 		ASK_COLOR(0x59),
 		PING(0x5A),
 		SEND_ARC(0x5B),

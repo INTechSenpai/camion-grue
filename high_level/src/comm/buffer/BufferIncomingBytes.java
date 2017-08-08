@@ -12,16 +12,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package serie;
+package comm.buffer;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import exceptions.serie.ClosedSerialException;
-import exceptions.serie.MissingCharacterException;
+
+import comm.Paquet;
+import exceptions.ClosedSerialException;
+import exceptions.MissingCharacterException;
 import pfg.log.Log;
 import senpai.Subject;
-import serie.trame.Paquet;
 import senpai.Severity;
 
 /**
@@ -102,8 +103,9 @@ public class BufferIncomingBytes
 	
 	public final synchronized Paquet readPaquet() throws MissingCharacterException, InterruptedException, ClosedSerialException
 	{
-		read();
-		return null;
+		while(true)
+			Thread.sleep(500);
+//		return null;
 	}
 
 	/**

@@ -39,7 +39,7 @@ public class ThreadPeremption extends Thread
 	private int dureePeremption;
 	private boolean printProxObs;
 
-	public ThreadPeremption(Log log, ObstaclesMemory memory, DStarLite dstarlite, Config config)
+	public ThreadPeremption(Log log, ObstaclesMemory memory, Config config)
 	{
 		this.log = log;
 		this.memory = memory;

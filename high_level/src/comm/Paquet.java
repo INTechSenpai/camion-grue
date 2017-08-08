@@ -12,28 +12,43 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package exceptions.serie;
+package comm;
+
+import comm.SerialProtocol.Id;
 
 /**
- * Exception levée par la série
+ * Paquet série haut niveau reçu
  * 
  * @author pf
  *
  */
 
-public class IncorrectChecksumException extends Exception
+public class Paquet
 {
+	public Id origine;
+	public int[] message;
+	public Ticket ticket;
 
-	private static final long serialVersionUID = -960091158805232282L;
-
-	public IncorrectChecksumException()
+	public Paquet(int[] message, Ticket ticket, Id origine)
 	{
-		super();
+		this.origine = origine;
+		this.message = message;
+		this.ticket = ticket;
 	}
 
-	public IncorrectChecksumException(String m)
+	@Override
+	public String toString()
 	{
-		super(m);
+		String aff = "";
+		for(int i = 0; i < message.length; i++)
+		{
+			int out = message[i];
+			String s = Integer.toHexString(out).toUpperCase();
+			if(s.length() == 1)
+				aff += "0" + s + " ";
+			else
+				aff += s.substring(s.length() - 2, s.length()) + " ";
+		}
+		return origine + " " + aff;
 	}
-
 }

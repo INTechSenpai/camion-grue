@@ -17,10 +17,10 @@ package tests.lowlevel;
 import org.junit.Before;
 import org.junit.Test;
 
+import comm.Ticket;
+import comm.SerialProtocol.State;
+import comm.buffer.BufferOutgoingOrder;
 import pfg.kraken.utils.XY;
-import serie.BufferOutgoingOrder;
-import serie.SerialProtocol.State;
-import serie.Ticket;
 import tests.JUnit_Test;
 
 /**
@@ -43,6 +43,11 @@ public class JUnit_Serie extends JUnit_Test
 		data = container.getService(BufferOutgoingOrder.class);
 	}
 
+	@Test
+	public void empty() throws Exception
+	{
+	}
+	
 	/**
 	 * Un test pour vérifie la connexion
 	 * Le programme s'arrête automatiquement au bout de 3s
@@ -63,7 +68,7 @@ public class JUnit_Serie extends JUnit_Test
 	@Test
 	public void test_stream() throws Exception
 	{
-		data.startStream();
+		data.startStreamSensors();
 		Thread.sleep(10000);
 	}
 
@@ -94,7 +99,7 @@ public class JUnit_Serie extends JUnit_Test
 	@Test
 	public void test_edit_position() throws Exception
 	{
-		data.startStream();
+		data.startStreamSensors();
 		Thread.sleep(1000);
 		data.correctPosition(new XY(42, 24), 1);
 		Thread.sleep(1000);

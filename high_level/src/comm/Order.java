@@ -12,11 +12,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package serie.trame;
+package comm;
 
-import serie.Ticket;
 import java.nio.ByteBuffer;
-import serie.SerialProtocol.Id;
+
+import comm.SerialProtocol.Id;
 
 /**
  * Un ordre à envoyer sur la série
@@ -64,8 +64,7 @@ public class Order
 		else
 			tailleMessage = message.limit();
 		tailleTrame = tailleMessage + 3;
-		if(tailleTrame > 254)
-			throw new IllegalArgumentException("La trame est trop grande ! (" + tailleTrame + " octets)");
+		assert tailleTrame <= 254 : "La trame est trop grande ! (" + tailleTrame + " octets)";
 		trame[0] = (byte) 0xFF;
 		trame[1] = ordre.code;
 		trame[2] = (byte) (tailleTrame);

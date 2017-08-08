@@ -12,28 +12,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package exceptions.serie;
+package comm.buffer;
+
+import comm.Paquet;
+import pfg.log.Log;
 
 /**
- * Exception levée par SerialConnexion
+ * Buffer qui contient les ordres provenant de la série
  * 
  * @author pf
  *
  */
 
-public class MissingCharacterException extends Exception
+public class BufferIncomingOrder extends IncomingBuffer<Paquet>
 {
-
-	private static final long serialVersionUID = -960091158805232282L;
-
-	public MissingCharacterException()
+	public BufferIncomingOrder(Log log)
 	{
-		super();
+		super(log);
 	}
-
-	public MissingCharacterException(String s)
-	{
-		super(s);
-	}
-
 }

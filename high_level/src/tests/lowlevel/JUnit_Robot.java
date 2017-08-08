@@ -20,11 +20,12 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import org.junit.Before;
 import org.junit.Test;
+
+import comm.buffer.BufferOutgoingOrder;
 import robot.RobotReal;
 import robot.Speed;
 import senpai.ConfigInfoSenpai;
 import senpai.Subject;
-import serie.BufferOutgoingOrder;
 import tests.JUnit_Test;
 
 /**
@@ -98,7 +99,7 @@ public class JUnit_Robot extends JUnit_Test
 //		pathcache = container.getService(PathCache.class);
 		data = container.getService(BufferOutgoingOrder.class);
 		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_SERIE);
-		data.startStream();
+		data.startStreamSensors();
 		v = Speed.TEST;
 		log.write("Vitesse du robot : " + v.translationalSpeed * 1000, Subject.DUMMY);
 	}

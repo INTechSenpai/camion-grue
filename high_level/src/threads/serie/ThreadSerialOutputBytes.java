@@ -14,10 +14,10 @@
 
 package threads.serie;
 
-import exceptions.serie.ClosedSerialException;
+import comm.buffer.BufferOutgoingBytes;
+import exceptions.ClosedSerialException;
 import pfg.log.Log;
 import senpai.Subject;
-import serie.BufferOutgoingBytes;
 
 /**
  * Thread qui vérifie s'il faut envoyer des choses sur la série

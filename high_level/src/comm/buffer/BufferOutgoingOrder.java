@@ -12,7 +12,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package serie;
+package comm.buffer;
 
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -20,13 +20,14 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import capteurs.SensorMode;
+import comm.Order;
+import comm.Ticket;
+import comm.SerialProtocol.Channel;
+import comm.SerialProtocol.Id;
 import pfg.log.Log;
 import robot.Speed;
 import senpai.Subject;
 import senpai.Severity;
-import serie.SerialProtocol.Channel;
-import serie.SerialProtocol.Id;
-import serie.trame.Order;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.robot.CinematiqueObs;
 import pfg.kraken.utils.XY;
@@ -272,7 +273,7 @@ public class BufferOutgoingOrder
 	/**
 	 * Démarre le stream
 	 */
-	public synchronized void startStream()
+	public synchronized void startStreamSensors()
 	{
 		ByteBuffer data = ByteBuffer.allocate(1);
 		data.put(Channel.INSCRIPTION.code);

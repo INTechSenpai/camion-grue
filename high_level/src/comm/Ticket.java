@@ -12,9 +12,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package serie;
+package comm;
 
-import serie.SerialProtocol.InOrder;
+import comm.SerialProtocol.InOrder;
 
 /**
  * Un ticket. Tu tires un numéro et tu attends ton tour.
@@ -60,6 +60,11 @@ public class Ticket
 		return getAndClear();
 	}
 	
+	/**
+	 * Attend le status avec un timeout.
+	 * @param timeout
+	 * @throws InterruptedException
+	 */
 	public synchronized void attendStatus(long timeout) throws InterruptedException
 	{
 		if(isEmpty())

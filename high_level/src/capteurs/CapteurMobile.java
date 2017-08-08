@@ -28,7 +28,6 @@ import pfg.kraken.robot.Cinematique;
 
 public class CapteurMobile extends Capteur
 {
-	private boolean roueDroite;
 
 	/**
 	 * L'orientation relative à donner est celle du capteur lorsque les roues
@@ -37,30 +36,12 @@ public class CapteurMobile extends Capteur
 	public CapteurMobile(Config config, XY positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
 	{
 		super(config, positionRelative, orientationRelative, type, sureleve);
-		roueDroite = positionRelative.getY() < 0;
 	}
 
 	@Override
 	public void computePosOrientationRelative(Cinematique c, double angleRoueGauche, double angleRoueDroite)
 	{
-/*		if(roueDroite)
-			orientationRelativeRotate = orientationRelative + angleRoueDroite;
-		else
-			orientationRelativeRotate = orientationRelative + angleRoueGauche;
-
-		positionRelative.copy(positionRelativeRotate);
-		if(roueDroite)
-		{
-			positionRelativeRotate.minus(centreRotationDroite);
-			positionRelativeRotate.rotate(orientationRelativeRotate);
-			positionRelativeRotate.plus(centreRotationDroite);
-		}
-		else
-		{
-			positionRelativeRotate.minus(centreRotationGauche);
-			positionRelativeRotate.rotate(orientationRelativeRotate);
-			positionRelativeRotate.plus(centreRotationGauche);
-		}*/
+		// TODO
 	}
 
 }

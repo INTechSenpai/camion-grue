@@ -18,10 +18,11 @@ import robot.RobotReal;
 import senpai.ConfigInfoSenpai;
 import senpai.Senpai;
 import senpai.Subject;
-import serie.BufferOutgoingOrder;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import comm.buffer.BufferOutgoingOrder;
 import pfg.config.Config;
 import pfg.kraken.obstacles.ObstacleRobot;
 import pfg.kraken.obstacles.RectangularObstacle;

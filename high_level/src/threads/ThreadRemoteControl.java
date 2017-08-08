@@ -20,6 +20,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import comm.Ticket;
+import comm.buffer.BufferOutgoingOrder;
 import pfg.config.Config;
 import pfg.log.Log;
 import remoteControl.Commandes;
@@ -28,8 +31,6 @@ import senpai.ConfigInfoSenpai;
 import senpai.Senpai;
 import senpai.Senpai.ErrorCode;
 import senpai.Severity;
-import serie.BufferOutgoingOrder;
-import serie.Ticket;
 
 /**
  * Thread du contrôle à distance

@@ -12,28 +12,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package exceptions.serie;
+package comm.buffer;
+
+import capteurs.SensorsData;
+import pfg.log.Log;
 
 /**
- * Exception levée par la série en cas d'erreur de protocole
+ * Buffer qui contient les infos provenant des capteurs du LL
  * 
  * @author pf
  *
  */
 
-public class ProtocolException extends Exception
+public class SensorsDataBuffer extends IncomingBuffer<SensorsData>
 {
-
-	private static final long serialVersionUID = -960091158805232282L;
-
-	public ProtocolException()
+	public SensorsDataBuffer(Log log)
 	{
-		super();
+		super(log);
 	}
-
-	public ProtocolException(String m)
-	{
-		super(m);
-	}
-
 }

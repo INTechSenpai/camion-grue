@@ -16,7 +16,11 @@ package threads.serie;
 
 import capteurs.CapteursRobot;
 import capteurs.SensorsData;
-import capteurs.SensorsDataBuffer;
+import comm.Paquet;
+import comm.SerialProtocol.Id;
+import comm.SerialProtocol.InOrder;
+import comm.buffer.BufferIncomingOrder;
+import comm.buffer.SensorsDataBuffer;
 import pfg.config.Config;
 import pfg.log.Log;
 import pfg.kraken.robot.Cinematique;
@@ -25,10 +29,6 @@ import senpai.Senpai;
 import senpai.Senpai.ErrorCode;
 import senpai.Severity;
 import senpai.Subject;
-import serie.BufferIncomingOrder;
-import serie.SerialProtocol.InOrder;
-import serie.SerialProtocol.Id;
-import serie.trame.Paquet;
 
 /**
  * Thread qui écoute la série et appelle qui il faut.
