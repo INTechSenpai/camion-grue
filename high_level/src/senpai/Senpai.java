@@ -145,7 +145,17 @@ public class Senpai
 		Thread.sleep(300);
 		return errorCode;
 	}
+	
+	public synchronized <S> S getService(Class<S> service) throws InjectorException
+	{
+		return injector.getService(service);
+	}
 
+	public synchronized <S> S getExistingService(Class<S> classe)
+	{
+		return injector.getExistingService(classe);
+	}
+	
 	/**
 	 * Instancie le gestionnaire de dépendances et quelques services critiques
 	 * (log et config qui sont interdépendants)
@@ -230,6 +240,8 @@ public class Senpai
 		{
 			log.write("Mise en place du hook d'arrêt", Subject.DUMMY);
 			Runtime.getRuntime().addShutdownHook(injector.getService(ThreadShutdown.class));
+			Obstacle.set(log, injector.getService(AbstractPrintBuffer.class));
+			Obstacle.useConfig(config);
 		}
 		catch(InjectorException e)
 		{
@@ -237,9 +249,6 @@ public class Senpai
 			e.printStackTrace(log.getPrintWriter());
 			assert false;
 		}
-		
-		Obstacle.set(log, injector.getService(AbstractPrintBuffer.class));
-		Obstacle.useConfig(config);
 		
 		startAllThreads();
 	}

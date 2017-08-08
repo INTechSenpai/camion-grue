@@ -20,10 +20,10 @@ import pfg.config.Config;
 import pfg.graphic.Fenetre;
 import pfg.graphic.printable.Layer;
 import pfg.graphic.printable.Printable;
-import robot.Cinematique;
 import robot.RobotReal;
-import utils.Vec2RO;
-import utils.Vec2RW;
+import pfg.kraken.robot.Cinematique;
+import pfg.kraken.utils.XY;
+import pfg.kraken.utils.XY_RW;
 
 /**
  * Un capteur de proximité du robot
@@ -37,24 +37,24 @@ public abstract class Capteur implements Printable
 	private static final long serialVersionUID = 1L;
 	
 	public boolean sureleve;
-	protected final Vec2RO positionRelative;
+	protected final XY positionRelative;
 	protected final double orientationRelative;
 	public final double angleCone; // angle du cône (en radians)
 	public final int portee;
 	public final int distanceMin;
 //	protected int L, d;
-//	protected Vec2RO centreRotationGauche, centreRotationDroite;
+//	protected XY centreRotationGauche, centreRotationDroite;
 	protected double orientationRelativeRotate;
-	protected Vec2RW positionRelativeRotate;
+	protected XY_RW positionRelativeRotate;
 	private TypeCapteur type;
 	private RobotReal robot;
 
-	public Capteur(Config config, Vec2RO positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
+	public Capteur(Config config, XY positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
 	{
 		this.type = type;
 		this.positionRelative = positionRelative;
 		this.orientationRelative = orientationRelative;
-		positionRelativeRotate = new Vec2RW();
+		positionRelativeRotate = new XY_RW();
 		this.angleCone = type.angleCone;
 		this.distanceMin = type.distanceMin;
 		this.portee = type.portee;
@@ -62,8 +62,8 @@ public abstract class Capteur implements Printable
 
 /*		L = config.getInt(ConfigInfo.CENTRE_ROTATION_ROUE_X);
 		d = config.getInt(ConfigInfo.CENTRE_ROTATION_ROUE_Y);
-		centreRotationGauche = new Vec2RO(L, d);
-		centreRotationDroite = new Vec2RO(L, -d);*/
+		centreRotationGauche = new XY(L, d);
+		centreRotationDroite = new XY(L, -d);*/
 	}
 
 	/**
@@ -82,15 +82,15 @@ public abstract class Capteur implements Printable
 		{
 			double orientation = robot.getCinematique().orientationReelle;
 			computePosOrientationRelative(robot.getCinematique(), 0, 0);
-			Vec2RW p1 = positionRelativeRotate.clone();
+			XY_RW p1 = positionRelativeRotate.clone();
 			p1.rotate(orientation);
 			p1.plus(robot.getCinematique().getPosition());
-			Vec2RW p2 = positionRelativeRotate.clone();
-			p2.plus(new Vec2RO(portee, angleCone + orientationRelativeRotate, false));
+			XY_RW p2 = positionRelativeRotate.clone();
+			p2.plus(new XY(portee, angleCone + orientationRelativeRotate, false));
 			p2.rotate(orientation);
 			p2.plus(robot.getCinematique().getPosition());
-			Vec2RW p3 = positionRelativeRotate.clone();
-			p3.plus(new Vec2RO(portee, -angleCone + orientationRelativeRotate, false));
+			XY_RW p3 = positionRelativeRotate.clone();
+			p3.plus(new XY(portee, -angleCone + orientationRelativeRotate, false));
 			p3.rotate(orientation);
 			p3.plus(robot.getCinematique().getPosition());
 			int[] x = new int[3];

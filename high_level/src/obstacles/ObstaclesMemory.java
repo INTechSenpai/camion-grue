@@ -12,19 +12,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package obstacles.memory;
+package obstacles;
 
-import graphic.PrintBufferInterface;
 import java.util.Iterator;
 import java.util.LinkedList;
-import obstacles.types.Obstacle;
-import obstacles.types.ObstacleProximity;
-import pathfinding.dstarlite.gridspace.Masque;
-import utils.Log;
-import config.Config;
-import config.ConfigInfo;
-import container.Service;
-import container.dependances.LowPFClass;
+
+import pfg.config.Config;
+import pfg.graphic.AbstractPrintBuffer;
+import pfg.kraken.obstacles.Obstacle;
+import pfg.log.Log;
+import senpai.ConfigInfoSenpai;
 
 /**
  * Mémorise tous les obstacles mobiles qu'on a rencontré jusque là.
@@ -34,7 +31,7 @@ import container.dependances.LowPFClass;
  *
  */
 
-public class ObstaclesMemory implements Service, LowPFClass
+public class ObstaclesMemory
 {
 	// Les obstacles mobiles, c'est-à-dire des obstacles de proximité
 	private volatile LinkedList<ObstacleProximity> listObstaclesMobiles = new LinkedList<ObstacleProximity>();
@@ -49,31 +46,29 @@ public class ObstaclesMemory implements Service, LowPFClass
 	private final int tempsAvantSuppression = 2000;
 
 	protected Log log;
-	private PrintBufferInterface buffer;
+	private AbstractPrintBuffer buffer;
 
-	public ObstaclesMemory(Log log, PrintBufferInterface buffer, Config config)
+	public ObstaclesMemory(Log log, AbstractPrintBuffer buffer, Config config)
 	{
 		this.log = log;
 		this.buffer = buffer;
-		dureeAvantPeremption = config.getInt(ConfigInfo.DUREE_PEREMPTION_OBSTACLES);
-		printProx = config.getBoolean(ConfigInfo.GRAPHIC_PROXIMITY_OBSTACLES);
-		printDStarLite = config.getBoolean(ConfigInfo.GRAPHIC_D_STAR_LITE);
+		dureeAvantPeremption = config.getInt(ConfigInfoSenpai.DUREE_PEREMPTION_OBSTACLES);
+//		printProx = config.getBoolean(ConfigInfo.GRAPHIC_PROXIMITY_OBSTACLES);
+//		printDStarLite = config.getBoolean(ConfigInfo.GRAPHIC_D_STAR_LITE);
 	}
 
-	public synchronized ObstacleProximity add(Obstacle obstacle, Masque masque)
+	public synchronized ObstacleProximity add(Obstacle obstacle)
 	{
-		return add(obstacle, System.currentTimeMillis(), masque);
+		return add(obstacle, System.currentTimeMillis());
 	}
 
-	private synchronized ObstacleProximity add(Obstacle obstacleParam, long date, Masque masque)
+	private synchronized ObstacleProximity add(Obstacle obstacleParam, long date)
 	{
-		ObstacleProximity obstacle = new ObstacleProximity(obstacleParam, date + dureeAvantPeremption, masque);
+		ObstacleProximity obstacle = null;//new ObstacleProximity(obstacleParam, date + dureeAvantPeremption);
 		listObstaclesMobiles.add(obstacle);
 
 		if(printProx)
 			buffer.addSupprimable(obstacle);
-		if(printDStarLite)
-			buffer.addSupprimable(obstacle.getMasque());
 
 		size++;
 		return obstacle;
@@ -106,7 +101,6 @@ public class ObstaclesMemory implements Service, LowPFClass
 		if(printProx)
 		{
 			buffer.removeSupprimable(o);
-			buffer.removeSupprimable(o.getMasque());
 		}
 
 		listObstaclesMortsTot.add(o);
@@ -179,7 +173,6 @@ public class ObstaclesMemory implements Service, LowPFClass
 			if(printProx && o != null)
 			{
 				buffer.removeSupprimable(o);
-				buffer.removeSupprimable(o.getMasque());
 			}
 		}
 

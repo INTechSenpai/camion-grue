@@ -14,19 +14,9 @@
 
 package tests;
 
-import obstacles.memory.ObstaclesIteratorPresent;
-import obstacles.memory.ObstaclesMemory;
-import obstacles.types.ObstacleCircular;
-import pathfinding.ChronoGameState;
-import pathfinding.RealGameState;
-import pathfinding.dstarlite.gridspace.GridSpace;
-import robot.Cinematique;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import capteurs.SensorsData;
 import capteurs.SensorsDataBuffer;
-import utils.Vec2RO;
+import obstacles.ObstaclesIteratorPresent;
+import obstacles.ObstaclesMemory;
 
 /**
  * Tests unitaires de l'obstacle memory manager
@@ -42,7 +32,7 @@ public class JUnit_OMMemory extends JUnit_Test
 	private ObstaclesIteratorPresent iterator;
 	private SensorsDataBuffer data;
 	// private MasqueManager mm;
-	private GridSpace gridspace;
+/*	private GridSpace gridspace;
 	private RealGameState state;
 
 	@Override
@@ -79,7 +69,7 @@ public class JUnit_OMMemory extends JUnit_Test
 		data.add(new SensorsData(0, 0, sensors, chrono.robot.getCinematique()));
 		Thread.sleep(5000);
 	}
-
+*/
 	/*
 	 * @Test
 	 * public void test_iterator() throws Exception

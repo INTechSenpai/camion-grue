@@ -12,9 +12,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package obstacles.memory;
+package obstacles;
 
-import utils.Log;
+import pfg.log.Log;
 
 /**
  * Itérator permettant de manipuler facilement les obstacles mobiles dans le

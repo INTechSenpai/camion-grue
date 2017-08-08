@@ -16,11 +16,12 @@ package tests.lowlevel;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import pfg.kraken.utils.XY;
 import serie.BufferOutgoingOrder;
 import serie.SerialProtocol.State;
 import serie.Ticket;
 import tests.JUnit_Test;
-import utils.Vec2RO;
 
 /**
  * Tests unitaires de la série.
@@ -95,7 +96,7 @@ public class JUnit_Serie extends JUnit_Test
 	{
 		data.startStream();
 		Thread.sleep(1000);
-		data.correctPosition(new Vec2RO(42, 24), 1);
+		data.correctPosition(new XY(42, 24), 1);
 		Thread.sleep(1000);
 	}
 
@@ -127,39 +128,4 @@ public class JUnit_Serie extends JUnit_Test
 		Thread.sleep(100000);
 	}
 
-	/**
-	 * Test de tous les actionneurs
-	 * 
-	 * @throws Exception
-	 */
-	@Test
-	public void test_ax12() throws Exception
-	{
-		data.baisseFilet();
-		Thread.sleep(2000);
-		data.leveFilet();
-		Thread.sleep(2000);
-		data.bougeFiletMiChemin();
-		Thread.sleep(2000);
-	}
-
-	@Test
-	public void test_actionneurs() throws Exception
-	{
-		data.ejecteBalles(true);
-		Thread.sleep(2000);
-		data.rearme(true);
-		Thread.sleep(2000);
-		data.ejecteBalles(false);
-		Thread.sleep(2000);
-		data.rearme(false);
-		Thread.sleep(2000);
-		data.ouvreFilet();
-		Thread.sleep(2000);
-		data.fermeFilet();
-		Thread.sleep(2000);
-		data.fermeFiletForce();
-		Thread.sleep(2000);
-		data.traverseBascule();
-	}
 }

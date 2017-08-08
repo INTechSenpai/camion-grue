@@ -15,8 +15,8 @@
 package capteurs;
 
 import pfg.config.Config;
-import robot.Cinematique;
-import utils.Vec2RO;
+import pfg.kraken.utils.XY;
+import pfg.kraken.robot.Cinematique;
 
 /**
  * Capteur qui regarde dans le sens des roues
@@ -34,7 +34,7 @@ public class CapteurMobile extends Capteur
 	 * L'orientation relative à donner est celle du capteur lorsque les roues
 	 * sont droites (courbure nulle)
 	 */
-	public CapteurMobile(Config config, Vec2RO positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
+	public CapteurMobile(Config config, XY positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
 	{
 		super(config, positionRelative, orientationRelative, type, sureleve);
 		roueDroite = positionRelative.getY() < 0;

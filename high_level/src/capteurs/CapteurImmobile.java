@@ -15,8 +15,8 @@
 package capteurs;
 
 import pfg.config.Config;
-import robot.Cinematique;
-import utils.Vec2RO;
+import pfg.kraken.robot.Cinematique;
+import pfg.kraken.utils.XY;
 
 /**
  * Un capteur immobile
@@ -29,7 +29,7 @@ public class CapteurImmobile extends Capteur
 {
 	private static final long serialVersionUID = 1L;
 
-	public CapteurImmobile(Config config, Vec2RO positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
+	public CapteurImmobile(Config config, XY positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
 	{
 		super(config, positionRelative, orientationRelative, type, sureleve);
 		orientationRelativeRotate = orientationRelative;

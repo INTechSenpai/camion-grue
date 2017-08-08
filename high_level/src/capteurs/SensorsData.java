@@ -14,7 +14,7 @@
 
 package capteurs;
 
-import robot.Cinematique;
+import pfg.kraken.robot.Cinematique;
 
 /**
  * Un groupe de mesures qui proviennent des capteurs

@@ -14,8 +14,6 @@
 
 package serie;
 
-import serie.SerialProtocol.State;
-
 /**
  * Protocole série entre le bas niveau et la Java
  * 

@@ -14,11 +14,8 @@
 
 package scripts;
 
-import exceptions.ActionneurException;
-import exceptions.MemoryManagerException;
-import exceptions.UnableToMoveException;
+import pfg.kraken.robot.Cinematique;
 import pfg.log.Log;
-import robot.Cinematique;
 
 /**
  * Script abstrait
@@ -34,7 +31,7 @@ public abstract class Script
 	public abstract Cinematique getPointEntree();
 
 	public abstract void setUpCercleArrivee();
-
+/*
 	protected abstract void run(RealGameState state) throws InterruptedException, UnableToMoveException, ActionneurException, MemoryManagerException;
 
 	public void execute(RealGameState state) throws InterruptedException, MemoryManagerException
@@ -49,7 +46,7 @@ public abstract class Script
 		{
 			log.critical("Erreur lors de l'exécution du script " + getClass().getSimpleName() + " : " + e);
 		}
-	}
+	}*/
 
 	@Override
 	public int hashCode()

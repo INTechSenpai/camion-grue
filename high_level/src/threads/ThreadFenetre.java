@@ -15,7 +15,6 @@
 package threads;
 
 import pfg.config.Config;
-import pfg.graphic.ConfigInfoGraphic;
 import pfg.graphic.Fenetre;
 import pfg.graphic.PrintBuffer;
 import pfg.log.Log;
@@ -37,7 +36,6 @@ public class ThreadFenetre extends Thread
 	private PrintBuffer buffer;
 	private boolean gif, print, deporte;
 	private long derniereSauv = 0;
-	private String giffile;
 
 	public ThreadFenetre(Log log, Senpai container, PrintBuffer buffer, Config config)
 	{
@@ -45,7 +43,6 @@ public class ThreadFenetre extends Thread
 		this.buffer = buffer;
 /*		print = config.getBoolean(ConfigInfoGraphic.GRAPHIC_ENABLE);
 		deporte = config.getBoolean(ConfigInfoGraphic.GRAPHIC_EXTERNAL);
-		giffile = config.getString(ConfigInfoGraphic.GIF_FILENAME);
 		if(print && !deporte)
 			try
 			{

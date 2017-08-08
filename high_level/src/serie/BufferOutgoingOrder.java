@@ -21,15 +21,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import capteurs.SensorMode;
 import pfg.log.Log;
-import robot.CinematiqueObs;
 import robot.Speed;
 import senpai.Subject;
 import senpai.Severity;
 import serie.SerialProtocol.Channel;
 import serie.SerialProtocol.Id;
 import serie.trame.Order;
-import utils.Vec2RO;
-import utils.Vec2RW;
+import pfg.kraken.robot.Cinematique;
+import pfg.kraken.robot.CinematiqueObs;
+import pfg.kraken.utils.XY;
+import pfg.kraken.utils.XY_RW;
 
 /**
  * Classe qui contient les ordres à envoyer à la série
@@ -170,7 +171,7 @@ public class BufferOutgoingOrder
 		notify();
 	}
 
-	Vec2RW tmp = new Vec2RW();
+	XY_RW tmp = new XY_RW();
 
 	/**
 	 * Ajoute une position et un angle.
@@ -180,7 +181,7 @@ public class BufferOutgoingOrder
 	 * @param pos
 	 * @param angle
 	 */
-	private void addXYO(ByteBuffer data, Vec2RO pos, double angle, boolean checkInTable)
+	private void addXYO(ByteBuffer data, XY pos, double angle, boolean checkInTable)
 	{
 		double x = pos.getX();
 		double y = pos.getY();
@@ -203,7 +204,7 @@ public class BufferOutgoingOrder
 	/**
 	 * Corrige la position du bas niveau
 	 */
-	public synchronized void setPosition(Vec2RO pos, double orientation)
+	public synchronized void setPosition(XY pos, double orientation)
 	{
 		ByteBuffer data = ByteBuffer.allocate(5);
 		addXYO(data, pos, orientation, true);
@@ -214,7 +215,7 @@ public class BufferOutgoingOrder
 	/**
 	 * Corrige la position du bas niveau
 	 */
-	public synchronized void correctPosition(Vec2RO deltaPos, double deltaOrientation)
+	public synchronized void correctPosition(XY deltaPos, double deltaOrientation)
 	{
 		ByteBuffer data = ByteBuffer.allocate(5);
 		addXYO(data, deltaPos, deltaOrientation, false);
@@ -244,6 +245,17 @@ public class BufferOutgoingOrder
 		return t;
 	}
 
+	/**
+	 * Demande la couleur au bas niveau
+	 */
+	public synchronized Ticket demandeCouleur()
+	{
+		Ticket t = new Ticket();
+		bufferBassePriorite.add(new Order(Id.ASK_COLOR, t));
+		notify();
+		return t;
+	}
+	
 	/**
 	 * Demande d'utiliser un certain SensorMode
 	 * 
@@ -276,7 +288,7 @@ public class BufferOutgoingOrder
 	 * @param indexTrajectory
 	 * @return
 	 */
-	public synchronized void makeNextObsolete(CinematiqueObs c, int indexTrajectory)
+	public synchronized void makeNextObsolete(Cinematique c, int indexTrajectory)
 	{
 		log.write("Envoi d'un arc d'obsolescence", Subject.COMM);
 

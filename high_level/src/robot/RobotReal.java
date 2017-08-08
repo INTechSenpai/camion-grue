@@ -16,20 +16,22 @@ package robot;
 
 import java.awt.Graphics;
 import java.lang.reflect.InvocationTargetException;
-import java.util.LinkedList;
 import capteurs.SensorMode;
 import serie.BufferOutgoingOrder;
 import serie.SerialProtocol;
-import serie.SerialProtocol.InOrder;
-import serie.SerialProtocol.State;
 import serie.Ticket;
 import exceptions.ActionneurException;
 import exceptions.MemoryManagerException;
-import exceptions.PathfindingException;
 import exceptions.UnableToMoveException;
+import pfg.config.Config;
 import pfg.graphic.Fenetre;
-import utils.Vec2RO;
-import utils.Vec2RW;
+import pfg.graphic.printable.Layer;
+import pfg.graphic.printable.Printable;
+import pfg.kraken.robot.Cinematique;
+import pfg.kraken.utils.XY;
+import pfg.log.Log;
+import senpai.ConfigInfoSenpai;
+import senpai.Subject;
 
 /**
  * Effectue le lien entre le code et la réalité (permet de parler à la carte bas
@@ -39,32 +41,22 @@ import utils.Vec2RW;
  *
  */
 
-public class RobotReal extends Robot
+public class RobotReal extends Robot implements Printable
 {
 	protected volatile boolean matchDemarre = false;
 	protected volatile long dateDebutMatch;
 	private boolean simuleSerie;
 	private int demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge;
 	private boolean print, printTrace;
-	private PrintBufferInterface buffer;
 	private BufferOutgoingOrder out;
-	private ArcManager arcmanager;
-	private CheminPathfinding chemin;
 	private volatile boolean cinematiqueInitialised = false;
 	private SensorMode lastMode = null;
-	private BezierComputer bezier;
-	private AnglesRoues angles = new AnglesRoues();
-	private Vector vecteur = new Vector(new Vec2RW(), 0, Couleur.ToF_COURT);
 
 	// Constructeur
-	public RobotReal(Log log, BezierComputer bezier, ArcManager arcmanager, BufferOutgoingOrder out, PrintBufferInterface buffer, CheminPathfinding chemin, Config config)
+	public RobotReal(Log log, BufferOutgoingOrder out, Config config)
 	{
 		super(log);
-		this.arcmanager = arcmanager;
-		this.buffer = buffer;
 		this.out = out;
-		this.chemin = chemin;
-		this.bezier = bezier;
 		
 		// c'est le LL qui fournira la position
 		cinematique = new Cinematique(0, 300, 0, true, 3);
@@ -76,9 +68,6 @@ public class RobotReal extends Robot
 		printTrace = config.getBoolean(ConfigInfoSenpai.GRAPHIC_TRACE_ROBOT);
 
 		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_SERIE);
-
-		if(print || printTrace)
-			buffer.add(this);
 	}
 	
 	/*
@@ -118,7 +107,7 @@ public class RobotReal extends Robot
 	@Override
 	public synchronized void setCinematique(Cinematique cinematique)
 	{
-		Vec2RO old = this.cinematique.getPosition().clone();
+		XY old = this.cinematique.getPosition().clone();
 		super.setCinematique(cinematique);
 		/*
 		 * On vient juste de récupérer la position initiale
@@ -128,36 +117,31 @@ public class RobotReal extends Robot
 			cinematiqueInitialised = true;
 			notifyAll();
 		}
-		synchronized(buffer)
+/*		synchronized(buffer)
 		{
 			// affichage
 			if(printTrace && old.distanceFast(cinematique.getPosition()) < 100)
 				buffer.addSupprimable(new Segment(old, cinematique.getPosition().clone(), Layer.FOREGROUND, Couleur.ROUGE.couleur));
 			else if(print)
 				buffer.notify();
-		}
+		}*/
 	}
 
 	@Override
 	public void print(Graphics g, Fenetre f)
 	{
-		if(print)
+/*		if(print)
 		{
 			ObstacleRobot o = new ObstacleRobot(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
 			o.update(cinematique.getPosition(), cinematique.orientationReelle);
 			o.print(g, f, robot);
-		}
-		if(printTrace)
-		{
-			vecteur.update(cinematique.getPosition(), cinematique.orientationReelle);
-			vecteur.print(g, f, robot);
-		}
+		}*/
 	}
 
 	@Override
-	public Layer getLayer()
+	public int getLayer()
 	{
-		return Layer.FOREGROUND;
+		return Layer.FOREGROUND.ordinal();
 	}
 
 	public int getDemieLargeurGauche()
@@ -184,54 +168,6 @@ public class RobotReal extends Robot
 	 * DÉPLACEMENTS
 	 */
 
-	@Override
-	public void avanceToCircle(Speed speed) throws InterruptedException, UnableToMoveException, MemoryManagerException
-	{
-		ArcCourbeDynamique arc = bezier.trajectoireCirculaireVersCentre(cinematique);
-		if(arc == null)
-			throw new UnableToMoveException("Le robot est arrivé au mauvais endroit et aucune correction n'est possible !");
-		LinkedList<CinematiqueObs> out = new LinkedList<CinematiqueObs>();
-		for(CinematiqueObs o : arc.arcs)
-			out.add(o);
-		try
-		{
-			chemin.addToEnd(out);			
-			if(!simuleSerie)
-				chemin.waitTrajectoryTickets();
-		}
-		catch(PathfindingException e)
-		{
-			// Ceci ne devrait pas arriver, ou alors en demandant d'avancer de
-			// 5m
-			e.printStackTrace();
-			e.printStackTrace(log.getPrintWriter());
-		}
-		followTrajectory(speed);
-	}
-	
-	@Override
-	public void avance(double distance, Speed speed) throws UnableToMoveException, InterruptedException, MemoryManagerException
-	{
-		try
-		{
-			chemin.addToEnd(bezier.avance(distance, cinematique));
-			if(!simuleSerie)
-				chemin.waitTrajectoryTickets();
-		}
-		catch(PathfindingException e)
-		{
-			// Ceci ne devrait pas arriver, ou alors en demandant d'avancer de
-			// 5m
-			e.printStackTrace();
-			e.printStackTrace(log.getPrintWriter());
-		}
-		followTrajectory(speed);
-	}
-
-	public boolean isSerieSimule()
-	{
-		return simuleSerie;
-	}
 	
 	/*
 	 * ACTIONNEURS
@@ -248,7 +184,7 @@ public class RobotReal extends Robot
 	protected void bloque(String nom, Object... param) throws InterruptedException, ActionneurException
 	{
 		if(param == null || param.length == 0)
-			log.debug("Appel à " + nom, Verbose.SCRIPTS.masque);
+			log.write("Appel à " + nom, Subject.DUMMY);
 		else
 		{
 			String s = "";
@@ -258,7 +194,7 @@ public class RobotReal extends Robot
 					s += ", ";
 				s += o;
 			}
-			log.debug("Appel à " + nom + " (param = " + s + ")", Verbose.SCRIPTS.masque);
+			log.write("Appel à " + nom + " (param = " + s + ")", Subject.DUMMY);
 		}
 
 		if(simuleSerie)
@@ -287,32 +223,7 @@ public class RobotReal extends Robot
 		if(etat == SerialProtocol.State.KO)
 			throw new ActionneurException("Problème pour l'actionneur " + nom);
 
-		log.debug("Temps d'exécution de " + nom + " : " + (System.currentTimeMillis() - avant), Verbose.SCRIPTS.masque);
-	}
-
-	/**
-	 * Initialise les actionneurs pour le début du match
-	 * 
-	 * @throws InterruptedException
-	 */
-	public void initActionneurs() throws InterruptedException
-	{
-		try
-		{
-			leveFilet();
-			verrouilleFilet();
-			rearme();
-			rearmeAutreCote();
-		}
-		catch(ActionneurException e)
-		{
-			log.critical(e);
-		}
-	}
-
-	public Ticket traverseBascule() throws InterruptedException, ActionneurException
-	{
-		return out.traverseBascule();
+		log.write("Temps d'exécution de " + nom + " : " + (System.currentTimeMillis() - avant), Subject.DUMMY);
 	}
 
 	/**
@@ -326,11 +237,11 @@ public class RobotReal extends Robot
 	{
 		if(simuleSerie)
 		{
-			setCinematique(chemin.getLastCinematique());
+//			setCinematique(chemin.getLastCinematique());
 			return;
 		}
 		
-		boolean oneMoreTime = true;
+/*		boolean oneMoreTime = true;
 		if(chemin.isEmpty())
 			log.warning("Trajectoire vide !");
 		else
@@ -375,6 +286,7 @@ public class RobotReal extends Robot
 				}
 			}
 		chemin.clear(); // dans tous les cas, il faut nettoyer le chemin
+		*/
 	}
 
 	public void setSensorMode(SensorMode mode)
@@ -386,30 +298,11 @@ public class RobotReal extends Robot
 		}
 	}
 
-	public AnglesRoues getAngles()
-	{
-		return angles;
-	}
-	
-	public Vector getVector()
-	{
-		return vecteur.clone();
-	}
-
-	public void setVector(Vector vecteur)
-	{
-		this.vecteur = vecteur;
-	}
-	
 	@Override
-	public boolean isArrivedAsser()
-	{
-		return arcmanager.isArrivedAsser(cinematique);
-	}
-
-	public void fermeFiletNonBloquant()
-	{
-		out.fermeFilet();
+	public void avance(double distance, Speed speed)
+			throws UnableToMoveException, InterruptedException, MemoryManagerException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -26,7 +26,8 @@ import pfg.kraken.obstacles.Obstacle;
 
 public enum GameElementNames
 {
-	;
+	DUMMY_1(null, 0, null),
+	DUMMY_2(null, 0, null);
 
 	public final Obstacle obstacle; // il se trouve qu'ils sont tous
 												// circulaires…

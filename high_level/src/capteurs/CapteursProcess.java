@@ -14,20 +14,24 @@
 
 package capteurs;
 
-import robot.Cinematique;
 import robot.RobotReal;
 import senpai.ConfigInfoSenpai;
+import senpai.Senpai;
+import senpai.Subject;
 import serie.BufferOutgoingOrder;
 import java.util.ArrayList;
 import java.util.List;
-import exceptions.ContainerException;
+
+import pfg.config.Config;
 import pfg.kraken.obstacles.ObstacleRobot;
+import pfg.kraken.obstacles.RectangularObstacle;
+import pfg.kraken.robot.Cinematique;
+import pfg.kraken.utils.XY;
+import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import table.GameElementNames;
 import table.RealTable;
 import table.EtatElement;
-import utils.Vec2RO;
-import utils.Vec2RW;
 
 /**
  * Cette classe contient les informations sur la situation
@@ -61,13 +65,10 @@ public class CapteursProcess
 
 	private List<SensorsData> mesuresScan = new ArrayList<SensorsData>();
 
-	public CapteursProcess(Container container, Log log, GridSpace gridspace, RealTable table, DStarLite dstarlite, CheminPathfinding chemin, PrintBufferInterface buffer, RobotReal robot, BufferOutgoingOrder serie, Config config)
+	public CapteursProcess(Senpai container, Log log, RealTable table, RobotReal robot, BufferOutgoingOrder serie, Config config)
 	{
 		this.table = table;
 		this.log = log;
-		this.gridspace = gridspace;
-		this.dstarlite = dstarlite;
-		this.chemin = chemin;
 		this.robot = robot;
 		this.serie = serie;
 
@@ -87,26 +88,19 @@ public class CapteursProcess
 
 		// on ne veut pas prendre en compte la marge quand on vérifie qu'on
 		// collisionne un élément de jeu
-		obstacleRobot = new ObstacleRobot(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, 0);
+		obstacleRobot = null;//new ObstacleRobot(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, 0);
 
 		capteurs = new Capteur[nbCapteurs];
 
-		try
+		for(int i = 0; i < nbCapteurs; i++)
 		{
-			for(int i = 0; i < nbCapteurs; i++)
-			{
-				CapteursRobot c = CapteursRobot.values()[i];
-				capteurs[i] = container.make(c.classe, c.pos, c.angle, c.type, c.sureleve);
-			}
-		}
-		catch(ContainerException e)
-		{
-			log.critical(e);
+			CapteursRobot c = CapteursRobot.values()[i];
+//				capteurs[i] = container.make(c.classe, c.pos, c.angle, c.type, c.sureleve);
 		}
 
-		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS))
+/*		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS))
 			for(Capteur c : capteurs)
-				buffer.add(c);
+				buffer.add(c);*/
 	}
 
 	public synchronized void startScan()
@@ -122,31 +116,31 @@ public class CapteursProcess
 		for(SensorsData data : mesuresScan)
 		{			
 			double orientationRobot = data.cinematique.orientationReelle;
-			Vec2RO positionRobot = data.cinematique.getPosition();
+			XY positionRobot = data.cinematique.getPosition();
 			for(int j = 0; j < 2; j++)
 			{
 				int i = tofAvant[j];
- 				Vec2RO positionVue = getPositionVue(capteurs[i], data.mesures[i], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);
+ 				XY positionVue = getPositionVue(capteurs[i], data.mesures[i], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);
 				if(positionVue == null)
 					continue;
 				
-				Vec2RW positionEnnemi = new Vec2RW(data.mesures[i] + longueurEnnemi / 2, capteurs[i].orientationRelativeRotate, true);
+				XY_RW positionEnnemi = new XY_RW(data.mesures[i] + longueurEnnemi / 2, capteurs[i].orientationRelativeRotate, true);
 				positionEnnemi.plus(capteurs[i].positionRelativeRotate);
 				positionEnnemi.rotate(orientationRobot);
 				positionEnnemi.plus(positionRobot);
-				ObstacleRectangular obs = new ObstacleRectangular(positionEnnemi, longueurEnnemi, (int)(data.mesures[i] * 0.2), orientationRobot + capteurs[i].orientationRelativeRotate, Couleur.SCAN);
+//				RectangularObstacle obs = new RectangularObstacle(positionEnnemi, longueurEnnemi, (int)(data.mesures[i] * 0.2), orientationRobot + capteurs[i].orientationRelativeRotate, Couleur.SCAN);
 
-				if(obs.isHorsTable())
-					continue; // hors table
+//				if(obs.isHorsTable())
+//					continue; // hors table
 
-				gridspace.addObstacleAndRemoveNearbyObstacles(obs);
+//				gridspace.addObstacleAndRemoveNearbyObstacles(obs);
 			}
 
 		}
 		
 		scan = false;
-		dstarlite.updateObstaclesEnnemi();
-		dstarlite.updateObstaclesTable();
+//		dstarlite.updateObstaclesEnnemi();
+//		dstarlite.updateObstaclesTable();
 	}
 
 	/**
@@ -155,7 +149,7 @@ public class CapteursProcess
 	public synchronized void updateObstaclesMobiles(SensorsData data)
 	{
 		double orientationRobot = data.cinematique.orientationReelle;
-		Vec2RO positionRobot = data.cinematique.getPosition();
+		XY positionRobot = data.cinematique.getPosition();
 
 		obstacleRobot.update(positionRobot, orientationRobot);
 
@@ -190,17 +184,7 @@ public class CapteursProcess
 		{
 			CapteursRobot c = CapteursRobot.values[i];
 
-			/*
-			 * Les deux capteurs ToF courts arrière voient le filet lorsqu'il
-			 * est baissé
-			 */
-			if(robot.isFiletBaisse() && (c == CapteursRobot.ToF_ARRIERE_DROITE || c == CapteursRobot.ToF_ARRIERE_GAUCHE || c == CapteursRobot.ToF_LONG_ARRIERE))
-			{
-				log.debug("Filet baissé : ToF arrière ignorés", Verbose.CAPTEURS.masque);
-				continue;
-			}
-
-			Vec2RO positionVue = getPositionVue(capteurs[i], data.mesures[i], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);
+			XY positionVue = getPositionVue(capteurs[i], data.mesures[i], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);
 			if(positionVue == null)
 				continue;
 
@@ -209,13 +193,13 @@ public class CapteursProcess
 			/**
 			 * Si ce qu'on voit est un obstacle de table, on l'ignore
 			 */
-			for(ObstaclesFixes o : ObstaclesFixes.values())
+/*			for(ObstaclesFixes o : ObstaclesFixes.values())
 				if(o.isVisible(capteurs[i].sureleve) && o.getObstacle().squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
 				{
 					log.debug("Obstacle de table vu : " + o, Verbose.CAPTEURS.masque);
 					stop = true;
 					break;
-				}
+				}*/
 
 			if(stop)
 				continue;
@@ -223,7 +207,7 @@ public class CapteursProcess
 			for(GameElementNames o : GameElementNames.values())
 				if(table.isDone(o) != EtatElement.PRIS_PAR_NOUS && o.isVisible(c, capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
 				{
-					log.debug("Élément de jeu vu : " + o, Verbose.CAPTEURS.masque);
+					log.write("Élément de jeu vu : " + o, Subject.CAPTEURS);
 					stop = true;
 					break;
 				}
@@ -234,24 +218,24 @@ public class CapteursProcess
 			/**
 			 * Sinon, on ajoute
 			 */
-			Vec2RW positionEnnemi = new Vec2RW(data.mesures[i] + longueurEnnemi / 2, capteurs[i].orientationRelativeRotate, true);
+			XY_RW positionEnnemi = new XY_RW(data.mesures[i] + longueurEnnemi / 2, capteurs[i].orientationRelativeRotate, true);
 			positionEnnemi.plus(capteurs[i].positionRelativeRotate);
 			positionEnnemi.rotate(orientationRobot);
 			positionEnnemi.plus(positionRobot);
 
-			ObstacleRectangular obs = new ObstacleRectangular(positionEnnemi, longueurEnnemi, largeurEnnemi, orientationRobot + capteurs[i].orientationRelativeRotate, c.type.couleurOrig);
+			RectangularObstacle obs = null;//new RectangularObstacle(positionEnnemi, longueurEnnemi, largeurEnnemi, orientationRobot + capteurs[i].orientationRelativeRotate, c.type.couleurOrig);
 
-			if(obs.isHorsTable())
+/*			if(obs.isHorsTable())
 			{
 				// if(debugCapteurs)
 				// log.debug("Hors table !");
 				continue; // hors table
-			}
+			}*/
 
-			log.debug("Ajout d'un obstacle d'ennemi en " + positionEnnemi + " vu par " + c, Verbose.CAPTEURS.masque);
+			log.write("Ajout d'un obstacle d'ennemi en " + positionEnnemi + " vu par " + c, Subject.CAPTEURS);
 
 			// ObstacleProximity o =
-			gridspace.addObstacleAndRemoveNearbyObstacles(obs);
+//			gridspace.addObstacleAndRemoveNearbyObstacles(obs);
 
 			/**
 			 * Mise à jour de l'état de la table : un ennemi est passé
@@ -262,9 +246,9 @@ public class CapteursProcess
 */
 		}
 
-		dstarlite.updateObstaclesEnnemi();
-		dstarlite.updateObstaclesTable();
-		chemin.checkColliding(false);
+//		dstarlite.updateObstaclesEnnemi();
+//		dstarlite.updateObstaclesTable();
+//		chemin.checkColliding(false);
 
 		if(enableCorrection)
 			correctXYO(data);
@@ -296,11 +280,11 @@ public class CapteursProcess
 			if(data.mesures[index1] <= 4 || data.mesures[index2] <= 4)
 				continue;
 			
-			Vec2RW pointVu1 = getPositionVue(capteurs[index1], data.mesures[index1], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);
+			XY_RW pointVu1 = getPositionVue(capteurs[index1], data.mesures[index1], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);
 			if(pointVu1 == null)
 				continue;
 
-			Vec2RW pointVu2 = getPositionVue(capteurs[index2], data.mesures[index2], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);
+			XY_RW pointVu2 = getPositionVue(capteurs[index2], data.mesures[index2], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);
 			if(pointVu2 == null)
 				continue;
 
@@ -316,7 +300,7 @@ public class CapteursProcess
 			if(mur1 == null || mur2 == null || mur1 != mur2)
 				continue;
 
-			Vec2RO delta = pointVu1.minusNewVector(pointVu2);
+			XY delta = pointVu1.minusNewVector(pointVu2);
 			double deltaOrientation = (mur1.orientation - delta.getArgument()) % Math.PI; // on
 																				// veut
 																				// une
@@ -341,7 +325,7 @@ public class CapteursProcess
 			 */
 			if(Math.abs(deltaOrientation) > imprecisionMaxAngle)
 			{
-				log.debug("Imprécision en angle trop grande !" + Math.abs(deltaOrientation), Verbose.CORRECTION.masque);
+				log.write("Imprécision en angle trop grande !" + Math.abs(deltaOrientation), Subject.DUMMY);
 				continue;
 			}
 
@@ -365,7 +349,7 @@ public class CapteursProcess
 			 */
 			if(Math.abs(deltaX) > imprecisionMaxPos || Math.abs(deltaY) > imprecisionMaxPos)
 			{
-				log.debug("Imprécision en position trop grande ! ("+deltaX+","+deltaY+")", Verbose.CORRECTION.masque);
+				log.write("Imprécision en position trop grande ! ("+deltaX+","+deltaY+")", Subject.DUMMY);
 				continue;
 			}
 
@@ -381,16 +365,16 @@ public class CapteursProcess
 																								// dernier
 																								// calcul
 			{
-				log.debug("Correction timeout", Verbose.CORRECTION.masque);
+				log.write("Correction timeout", Subject.DUMMY);
 				indexCorrection = 0;
 			}
 
 			bufferCorrection[indexCorrection] = correction;
 			indexCorrection++;
-			log.debug("Intégration d'une donnée de correction", Verbose.CORRECTION.masque);
+			log.write("Intégration d'une donnée de correction", Subject.DUMMY);
 			if(indexCorrection == bufferCorrection.length)
 			{
-				Vec2RW posmoy = new Vec2RW();
+				XY_RW posmoy = new XY_RW();
 				double orientationmoy = 0;
 				for(int i = 0; i < bufferCorrection.length; i++)
 				{
@@ -400,7 +384,7 @@ public class CapteursProcess
 				}
 				posmoy.scalar(2. / bufferCorrection.length);
 				orientationmoy /= bufferCorrection.length;
-				log.debug("Envoi d'une correction XYO : " + posmoy + " " + orientationmoy, Verbose.CORRECTION.masque | Verbose.DEBUG.masque);
+				log.write("Envoi d'une correction XYO : " + posmoy + " " + orientationmoy, Subject.DUMMY);
 				serie.correctPosition(posmoy, orientationmoy);
 				indexCorrection = 0;
 			}
@@ -417,7 +401,7 @@ public class CapteursProcess
 	 * @param cinematique
 	 * @return
 	 */
-	private Vec2RW getPositionVue(Capteur c, int mesure, Cinematique cinematique, double angleRoueGauche, double angleRoueDroite)
+	private XY_RW getPositionVue(Capteur c, int mesure, Cinematique cinematique, double angleRoueGauche, double angleRoueDroite)
 	{
 		c.computePosOrientationRelative(cinematique, angleRoueGauche, angleRoueDroite);
 
@@ -431,7 +415,7 @@ public class CapteursProcess
 			return null;
 		}
 
-		Vec2RW positionVue = new Vec2RW(mesure, c.orientationRelativeRotate, true);
+		XY_RW positionVue = new XY_RW(mesure, c.orientationRelativeRotate, true);
 		positionVue.plus(c.positionRelativeRotate);
 		positionVue.rotate(cinematique.orientationReelle);
 		positionVue.plus(cinematique.getPosition());
@@ -460,7 +444,7 @@ public class CapteursProcess
 	 * @param pos
 	 * @return
 	 */
-	private Mur orientationMurProche(Vec2RO pos)
+	private Mur orientationMurProche(XY pos)
 	{
 		double distanceMax = 3 * imprecisionMaxPos; // c'est une première
 													// approximation, on peut

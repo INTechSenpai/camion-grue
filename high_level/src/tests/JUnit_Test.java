@@ -20,16 +20,17 @@ import org.junit.rules.TestName;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
+
+import pfg.config.Config;
+import pfg.graphic.Fenetre;
+import pfg.kraken.robot.Cinematique;
+import pfg.log.Log;
+
 import org.junit.After;
 
-import utils.Log;
-import config.Config;
-import config.ConfigInfo;
-import container.Container;
-import graphic.Fenetre;
-import robot.Cinematique;
 import robot.RobotReal;
-import threads.serie.ThreadSerialInputCoucheOrdre;
+import senpai.Senpai;
+import senpai.Subject;
 
 /**
  * Classe mère de tous les tests.
@@ -42,7 +43,7 @@ import threads.serie.ThreadSerialInputCoucheOrdre;
 
 public abstract class JUnit_Test
 {
-	protected Container container;
+	protected Senpai container;
 	protected Config config;
 	protected Log log;
 
@@ -54,16 +55,16 @@ public abstract class JUnit_Test
 	{
 		System.out.println("----- DÉBUT DU TEST " + testName.getMethodName() + " -----");
 
-		container = new Container();
+		container = new Senpai();
 		config = container.getService(Config.class);
 		log = container.getService(Log.class);
-		log.debug("Test unitaire : " + testName.getMethodName());
-		synchronized(config)
+		log.write("Test unitaire : " + testName.getMethodName(), Subject.DUMMY);
+/*		synchronized(config)
 		{
 			config.set(ConfigInfo.MATCH_DEMARRE, true);
 			config.set(ConfigInfo.DATE_DEBUT_MATCH, System.currentTimeMillis());
 			ThreadSerialInputCoucheOrdre.capteursOn = true;
-		}
+		}*/
 		/*
 		 * La position initiale du robot
 		 */

@@ -1,5 +1,7 @@
 package capteurs;
 
+import pfg.kraken.utils.XY;
+
 /*
  * Copyright (C) 2013-2017 Pierre-François Gimenez
  * This program is free software: you can redistribute it and/or modify
@@ -14,7 +16,6 @@ package capteurs;
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-import utils.Vec2RO;
 
 /**
  * Énum contenant les capteurs du robot
@@ -31,38 +32,38 @@ public enum CapteursRobot
 	// ; [10] ToF Flan Arrière Droit ; [11] ToF Flan Avant Droit ; [12]
 	// ToF Avant Droit
 
-	ToF_LONG_AVANT(CapteurImmobile.class, new Vec2RO(224, 0), 0, TypeCapteur.ToF_LONG, true),
+	ToF_LONG_AVANT(CapteurImmobile.class, new XY(224, 0), 0, TypeCapteur.ToF_LONG, true),
 
-	IR_AVANT_GAUCHE(CapteurMobile.class, new Vec2RO(233, 86), 10. / 180. * Math.PI, TypeCapteur.IR, true),
+	IR_AVANT_GAUCHE(CapteurMobile.class, new XY(233, 86), 10. / 180. * Math.PI, TypeCapteur.IR, true),
 
-	ToF_LONG_ARRIERE(CapteurImmobile.class, new Vec2RO(0, 0), 180. / 180. * Math.PI, TypeCapteur.ToF_LONG, true),
+	ToF_LONG_ARRIERE(CapteurImmobile.class, new XY(0, 0), 180. / 180. * Math.PI, TypeCapteur.ToF_LONG, true),
 
-	IR_AVANT_DROITE(CapteurMobile.class, new Vec2RO(233, -86), -10. / 180. * Math.PI, TypeCapteur.IR, true),
+	IR_AVANT_DROITE(CapteurMobile.class, new XY(233, -86), -10. / 180. * Math.PI, TypeCapteur.IR, true),
 
-	ToF_AVANT_GAUCHE(CapteurMobile.class, new Vec2RO(235, 60), 25. / 180. * Math.PI, TypeCapteur.ToF_COURT, false),
+	ToF_AVANT_GAUCHE(CapteurMobile.class, new XY(235, 60), 25. / 180. * Math.PI, TypeCapteur.ToF_COURT, false),
 
-	ToF_LATERAL_GAUCHE_AVANT(CapteurImmobile.class, new Vec2RO(140, 102), Math.PI / 2, TypeCapteur.ToF_COURT, false),
+	ToF_LATERAL_GAUCHE_AVANT(CapteurImmobile.class, new XY(140, 102), Math.PI / 2, TypeCapteur.ToF_COURT, false),
 
-	ToF_LATERAL_GAUCHE_ARRIERE(CapteurImmobile.class, new Vec2RO(55, 102), Math.PI / 2, TypeCapteur.ToF_COURT, false),
+	ToF_LATERAL_GAUCHE_ARRIERE(CapteurImmobile.class, new XY(55, 102), Math.PI / 2, TypeCapteur.ToF_COURT, false),
 
-	ToF_ARRIERE_GAUCHE(CapteurImmobile.class, new Vec2RO(-53, 85), 170. / 180. * Math.PI, TypeCapteur.ToF_COURT, false),
+	ToF_ARRIERE_GAUCHE(CapteurImmobile.class, new XY(-53, 85), 170. / 180. * Math.PI, TypeCapteur.ToF_COURT, false),
 
-	ToF_ARRIERE_DROITE(CapteurImmobile.class, new Vec2RO(-53, -85), -170. / 180. * Math.PI, TypeCapteur.ToF_COURT, false),
+	ToF_ARRIERE_DROITE(CapteurImmobile.class, new XY(-53, -85), -170. / 180. * Math.PI, TypeCapteur.ToF_COURT, false),
 
-	ToF_LATERAL_DROITE_ARRIERE(CapteurImmobile.class, new Vec2RO(55, -102), -Math.PI / 2, TypeCapteur.ToF_COURT, false),
+	ToF_LATERAL_DROITE_ARRIERE(CapteurImmobile.class, new XY(55, -102), -Math.PI / 2, TypeCapteur.ToF_COURT, false),
 
-	ToF_LATERAL_DROITE_AVANT(CapteurImmobile.class, new Vec2RO(140, -102), -Math.PI / 2, TypeCapteur.ToF_COURT, false),
+	ToF_LATERAL_DROITE_AVANT(CapteurImmobile.class, new XY(140, -102), -Math.PI / 2, TypeCapteur.ToF_COURT, false),
 
-	ToF_AVANT_DROITE(CapteurMobile.class, new Vec2RO(235, -60), -25. / 180. * Math.PI, TypeCapteur.ToF_COURT, false);
+	ToF_AVANT_DROITE(CapteurMobile.class, new XY(235, -60), -25. / 180. * Math.PI, TypeCapteur.ToF_COURT, false);
 
 	public final Class<? extends Capteur> classe;
-	public final Vec2RO pos;
+	public final XY pos;
 	public final double angle;
 	public final TypeCapteur type;
 	public final boolean sureleve;
 	public final static CapteursRobot[] values = values();
 
-	private <S extends Capteur> CapteursRobot(Class<S> classe, Vec2RO pos, double angle, TypeCapteur type, boolean sureleve)
+	private <S extends Capteur> CapteursRobot(Class<S> classe, XY pos, double angle, TypeCapteur type, boolean sureleve)
 	{
 		this.classe = classe;
 		this.pos = pos;

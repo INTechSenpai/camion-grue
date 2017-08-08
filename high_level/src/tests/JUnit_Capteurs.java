@@ -20,7 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import capteurs.CapteursProcess;
 import capteurs.SensorsData;
-import robot.Cinematique;
+import pfg.kraken.robot.Cinematique;
 
 /**
  * Tests unitaires pour les capteurs

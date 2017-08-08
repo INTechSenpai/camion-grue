@@ -18,8 +18,8 @@ import exceptions.ActionneurException;
 import exceptions.MemoryManagerException;
 import exceptions.UnableToMoveException;
 import pfg.config.Config;
+import pfg.kraken.robot.Cinematique;
 import pfg.log.Log;
-import serie.Ticket;
 
 /**
  * Classe abstraite du robot, dont héritent RobotVrai et RobotChrono
@@ -45,8 +45,6 @@ public abstract class Robot
 
 	public abstract void avance(double distance, Speed speed) throws UnableToMoveException, InterruptedException, MemoryManagerException;
 
-	public abstract void avanceToCircle(Speed speed) throws InterruptedException, UnableToMoveException, MemoryManagerException;
-	
 	public abstract void followTrajectory(Speed vitesse) throws InterruptedException, UnableToMoveException;
 
 	public Robot(Log log)
@@ -91,8 +89,6 @@ public abstract class Robot
 	{
 		cinematique.copy(this.cinematique);
 	}
-
-	public abstract boolean isArrivedAsser();
 
 	public Cinematique getCinematique()
 	{

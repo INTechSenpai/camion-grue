@@ -15,10 +15,12 @@
 package robot;
 
 import exceptions.ActionneurException;
-import exceptions.MemoryManagerException;
 import exceptions.UnableToMoveException;
+import pfg.kraken.astar.tentacles.Tentacle;
+import pfg.kraken.robot.Cinematique;
+import pfg.kraken.utils.XY;
+import pfg.log.Log;
 import serie.Ticket;
-import utils.Vec2RO;
 
 /**
  * Robot particulier qui fait pas bouger le robot réel, mais détermine la durée
@@ -31,7 +33,7 @@ public class RobotChrono extends Robot
 {
 	// Date en millisecondes depuis le début du match.
 	protected long date = 0;
-	private CheminPathfinding chemin;
+//	private CheminPathfinding chemin;
 
 	/**
 	 * Constructeur clone
@@ -39,11 +41,11 @@ public class RobotChrono extends Robot
 	 * @param log
 	 * @param robot
 	 */
-	public RobotChrono(Log log, RobotReal robot, CheminPathfinding chemin)
+	public RobotChrono(Log log, RobotReal robot)
 	{
 		super(log);
 		robot.copy(this);
-		this.chemin = chemin;
+//		this.chemin = chemin;
 	}
 
 	@Override
@@ -52,7 +54,7 @@ public class RobotChrono extends Robot
 		return date;
 	}
 
-	public void suitArcCourbe(ArcCourbe came_from_arc, double translationalSpeed)
+	public void suitArcCourbe(Tentacle came_from_arc, double translationalSpeed)
 	{
 		date += came_from_arc.getDuree(translationalSpeed);
 		came_from_arc.getLast().copy(cinematique);
@@ -70,25 +72,14 @@ public class RobotChrono extends Robot
 	@Override
 	public void avance(double distance, Speed speed)
 	{
-		cinematique.getPositionEcriture().plus(new Vec2RO(distance, cinematique.orientationReelle, true));
+		cinematique.getPositionEcriture().plus(new XY(distance, cinematique.orientationReelle, true));
 	}
-	
-	// TODO
-	public void avanceToCircle(Speed speed) throws InterruptedException, UnableToMoveException, MemoryManagerException
-	{}
-
 
 	@Override
 	public void followTrajectory(Speed vitesse) throws InterruptedException, UnableToMoveException
 	{
 		// ne mets pas à jour la date, c'est normal
-		chemin.getLastCinematique().copy(cinematique);
-	}
-
-	@Override
-	public boolean isArrivedAsser()
-	{
-		return true;
+//		chemin.getLastCinematique().copy(cinematique);
 	}
 	
 	public Ticket traverseBascule() throws InterruptedException, ActionneurException

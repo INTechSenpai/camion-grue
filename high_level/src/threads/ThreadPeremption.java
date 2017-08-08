@@ -14,7 +14,7 @@
 
 package threads;
 
-import obstacles.memory.ObstaclesMemory;
+import obstacles.ObstaclesMemory;
 import pfg.config.Config;
 import pfg.kraken.dstarlite.DStarLite;
 import pfg.log.Log;
