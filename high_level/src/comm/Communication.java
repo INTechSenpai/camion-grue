@@ -77,8 +77,8 @@ public class Communication
 	{
 		if(mustClose)
 			throw new ClosedSerialException("La série est fermée et ne peut envoyer un message");
-
-		if(!socket.isConnected() || socket.isClosed())
+		
+		if(socket == null || !socket.isConnected() || socket.isClosed())
 		{
 			socket = null;
 			do {
@@ -212,7 +212,6 @@ public class Communication
 				message[i] = input.read();
 			return new Paquet(message, origine);
 		} catch (IOException e) {
-			e.printStackTrace();
 			throw new ClosedSerialException(e.getMessage());
 		}
 	}
