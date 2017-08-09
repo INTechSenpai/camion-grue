@@ -21,7 +21,6 @@ import comm.CommProtocol;
 import comm.Ticket;
 import comm.buffer.BufferOutgoingOrder;
 import exceptions.ActionneurException;
-import exceptions.MemoryManagerException;
 import exceptions.UnableToMoveException;
 import pfg.config.Config;
 import pfg.graphic.Fenetre;
@@ -300,7 +299,7 @@ public class RobotReal extends Robot implements Printable
 
 	@Override
 	public void avance(double distance, Speed speed)
-			throws UnableToMoveException, InterruptedException, MemoryManagerException {
+			throws UnableToMoveException, InterruptedException {
 		// TODO Auto-generated method stub
 		
 	}

@@ -15,7 +15,6 @@
 package robot;
 
 import exceptions.ActionneurException;
-import exceptions.MemoryManagerException;
 import exceptions.UnableToMoveException;
 import pfg.config.Config;
 import pfg.kraken.robot.Cinematique;
@@ -43,7 +42,7 @@ public abstract class Robot
 
 	protected abstract void bloque(String nom, Object... param) throws InterruptedException, ActionneurException;
 
-	public abstract void avance(double distance, Speed speed) throws UnableToMoveException, InterruptedException, MemoryManagerException;
+	public abstract void avance(double distance, Speed speed) throws UnableToMoveException, InterruptedException;
 
 	public abstract void followTrajectory(Speed vitesse) throws InterruptedException, UnableToMoveException;
 

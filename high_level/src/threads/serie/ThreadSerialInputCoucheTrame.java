@@ -16,7 +16,7 @@ package threads.serie;
 
 import comm.Communication;
 import comm.buffer.BufferIncomingOrder;
-import exceptions.ClosedSerialException;
+import exceptions.UnexpectedClosedCommException;
 import pfg.log.Log;
 import senpai.Subject;
 
@@ -52,7 +52,7 @@ public class ThreadSerialInputCoucheTrame extends Thread
 			while(true)
 				buffer.add(serie.readPaquet());
 		}
-		catch(InterruptedException | ClosedSerialException e)
+		catch(InterruptedException | UnexpectedClosedCommException e)
 		{
 			log.write("Arrêt de " + Thread.currentThread().getName()+" : "+e, Subject.DUMMY);
 			Thread.currentThread().interrupt();

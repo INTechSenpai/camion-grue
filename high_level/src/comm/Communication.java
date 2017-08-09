@@ -21,7 +21,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 import comm.CommProtocol.Id;
-import exceptions.ClosedSerialException;
+import exceptions.UnexpectedClosedCommException;
 import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
 import senpai.ConfigSenpai;
@@ -43,8 +43,6 @@ public class Communication
 	private InetAddress adresse;
 	private Socket socket;
 
-	private boolean mustClose = false;
-
 	private OutputStream output;
 	private InputStream input;
 
@@ -63,18 +61,20 @@ public class Communication
 		port = config.getInt(ConfigInfoSenpai.LL_PORT_NUMBER);
 	}
 
+	private boolean isClosed()
+	{
+		return socket == null || !socket.isConnected() || socket.isClosed();
+	}
+	
 	/**
 	 * Ouverture du port
 	 * 
 	 * @throws InterruptedException
-	 * @throws ClosedSerialException 
+	 * @throws UnexpectedClosedCommException 
 	 */
-	protected synchronized void openSocket(int delay) throws InterruptedException, ClosedSerialException
+	protected synchronized void openSocket(int delay) throws InterruptedException, UnexpectedClosedCommException
 	{
-		if(mustClose)
-			throw new ClosedSerialException("La série est fermée et ne peut envoyer un message");
-		
-		if(socket == null || !socket.isConnected() || socket.isClosed())
+		if(isClosed())
 		{
 			socket = null;
 			do {
@@ -109,7 +109,7 @@ public class Communication
 			output = socket.getOutputStream();
 	
 		}
-		catch(IOException | InterruptedException | ClosedSerialException e)
+		catch(IOException | InterruptedException | UnexpectedClosedCommException e)
 		{
 			e.printStackTrace();
 			assert false : e;
@@ -136,7 +136,6 @@ public class Communication
 				log.write("Fermeture de la carte", Subject.COMM);
 				socket.close();
 				output.close();
-				mustClose = true;
 			}
 			catch(IOException e)
 			{
@@ -157,8 +156,11 @@ public class Communication
 	 * @param message
 	 * @throws InterruptedException
 	 */
-	public void communiquer(Order o) throws InterruptedException, ClosedSerialException
+	public void communiquer(Order o) throws InterruptedException, UnexpectedClosedCommException
 	{
+		if(isClosed())
+			throw new InterruptedException("La communication a été arrêtée");
+		
 		try
 		{
 			output.write(o.trame, 0, o.tailleTrame);
@@ -166,7 +168,7 @@ public class Communication
 		}
 		catch(IOException e)
 		{
-			throw new ClosedSerialException("Connexion perdue ! "+e);
+			throw new UnexpectedClosedCommException("Connexion perdue ! "+e);
 			/*
 			 * Le code ci-dessous a été retiré car, de toute façon, il ne gère pas la récupération de la lecture
 			 */
@@ -183,18 +185,16 @@ public class Communication
 		}
 	}
 
-	public boolean isClosed()
+	public Paquet readPaquet() throws InterruptedException, UnexpectedClosedCommException
 	{
-		return mustClose;
-	}
+		if(isClosed())
+			throw new InterruptedException("La communication a été arrêtée");
 
-	public Paquet readPaquet() throws InterruptedException, ClosedSerialException
-	{
 		try {
 			int k = input.read();
 
 			if(k == -1)
-				throw new ClosedSerialException("EOF de l'input de communication");
+				throw new UnexpectedClosedCommException("EOF de l'input de communication");
 			
 			assert k == 0xFF : "Mauvais entête de paquet : "+k;
 			
@@ -210,7 +210,7 @@ public class Communication
 			
 			return new Paquet(message, origine);
 		} catch (IOException e) {
-			throw new ClosedSerialException(e.getMessage());
+			throw new UnexpectedClosedCommException(e.getMessage());
 		}
 	}
 }

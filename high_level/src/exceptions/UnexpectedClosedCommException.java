@@ -15,25 +15,24 @@
 package exceptions;
 
 /**
- * Exception levée par SerialConnexion
+ * Exception levée par la comm en cas de fermeture non prévue
  * 
  * @author pf
  *
  */
 
-public class MissingCharacterException extends Exception
+public class UnexpectedClosedCommException extends Exception
 {
+	private static final long serialVersionUID = -4499322914809811741L;
 
-	private static final long serialVersionUID = -960091158805232282L;
-
-	public MissingCharacterException()
+	public UnexpectedClosedCommException()
 	{
 		super();
 	}
 
-	public MissingCharacterException(String s)
+	public UnexpectedClosedCommException(String m)
 	{
-		super(s);
+		super(m);
 	}
 
 }

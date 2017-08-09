@@ -95,10 +95,10 @@ public class CommProtocol
 			
 			this.code = (byte) code;
 			// Les canaux de données n'ont pas de tickets
-			if(code < 32)
-				ticket = null;
-			else
+			if(expectAnswer)
 				ticket = new Ticket();
+			else
+				ticket = null;
 		}
 		
 		public void answerReceived()
@@ -124,6 +124,7 @@ public class CommProtocol
 			for(Id id : values())
 				if(id.code == code)
 					return id;
+			assert false : "Code d'ordre inconnu : "+code;
 			return null;
 		}
 	}
