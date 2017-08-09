@@ -14,7 +14,7 @@
 
 package comm;
 
-import comm.SerialProtocol.Id;
+import comm.CommProtocol.Id;
 
 /**
  * Paquet série haut niveau reçu
@@ -27,13 +27,11 @@ public class Paquet
 {
 	public Id origine;
 	public int[] message;
-	public Ticket ticket;
 
-	public Paquet(int[] message, Ticket ticket, Id origine)
+	public Paquet(int[] message, int origine)
 	{
-		this.origine = origine;
+		this.origine = Id.parseId(origine);
 		this.message = message;
-		this.ticket = ticket;
 	}
 
 	@Override

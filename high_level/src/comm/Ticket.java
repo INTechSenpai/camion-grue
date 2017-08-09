@@ -14,7 +14,7 @@
 
 package comm;
 
-import comm.SerialProtocol.InOrder;
+import comm.CommProtocol.InOrder;
 
 /**
  * Un ticket. Tu tires un numéro et tu attends ton tour.

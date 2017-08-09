@@ -15,7 +15,6 @@
 package threads.serie;
 
 import comm.Order;
-import comm.buffer.BufferIncomingBytes;
 import comm.buffer.BufferOutgoingBytes;
 import comm.buffer.BufferOutgoingOrder;
 import exceptions.ClosedSerialException;
@@ -36,15 +35,13 @@ public class ThreadSerialOutputOrder extends Thread
 	protected Log log;
 	private BufferOutgoingBytes serie;
 	private BufferOutgoingOrder data;
-	private BufferIncomingBytes input;
 	private boolean simuleSerie;
 
-	public ThreadSerialOutputOrder(Log log, BufferOutgoingBytes serie, BufferIncomingBytes input, BufferOutgoingOrder data, Config config)
+	public ThreadSerialOutputOrder(Log log, BufferOutgoingBytes serie, BufferOutgoingOrder data, Config config)
 	{
 		this.log = log;
 		this.serie = serie;
 		this.data = data;
-		this.input = input;
 		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_SERIE);
 	}
 
@@ -69,9 +66,9 @@ public class ThreadSerialOutputOrder extends Thread
 				input.wait(); // on est notifié dès qu'on reçoit quelque chose
 								// sur la série
 				log.debug("Pong reçu : la connexion série est OK");
-			}*/
+			}
 			
-			input.setPingDone();
+			input.setPingDone();*/
 			
 			while(true)
 			{

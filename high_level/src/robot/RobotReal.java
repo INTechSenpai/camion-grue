@@ -17,7 +17,7 @@ package robot;
 import java.awt.Graphics;
 import java.lang.reflect.InvocationTargetException;
 import capteurs.SensorMode;
-import comm.SerialProtocol;
+import comm.CommProtocol;
 import comm.Ticket;
 import comm.buffer.BufferOutgoingOrder;
 import exceptions.ActionneurException;
@@ -200,7 +200,7 @@ public class RobotReal extends Robot implements Printable
 		if(simuleSerie)
 			return;
 
-		SerialProtocol.State etat;
+		CommProtocol.State etat;
 		Ticket t = null;
 		Class<?>[] paramClasses = null;
 		if(param.length > 0)
@@ -220,7 +220,7 @@ public class RobotReal extends Robot implements Printable
 			e.printStackTrace(log.getPrintWriter());
 		}
 		etat = t.attendStatus().etat;
-		if(etat == SerialProtocol.State.KO)
+		if(etat == CommProtocol.State.KO)
 			throw new ActionneurException("Problème pour l'actionneur " + nom);
 
 		log.write("Temps d'exécution de " + nom + " : " + (System.currentTimeMillis() - avant), Subject.DUMMY);

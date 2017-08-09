@@ -14,7 +14,7 @@
 
 package threads.serie;
 
-import comm.buffer.BufferIncomingBytes;
+import comm.Communication;
 import comm.buffer.BufferIncomingOrder;
 import exceptions.ClosedSerialException;
 import pfg.log.Log;
@@ -31,10 +31,10 @@ public class ThreadSerialInputCoucheTrame extends Thread
 {
 
 	protected Log log;
-	private BufferIncomingBytes serie;
+	private Communication serie;
 	private BufferIncomingOrder buffer;
 	
-	public ThreadSerialInputCoucheTrame(Log log, BufferIncomingBytes serie, BufferIncomingOrder buffer)
+	public ThreadSerialInputCoucheTrame(Log log, Communication serie, BufferIncomingOrder buffer)
 	{
 		this.log = log;
 		this.serie = serie;

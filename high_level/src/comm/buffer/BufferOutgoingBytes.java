@@ -14,7 +14,7 @@
 
 package comm.buffer;
 
-import comm.SerieCouchePhysique;
+import comm.Communication;
 import exceptions.ClosedSerialException;
 import pfg.log.Log;
 import senpai.Severity;
@@ -30,14 +30,14 @@ import senpai.Subject;
 public class BufferOutgoingBytes
 {
 	protected Log log;
-	private SerieCouchePhysique serie;
+	private Communication serie;
 
 	private byte bufferWriting[] = new byte[16384];
 
 	private volatile int indexBufferStart = 0;
 	private volatile int indexBufferStop = 0;
 
-	public BufferOutgoingBytes(Log log, SerieCouchePhysique serie)
+	public BufferOutgoingBytes(Log log, Communication serie)
 	{
 		this.log = log;
 		this.serie = serie;

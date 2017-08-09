@@ -16,7 +16,7 @@ package comm;
 
 import java.nio.ByteBuffer;
 
-import comm.SerialProtocol.Id;
+import comm.CommProtocol.Id;
 
 /**
  * Un ordre à envoyer sur la série
@@ -27,33 +27,21 @@ import comm.SerialProtocol.Id;
 
 public class Order
 {
-	public Ticket ticket;
 	public Id ordre;
 	public final byte[] trame = new byte[256]; // la taille maximale
 	public int tailleTrame;
 	
-	public Order(ByteBuffer message, Id ordre, Ticket ticket)
+	public Order(ByteBuffer message, Id ordre)
 	{
 		if(message != null)
 			message.flip();
-		this.ticket = ticket;
 		this.ordre = ordre;
 		update(message);
 	}
 
-	public Order(ByteBuffer message, Id ordre)
-	{
-		this(message, ordre, new Ticket());
-	}
-
 	public Order(Id ordre)
 	{
-		this(null, ordre, new Ticket());
-	}
-
-	public Order(Id ordre, Ticket t)
-	{
-		this(null, ordre, t);
+		this(null, ordre);
 	}
 
 	private void update(ByteBuffer message)

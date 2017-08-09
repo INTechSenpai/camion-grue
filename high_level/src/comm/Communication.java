@@ -14,12 +14,12 @@
 
 package comm;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
-import comm.buffer.BufferIncomingBytes;
 import exceptions.ClosedSerialException;
 import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
@@ -34,11 +34,9 @@ import senpai.Subject;
  *
  */
 
-public class SerieCouchePhysique
+public class Communication
 {
 	protected Log log;
-	private BufferIncomingBytes buffer;
-//	private SerialListener listener;
 	
 	private int port;
 	private InetAddress adresse;
@@ -47,19 +45,17 @@ public class SerieCouchePhysique
 	private boolean simuleSerie;
 	private boolean mustClose = false;
 
-	/** The output stream to the port */
 	private OutputStream output;
+	private DataInputStream input;
 
 	/**
 	 * Constructeur pour la série de test
 	 * 
 	 * @param log
 	 */
-	public SerieCouchePhysique(Log log, BufferIncomingBytes buffer, ConfigSenpai config)
+	public Communication(Log log, ConfigSenpai config)
 	{
 		this.log = log;
-		this.buffer = buffer;
-//		this.listener = listener;
 
 		adresse = config.getAdresse();
 		port = config.getInt(ConfigInfoSenpai.LL_PORT_NUMBER);
@@ -116,10 +112,8 @@ public class SerieCouchePhysique
 			openSocket(500);
 			
 			// open the streams
-			buffer.setInput(socket.getInputStream());
+			input = new DataInputStream(socket.getInputStream());
 			output = socket.getOutputStream();
-	
-			// Configuration du listener TODO
 	
 			return true;
 		}
@@ -145,7 +139,6 @@ public class SerieCouchePhysique
 			{
 				log.write("Fermeture de la carte", Subject.COMM);
 				socket.close();
-				buffer.close();
 				output.close();
 				mustClose = false;
 			}
@@ -199,5 +192,28 @@ public class SerieCouchePhysique
 	public boolean isClosed()
 	{
 		return mustClose;
+	}
+
+	public Paquet readPaquet() throws InterruptedException, ClosedSerialException
+	{
+		if(simuleSerie)
+			while(true)
+				Thread.sleep(10000);
+
+		openSocket(50);
+		try {
+			int k = input.read();
+			assert k == 0xFF;
+			int origine = input.read();
+			int taille = input.read() - 3;
+			assert taille >= 0 && taille <= 254;
+			int[] message = new int[taille];
+			for(int i = 0; i < taille; i++)
+				message[i] = input.read();
+			return new Paquet(message, origine);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new ClosedSerialException(e.getMessage());
+		}
 	}
 }

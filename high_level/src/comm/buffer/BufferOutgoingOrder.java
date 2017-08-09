@@ -22,8 +22,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import capteurs.SensorMode;
 import comm.Order;
 import comm.Ticket;
-import comm.SerialProtocol.Channel;
-import comm.SerialProtocol.Id;
+import comm.CommProtocol.Channel;
+import comm.CommProtocol.Id;
 import pfg.log.Log;
 import robot.Speed;
 import senpai.Subject;
@@ -111,10 +111,9 @@ public class BufferOutgoingOrder
 	
 	public synchronized Ticket run()
 	{
-		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(Id.RUN, t));
+		bufferBassePriorite.add(new Order(Id.RUN));
 		notify();
-		return t;
+		return Id.RUN.ticket;
 	}
 
 	public synchronized void setCurvature(double courbure)
@@ -155,10 +154,9 @@ public class BufferOutgoingOrder
 		ByteBuffer data = ByteBuffer.allocate(2);
 		data.putShort(vitesseTr);
 
-		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(data, Id.FOLLOW_TRAJECTORY, t));
+		bufferBassePriorite.add(new Order(data, Id.FOLLOW_TRAJECTORY));
 		notify();
-		return t;
+		return Id.FOLLOW_TRAJECTORY.ticket;
 	}
 
 	/**
@@ -229,10 +227,9 @@ public class BufferOutgoingOrder
 	 */
 	public synchronized Ticket waitForJumper()
 	{
-		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(Id.WAIT_FOR_JUMPER, t));
+		bufferBassePriorite.add(new Order(Id.WAIT_FOR_JUMPER));
 		notify();
-		return t;
+		return Id.WAIT_FOR_JUMPER.ticket;
 	}
 
 	/**
@@ -240,10 +237,9 @@ public class BufferOutgoingOrder
 	 */
 	public synchronized Ticket startMatchChrono()
 	{
-		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(Id.START_MATCH_CHRONO, t));
+		bufferBassePriorite.add(new Order(Id.START_MATCH_CHRONO));
 		notify();
-		return t;
+		return Id.START_MATCH_CHRONO.ticket;
 	}
 
 	/**
@@ -251,10 +247,9 @@ public class BufferOutgoingOrder
 	 */
 	public synchronized Ticket demandeCouleur()
 	{
-		Ticket t = new Ticket();
-		bufferBassePriorite.add(new Order(Id.ASK_COLOR, t));
+		bufferBassePriorite.add(new Order(Id.ASK_COLOR));
 		notify();
-		return t;
+		return Id.ASK_COLOR.ticket;
 	}
 	
 	/**
@@ -311,16 +306,15 @@ public class BufferOutgoingOrder
 	/**
 	 * Envoi de tous les arcs élémentaires d'un arc courbe
 	 * @0 arc
+	 * @throws InterruptedException 
 	 */
-	public synchronized Ticket[] envoieArcCourbe(List<CinematiqueObs> points, int indexTrajectory)
+	public synchronized void envoieArcCourbe(List<CinematiqueObs> points, int indexTrajectory) throws InterruptedException
 	{
 		log.write("Envoi de " + points.size() + " points à partir de l'index " + indexTrajectory, Subject.COMM);
 
 		int index = indexTrajectory;
 		int nbEnvoi = (points.size() >> 5) + 1;
 		int modulo = (points.size() & 31); // pour le dernier envoi
-
-		Ticket[] t = new Ticket[nbEnvoi];
 
 		for(int i = 0; i < nbEnvoi; i++)
 		{
@@ -329,7 +323,6 @@ public class BufferOutgoingOrder
 				nbArc = modulo;
 			ByteBuffer data = ByteBuffer.allocate(1 + 7 * nbArc);
 			data.put((byte) index);
-			t[i] = new Ticket();
 			for(int j = 0; j < nbArc; j++)
 			{
 				int k = (i << 5) + j;
@@ -361,11 +354,11 @@ public class BufferOutgoingOrder
 
 				data.putShort(courbure);
 			}
-			bufferTrajectoireCourbe.add(new Order(data, Id.SEND_ARC, t[i]));
+			bufferTrajectoireCourbe.add(new Order(data, Id.SEND_ARC));
+			Id.SEND_ARC.ticket.attendStatus();
 			index += nbArc;
 		}
 		notify();
-		return t;
 	}
 
 	public void waitStop() throws InterruptedException

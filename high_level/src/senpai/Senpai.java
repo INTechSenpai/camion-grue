@@ -21,7 +21,7 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import comm.SerieCouchePhysique;
+import comm.Communication;
 import pfg.config.Config;
 import pfg.graphic.AbstractPrintBuffer;
 import pfg.graphic.DebugTool;
@@ -97,7 +97,7 @@ public class Senpai
 	
 		shutdown = true;
 
-		SerieCouchePhysique s = injector.getExistingService(SerieCouchePhysique.class);
+		Communication s = injector.getExistingService(Communication.class);
 		if(s != null)
 			s.close();
 

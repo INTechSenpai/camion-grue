@@ -21,7 +21,7 @@ package comm;
  *
  */
 
-public class SerialProtocol
+public class CommProtocol
 {
 
 	public enum State
@@ -43,13 +43,17 @@ public class SerialProtocol
 		/**
 		 * Protocole Java vers bas niveau
 		 */
+		
+		// Canaux de données (0x00 à 0x1F)
+		SENSORS_CHANNEL(0x00), // TODO
+		
+		// Ordres longs (0x20 à 0x7F)
 		FOLLOW_TRAJECTORY(0x38),
 		STOP(0x39),
 		WAIT_FOR_JUMPER(0x3A),
 		START_MATCH_CHRONO(0x3B),
 		SCAN(0x49),
 		RUN(0x4B),
-		SENSORS_CHANNEL(0x00), // TODO
 		ASK_COLOR(0x59),
 		PING(0x5A),
 		SEND_ARC(0x5B),
@@ -60,11 +64,27 @@ public class SerialProtocol
 		SET_POSITION(0x60),
 		SET_CURVATURE(0x61);
 		
+		// Ordres immédiats (0x80 à 0xFF)
+		
 		public final byte code;
+		public final Ticket ticket;
 		
 		private Id(int code)
 		{
 			this.code = (byte) code;
+			// Les canaux de données n'ont pas de tickets
+			if(code < 32)
+				ticket = null;
+			else
+				ticket = new Ticket();
+		}
+		
+		public static Id parseId(int code)
+		{
+			for(Id id : values())
+				if(id.code == code)
+					return id;
+			return null;
 		}
 	}
 

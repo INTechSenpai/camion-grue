@@ -18,7 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import comm.Ticket;
-import comm.SerialProtocol.State;
+import comm.CommProtocol.State;
 import comm.buffer.BufferOutgoingOrder;
 import pfg.kraken.utils.XY;
 import tests.JUnit_Test;
