@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import comm.CommProtocol.Id;
 import exceptions.ClosedSerialException;
 import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
@@ -204,12 +205,17 @@ public class Communication
 		try {
 			int k = input.read();
 			assert k == 0xFF;
-			int origine = input.read();
+			
+			int origineInt = input.read();
+			Id origine = Id.parseId(origineInt);
+			origine.answerReceived();
+			
 			int taille = input.read() - 3;
 			assert taille >= 0 && taille <= 254;
 			int[] message = new int[taille];
 			for(int i = 0; i < taille; i++)
 				message[i] = input.read();
+			
 			return new Paquet(message, origine);
 		} catch (IOException e) {
 			throw new ClosedSerialException(e.getMessage());

@@ -33,8 +33,11 @@ public class DummyLL {
 		try {
 			socketduserveur = socketserver.accept();
 			BufferedReader input = new BufferedReader(new InputStreamReader(socketduserveur.getInputStream()));
-			while(true)
-				System.out.println(input.readLine());
+			int read;
+			do {
+				read = input.read();
+				System.out.println(read);
+			} while(read != -1);
 		} finally {
 			socketserver.close();
 		}

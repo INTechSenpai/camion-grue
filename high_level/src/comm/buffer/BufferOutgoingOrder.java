@@ -109,10 +109,23 @@ public class BufferOutgoingOrder
 		setMaxSpeed(vitesseTr);
 	}
 	
+	private synchronized void addBassePriorite(Order o)
+	{
+		o.ordre.orderSent();
+		bufferBassePriorite.add(o);
+		notify();
+	}
+
+	private synchronized void addHautePriorite(Order o)
+	{
+		o.ordre.orderSent();
+		bufferTrajectoireCourbe.add(o);
+		notify();
+	}
+	
 	public synchronized Ticket run()
 	{
-		bufferBassePriorite.add(new Order(Id.RUN));
-		notify();
+		addBassePriorite(new Order(Id.RUN));
 		return Id.RUN.ticket;
 	}
 
@@ -122,8 +135,7 @@ public class BufferOutgoingOrder
 		short courbureShort = (short) (Math.round(courbure * 100));
 		data.putShort(courbureShort);
 
-		bufferBassePriorite.add(new Order(data, Id.SET_CURVATURE));
-		notify();
+		addBassePriorite(new Order(data, Id.SET_CURVATURE));
 	}
 
 	public synchronized void setMaxSpeed(short vitesseTr)
@@ -131,8 +143,7 @@ public class BufferOutgoingOrder
 		ByteBuffer data = ByteBuffer.allocate(2);
 		data.putShort(vitesseTr);
 
-		bufferBassePriorite.add(new Order(data, Id.SET_MAX_SPEED));
-		notify();
+		addBassePriorite(new Order(data, Id.SET_MAX_SPEED));
 	}
 
 	/**
@@ -154,8 +165,7 @@ public class BufferOutgoingOrder
 		ByteBuffer data = ByteBuffer.allocate(2);
 		data.putShort(vitesseTr);
 
-		bufferBassePriorite.add(new Order(data, Id.FOLLOW_TRAJECTORY));
-		notify();
+		addBassePriorite(new Order(data, Id.FOLLOW_TRAJECTORY));
 		return Id.FOLLOW_TRAJECTORY.ticket;
 	}
 
@@ -207,8 +217,7 @@ public class BufferOutgoingOrder
 	{
 		ByteBuffer data = ByteBuffer.allocate(5);
 		addXYO(data, pos, orientation, true);
-		bufferBassePriorite.add(new Order(data, Id.SET_POSITION));
-		notify();
+		addBassePriorite(new Order(data, Id.SET_POSITION));
 	}
 
 	/**
@@ -218,8 +227,7 @@ public class BufferOutgoingOrder
 	{
 		ByteBuffer data = ByteBuffer.allocate(5);
 		addXYO(data, deltaPos, deltaOrientation, false);
-		bufferBassePriorite.add(new Order(data, Id.EDIT_POSITION));
-		notify();
+		addBassePriorite(new Order(data, Id.EDIT_POSITION));
 	}
 
 	/**
@@ -227,8 +235,7 @@ public class BufferOutgoingOrder
 	 */
 	public synchronized Ticket waitForJumper()
 	{
-		bufferBassePriorite.add(new Order(Id.WAIT_FOR_JUMPER));
-		notify();
+		addBassePriorite(new Order(Id.WAIT_FOR_JUMPER));
 		return Id.WAIT_FOR_JUMPER.ticket;
 	}
 
@@ -237,8 +244,7 @@ public class BufferOutgoingOrder
 	 */
 	public synchronized Ticket startMatchChrono()
 	{
-		bufferBassePriorite.add(new Order(Id.START_MATCH_CHRONO));
-		notify();
+		addBassePriorite(new Order(Id.START_MATCH_CHRONO));
 		return Id.START_MATCH_CHRONO.ticket;
 	}
 
@@ -247,8 +253,7 @@ public class BufferOutgoingOrder
 	 */
 	public synchronized Ticket demandeCouleur()
 	{
-		bufferBassePriorite.add(new Order(Id.ASK_COLOR));
-		notify();
+		addBassePriorite(new Order(Id.ASK_COLOR));
 		return Id.ASK_COLOR.ticket;
 	}
 	
@@ -261,21 +266,34 @@ public class BufferOutgoingOrder
 	{
 		ByteBuffer data = ByteBuffer.allocate(1);
 		data.put(mode.code);
-		bufferBassePriorite.add(new Order(data, Id.SET_SENSOR_MODE));
-		notify();
+		addBassePriorite(new Order(data, Id.SET_SENSOR_MODE));
 	}
 
 	/**
-	 * Démarre le stream
+	 * Démarre un stream
 	 */
-	public synchronized void startStreamSensors()
+	public synchronized void startStream(Id stream)
 	{
-		ByteBuffer data = ByteBuffer.allocate(1);
-		data.put(Channel.INSCRIPTION.code);
-		bufferBassePriorite.add(new Order(data, Id.SENSORS_CHANNEL));
-		notify();
+		changeStream(stream, Channel.INSCRIPTION);
 	}
-
+	
+	/**
+	 * Arrête un stream
+	 */
+	public synchronized void stopStream(Id stream)
+	{
+		changeStream(stream, Channel.DESINSCRIPTION);
+	}
+	
+	private synchronized void changeStream(Id stream, Channel ch)
+	{
+		// on vérifie qu'on ne cherche pas à s'abonner alors qu'on est déjà abonné (idem avec désabonné)
+		stream.changeStreamState(ch);
+		ByteBuffer data = ByteBuffer.allocate(1);
+		data.put(ch.code);
+		addBassePriorite(new Order(data, stream));
+	}
+	
 	/**
 	 * Envoi un seul arc sans stop. Permet d'avoir une erreur NO_MORE_POINTS
 	 * avec le point d'après
@@ -300,7 +318,7 @@ public class BufferOutgoingOrder
 
 		data.putShort(courbure);
 
-		bufferTrajectoireCourbe.add(new Order(data, Id.SEND_ARC));
+		addHautePriorite(new Order(data, Id.SEND_ARC));
 	}
 
 	/**
@@ -354,11 +372,10 @@ public class BufferOutgoingOrder
 
 				data.putShort(courbure);
 			}
-			bufferTrajectoireCourbe.add(new Order(data, Id.SEND_ARC));
+			addHautePriorite(new Order(data, Id.SEND_ARC));
 			Id.SEND_ARC.ticket.attendStatus();
 			index += nbArc;
 		}
-		notify();
 	}
 
 	public void waitStop() throws InterruptedException

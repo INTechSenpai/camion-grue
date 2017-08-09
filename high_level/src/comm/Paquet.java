@@ -28,9 +28,9 @@ public class Paquet
 	public Id origine;
 	public int[] message;
 
-	public Paquet(int[] message, int origine)
+	public Paquet(int[] message, Id origine)
 	{
-		this.origine = Id.parseId(origine);
+		this.origine = origine;
 		this.message = message;
 	}
 

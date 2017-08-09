@@ -35,7 +35,8 @@ public class CommProtocol
 		DESINSCRIPTION,
 		INSCRIPTION;
 		
-		public final byte code = (byte) ordinal();		
+		public final byte code = (byte) ordinal();
+		public final boolean started = ordinal() == 1;
 	}
 
 	public enum Id
@@ -45,38 +46,76 @@ public class CommProtocol
 		 */
 		
 		// Canaux de données (0x00 à 0x1F)
-		SENSORS_CHANNEL(0x00), // TODO
+		SENSORS_CHANNEL(0x00, true),
 		
 		// Ordres longs (0x20 à 0x7F)
-		FOLLOW_TRAJECTORY(0x38),
-		STOP(0x39),
-		WAIT_FOR_JUMPER(0x3A),
-		START_MATCH_CHRONO(0x3B),
-		SCAN(0x49),
-		RUN(0x4B),
-		ASK_COLOR(0x59),
-		PING(0x5A),
-		SEND_ARC(0x5B),
-		SET_MAX_SPEED(0x5C),
-		EDIT_POSITION(0x5D),
-		STOP_STREAM_ALL(0x5E),
-		SET_SENSOR_MODE(0x5F),
-		SET_POSITION(0x60),
-		SET_CURVATURE(0x61);
+		FOLLOW_TRAJECTORY(0x38, true),
+		STOP(0x39, true),
+		WAIT_FOR_JUMPER(0x3A, true),
+		START_MATCH_CHRONO(0x3B, true),
+		SCAN(0x49, false),
+		RUN(0x4B, false),
+		ASK_COLOR(0x59, true),
+		PING(0x5A, true),
+		SEND_ARC(0x5B, false),
+		SET_MAX_SPEED(0x5C, false),
+		EDIT_POSITION(0x5D, false),
+		SET_SENSOR_MODE(0x5F, false),
+		SET_POSITION(0x60, false),
+		SET_CURVATURE(0x61, false);
 		
 		// Ordres immédiats (0x80 à 0xFF)
 		
 		public final byte code;
+		private boolean sendIsPossible; // "true" si un ordre est lancé, "false" sinon
 		public final Ticket ticket;
+		private final boolean isStream;
+		private boolean streamStarted;
+		private final boolean expectAnswer;
+		private boolean waitingForAnswer;
 		
-		private Id(int code)
+		public void changeStreamState(Channel newState)
 		{
+			assert isStream;
+			assert streamStarted != newState.started;
+			assert waitingForAnswer == streamStarted; // invariant pour les streams
+			streamStarted = newState.started;
+			waitingForAnswer = streamStarted;
+		}
+		
+		private Id(int code, boolean expectAnswer)
+		{
+			this.expectAnswer = expectAnswer;
+			isStream = code < 23;
+			assert !isStream || expectAnswer; // les streams doivent toujours pouvoir attendre une réponse
+			sendIsPossible = true;
+			waitingForAnswer = false;
+			streamStarted = false;
+			
 			this.code = (byte) code;
 			// Les canaux de données n'ont pas de tickets
 			if(code < 32)
 				ticket = null;
 			else
 				ticket = new Ticket();
+		}
+		
+		public void answerReceived()
+		{
+			assert waitingForAnswer && expectAnswer;
+			if(!isStream)
+				waitingForAnswer = true;
+			sendIsPossible = true;
+		}
+		
+		public void orderSent()
+		{
+			assert sendIsPossible;
+			if(expectAnswer && !isStream)
+			{
+				sendIsPossible = false;
+				waitingForAnswer = true;
+			}
 		}
 		
 		public static Id parseId(int code)

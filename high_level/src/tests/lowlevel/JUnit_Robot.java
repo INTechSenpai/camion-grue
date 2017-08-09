@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import org.junit.Before;
 import org.junit.Test;
 
+import comm.CommProtocol.Id;
 import comm.buffer.BufferOutgoingOrder;
 import robot.RobotReal;
 import robot.Speed;
@@ -99,7 +100,7 @@ public class JUnit_Robot extends JUnit_Test
 //		pathcache = container.getService(PathCache.class);
 		data = container.getService(BufferOutgoingOrder.class);
 		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_SERIE);
-		data.startStreamSensors();
+		data.startStream(Id.SENSORS_CHANNEL);
 		v = Speed.TEST;
 		log.write("Vitesse du robot : " + v.translationalSpeed * 1000, Subject.DUMMY);
 	}
