@@ -14,8 +14,8 @@
 
 package threads.serie;
 
+import comm.Communication;
 import comm.Order;
-import comm.buffer.BufferOutgoingBytes;
 import comm.buffer.BufferOutgoingOrder;
 import exceptions.ClosedSerialException;
 import pfg.config.Config;
@@ -33,11 +33,11 @@ import senpai.Subject;
 public class ThreadSerialOutputOrder extends Thread
 {
 	protected Log log;
-	private BufferOutgoingBytes serie;
+	private Communication serie;
 	private BufferOutgoingOrder data;
 	private boolean simuleSerie;
 
-	public ThreadSerialOutputOrder(Log log, BufferOutgoingBytes serie, BufferOutgoingOrder data, Config config)
+	public ThreadSerialOutputOrder(Log log, Communication serie, BufferOutgoingOrder data, Config config)
 	{
 		this.log = log;
 		this.serie = serie;
@@ -84,11 +84,10 @@ public class ThreadSerialOutputOrder extends Thread
 						data.wait();
 
 					message = data.poll();
+					log.write("Envoi du message : "+message, Subject.DUMMY);
 				}
 				if(message != null)
-				{
-					serie.add(message.trame, message.tailleTrame);
-				}
+					serie.communiquer(message);
 			}
 		}
 		catch(InterruptedException | ClosedSerialException e)

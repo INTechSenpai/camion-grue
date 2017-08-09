@@ -28,7 +28,7 @@ import comm.CommProtocol.Id;
 public class Order
 {
 	public Id ordre;
-	public final byte[] trame = new byte[256]; // la taille maximale
+	public final byte[] trame = new byte[300]; // un peu de marge
 	public int tailleTrame;
 	
 	public Order(ByteBuffer message, Id ordre)
@@ -52,10 +52,10 @@ public class Order
 		else
 			tailleMessage = message.limit();
 		tailleTrame = tailleMessage + 3;
-		assert tailleTrame <= 254 : "La trame est trop grande ! (" + tailleTrame + " octets)";
+		assert tailleMessage <= 254 : "Le message est trop long ! (" + tailleTrame + " octets)";
 		trame[0] = (byte) 0xFF;
 		trame[1] = ordre.code;
-		trame[2] = (byte) (tailleTrame);
+		trame[2] = (byte) (tailleMessage);
 
 		for(int i = 0; i < tailleMessage; i++)
 			trame[i + 3] = message.get();

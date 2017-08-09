@@ -162,7 +162,7 @@ public class Communication
 	 * @param message
 	 * @throws InterruptedException
 	 */
-	public synchronized void communiquer(byte[] bufferWriting, int offset, int length) throws InterruptedException, ClosedSerialException
+	public void communiquer(Order o) throws InterruptedException, ClosedSerialException
 	{
 		if(simuleSerie)
 			return;
@@ -173,7 +173,7 @@ public class Communication
 
 		try
 		{
-			output.write(bufferWriting, offset, length);
+			output.write(o.trame, 0, o.tailleTrame);
 			output.flush();
 		}
 		catch(IOException e)
@@ -186,7 +186,7 @@ public class Communication
 			log.write("Ne peut pas parler à la carte. Tentative de reconnexion.", Severity.WARNING, Subject.COMM);
 			openSocket(50);
 			// On a retrouvé la série, on renvoie le message
-			communiquer(bufferWriting, offset, length);
+			communiquer(o);
 		}
 	}
 
@@ -204,14 +204,18 @@ public class Communication
 		openSocket(50);
 		try {
 			int k = input.read();
-			assert k == 0xFF;
+
+			if(k == -1)
+				throw new ClosedSerialException("EOF de l'input de communication");
+			
+			assert k == 0xFF : "Mauvais entête de paquet : "+k;
 			
 			int origineInt = input.read();
 			Id origine = Id.parseId(origineInt);
 			origine.answerReceived();
 			
-			int taille = input.read() - 3;
-			assert taille >= 0 && taille <= 254;
+			int taille = input.read();
+			assert taille >= 0 && taille <= 254 : "Le message reçu a un mauvais champ \"length\" : "+taille;
 			int[] message = new int[taille];
 			for(int i = 0; i < taille; i++)
 				message[i] = input.read();

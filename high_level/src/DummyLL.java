@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -33,11 +34,18 @@ public class DummyLL {
 		try {
 			socketduserveur = socketserver.accept();
 			BufferedReader input = new BufferedReader(new InputStreamReader(socketduserveur.getInputStream()));
-			int read;
+			int read, length = 0;
+			OutputStream output = socketduserveur.getOutputStream();
 			do {
+				length++;
 				read = input.read();
 				System.out.println(read);
-			} while(read != -1);
+			} while(read != -1 && length < 4);
+			output.write(0xFF);
+			output.write(0x00);
+			output.write(0x01);
+			output.write(0x42);
+			System.out.println("Envoi terminé");
 		} finally {
 			socketserver.close();
 		}

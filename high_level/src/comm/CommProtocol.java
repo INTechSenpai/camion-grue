@@ -76,9 +76,9 @@ public class CommProtocol
 		
 		public void changeStreamState(Channel newState)
 		{
-			assert isStream;
-			assert streamStarted != newState.started;
-			assert waitingForAnswer == streamStarted; // invariant pour les streams
+			assert isStream : "changeStreamState sur "+this+" qui n'est pas un canal de données (code = "+code+")";
+			assert streamStarted != newState.started : "Canal déjà ouvert ou fermé !";
+			assert waitingForAnswer == streamStarted : "Invariant rompu : waitingForAnswer = "+waitingForAnswer+" et streamStarted = "+streamStarted; // invariant pour les streams
 			streamStarted = newState.started;
 			waitingForAnswer = streamStarted;
 		}
@@ -87,7 +87,8 @@ public class CommProtocol
 		{
 			this.expectAnswer = expectAnswer;
 			isStream = code < 23;
-			assert !isStream || expectAnswer; // les streams doivent toujours pouvoir attendre une réponse
+			// les streams doivent toujours pouvoir attendre une réponse
+			assert !isStream || expectAnswer : "Les canaux de données doivent pouvoir attendre une réponse";
 			sendIsPossible = true;
 			waitingForAnswer = false;
 			streamStarted = false;
@@ -102,7 +103,7 @@ public class CommProtocol
 		
 		public void answerReceived()
 		{
-			assert waitingForAnswer && expectAnswer;
+			assert waitingForAnswer && expectAnswer : "Réponse inattendue reçue pour "+this;
 			if(!isStream)
 				waitingForAnswer = true;
 			sendIsPossible = true;
@@ -110,7 +111,7 @@ public class CommProtocol
 		
 		public void orderSent()
 		{
-			assert sendIsPossible;
+			assert sendIsPossible : "Envoi impossible pour "+this+" : on attend encore une réponse";
 			if(expectAnswer && !isStream)
 			{
 				sendIsPossible = false;
