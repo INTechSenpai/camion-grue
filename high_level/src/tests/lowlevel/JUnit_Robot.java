@@ -99,7 +99,7 @@ public class JUnit_Robot extends JUnit_Test
 //		astar = container.getService(AStarCourbe.class);
 //		pathcache = container.getService(PathCache.class);
 		data = container.getService(BufferOutgoingOrder.class);
-		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_SERIE);
+		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 		data.startStream(Id.SENSORS_CHANNEL);
 		v = Speed.TEST;
 		log.write("Vitesse du robot : " + v.translationalSpeed * 1000, Subject.DUMMY);

@@ -14,8 +14,8 @@
 
 package comm;
 
-import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -43,12 +43,13 @@ public class Communication
 	private InetAddress adresse;
 	private Socket socket;
 
-	private boolean simuleSerie;
 	private boolean mustClose = false;
 
 	private OutputStream output;
-	private DataInputStream input;
+	private InputStream input;
 
+	private volatile boolean initialized = false;
+	
 	/**
 	 * Constructeur pour la série de test
 	 * 
@@ -60,12 +61,6 @@ public class Communication
 
 		adresse = config.getAdresse();
 		port = config.getInt(ConfigInfoSenpai.LL_PORT_NUMBER);
-		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_SERIE);
-
-		if(simuleSerie)
-			log.write("SÉRIE SIMULÉE !", Severity.CRITICAL, Subject.DUMMY);
-		
-		initialize();
 	}
 
 	/**
@@ -104,36 +99,36 @@ public class Communication
 	 * @param baudrate
 	 * Le baudrate que la carte utilise
 	 */
-	private boolean initialize()
+	public synchronized void initialize()
 	{
-		if(simuleSerie)
-			return true;
-
 		try {
 			openSocket(500);
 			
 			// open the streams
-			input = new DataInputStream(socket.getInputStream());
+			input = socket.getInputStream();
 			output = socket.getOutputStream();
 	
-			return true;
 		}
 		catch(IOException | InterruptedException | ClosedSerialException e)
 		{
 			e.printStackTrace();
 			assert false : e;
-			return false;
-		}		
+		}
+		initialized = true;
+		notifyAll();
 	}
 
+	public synchronized void waitForInitialization() throws InterruptedException
+	{
+		if(!initialized)
+			wait();
+	}
+	
 	/**
 	 * Doit être appelé quand on arrête de se servir de la série
 	 */
 	public synchronized void close()
 	{
-		if(simuleSerie)
-			return;
-
 		if(socket.isConnected() && !socket.isClosed())
 		{
 			try
@@ -141,7 +136,7 @@ public class Communication
 				log.write("Fermeture de la carte", Subject.COMM);
 				socket.close();
 				output.close();
-				mustClose = false;
+				mustClose = true;
 			}
 			catch(IOException e)
 			{
@@ -149,9 +144,9 @@ public class Communication
 			}
 		}
 		else if(socket.isClosed())
-			log.write("Carte déjà fermée", Severity.WARNING, Subject.COMM);
+			log.write("Fermeture impossible : carte déjà fermée", Severity.WARNING, Subject.COMM);
 		else// if(!socket.isConnected())
-			log.write("Carte jamais ouverte", Severity.WARNING, Subject.COMM);
+			log.write("Fermeture impossible : carte jamais ouverte", Severity.WARNING, Subject.COMM);
 	}
 
 	/**
@@ -164,13 +159,6 @@ public class Communication
 	 */
 	public void communiquer(Order o) throws InterruptedException, ClosedSerialException
 	{
-		if(simuleSerie)
-			return;
-
-		/**
-		 * Un appel à une série fermée ne devrait jamais être effectué.
-		 */
-
 		try
 		{
 			output.write(o.trame, 0, o.tailleTrame);
@@ -178,15 +166,20 @@ public class Communication
 		}
 		catch(IOException e)
 		{
-			/**
+			throw new ClosedSerialException("Connexion perdue ! "+e);
+			/*
+			 * Le code ci-dessous a été retiré car, de toute façon, il ne gère pas la récupération de la lecture
+			 */
+			
+			/*
 			 * Si la carte ne répond vraiment pas, on recommence de manière
 			 * infinie.
 			 * De toute façon, on n'a pas d'autre choix...
 			 */
-			log.write("Ne peut pas parler à la carte. Tentative de reconnexion.", Severity.WARNING, Subject.COMM);
+/*			log.write("Ne peut pas parler à la carte. Tentative de reconnexion.", Severity.WARNING, Subject.COMM);
 			openSocket(50);
 			// On a retrouvé la série, on renvoie le message
-			communiquer(o);
+			communiquer(o);*/
 		}
 	}
 
@@ -197,11 +190,6 @@ public class Communication
 
 	public Paquet readPaquet() throws InterruptedException, ClosedSerialException
 	{
-		if(simuleSerie)
-			while(true)
-				Thread.sleep(10000);
-
-		openSocket(50);
 		try {
 			int k = input.read();
 

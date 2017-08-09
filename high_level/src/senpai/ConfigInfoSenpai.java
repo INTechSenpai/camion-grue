@@ -94,9 +94,9 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	SAVE_FOUND_PATH(true), // sauvegarde tous les trajets calculés en match
 
 	/**
-	 * Paramètres de la série
+	 * Paramètres de la comm
 	 */
-	SIMULE_SERIE(false), // la série doit-elle être simulée (utile pour debug)
+	SIMULE_COMM(false), // la comm doit-elle être simulée (utile pour debug du HL)
 
 	/**
 	 * Paramètres bas niveau des capteurs

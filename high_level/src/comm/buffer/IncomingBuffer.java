@@ -25,6 +25,7 @@ import senpai.Subject;
 public class IncomingBuffer<T> {
 
 	protected Log log;
+	private boolean warning = false;
 	
 	public IncomingBuffer(Log log)
 	{
@@ -52,9 +53,15 @@ public class IncomingBuffer<T> {
 	{
 		buffer.add(elem);
 		if(buffer.size() > 20)
+		{
 			log.write("Buffer de "+elem.getClass().getSimpleName()+" traités trop lentement ! Taille buffer : " + buffer.size(), Severity.CRITICAL, Subject.COMM);
+			warning = true;
+		}
 		else if(buffer.size() > 5)
+		{
 			log.write("Buffer de "+elem.getClass().getSimpleName()+" traités trop lentement ! Taille buffer : " + buffer.size(), Severity.WARNING, Subject.COMM);
+			warning = true;
+		}
 
 		notify();
 	}
@@ -66,6 +73,12 @@ public class IncomingBuffer<T> {
 	 */
 	public synchronized T poll()
 	{
-		return buffer.poll();
+		T out = buffer.poll();
+		if(buffer.isEmpty() && warning)
+		{
+			log.write("Retard du buffer de "+out.getClass().getSimpleName()+" récupéré", Subject.COMM);
+			warning = false;
+		}
+		return out;
 	}
 }

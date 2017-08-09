@@ -20,7 +20,6 @@ import comm.buffer.BufferOutgoingOrder;
 import exceptions.ClosedSerialException;
 import pfg.config.Config;
 import pfg.log.Log;
-import senpai.ConfigInfoSenpai;
 import senpai.Subject;
 
 /**
@@ -35,14 +34,12 @@ public class ThreadSerialOutputOrder extends Thread
 	protected Log log;
 	private Communication serie;
 	private BufferOutgoingOrder data;
-	private boolean simuleSerie;
 
 	public ThreadSerialOutputOrder(Log log, Communication serie, BufferOutgoingOrder data, Config config)
 	{
 		this.log = log;
 		this.serie = serie;
 		this.data = data;
-		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_SERIE);
 	}
 
 	@Override
@@ -55,20 +52,7 @@ public class ThreadSerialOutputOrder extends Thread
 		// On envoie d'abord le ping long initial
 		try
 		{
-			if(simuleSerie)
-				while(true)
-					Thread.sleep(10000);
-
-/*			synchronized(input)
-			{
-				serie.sendOrder(new Order(OutOrder.PING));
-				log.debug("Ping envoyé : attente de réception");
-				input.wait(); // on est notifié dès qu'on reçoit quelque chose
-								// sur la série
-				log.debug("Pong reçu : la connexion série est OK");
-			}
-			
-			input.setPingDone();*/
+			serie.waitForInitialization();
 			
 			while(true)
 			{
@@ -84,7 +68,6 @@ public class ThreadSerialOutputOrder extends Thread
 						data.wait();
 
 					message = data.poll();
-					log.write("Envoi du message : "+message, Subject.DUMMY);
 				}
 				if(message != null)
 					serie.communiquer(message);

@@ -67,7 +67,7 @@ public class RobotReal extends Robot implements Printable
 		marge = config.getInt(ConfigInfoSenpai.DILATATION_OBSTACLE_ROBOT);
 		printTrace = config.getBoolean(ConfigInfoSenpai.GRAPHIC_TRACE_ROBOT);
 
-		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_SERIE);
+		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 	}
 	
 	/*

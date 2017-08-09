@@ -1,6 +1,5 @@
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -33,7 +32,7 @@ public class DummyLL {
 		ServerSocket socketserver = new ServerSocket(22222);
 		try {
 			socketduserveur = socketserver.accept();
-			BufferedReader input = new BufferedReader(new InputStreamReader(socketduserveur.getInputStream()));
+			BufferedInputStream input = new BufferedInputStream(socketduserveur.getInputStream());
 			int read, length = 0;
 			OutputStream output = socketduserveur.getOutputStream();
 			do {

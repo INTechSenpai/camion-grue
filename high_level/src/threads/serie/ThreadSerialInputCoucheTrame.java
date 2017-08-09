@@ -48,6 +48,7 @@ public class ThreadSerialInputCoucheTrame extends Thread
 		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.DUMMY);
 		try
 		{
+			serie.waitForInitialization();
 			while(true)
 				buffer.add(serie.readPaquet());
 		}

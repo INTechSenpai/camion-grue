@@ -57,6 +57,7 @@ public class Senpai
 	private Thread mainThread;
 	private ErrorCode errorCode = ErrorCode.NO_ERROR;
 	private boolean shutdown = false;
+	private boolean simuleComm;
 	
 	public boolean isShutdownInProgress()
 	{
@@ -98,7 +99,9 @@ public class Senpai
 		shutdown = true;
 
 		Communication s = injector.getExistingService(Communication.class);
-		if(s != null)
+		assert s != null;
+		
+		if(!simuleComm)
 			s.close();
 
 		// On appelle le destructeur du PrintBuffer
@@ -256,6 +259,19 @@ public class Senpai
 		}
 		
 		startAllThreads();
+		
+		/**
+		 * L'initialisation est bloquante (on attend le LL), donc on le f ait le plus tardivement possible
+		 */
+		try {
+			simuleComm = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM); 
+			if(!simuleComm)
+				injector.getService(Communication.class).initialize();
+			else
+				log.write("COMMUNICATION SIMULÉE !", Severity.CRITICAL, Subject.DUMMY);						
+		} catch (InjectorException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private boolean checkAssert()
