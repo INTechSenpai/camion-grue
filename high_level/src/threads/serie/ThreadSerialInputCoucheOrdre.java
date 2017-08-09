@@ -47,7 +47,7 @@ public class ThreadSerialInputCoucheOrdre extends Thread
 	private Senpai container;
 	private Cinematique current = new Cinematique();
 
-	public static boolean capteursOn = false;
+	private boolean capteursOn = false;
 	private int nbCapteurs;
 
 	public ThreadSerialInputCoucheOrdre(Log log, Config config, BufferIncomingOrder serie, SensorsDataBuffer buffer, RobotReal robot, Senpai container)
@@ -94,19 +94,18 @@ public class ThreadSerialInputCoucheOrdre extends Thread
 				{
 					if(data[0] == InOrder.COULEUR_BLEU.codeInt)
 					{
-						Id.ASK_COLOR.ticket.set(InOrder.COULEUR_BLEU);
+						paquet.origine.ticket.set(InOrder.COULEUR_BLEU);
 //						config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(true));
 					}
 					else if(data[0] == InOrder.COULEUR_JAUNE.codeInt)
 					{
-						Id.ASK_COLOR.ticket.set(InOrder.COULEUR_JAUNE);
+						paquet.origine.ticket.set(InOrder.COULEUR_JAUNE);
 //						config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(false));
 					}
 					else
 					{
-						Id.ASK_COLOR.ticket.set(InOrder.COULEUR_ROBOT_INCONNU);
-						if(data[0] != InOrder.COULEUR_ROBOT_INCONNU.codeInt)
-							log.write("Code couleur inconnu : " + data[0], Severity.CRITICAL, Subject.COMM);
+						paquet.origine.ticket.set(InOrder.COULEUR_ROBOT_INCONNU);
+						assert data[0] == InOrder.COULEUR_ROBOT_INCONNU.codeInt : "Code couleur inconnu : " + data[0];
 					}
 				}
 
@@ -193,13 +192,13 @@ public class ThreadSerialInputCoucheOrdre extends Thread
 						// TODO
 //						config.set(ConfigInfo.DATE_DEBUT_MATCH, System.currentTimeMillis());
 //						config.set(ConfigInfo.MATCH_DEMARRE, true);
-						Id.WAIT_FOR_JUMPER.ticket.set(InOrder.ACK_SUCCESS);
+						paquet.origine.ticket.set(InOrder.ACK_SUCCESS);
 					}
 				}
 
 				else if(paquet.origine == Id.SEND_ARC)
 				{
-					Id.SEND_ARC.ticket.set(InOrder.ACK_SUCCESS);
+					paquet.origine.ticket.set(InOrder.ACK_SUCCESS);
 				}
 
 				/**
@@ -212,13 +211,13 @@ public class ThreadSerialInputCoucheOrdre extends Thread
 					if(data[0] == InOrder.ARRET_URGENCE.codeInt)
 					{
 						log.write("Arrêt d'urgence provenant du bas niveau !", Severity.CRITICAL, Subject.DUMMY);
-						Id.START_MATCH_CHRONO.ticket.set(InOrder.ARRET_URGENCE);
+						paquet.origine.ticket.set(InOrder.ARRET_URGENCE);
 						// On arrête le thread principal
 						container.interruptWithCodeError(ErrorCode.EMERGENCY_STOP);
 					}
 					else
 					{
-						Id.START_MATCH_CHRONO.ticket.set(InOrder.MATCH_FINI);
+						paquet.origine.ticket.set(InOrder.MATCH_FINI);
 						// On arrête le thread principal
 						container.interruptWithCodeError(ErrorCode.END_OF_MATCH);
 					}
@@ -237,17 +236,17 @@ public class ThreadSerialInputCoucheOrdre extends Thread
 //					chemin.setCurrentIndex(data[1]); // on a l'index courant
 
 					if(data[0] == InOrder.ROBOT_ARRIVE.codeInt)
-						Id.FOLLOW_TRAJECTORY.ticket.set(InOrder.ROBOT_ARRIVE);
+						paquet.origine.ticket.set(InOrder.ROBOT_ARRIVE);
 					else if(data[0] == InOrder.ROBOT_BLOCAGE_INTERIEUR.codeInt)
-						Id.FOLLOW_TRAJECTORY.ticket.set(InOrder.ROBOT_BLOCAGE_INTERIEUR);
+						paquet.origine.ticket.set(InOrder.ROBOT_BLOCAGE_INTERIEUR);
 					else if(data[0] == InOrder.ROBOT_BLOCAGE_EXTERIEUR.codeInt)
-						Id.FOLLOW_TRAJECTORY.ticket.set(InOrder.ROBOT_BLOCAGE_EXTERIEUR);
+						paquet.origine.ticket.set(InOrder.ROBOT_BLOCAGE_EXTERIEUR);
 					else if(data[0] == InOrder.PLUS_DE_POINTS.codeInt)
-						Id.FOLLOW_TRAJECTORY.ticket.set(InOrder.PLUS_DE_POINTS);
+						paquet.origine.ticket.set(InOrder.PLUS_DE_POINTS);
 					else if(data[0] == InOrder.STOP_REQUIRED.codeInt)
-						Id.FOLLOW_TRAJECTORY.ticket.set(InOrder.STOP_REQUIRED);
+						paquet.origine.ticket.set(InOrder.STOP_REQUIRED);
 					else if(data[0] == InOrder.TROP_LOIN.codeInt)
-						Id.FOLLOW_TRAJECTORY.ticket.set(InOrder.TROP_LOIN);
+						paquet.origine.ticket.set(InOrder.TROP_LOIN);
 				}
 
 				/*
@@ -259,7 +258,7 @@ public class ThreadSerialInputCoucheOrdre extends Thread
 				 * exemple PING ou STOP) n'ont pas besoin d'être traités
 				 */
 				else if(data.length != 0)
-					log.write("On a ignoré un paquet d'origine " + paquet.origine + " (taille : " + data.length + ")", Severity.CRITICAL, Subject.COMM);
+					log.write("On a ignoré une réponse " + paquet.origine + " (taille : " + data.length + ")", Severity.CRITICAL, Subject.COMM);
 
 				log.write("Durée de traitement de " + paquet.origine + " : " + (System.currentTimeMillis() - avant), Subject.COMM);
 			}
