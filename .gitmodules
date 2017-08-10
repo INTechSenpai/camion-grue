@@ -1,12 +1,12 @@
 [submodule "high_level/graphic-toolbox"]
 	path = high_level/graphic-toolbox
-	url = git@github.com:PFGimenez/graphic-toolbox.git
+	url = ../../PFGimenez/graphic-toolbox.git
 [submodule "high_level/config"]
 	path = high_level/config
-	url = git@github.com:PFGimenez/config.git
+	url = ../../PFGimenez/config.git
 [submodule "high_level/The-Kraken-Pathfinding"]
 	path = high_level/The-Kraken-Pathfinding
-	url = git@github.com:PFGimenez/The-Kraken-Pathfinding.git
+	url = ../../PFGimenez/The-Kraken-Pathfinding.git
 [submodule "high_level/dependency-injector"]
 	path = high_level/dependency-injector
-	url = git@github.com:PFGimenez/dependency-injector.git
+	url = ../../PFGimenez/dependency-injector.git
