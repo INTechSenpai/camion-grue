@@ -1,4 +1,4 @@
-git submodule update --recursive
+git submodule update --recursive --remote
 git pull
 ant clean
 ant
