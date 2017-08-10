@@ -2,6 +2,7 @@ language : java
 install :
     - cd high_level
     - echo "SIMULE_COMM = true" > senpai.conf
+    - ./update.sh
 script :
     - ant
 jdk :
