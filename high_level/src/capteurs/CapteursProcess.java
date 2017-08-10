@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import buffer.BufferOutgoingOrder;
+import buffer.ObstaclesBuffer;
 import obstacles.ObstaclesFixes;
 import pfg.config.Config;
 import pfg.kraken.obstacles.ObstacleRobot;
@@ -52,6 +53,7 @@ public class CapteursProcess
 	private RealTable table;
 	private RobotReal robot;
 	private BufferOutgoingOrder serie;
+	private ObstaclesBuffer obsbuffer;
 
 	private int nbCapteurs;
 	private int largeurEnnemi, longueurEnnemi;
@@ -70,12 +72,13 @@ public class CapteursProcess
 
 	private List<SensorsData> mesuresScan = new ArrayList<SensorsData>();
 
-	public CapteursProcess(Senpai container, Log log, RealTable table, RobotReal robot, BufferOutgoingOrder serie, Config config)
+	public CapteursProcess(Senpai container, Log log, RealTable table, RobotReal robot, BufferOutgoingOrder serie, Config config, ObstaclesBuffer obsbuffer)
 	{
 		this.table = table;
 		this.log = log;
 		this.robot = robot;
 		this.serie = serie;
+		this.obsbuffer = obsbuffer;
 
 		largeurEnnemi = config.getInt(ConfigInfoSenpai.LARGEUR_OBSTACLE_ENNEMI);
 		longueurEnnemi = config.getInt(ConfigInfoSenpai.LONGUEUR_OBSTACLE_ENNEMI);
@@ -147,6 +150,7 @@ public class CapteursProcess
 //				if(obs.isHorsTable())
 //					continue; // hors table
 
+				obsbuffer.addNewObstacle(obs);
 //				gridspace.addObstacleAndRemoveNearbyObstacles(obs);
 			}
 
@@ -248,6 +252,8 @@ public class CapteursProcess
 
 			log.write("Ajout d'un obstacle d'ennemi en " + positionEnnemi + " vu par " + c, Subject.CAPTEURS);
 
+			obsbuffer.addNewObstacle(obs);
+
 			// ObstacleProximity o =
 //			gridspace.addObstacleAndRemoveNearbyObstacles(obs);
 
@@ -259,10 +265,9 @@ public class CapteursProcess
 					table.setDone(g, EtatElement.PRIS_PAR_ENNEMI);
 */
 		}
-
-//		dstarlite.updateObstaclesEnnemi();
-//		dstarlite.updateObstaclesTable();
-//		chemin.checkColliding(false);
+		
+//		if(chemin.checkColliding(false))
+//			obsbuffer.notify();
 
 		if(enableCorrection)
 			correctXYO(data);
