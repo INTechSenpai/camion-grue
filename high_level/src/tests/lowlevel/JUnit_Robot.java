@@ -21,8 +21,8 @@ import java.lang.reflect.Method;
 import org.junit.Before;
 import org.junit.Test;
 
+import buffer.BufferOutgoingOrder;
 import comm.CommProtocol.Id;
-import comm.buffer.BufferOutgoingOrder;
 import robot.RobotReal;
 import robot.Speed;
 import senpai.ConfigInfoSenpai;

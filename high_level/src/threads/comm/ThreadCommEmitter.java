@@ -12,12 +12,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package threads.serie;
+package threads.comm;
 
+import buffer.BufferOutgoingOrder;
 import comm.Communication;
 import comm.Order;
-import comm.buffer.BufferOutgoingOrder;
-import exceptions.UnexpectedClosedCommException;
 import pfg.config.Config;
 import pfg.log.Log;
 import senpai.Subject;
@@ -29,13 +28,13 @@ import senpai.Subject;
  *
  */
 
-public class ThreadSerialOutputOrder extends Thread
+public class ThreadCommEmitter extends Thread
 {
 	protected Log log;
 	private Communication serie;
 	private BufferOutgoingOrder data;
 
-	public ThreadSerialOutputOrder(Log log, Communication serie, BufferOutgoingOrder data, Config config)
+	public ThreadCommEmitter(Log log, Communication serie, BufferOutgoingOrder data, Config config)
 	{
 		this.log = log;
 		this.serie = serie;
@@ -73,9 +72,9 @@ public class ThreadSerialOutputOrder extends Thread
 					serie.communiquer(message);
 			}
 		}
-		catch(InterruptedException | UnexpectedClosedCommException e)
+		catch(InterruptedException e)
 		{
-			log.write("Arrêt de " + Thread.currentThread().getName()+" : "+e, Subject.DUMMY);
+			log.write("Arrêt de " + Thread.currentThread().getName(), Subject.DUMMY);
 			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)

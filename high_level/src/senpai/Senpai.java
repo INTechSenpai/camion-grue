@@ -19,9 +19,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import comm.Communication;
+import obstacles.ObstaclesFixes;
 import pfg.config.Config;
 import pfg.graphic.AbstractPrintBuffer;
 import pfg.graphic.DebugTool;
@@ -237,7 +240,11 @@ public class Senpai
 
 		assert checkAssert();
 		
-		Kraken k = Kraken.getKraken(null);
+		List<Obstacle> obstaclesFixes = new ArrayList<Obstacle>();
+		for(ObstaclesFixes o : ObstaclesFixes.values())
+			obstaclesFixes.add(o.obstacle);
+		
+		Kraken k = Kraken.getKraken(obstaclesFixes);
 		
 		injector.addService(TentacularAStar.class, k.getAStar());
 		

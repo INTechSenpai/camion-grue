@@ -12,7 +12,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package comm.buffer;
+package buffer;
 
 import java.nio.ByteBuffer;
 import java.util.List;

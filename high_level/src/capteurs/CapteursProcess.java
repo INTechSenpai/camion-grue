@@ -16,13 +16,17 @@ package capteurs;
 
 import robot.RobotReal;
 import senpai.ConfigInfoSenpai;
+import senpai.CouleurSenpai;
 import senpai.Senpai;
 import senpai.Subject;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import comm.buffer.BufferOutgoingOrder;
+import buffer.BufferOutgoingOrder;
+import obstacles.ObstaclesFixes;
 import pfg.config.Config;
 import pfg.kraken.obstacles.ObstacleRobot;
 import pfg.kraken.obstacles.RectangularObstacle;
@@ -95,8 +99,17 @@ public class CapteursProcess
 
 		for(int i = 0; i < nbCapteurs; i++)
 		{
-			CapteursRobot c = CapteursRobot.values()[i];
-//				capteurs[i] = container.make(c.classe, c.pos, c.angle, c.type, c.sureleve);
+			try {
+				CapteursRobot c = CapteursRobot.values()[i];
+				@SuppressWarnings("unchecked")
+				// On utilise le seul constructeur
+				Constructor<? extends Capteur> constructor = (Constructor<? extends Capteur>) c.classe.getConstructors()[0];
+				capteurs[i] = constructor.newInstance(config, c.pos, c.angle, c.type, c.sureleve);
+			}
+			catch(InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+			{
+				assert false : e;
+			}
 		}
 
 /*		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS))
@@ -129,7 +142,7 @@ public class CapteursProcess
 				positionEnnemi.plus(capteurs[i].positionRelativeRotate);
 				positionEnnemi.rotate(orientationRobot);
 				positionEnnemi.plus(positionRobot);
-//				RectangularObstacle obs = new RectangularObstacle(positionEnnemi, longueurEnnemi, (int)(data.mesures[i] * 0.2), orientationRobot + capteurs[i].orientationRelativeRotate, Couleur.SCAN);
+				RectangularObstacle obs = new RectangularObstacle(positionEnnemi, longueurEnnemi, (int)(data.mesures[i] * 0.2), orientationRobot + capteurs[i].orientationRelativeRotate, CouleurSenpai.SCAN.couleur, CouleurSenpai.SCAN.l);
 
 //				if(obs.isHorsTable())
 //					continue; // hors table
@@ -194,13 +207,13 @@ public class CapteursProcess
 			/**
 			 * Si ce qu'on voit est un obstacle de table, on l'ignore
 			 */
-/*			for(ObstaclesFixes o : ObstaclesFixes.values())
-				if(o.isVisible(capteurs[i].sureleve) && o.getObstacle().squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
+			for(ObstaclesFixes o : ObstaclesFixes.values())
+				if(o.isVisible(capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
 				{
-					log.debug("Obstacle de table vu : " + o, Verbose.CAPTEURS.masque);
+					log.write("Obstacle de table vu : " + o, Subject.CAPTEURS);
 					stop = true;
 					break;
-				}*/
+				}
 
 			if(stop)
 				continue;

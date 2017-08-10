@@ -14,9 +14,9 @@
 
 package threads;
 
-import threads.serie.ThreadSerialInputCoucheOrdre;
-import threads.serie.ThreadSerialInputCoucheTrame;
-import threads.serie.ThreadSerialOutputOrder;
+import threads.comm.ThreadCommProcess;
+import threads.comm.ThreadCommListener;
+import threads.comm.ThreadCommEmitter;
 
 /**
  * Tous les threads à instancier au début du match. Utilisé par le container
@@ -32,9 +32,9 @@ public enum ThreadName
 	PRINT_SERVER(ThreadPrintServer.class),
 	REMOTE_CONTROL(ThreadRemoteControl.class),
 	PEREMPTION(ThreadPeremption.class),
-	SERIAL_INPUT_ORDRE(ThreadSerialInputCoucheOrdre.class),
-	SERIAL_INPUT_TRAME(ThreadSerialInputCoucheTrame.class),
-	SERIAL_OUTPUT_ORDER(ThreadSerialOutputOrder.class);
+	SERIAL_INPUT_ORDRE(ThreadCommProcess.class),
+	SERIAL_INPUT_TRAME(ThreadCommListener.class),
+	SERIAL_OUTPUT_ORDER(ThreadCommEmitter.class);
 
 	public Class<? extends Thread> c;
 

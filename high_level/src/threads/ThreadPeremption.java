@@ -14,9 +14,13 @@
 
 package threads;
 
+import java.util.List;
+
+import buffer.ObstaclesBuffer;
 import obstacles.ObstaclesMemory;
 import pfg.config.Config;
 import pfg.kraken.dstarlite.DStarLite;
+import pfg.kraken.obstacles.Obstacle;
 import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
 import senpai.Subject;
@@ -35,13 +39,15 @@ public class ThreadPeremption extends Thread
 	protected Log log;
 //	private PrintBufferInterface buffer;
 	private DStarLite dstarlite;
+	private ObstaclesBuffer buffer;
 
 	private int dureePeremption;
 	private boolean printProxObs;
 
-	public ThreadPeremption(Log log, ObstaclesMemory memory, Config config)
+	public ThreadPeremption(Log log, ObstaclesMemory memory, Config config, ObstaclesBuffer buffer)
 	{
 		this.log = log;
+		this.buffer = buffer;
 		this.memory = memory;
 //		this.buffer = buffer;
 		this.dstarlite = dstarlite;
@@ -59,6 +65,13 @@ public class ThreadPeremption extends Thread
 			while(true)
 			{
 				// TODO
+				List<Obstacle> oldObs = memory.deleteOldObstacles();
+				for(Obstacle o : oldObs)
+					buffer.addOldObstacle(o);
+				
+				buffer.notify();
+				
+				
 //				if(memory.deleteOldObstacles())
 //					dstarlite.updateObstaclesEnnemi();
 

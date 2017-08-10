@@ -28,6 +28,7 @@ import pfg.kraken.robot.Cinematique;
 
 public class CapteurMobile extends Capteur
 {
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * L'orientation relative à donner est celle du capteur lorsque les roues

@@ -16,6 +16,7 @@ package obstacles;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import pfg.config.Config;
 import pfg.graphic.AbstractPrintBuffer;
@@ -128,7 +129,7 @@ public class ObstaclesMemory
 	 * 
 	 * @return
 	 */
-	public synchronized boolean deleteOldObstacles()
+	public synchronized List<Obstacle> deleteOldObstacles()
 	{
 		long dateActuelle = System.currentTimeMillis();
 		int firstNotDeadNowSave = firstNotDeadNow;
@@ -179,7 +180,9 @@ public class ObstaclesMemory
 		if(o != null && o.getDeathDate() > dateActuelle)
 			nextDeathDate = o.getDeathDate();
 
-		return firstNotDeadNow != firstNotDeadNowSave;
+		// TODO
+		return null;
+//		return firstNotDeadNow != firstNotDeadNowSave;
 	}
 
 	public synchronized long getNextDeathDate()

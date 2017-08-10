@@ -21,8 +21,8 @@ import java.net.Socket;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import buffer.BufferOutgoingOrder;
 import comm.Ticket;
-import comm.buffer.BufferOutgoingOrder;
 import pfg.config.Config;
 import pfg.log.Log;
 import remoteControl.Commandes;

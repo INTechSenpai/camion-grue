@@ -14,7 +14,7 @@
 
 package tests;
 
-import comm.buffer.SensorsDataBuffer;
+import buffer.SensorsDataBuffer;
 import obstacles.ObstaclesIteratorPresent;
 import obstacles.ObstaclesMemory;
 

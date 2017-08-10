@@ -14,9 +14,9 @@
 
 package threads;
 
+import buffer.SensorsDataBuffer;
 import capteurs.CapteursProcess;
 import capteurs.SensorsData;
-import comm.buffer.SensorsDataBuffer;
 import pfg.log.Log;
 import senpai.Subject;
 

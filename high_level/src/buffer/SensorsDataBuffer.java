@@ -12,21 +12,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package comm.buffer;
+package buffer;
 
-import comm.Paquet;
+import capteurs.SensorsData;
 import pfg.log.Log;
 
 /**
- * Buffer qui contient les ordres provenant de la série
+ * Buffer qui contient les infos provenant des capteurs du LL
  * 
  * @author pf
  *
  */
 
-public class BufferIncomingOrder extends IncomingBuffer<Paquet>
+public class SensorsDataBuffer extends IncomingBuffer<SensorsData>
 {
-	public BufferIncomingOrder(Log log)
+	public SensorsDataBuffer(Log log)
 	{
 		super(log);
 	}

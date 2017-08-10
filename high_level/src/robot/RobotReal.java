@@ -16,10 +16,11 @@ package robot;
 
 import java.awt.Graphics;
 import java.lang.reflect.InvocationTargetException;
+
+import buffer.BufferOutgoingOrder;
 import capteurs.SensorMode;
 import comm.CommProtocol;
 import comm.Ticket;
-import comm.buffer.BufferOutgoingOrder;
 import exceptions.ActionneurException;
 import exceptions.UnableToMoveException;
 import pfg.config.Config;

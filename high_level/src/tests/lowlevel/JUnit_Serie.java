@@ -17,10 +17,10 @@ package tests.lowlevel;
 import org.junit.Before;
 import org.junit.Test;
 
+import buffer.BufferOutgoingOrder;
 import comm.Ticket;
 import comm.CommProtocol.Id;
 import comm.CommProtocol.State;
-import comm.buffer.BufferOutgoingOrder;
 import pfg.kraken.utils.XY;
 import tests.JUnit_Test;
 

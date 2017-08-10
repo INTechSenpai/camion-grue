@@ -13,7 +13,7 @@
  */
 
 
-package comm.buffer;
+package buffer;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;

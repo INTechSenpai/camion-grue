@@ -12,11 +12,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package threads.serie;
+package threads.comm;
 
+import buffer.BufferIncomingOrder;
 import comm.Communication;
-import comm.buffer.BufferIncomingOrder;
-import exceptions.UnexpectedClosedCommException;
 import pfg.log.Log;
 import senpai.Subject;
 
@@ -27,14 +26,14 @@ import senpai.Subject;
  *
  */
 
-public class ThreadSerialInputCoucheTrame extends Thread
+public class ThreadCommListener extends Thread
 {
 
 	protected Log log;
 	private Communication serie;
 	private BufferIncomingOrder buffer;
 	
-	public ThreadSerialInputCoucheTrame(Log log, Communication serie, BufferIncomingOrder buffer)
+	public ThreadCommListener(Log log, Communication serie, BufferIncomingOrder buffer)
 	{
 		this.log = log;
 		this.serie = serie;
@@ -52,9 +51,9 @@ public class ThreadSerialInputCoucheTrame extends Thread
 			while(true)
 				buffer.add(serie.readPaquet());
 		}
-		catch(InterruptedException | UnexpectedClosedCommException e)
+		catch(InterruptedException e)
 		{
-			log.write("Arrêt de " + Thread.currentThread().getName()+" : "+e, Subject.DUMMY);
+			log.write("Arrêt de " + Thread.currentThread().getName(), Subject.DUMMY);
 			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)

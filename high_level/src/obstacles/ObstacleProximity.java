@@ -30,7 +30,7 @@ public class ObstacleProximity extends RectangularObstacle
 
 	public ObstacleProximity(XY position, int sizeX, int sizeY, double angle, long death_date)
 	{
-		super(position, sizeX, sizeY, angle, Couleur.ROBOT_BOF);
+		super(position, sizeX, sizeY, angle, Couleur.ROBOT_BOF.couleur, Couleur.ROBOT_BOF.l);
 		this.death_date = death_date;
 	}
 

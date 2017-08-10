@@ -12,15 +12,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package threads.serie;
+package threads.comm;
 
+import buffer.BufferIncomingOrder;
+import buffer.SensorsDataBuffer;
 import capteurs.CapteursRobot;
 import capteurs.SensorsData;
 import comm.Paquet;
 import comm.CommProtocol.Id;
 import comm.CommProtocol.InOrder;
-import comm.buffer.BufferIncomingOrder;
-import comm.buffer.SensorsDataBuffer;
 import pfg.config.Config;
 import pfg.log.Log;
 import pfg.kraken.robot.Cinematique;
@@ -37,7 +37,7 @@ import senpai.Subject;
  *
  */
 
-public class ThreadSerialInputCoucheOrdre extends Thread
+public class ThreadCommProcess extends Thread
 {
 	protected Log log;
 	protected Config config;
@@ -50,7 +50,7 @@ public class ThreadSerialInputCoucheOrdre extends Thread
 	private boolean capteursOn = false;
 	private int nbCapteurs;
 
-	public ThreadSerialInputCoucheOrdre(Log log, Config config, BufferIncomingOrder serie, SensorsDataBuffer buffer, RobotReal robot, Senpai container)
+	public ThreadCommProcess(Log log, Config config, BufferIncomingOrder serie, SensorsDataBuffer buffer, RobotReal robot, Senpai container)
 	{
 		this.container = container;
 		this.log = log;
