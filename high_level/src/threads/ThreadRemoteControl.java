@@ -158,7 +158,7 @@ public class ThreadRemoteControl extends Thread
 			/*
 			 * On arrête tous les threads de socket en cours
 			 */
-			log.write("Arrêt de " + Thread.currentThread().getName()+" : "+e, Subject.DUMMY);
+			log.write("Arrêt de " + Thread.currentThread().getName(), Subject.DUMMY);
 			Thread.currentThread().interrupt();
 		}
 	}

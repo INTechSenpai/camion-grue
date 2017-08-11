@@ -230,6 +230,8 @@ public class Communication
 			
 			return new Paquet(message, origine);
 		} catch (IOException e) {
+			if(isClosed()) // arrêt volontaire
+				throw new InterruptedException("La communication a été arrêtée");
 			throw new UnexpectedClosedCommException(e.getMessage());
 		}
 	}
