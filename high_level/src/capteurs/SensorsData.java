@@ -25,9 +25,22 @@ import pfg.kraken.robot.Cinematique;
 
 public class SensorsData
 {
+	public enum TraitementEtat
+	{
+		HORS_TABLE,
+		DANS_OBSTACLE_FIXE,
+		TROP_LOIN,
+		TROP_PROCHE,
+		DESACTIVE,
+		DESACTIVE_SCAN, // les capteurs qui ne participent pas au scan
+		SCAN,
+		OBSTACLE_CREE;
+	}
+	
 	public Cinematique cinematique;
 	/** Ce que voit chacun des capteurs */
 	public int[] mesures;
+	public TraitementEtat[] etats;
 	public double angleRoueGauche, angleRoueDroite;
 
 	public SensorsData(double angleRoueGauche, double angleRoueDroite, int[] mesures, Cinematique cinematique)
@@ -35,15 +48,31 @@ public class SensorsData
 		this.angleRoueDroite = angleRoueDroite;
 		this.angleRoueGauche = angleRoueGauche;
 		this.mesures = mesures;
+		etats = new TraitementEtat[mesures.length];
 		this.cinematique = cinematique;
 	}
 
 	public SensorsData(Cinematique cinematique)
 	{
-		this.angleRoueDroite = 0;
-		this.angleRoueGauche = 0;
-		this.mesures = null;
+		angleRoueDroite = 0;
+		angleRoueGauche = 0;
+		mesures = null;
+		etats = null;
 		this.cinematique = cinematique;
+	}
+	
+	/**
+	 * On vérifie que tous les capteurs ont bien reçu un traitement
+	 * @return
+	 */
+	public boolean checkTraitementEtat()
+	{
+		if(etats == null)
+			return true;
+		for(int i = 0; i < etats.length; i++)
+			if(etats[i] == null)
+				return false;
+		return true;
 	}
 
 }

@@ -17,6 +17,9 @@ package obstacles;
 import pfg.kraken.Couleur;
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.utils.XY;
+import senpai.CouleurSenpai;
+import capteurs.CapteursRobot;
+import capteurs.SensorsData;
 
 /**
  * Obstacles détectés par capteurs de proximité (ultrasons et infrarouges)
@@ -27,10 +30,14 @@ public class ObstacleProximity extends RectangularObstacle
 {
 	private static final long serialVersionUID = -3518004359091355796L;
 	private long death_date;
+	public final SensorsData mesureOrigine;
+	public final CapteursRobot capteurOrigine;
 
-	public ObstacleProximity(XY position, int sizeX, int sizeY, double angle, long death_date)
+	public ObstacleProximity(XY position, int sizeX, int sizeY, double angle, CouleurSenpai c, long death_date, SensorsData mesureOrigine, CapteursRobot capteurOrigine)
 	{
-		super(position, sizeX, sizeY, angle, Couleur.ROBOT_BOF.couleur, Couleur.ROBOT_BOF.l);
+		super(position, sizeX, sizeY, angle, c.couleur, c.l);
+		this.mesureOrigine = mesureOrigine;
+		this.capteurOrigine = capteurOrigine;
 		this.death_date = death_date;
 	}
 
@@ -60,5 +67,18 @@ public class ObstacleProximity extends RectangularObstacle
 	public boolean isProcheCentre(XY position, int distance)
 	{
 		return squaredDistance(position) < distance * distance;
+	}
+	
+	public boolean isHorsTable()
+	{
+		return isHorsTable(coinBasGaucheRotate) ||
+				isHorsTable(coinBasDroiteRotate) || 
+				isHorsTable(coinHautGaucheRotate) || 
+				isHorsTable(coinHautDroiteRotate);
+	}
+	
+	private boolean isHorsTable(XY point)
+	{
+		return point.getX() < -1500 || point.getX() > 1500 || point.getY() < 0 || point.getY() > 2000;
 	}
 }
