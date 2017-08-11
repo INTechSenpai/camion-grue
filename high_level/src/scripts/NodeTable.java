@@ -14,21 +14,27 @@
 
 package scripts;
 
+import exceptions.ActionneurException;
+import exceptions.UnableToMoveException;
+
 /**
- * La liste des scripts
- * 
+ * Un nœud du graphe
  * @author pf
  *
  */
 
-public enum ScriptNames
+public class NodeTable extends ScriptDAGNode
 {
-	;
-	public final ScriptDAG s;
 
-	private ScriptNames(ScriptDAG s)
+	public NodeTable(ScriptDAGNode succes, ScriptDAGNode echec)
 	{
-		this.s = s;
+		super(succes, echec);
+	}
+
+	@Override
+	public void execute() throws InterruptedException, UnableToMoveException, ActionneurException
+	{
+		// met à jour la table, tout ça
 	}
 
 }

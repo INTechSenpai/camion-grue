@@ -14,21 +14,26 @@
 
 package scripts;
 
+import exceptions.ActionneurException;
+import exceptions.UnableToMoveException;
+
 /**
- * La liste des scripts
- * 
+ * Un nœud du graphe
  * @author pf
  *
  */
 
-public enum ScriptNames
+public abstract class ScriptDAGNode
 {
-	;
-	public final ScriptDAG s;
 
-	private ScriptNames(ScriptDAG s)
+	public final ScriptDAGNode succes, echec;
+	
+	public ScriptDAGNode(ScriptDAGNode succes, ScriptDAGNode echec)
 	{
-		this.s = s;
+		this.succes = succes;
+		this.echec = echec;
 	}
-
+	
+	public abstract void execute() throws InterruptedException, UnableToMoveException, ActionneurException;
+	
 }
