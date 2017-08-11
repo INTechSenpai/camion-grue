@@ -19,12 +19,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 import comm.CommProtocol.Id;
 import exceptions.UnexpectedClosedCommException;
+import pfg.config.Config;
 import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
-import senpai.ConfigSenpai;
 import senpai.Severity;
 import senpai.Subject;
 
@@ -53,11 +54,29 @@ public class Communication
 	 * 
 	 * @param log
 	 */
-	public Communication(Log log, ConfigSenpai config)
+	public Communication(Log log, Config config)
 	{
 		this.log = log;
 
-		adresse = config.getAdresse();
+		try
+		{
+			String[] s = config.getString(ConfigInfoSenpai.LL_HOSTNAME_SERVER).split("\\.");
+			// on découpe avec les points
+			if(s.length == 4) // une adresse ip, probablement
+			{
+				byte[] addr = new byte[4];
+				for(int j = 0; j < 4; j++)
+				addr[j] = Byte.parseByte(s[j]);
+				adresse = InetAddress.getByAddress(addr);
+			}
+			else // le nom du serveur, probablement
+				adresse = InetAddress.getByName(config.getString(ConfigInfoSenpai.LL_HOSTNAME_SERVER));
+		}
+		catch(UnknownHostException e)
+		{
+			assert false;
+			e.printStackTrace();
+		}
 		port = config.getInt(ConfigInfoSenpai.LL_PORT_NUMBER);
 	}
 

@@ -53,7 +53,7 @@ import threads.ThreadShutdown;
 public class Senpai
 {
 	private Log log;
-	private ConfigSenpai config;
+	private Config config;
 	private Injector injector;
 
 	private static int nbInstances = 0;
@@ -190,12 +190,11 @@ public class Senpai
 
 		DebugTool debug = new DebugTool();
 		log = debug.getLog(Severity.INFO);
-		config = new ConfigSenpai(ConfigInfoSenpai.values(), "senpai.conf", false);
+		config = new Config(ConfigInfoSenpai.values(), "senpai.conf", false);
 
 		injector.addService(Senpai.class, this);
 		injector.addService(Log.class, log);
 		injector.addService(Config.class, config);
-		injector.addService(ConfigSenpai.class, config);
 		Fenetre f = debug.getFenetre(new Vec2RO(0,1000));
 		injector.addService(Fenetre.class, f);
 		injector.addService(AbstractPrintBuffer.class, f.getPrintBuffer());
