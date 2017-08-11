@@ -68,6 +68,18 @@ public class JUnit_Serie extends JUnit_Test
 		Thread.sleep(10000);
 	}
 
+	@Test
+	public void test_latence() throws Exception
+	{
+		int nbEssais = 1000000;
+		long avant = System.currentTimeMillis();
+		for(int i = 0; i < nbEssais; i++)
+			data.ping().attendStatus();
+
+		// on divise par 2 car il s'agit d'un aller-retour
+		System.out.println("Latence estimée : "+(1000. * (System.currentTimeMillis() - avant) / (2*nbEssais))+" μs");
+	}
+	
 	/**
 	 * Un test d'ordre court.
 	 * On redemande la couleur jusqu'à avoir un autre code que "couleur

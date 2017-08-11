@@ -256,6 +256,15 @@ public class BufferOutgoingOrder
 		addBassePriorite(new Order(Id.ASK_COLOR));
 		return Id.ASK_COLOR.ticket;
 	}
+
+	/**
+	 * Demande la couleur au bas niveau
+	 */
+	public synchronized Ticket ping()
+	{
+		addBassePriorite(new Order(Id.PING));
+		return Id.PING.ticket;
+	}
 	
 	/**
 	 * Demande d'utiliser un certain SensorMode

@@ -4,6 +4,8 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import comm.CommProtocol;
+
 /*
  * Copyright (C) 2013-2017 Pierre-François Gimenez
  * This program is free software: you can redistribute it and/or modify
@@ -19,7 +21,7 @@ import java.net.Socket;
  */
 
 /**
- * Test de communication
+ * Test de communication. Répond au ping.
  * @author pf
  *
  */
@@ -32,18 +34,22 @@ public class DummyLL {
 		ServerSocket socketserver = new ServerSocket(22222);
 		try {
 			socketduserveur = socketserver.accept();
+			socketduserveur.setTcpNoDelay(true);
 			BufferedInputStream input = new BufferedInputStream(socketduserveur.getInputStream());
 			int read, length = 0;
 			OutputStream output = socketduserveur.getOutputStream();
 			do {
 				length++;
 				read = input.read();
-				System.out.println(read);
-			} while(read != -1 && length < 4);
-			output.write(0xFF);
-			output.write(0x00);
-			output.write(0x01);
-			output.write(0x42);
+//				System.out.println(read);
+				if(length % 3 == 0)
+				{
+					output.write(0xFF);
+					output.write(CommProtocol.Id.PING.code);
+					output.write(0x00);
+					output.flush();
+				}
+			} while(read != -1);
 			System.out.println("Envoi terminé");
 		} finally {
 			socketserver.close();

@@ -82,7 +82,7 @@ public class ThreadCommProcess extends Thread
 					paquet = serie.poll();
 				}
 
-				log.write("Durée avant obtention du paquet : " + (System.currentTimeMillis() - avant) + ". Traitement de " + paquet, Subject.COMM);
+//				log.write("Durée avant obtention du paquet : " + (System.currentTimeMillis() - avant) + ". Traitement de " + paquet, Subject.COMM);
 
 				avant = System.currentTimeMillis();
 				int[] data = paquet.message;
@@ -200,6 +200,11 @@ public class ThreadCommProcess extends Thread
 				{
 					paquet.origine.ticket.set(InOrder.ACK_SUCCESS);
 				}
+				
+				else if(paquet.origine == Id.PING)
+				{
+					paquet.origine.ticket.set(InOrder.ACK_SUCCESS);
+				}
 
 				/**
 				 * Fin du match, on coupe la série et on arrête ce thread
@@ -253,14 +258,10 @@ public class ThreadCommProcess extends Thread
 				 * ACTIONNEURS
 				 */
 
-				/**
-				 * Les paquets dont l'état n'importe pas et sans donnée (par
-				 * exemple PING ou STOP) n'ont pas besoin d'être traités
-				 */
-				else if(data.length != 0)
-					log.write("On a ignoré une réponse " + paquet.origine + " (taille : " + data.length + ")", Severity.CRITICAL, Subject.COMM);
-
-				log.write("Durée de traitement de " + paquet.origine + " : " + (System.currentTimeMillis() - avant), Subject.COMM);
+				else
+					assert false : "On a ignoré une réponse " + paquet.origine + " (taille : " + data.length + ")";
+				
+//				log.write("Durée de traitement de " + paquet.origine + " : " + (System.currentTimeMillis() - avant), Subject.COMM);
 			}
 		}
 		catch(InterruptedException e)

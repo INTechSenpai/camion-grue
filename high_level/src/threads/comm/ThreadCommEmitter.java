@@ -68,8 +68,7 @@ public class ThreadCommEmitter extends Thread
 
 					message = data.poll();
 				}
-				if(message != null)
-					serie.communiquer(message);
+				serie.communiquer(message);
 			}
 		}
 		catch(InterruptedException e)

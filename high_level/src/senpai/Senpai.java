@@ -243,7 +243,8 @@ public class Senpai
 		for(ObstaclesFixes o : ObstaclesFixes.values())
 			obstaclesFixes.add(o.obstacle);
 		
-		Kraken k = Kraken.getKraken(obstaclesFixes);
+//		Kraken k = Kraken.getKraken(obstaclesFixes);
+		Kraken k = Kraken.getKraken(null);
 		
 		injector.addService(TentacularAStar.class, k.getAStar());
 		

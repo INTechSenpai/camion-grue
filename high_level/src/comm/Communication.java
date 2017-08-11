@@ -100,6 +100,7 @@ public class Communication
 				try
 				{
 					socket = new Socket(adresse, port);
+					socket.setTcpNoDelay(true);
 				}
 				catch(IOException e)
 				{
