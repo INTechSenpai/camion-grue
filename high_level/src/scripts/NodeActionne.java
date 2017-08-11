@@ -14,6 +14,7 @@
 
 package scripts;
 
+import comm.CommProtocol;
 import exceptions.ActionneurException;
 import robot.RobotReal;
 import table.RealTable;
@@ -27,16 +28,20 @@ import table.RealTable;
 public class NodeActionne extends ScriptDAGNode
 {
 	private static final long serialVersionUID = 1L;
+	private Object[] param;
+	private CommProtocol ordre;
 
-	public NodeActionne(ScriptDAGNode succes, ScriptDAGNode echec)
+	public NodeActionne(ScriptDAGNode succes, ScriptDAGNode echec, CommProtocol ordre, Object... param)
 	{
 		super(succes, echec);
+		this.ordre = ordre;
+		this.param = param;
 	}
 
 	@Override
 	public void execute(RealTable table, RobotReal robot) throws InterruptedException, ActionneurException
 	{
-		// bouge un bras, tout ça
+		robot.execute(ordre, param);
 	}
 
 }

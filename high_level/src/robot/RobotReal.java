@@ -305,4 +305,9 @@ public class RobotReal extends Robot implements Printable
 		
 	}
 
+	public void execute(CommProtocol ordre, Object... param) throws InterruptedException, ActionneurException
+	{
+		bloque(ordre.toString(), param);
+	}
+
 }
