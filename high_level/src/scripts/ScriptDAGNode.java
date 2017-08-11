@@ -14,8 +14,12 @@
 
 package scripts;
 
+import java.io.Serializable;
+
 import exceptions.ActionneurException;
 import exceptions.UnableToMoveException;
+import robot.RobotReal;
+import table.RealTable;
 
 /**
  * Un nœud du graphe
@@ -23,9 +27,10 @@ import exceptions.UnableToMoveException;
  *
  */
 
-public abstract class ScriptDAGNode
+public abstract class ScriptDAGNode implements Serializable
 {
 
+	private static final long serialVersionUID = 1L;
 	public final ScriptDAGNode succes, echec;
 	
 	public ScriptDAGNode(ScriptDAGNode succes, ScriptDAGNode echec)
@@ -34,6 +39,6 @@ public abstract class ScriptDAGNode
 		this.echec = echec;
 	}
 	
-	public abstract void execute() throws InterruptedException, UnableToMoveException, ActionneurException;
+	public abstract void execute(RealTable table, RobotReal robot) throws InterruptedException, UnableToMoveException, ActionneurException;
 	
 }

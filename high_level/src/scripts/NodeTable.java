@@ -14,8 +14,10 @@
 
 package scripts;
 
-import exceptions.ActionneurException;
-import exceptions.UnableToMoveException;
+import robot.RobotReal;
+import table.EtatElement;
+import table.GameElementNames;
+import table.RealTable;
 
 /**
  * Un nœud du graphe
@@ -25,16 +27,20 @@ import exceptions.UnableToMoveException;
 
 public class NodeTable extends ScriptDAGNode
 {
+	private static final long serialVersionUID = 1L;
 
-	public NodeTable(ScriptDAGNode succes, ScriptDAGNode echec)
+	private GameElementNames elementDone;
+	
+	public NodeTable(RealTable table, GameElementNames elementDone, ScriptDAGNode succes)
 	{
-		super(succes, echec);
+		super(succes, null); // échec impossible
+		this.elementDone = elementDone;
 	}
 
 	@Override
-	public void execute() throws InterruptedException, UnableToMoveException, ActionneurException
+	public void execute(RealTable table, RobotReal robot)
 	{
-		// met à jour la table, tout ça
+		table.setDone(elementDone, EtatElement.PRIS_PAR_NOUS);
 	}
 
 }

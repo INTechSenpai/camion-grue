@@ -14,12 +14,15 @@
 
 package scripts;
 
+import java.io.Serializable;
 import java.util.List;
 
 import exceptions.ActionneurException;
 import exceptions.UnableToMoveException;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.robot.RobotState;
+import robot.RobotReal;
+import table.RealTable;
 
 /**
  * Un DAG qui représente un script
@@ -27,8 +30,10 @@ import pfg.kraken.robot.RobotState;
  *
  */
 
-public class ScriptDAG
+public class ScriptDAG implements Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	// TODO assert acyclic
 	private List<ScriptDAGNode> graphe;
 	private Cinematique pointEntree;
@@ -44,14 +49,14 @@ public class ScriptDAG
 		this.graphe = graphe;
 	}
 
-	protected void run(RobotState state) throws InterruptedException, UnableToMoveException, ActionneurException
+	protected void run(RobotState state, RealTable table, RobotReal robot) throws InterruptedException, UnableToMoveException, ActionneurException
 	{
 		ScriptDAGNode current = graphe.get(0);
+		assert state.getCinematique().equals(pointEntree);
 		while(current != null)
 		{
 			try {
-			// execute current
-				current.execute();
+				current.execute(table, robot);
 				current = current.succes;
 			}
 			catch(UnableToMoveException | ActionneurException e)

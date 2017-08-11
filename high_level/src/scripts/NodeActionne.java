@@ -15,7 +15,8 @@
 package scripts;
 
 import exceptions.ActionneurException;
-import exceptions.UnableToMoveException;
+import robot.RobotReal;
+import table.RealTable;
 
 /**
  * Un nœud du graphe
@@ -25,6 +26,7 @@ import exceptions.UnableToMoveException;
 
 public class NodeActionne extends ScriptDAGNode
 {
+	private static final long serialVersionUID = 1L;
 
 	public NodeActionne(ScriptDAGNode succes, ScriptDAGNode echec)
 	{
@@ -32,7 +34,7 @@ public class NodeActionne extends ScriptDAGNode
 	}
 
 	@Override
-	public void execute() throws InterruptedException, UnableToMoveException, ActionneurException
+	public void execute(RealTable table, RobotReal robot) throws InterruptedException, ActionneurException
 	{
 		// bouge un bras, tout ça
 	}
