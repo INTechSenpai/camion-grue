@@ -169,7 +169,7 @@ public class Senpai
 	 * @throws ContainerException si un autre container est déjà instancié
 	 * @throws InterruptedException
 	 */
-	public Senpai() throws InterruptedException
+	public Senpai(String configFile) throws InterruptedException
 	{
 		/**
 		 * On vérifie qu'il y ait un seul container à la fois
@@ -190,7 +190,7 @@ public class Senpai
 
 		DebugTool debug = new DebugTool();
 		log = debug.getLog(Severity.INFO);
-		config = new Config(ConfigInfoSenpai.values(), "senpai.conf", false);
+		config = new Config(ConfigInfoSenpai.values(), configFile, false);
 
 		injector.addService(Senpai.class, this);
 		injector.addService(Log.class, log);
