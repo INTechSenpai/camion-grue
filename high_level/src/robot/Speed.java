@@ -14,6 +14,8 @@
 
 package robot;
 
+import pfg.kraken.robot.KrakenSpeed;
+
 /**
  * Définition des vitesses possibles de déplacement du robot.
  * 
@@ -21,7 +23,7 @@ package robot;
  *
  */
 
-public enum Speed
+public enum Speed implements KrakenSpeed
 {
 	// vitesse standard
 	STANDARD,
@@ -37,4 +39,18 @@ public enum Speed
 	public double translationalSpeed; // valeur fixée par la config
 	// public static final double coeffMarcheArriere = 0.8; // 50% de la vitesse
 	// normale
+
+	@Override
+	public double getMaxForwardSpeed(double curvature)
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getMaxBackwardSpeed(double curvature)
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }
