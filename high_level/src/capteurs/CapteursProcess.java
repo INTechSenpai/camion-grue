@@ -14,7 +14,6 @@
 
 package capteurs;
 
-import robot.RobotReal;
 import senpai.ConfigInfoSenpai;
 import senpai.CouleurSenpai;
 import senpai.Senpai;
@@ -32,7 +31,6 @@ import obstacles.ObstacleProximity;
 import obstacles.ObstaclesFixes;
 import pfg.config.Config;
 import pfg.kraken.obstacles.ObstacleRobot;
-import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XY_RW;
@@ -53,7 +51,6 @@ public class CapteursProcess
 {
 	protected Log log;
 	private RealTable table;
-	private RobotReal robot;
 	private BufferOutgoingOrder serie;
 	private ObstaclesBuffer obsbuffer;
 
@@ -74,11 +71,10 @@ public class CapteursProcess
 
 	private List<SensorsData> mesuresScan = new ArrayList<SensorsData>();
 
-	public CapteursProcess(Senpai container, Log log, RealTable table, RobotReal robot, BufferOutgoingOrder serie, Config config, ObstaclesBuffer obsbuffer)
+	public CapteursProcess(Senpai container, Log log, RealTable table, BufferOutgoingOrder serie, Config config, ObstaclesBuffer obsbuffer)
 	{
 		this.table = table;
 		this.log = log;
-		this.robot = robot;
 		this.serie = serie;
 		this.obsbuffer = obsbuffer;
 
@@ -98,7 +94,7 @@ public class CapteursProcess
 
 		// on ne veut pas prendre en compte la marge quand on vérifie qu'on
 		// collisionne un élément de jeu
-		obstacleRobot = null;//new ObstacleRobot(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, 0);
+		obstacleRobot = new ObstacleRobot(demieLargeurNonDeploye, demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 
 		capteurs = new Capteur[nbCapteurs];
 
@@ -130,7 +126,7 @@ public class CapteursProcess
 
 	public synchronized void endScan()
 	{
-		// on ne s'occupe que tes tof avant
+		// on ne s'occupe que des tof avant
 		int[] tofAvant = new int[] {CapteursRobot.ToF_AVANT_DROITE.ordinal(), CapteursRobot.ToF_AVANT_GAUCHE.ordinal()};
 		for(SensorsData data : mesuresScan)
 		{			
@@ -150,20 +146,17 @@ public class CapteursProcess
 				positionEnnemi.plus(capteurs[i].positionRelativeRotate);
 				positionEnnemi.rotate(orientationRobot);
 				positionEnnemi.plus(positionRobot);
-				ObstacleProximity obs = new ObstacleProximity(positionEnnemi, longueurEnnemi, (int)(data.mesures[i] * 0.2), orientationRobot + capteurs[i].orientationRelativeRotate, CouleurSenpai.SCAN, System.currentTimeMillis(), data, CapteursRobot.values[i]);
+				ObstacleProximity obs = new ObstacleProximity(positionEnnemi, longueurEnnemi, (int)(data.mesures[i] * 0.2), orientationRobot + capteurs[i].orientationRelativeRotate, CouleurSenpai.SCAN, System.currentTimeMillis(), data, i);
 
 				if(obs.isHorsTable())
 					continue; // hors table
 
 				obsbuffer.addNewObstacle(obs);
-//				gridspace.addObstacleAndRemoveNearbyObstacles(obs);
 			}
 
 		}
 		
 		scan = false;
-//		dstarlite.updateObstaclesEnnemi();
-//		dstarlite.updateObstaclesTable();
 	}
 
 	/**
@@ -171,36 +164,36 @@ public class CapteursProcess
 	 */
 	public synchronized void updateObstaclesMobiles(SensorsData data)
 	{
+		double orientationRobot = data.cinematique.orientationReelle;
+		XY positionRobot = data.cinematique.getPosition();
+
+		obstacleRobot.update(positionRobot, orientationRobot);
+
+		/**
+		 * On update la table avec notre position
+		 */
+		for(GameElementNames g : GameElementNames.values())
+			if(table.isDone(g).hash < EtatElement.PRIS_PAR_NOUS.hash && g.obstacle.isColliding(obstacleRobot))
+			{
+				// if(debugCapteurs)
+				// log.debug("Élément shooté : "+g);
+				table.setDone(g, EtatElement.PRIS_PAR_NOUS); // on est sûr de
+																// l'avoir
+																// shooté
+			}
+
+		// parfois on n'a pas de mesure
+		if(data.mesures == null)
+			return;
+
+		if(scan)
+		{
+			mesuresScan.add(data);
+			return;
+		}
+
 		try
 		{
-			double orientationRobot = data.cinematique.orientationReelle;
-			XY positionRobot = data.cinematique.getPosition();
-	
-			obstacleRobot.update(positionRobot, orientationRobot);
-	
-			/**
-			 * On update la table avec notre position
-			 */
-			for(GameElementNames g : GameElementNames.values())
-				if(table.isDone(g).hash < EtatElement.PRIS_PAR_NOUS.hash && g.obstacle.isColliding(obstacleRobot))
-				{
-					// if(debugCapteurs)
-					// log.debug("Élément shooté : "+g);
-					table.setDone(g, EtatElement.PRIS_PAR_NOUS); // on est sûr de
-																	// l'avoir
-																	// shooté
-				}
-	
-			// parfois on n'a pas de mesure
-			if(data.mesures == null)
-				return;
-	
-			if(scan)
-			{
-				mesuresScan.add(data);
-				return;
-			}
-	
 			/**
 			 * Suppression des mesures qui sont hors-table ou qui voient un obstacle
 			 * de table
@@ -249,7 +242,7 @@ public class CapteursProcess
 				positionEnnemi.rotate(orientationRobot);
 				positionEnnemi.plus(positionRobot);
 	
-				ObstacleProximity obs = new ObstacleProximity(positionEnnemi, longueurEnnemi, largeurEnnemi, orientationRobot + capteurs[i].orientationRelativeRotate, c.type.couleurOrig, System.currentTimeMillis(), data, c);
+				ObstacleProximity obs = new ObstacleProximity(positionEnnemi, longueurEnnemi, largeurEnnemi, orientationRobot + capteurs[i].orientationRelativeRotate, c.type.couleurOrig, System.currentTimeMillis(), data, i);
 	
 				if(obs.isHorsTable())
 				{
@@ -285,7 +278,7 @@ public class CapteursProcess
 		}
 		finally
 		{
-			assert scan || data.checkTraitementEtat();
+			assert data.checkTraitementEtat();
 		}
 	}
 
@@ -360,7 +353,7 @@ public class CapteursProcess
 			 */
 			if(Math.abs(deltaOrientation) > imprecisionMaxAngle)
 			{
-				log.write("Imprécision en angle trop grande !" + Math.abs(deltaOrientation), Subject.DUMMY);
+				log.write("Imprécision en angle trop grande !" + Math.abs(deltaOrientation), Subject.CORRECTION);
 				continue;
 			}
 
@@ -384,7 +377,7 @@ public class CapteursProcess
 			 */
 			if(Math.abs(deltaX) > imprecisionMaxPos || Math.abs(deltaY) > imprecisionMaxPos)
 			{
-				log.write("Imprécision en position trop grande ! ("+deltaX+","+deltaY+")", Subject.DUMMY);
+				log.write("Imprécision en position trop grande ! ("+deltaX+","+deltaY+")", Subject.CORRECTION);
 				continue;
 			}
 
@@ -400,13 +393,13 @@ public class CapteursProcess
 																								// dernier
 																								// calcul
 			{
-				log.write("Correction timeout", Subject.DUMMY);
+				log.write("Correction timeout", Subject.CORRECTION);
 				indexCorrection = 0;
 			}
 
 			bufferCorrection[indexCorrection] = correction;
 			indexCorrection++;
-			log.write("Intégration d'une donnée de correction", Subject.DUMMY);
+			log.write("Intégration d'une donnée de correction", Subject.CORRECTION);
 			if(indexCorrection == bufferCorrection.length)
 			{
 				XY_RW posmoy = new XY_RW();
@@ -419,7 +412,7 @@ public class CapteursProcess
 				}
 				posmoy.scalar(2. / bufferCorrection.length);
 				orientationmoy /= bufferCorrection.length;
-				log.write("Envoi d'une correction XYO : " + posmoy + " " + orientationmoy, Subject.DUMMY);
+				log.write("Envoi d'une correction XYO : " + posmoy + " " + orientationmoy, Subject.CORRECTION);
 				serie.correctPosition(posmoy, orientationmoy);
 				indexCorrection = 0;
 			}
@@ -500,12 +493,13 @@ public class CapteursProcess
 		// "+murGauche);
 
 		if(!(murBas ^ murDroit ^ murHaut ^ murGauche)) // cette condition est
-														// fausse si on est près
-														// de 0 ou de 2 murs
+														// vraie si on est près
+														// de 1 ou de 3 murs
 			return null;
 
 		// la correction sur les murs gauche et droit sont désactivés
 		
+		// TODO
 		if(murBas)
 			return Mur.MUR_BAS;
 		else if(murDroit)

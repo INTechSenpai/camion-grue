@@ -26,6 +26,7 @@ public enum Subject implements LogCategory
 {
 	DUMMY,
 	CAPTEURS,
+	CORRECTION,
 	COMM,
 	REMOTE_CONTROL;
 	

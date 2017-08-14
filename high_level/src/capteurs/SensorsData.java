@@ -38,22 +38,24 @@ public class SensorsData
 	}
 	
 	public Cinematique cinematique;
-	/** Ce que voit chacun des capteurs */
+	/* Ce que voit chacun des capteurs */
 	public int[] mesures;
+	public long dateCreation;
 	public TraitementEtat[] etats;
-	public double angleRoueGauche, angleRoueDroite;
+	public double angleRoueGauche, angleRoueDroite; // TODO : selon la disposition des capteurs.
 
 	public SensorsData(double angleRoueGauche, double angleRoueDroite, int[] mesures, Cinematique cinematique)
 	{
+		this(cinematique);
 		this.angleRoueDroite = angleRoueDroite;
 		this.angleRoueGauche = angleRoueGauche;
 		this.mesures = mesures;
 		etats = new TraitementEtat[mesures.length];
-		this.cinematique = cinematique;
 	}
 
 	public SensorsData(Cinematique cinematique)
 	{
+		dateCreation = System.currentTimeMillis();
 		angleRoueDroite = 0;
 		angleRoueGauche = 0;
 		mesures = null;

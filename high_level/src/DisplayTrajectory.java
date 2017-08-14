@@ -1,5 +1,3 @@
-import pfg.kraken.Kraken;
-import pfg.kraken.utils.XYO;
 
 /*
  * Copyright (C) 2013-2017 Pierre-François Gimenez
