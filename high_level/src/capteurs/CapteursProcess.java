@@ -36,7 +36,7 @@ import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import table.GameElementNames;
-import table.RealTable;
+import table.Table;
 import table.EtatElement;
 
 /**
@@ -50,7 +50,7 @@ import table.EtatElement;
 public class CapteursProcess
 {
 	protected Log log;
-	private RealTable table;
+	private Table table;
 	private BufferOutgoingOrder serie;
 	private ObstaclesBuffer obsbuffer;
 
@@ -71,7 +71,7 @@ public class CapteursProcess
 
 	private List<SensorsData> mesuresScan = new ArrayList<SensorsData>();
 
-	public CapteursProcess(Senpai container, Log log, RealTable table, BufferOutgoingOrder serie, Config config, ObstaclesBuffer obsbuffer)
+	public CapteursProcess(Senpai container, Log log, Table table, BufferOutgoingOrder serie, Config config, ObstaclesBuffer obsbuffer)
 	{
 		this.table = table;
 		this.log = log;

@@ -19,7 +19,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import table.GameElementNames;
-import table.RealTable;
 import table.Table;
 import table.EtatElement;
 
@@ -40,7 +39,7 @@ public class JUnit_Table extends JUnit_Test
 	public void setUp() throws Exception
 	{
 		super.setUp();
-		table = container.getService(RealTable.class);
+		table = container.getService(Table.class);
 	}
 
 	@Test
