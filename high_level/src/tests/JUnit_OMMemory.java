@@ -14,9 +14,15 @@
 
 package tests;
 
-import buffer.SensorsDataBuffer;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import obstacles.ObstacleProximity;
 import obstacles.ObstaclesIteratorPresent;
 import obstacles.ObstaclesMemory;
+import pfg.kraken.utils.XY;
+import senpai.CouleurSenpai;
 
 /**
  * Tests unitaires de l'obstacle memory manager
@@ -30,37 +36,26 @@ public class JUnit_OMMemory extends JUnit_Test
 
 	private ObstaclesMemory memory;
 	private ObstaclesIteratorPresent iterator;
-	private SensorsDataBuffer data;
-	// private MasqueManager mm;
-/*	private GridSpace gridspace;
-	private RealGameState state;
 
 	@Override
 	@Before
 	public void setUp() throws Exception
 	{
 		super.setUp();
-		state = container.getService(RealGameState.class);
-		gridspace = container.getService(GridSpace.class);
 		memory = container.getService(ObstaclesMemory.class);
-		data = container.getService(SensorsDataBuffer.class);
 		iterator = new ObstaclesIteratorPresent(log, memory);
-		// mm = container.getService(MasqueManager.class);
 	}
 
 	@Test
 	public void test_obstacle() throws Exception
 	{
-		// ChronoGameState chrono = container.make(ChronoGameState.class);
 		iterator.reinit();
 		Assert.assertTrue(!iterator.hasNext());
-		gridspace.addObstacleAndRemoveNearbyObstacles(new ObstacleCircular(new Vec2RO(-400, 1300), 200));
+		memory.add(new ObstacleProximity(new XY(-400, 1300), 200, 200, 0, CouleurSenpai.BLANC, 0, null, 0));
 		Assert.assertTrue(iterator.hasNext());
-		// state.copyAStarCourbe(chrono);
-		// Assert.assertTrue(chrono.iterator.hasNext());
 	}
 
-	@Test
+/*	@Test
 	public void test_forme_obstacle() throws Exception
 	{
 		state.robot.setCinematique(new Cinematique(0, 1500, -Math.PI / 2, true, 0));

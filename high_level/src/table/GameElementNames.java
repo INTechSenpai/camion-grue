@@ -15,7 +15,9 @@
 package table;
 
 import capteurs.CapteursRobot;
+import pfg.kraken.obstacles.CircularObstacle;
 import pfg.kraken.obstacles.Obstacle;
+import pfg.kraken.utils.XY;
 
 /**
  * Enumérations contenant tous les éléments de jeux
@@ -26,28 +28,18 @@ import pfg.kraken.obstacles.Obstacle;
 
 public enum GameElementNames
 {
-	DUMMY_1(null, 0, null),
-	DUMMY_2(null, 0, null);
+	DUMMY_1(new CircularObstacle(new XY(100, 200), 500)),
+	DUMMY_2(new CircularObstacle(new XY(-1000, 700), 400));
 
-	public final Obstacle obstacle; // il se trouve qu'ils sont tous
-												// circulaires…
-	public final boolean cylindre;
-	public final double orientationArriveeDStarLite;
-	public final Double[] anglesAttaque;
+	public final Obstacle obstacle;
 
-	private GameElementNames(Obstacle obs, double orientationArriveeDStarLite, Double[] anglesAttaque)
+	private GameElementNames(Obstacle obs)
 	{
-		this.anglesAttaque = anglesAttaque;
-		cylindre = toString().startsWith("CYLINDRE");
 		obstacle = obs;
-		this.orientationArriveeDStarLite = orientationArriveeDStarLite;
 	}
 
 	public boolean isVisible(CapteursRobot c, boolean sureleve)
 	{
-		// cas particulier
-		if(c == CapteursRobot.ToF_LONG_AVANT && cylindre)
-			return true;
 		// les capteurs bas les voient, les hauts non
 		return !sureleve;
 	}
