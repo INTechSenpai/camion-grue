@@ -14,7 +14,7 @@
 
 package threads.comm;
 
-import buffer.BufferIncomingOrder;
+import buffer.IncomingOrderBuffer;
 import comm.Communication;
 import pfg.log.Log;
 import senpai.Subject;
@@ -31,9 +31,9 @@ public class ThreadCommListener extends Thread
 
 	protected Log log;
 	private Communication serie;
-	private BufferIncomingOrder buffer;
+	private IncomingOrderBuffer buffer;
 	
-	public ThreadCommListener(Log log, Communication serie, BufferIncomingOrder buffer)
+	public ThreadCommListener(Log log, Communication serie, IncomingOrderBuffer buffer)
 	{
 		this.log = log;
 		this.serie = serie;

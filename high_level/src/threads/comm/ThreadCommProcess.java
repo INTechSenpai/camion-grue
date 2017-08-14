@@ -14,7 +14,7 @@
 
 package threads.comm;
 
-import buffer.BufferIncomingOrder;
+import buffer.IncomingOrderBuffer;
 import buffer.SensorsDataBuffer;
 import capteurs.CapteursRobot;
 import capteurs.SensorsData;
@@ -41,7 +41,7 @@ public class ThreadCommProcess extends Thread
 {
 	protected Log log;
 	protected Config config;
-	private BufferIncomingOrder serie;
+	private IncomingOrderBuffer serie;
 	private SensorsDataBuffer buffer;
 	private RobotReal robot;
 	private Senpai container;
@@ -50,7 +50,7 @@ public class ThreadCommProcess extends Thread
 	private boolean capteursOn = false;
 	private int nbCapteurs;
 
-	public ThreadCommProcess(Log log, Config config, BufferIncomingOrder serie, SensorsDataBuffer buffer, RobotReal robot, Senpai container)
+	public ThreadCommProcess(Log log, Config config, IncomingOrderBuffer serie, SensorsDataBuffer buffer, RobotReal robot, Senpai container)
 	{
 		this.container = container;
 		this.log = log;

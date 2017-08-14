@@ -14,7 +14,7 @@
 
 package threads.comm;
 
-import buffer.BufferOutgoingOrder;
+import buffer.OutgoingOrderBuffer;
 import comm.Communication;
 import comm.Order;
 import pfg.config.Config;
@@ -32,9 +32,9 @@ public class ThreadCommEmitter extends Thread
 {
 	protected Log log;
 	private Communication serie;
-	private BufferOutgoingOrder data;
+	private OutgoingOrderBuffer data;
 
-	public ThreadCommEmitter(Log log, Communication serie, BufferOutgoingOrder data, Config config)
+	public ThreadCommEmitter(Log log, Communication serie, OutgoingOrderBuffer data, Config config)
 	{
 		this.log = log;
 		this.serie = serie;

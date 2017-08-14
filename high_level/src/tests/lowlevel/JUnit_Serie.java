@@ -17,7 +17,7 @@ package tests.lowlevel;
 import org.junit.Before;
 import org.junit.Test;
 
-import buffer.BufferOutgoingOrder;
+import buffer.OutgoingOrderBuffer;
 import comm.Ticket;
 import comm.CommProtocol.Id;
 import comm.CommProtocol.State;
@@ -34,14 +34,14 @@ import tests.JUnit_Test;
 public class JUnit_Serie extends JUnit_Test
 {
 
-	private BufferOutgoingOrder data;
+	private OutgoingOrderBuffer data;
 
 	@Override
 	@Before
 	public void setUp() throws Exception
 	{
 		super.setUp();
-		data = container.getService(BufferOutgoingOrder.class);
+		data = container.getService(OutgoingOrderBuffer.class);
 	}
 	
 	/**

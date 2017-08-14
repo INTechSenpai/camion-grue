@@ -24,7 +24,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import buffer.BufferOutgoingOrder;
+import buffer.OutgoingOrderBuffer;
 import buffer.ObstaclesBuffer;
 import capteurs.SensorsData.TraitementEtat;
 import obstacles.ObstacleProximity;
@@ -51,7 +51,7 @@ public class CapteursProcess
 {
 	protected Log log;
 	private Table table;
-	private BufferOutgoingOrder serie;
+	private OutgoingOrderBuffer serie;
 	private ObstaclesBuffer obsbuffer;
 
 	private int nbCapteurs;
@@ -68,16 +68,18 @@ public class CapteursProcess
 	private int indexCorrection = 0;
 	private boolean scan = false;
 	private Cinematique[] bufferCorrection;
+	private long dureeAvantPeremption;
 
 	private List<SensorsData> mesuresScan = new ArrayList<SensorsData>();
 
-	public CapteursProcess(Senpai container, Log log, Table table, BufferOutgoingOrder serie, Config config, ObstaclesBuffer obsbuffer)
+	public CapteursProcess(Senpai container, Log log, Table table, OutgoingOrderBuffer serie, Config config, ObstaclesBuffer obsbuffer)
 	{
 		this.table = table;
 		this.log = log;
 		this.serie = serie;
 		this.obsbuffer = obsbuffer;
 
+		dureeAvantPeremption = config.getInt(ConfigInfoSenpai.DUREE_PEREMPTION_OBSTACLES);
 		largeurEnnemi = config.getInt(ConfigInfoSenpai.LARGEUR_OBSTACLE_ENNEMI);
 		longueurEnnemi = config.getInt(ConfigInfoSenpai.LONGUEUR_OBSTACLE_ENNEMI);
 		distanceApproximation = config.getInt(ConfigInfoSenpai.DISTANCE_MAX_ENTRE_MESURE_ET_OBJET);
@@ -242,7 +244,7 @@ public class CapteursProcess
 				positionEnnemi.rotate(orientationRobot);
 				positionEnnemi.plus(positionRobot);
 	
-				ObstacleProximity obs = new ObstacleProximity(positionEnnemi, longueurEnnemi, largeurEnnemi, orientationRobot + capteurs[i].orientationRelativeRotate, c.type.couleurOrig, System.currentTimeMillis(), data, i);
+				ObstacleProximity obs = new ObstacleProximity(positionEnnemi, longueurEnnemi, largeurEnnemi, orientationRobot + capteurs[i].orientationRelativeRotate, c.type.couleurOrig, System.currentTimeMillis() + dureeAvantPeremption, data, i);
 	
 				if(obs.isHorsTable())
 				{

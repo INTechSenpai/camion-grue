@@ -17,7 +17,7 @@ package robot;
 import java.awt.Graphics;
 import java.lang.reflect.InvocationTargetException;
 
-import buffer.BufferOutgoingOrder;
+import buffer.OutgoingOrderBuffer;
 import capteurs.SensorMode;
 import comm.CommProtocol;
 import comm.Ticket;
@@ -48,12 +48,12 @@ public class RobotReal extends Robot implements Printable
 	private boolean simuleSerie;
 	private int demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge;
 	private boolean print, printTrace;
-	private BufferOutgoingOrder out;
+	private OutgoingOrderBuffer out;
 	private volatile boolean cinematiqueInitialised = false;
 	private SensorMode lastMode = null;
 
 	// Constructeur
-	public RobotReal(Log log, BufferOutgoingOrder out, Config config)
+	public RobotReal(Log log, OutgoingOrderBuffer out, Config config)
 	{
 		super(log);
 		this.out = out;
@@ -212,7 +212,7 @@ public class RobotReal extends Robot implements Printable
 		long avant = System.currentTimeMillis();
 		try
 		{
-			t = (Ticket) BufferOutgoingOrder.class.getMethod(nom, paramClasses).invoke(out, param.length == 0 ? null : param);
+			t = (Ticket) OutgoingOrderBuffer.class.getMethod(nom, paramClasses).invoke(out, param.length == 0 ? null : param);
 		}
 		catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e)
 		{

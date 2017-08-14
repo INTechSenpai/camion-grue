@@ -21,7 +21,7 @@ import java.net.Socket;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import buffer.BufferOutgoingOrder;
+import buffer.OutgoingOrderBuffer;
 import comm.Ticket;
 import pfg.config.Config;
 import pfg.log.Log;
@@ -42,7 +42,7 @@ import senpai.Severity;
 public class ThreadRemoteControl extends Thread
 {
 	private Log log;
-	private BufferOutgoingOrder data;
+	private OutgoingOrderBuffer data;
 	private Senpai container;
 	private ServerSocket ssocket = null;
 	private boolean remote;
@@ -116,7 +116,7 @@ public class ThreadRemoteControl extends Thread
 	}
 
 	
-	public ThreadRemoteControl(Log log, Config config, BufferOutgoingOrder data, Senpai container)
+	public ThreadRemoteControl(Log log, Config config, OutgoingOrderBuffer data, Senpai container)
 	{
 		this.log = log;
 		this.data = data;

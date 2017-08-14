@@ -21,7 +21,7 @@ import java.lang.reflect.Method;
 import org.junit.Before;
 import org.junit.Test;
 
-import buffer.BufferOutgoingOrder;
+import buffer.OutgoingOrderBuffer;
 import comm.CommProtocol.Id;
 import robot.RobotReal;
 import robot.Speed;
@@ -44,7 +44,7 @@ public class JUnit_Robot extends JUnit_Test
 //	private CheminPathfinding chemin;
 //	private RealGameState state;
 //	private PathCache pathcache;
-	private BufferOutgoingOrder data;
+	private OutgoingOrderBuffer data;
 //	private Cinematique c = null;
 	private boolean simuleSerie;
 	private Speed v;
@@ -98,7 +98,7 @@ public class JUnit_Robot extends JUnit_Test
 //		chemin = container.getService(CheminPathfinding.class);
 //		astar = container.getService(AStarCourbe.class);
 //		pathcache = container.getService(PathCache.class);
-		data = container.getService(BufferOutgoingOrder.class);
+		data = container.getService(OutgoingOrderBuffer.class);
 		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 		data.startStream(Id.SENSORS_CHANNEL);
 		v = Speed.TEST;

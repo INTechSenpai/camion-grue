@@ -44,11 +44,11 @@ import pfg.kraken.utils.XY_RW;
  *
  */
 
-public class BufferOutgoingOrder
+public class OutgoingOrderBuffer
 {
 	protected Log log;
 
-	public BufferOutgoingOrder(Log log)
+	public OutgoingOrderBuffer(Log log)
 	{
 		this.log = log;
 	}

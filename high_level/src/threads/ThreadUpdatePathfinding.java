@@ -17,7 +17,7 @@ package threads;
 import java.util.ArrayList;
 import java.util.List;
 
-import buffer.BufferOutgoingOrder;
+import buffer.OutgoingOrderBuffer;
 import buffer.ObstaclesBuffer;
 import pfg.kraken.astar.TentacularAStar;
 import pfg.kraken.obstacles.Obstacle;
@@ -37,10 +37,10 @@ public class ThreadUpdatePathfinding extends Thread
 	protected Log log;
 	private TentacularAStar pathfinding;
 //	private CheminPathfinding chemin;
-	private BufferOutgoingOrder out;
+	private OutgoingOrderBuffer out;
 	private ObstaclesBuffer obsbuffer;
 
-	public ThreadUpdatePathfinding(Log log, TentacularAStar pathfinding, /*CheminPathfinding chemin,*/ BufferOutgoingOrder out, ObstaclesBuffer obsbuffer)
+	public ThreadUpdatePathfinding(Log log, TentacularAStar pathfinding, /*CheminPathfinding chemin,*/ OutgoingOrderBuffer out, ObstaclesBuffer obsbuffer)
 	{
 		this.obsbuffer = obsbuffer;
 		this.log = log;

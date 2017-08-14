@@ -24,9 +24,9 @@ import pfg.log.Log;
  *
  */
 
-public class BufferIncomingOrder extends IncomingBuffer<Paquet>
+public class IncomingOrderBuffer extends IncomingBuffer<Paquet>
 {
-	public BufferIncomingOrder(Log log)
+	public IncomingOrderBuffer(Log log)
 	{
 		super(log);
 	}

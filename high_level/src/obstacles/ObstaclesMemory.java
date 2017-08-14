@@ -14,6 +14,7 @@
 
 package obstacles;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,7 +24,6 @@ import pfg.graphic.AbstractPrintBuffer;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.container.DynamicObstacles;
 import pfg.log.Log;
-import senpai.ConfigInfoSenpai;
 
 /**
  * Mémorise tous les obstacles mobiles qu'on a rencontré jusque là.
@@ -38,13 +38,11 @@ public class ObstaclesMemory implements DynamicObstacles
 	// Les obstacles mobiles, c'est-à-dire des obstacles de proximité
 	private volatile LinkedList<ObstacleProximity> listObstaclesMobiles = new LinkedList<ObstacleProximity>();
 	private volatile LinkedList<ObstacleProximity> listObstaclesMortsTot = new LinkedList<ObstacleProximity>();
-	private int dureeAvantPeremption;
 	private volatile int size = 0;
 	private volatile int indicePremierObstacle = 0;
 	private volatile int firstNotDeadNow = 0;
 	private volatile long nextDeathDate = Long.MAX_VALUE;
 	private boolean printProx;
-	private boolean printDStarLite;
 	private final int tempsAvantSuppression = 2000;
 
 	protected Log log;
@@ -54,19 +52,13 @@ public class ObstaclesMemory implements DynamicObstacles
 	{
 		this.log = log;
 		this.buffer = buffer;
-		dureeAvantPeremption = config.getInt(ConfigInfoSenpai.DUREE_PEREMPTION_OBSTACLES);
 //		printProx = config.getBoolean(ConfigInfo.GRAPHIC_PROXIMITY_OBSTACLES);
 //		printDStarLite = config.getBoolean(ConfigInfo.GRAPHIC_D_STAR_LITE);
 	}
 
-	public synchronized ObstacleProximity add(Obstacle obstacle)
+	public synchronized ObstacleProximity add(ObstacleProximity obstacleParam)
 	{
-		return add(obstacle, System.currentTimeMillis());
-	}
-
-	private synchronized ObstacleProximity add(Obstacle obstacleParam, long date)
-	{
-		ObstacleProximity obstacle = null;//new ObstacleProximity(obstacleParam, date + dureeAvantPeremption);
+		ObstacleProximity obstacle = obstacleParam;
 		listObstaclesMobiles.add(obstacle);
 
 		if(printProx)
@@ -133,8 +125,10 @@ public class ObstaclesMemory implements DynamicObstacles
 	public synchronized List<Obstacle> deleteOldObstacles()
 	{
 		long dateActuelle = System.currentTimeMillis();
-		int firstNotDeadNowSave = firstNotDeadNow;
+//		int firstNotDeadNowSave = firstNotDeadNow;
 
+		List<Obstacle> old = new ArrayList<Obstacle>();
+		
 		ObstacleProximity o = null;
 
 		nextDeathDate = Long.MAX_VALUE;
@@ -172,6 +166,7 @@ public class ObstaclesMemory implements DynamicObstacles
 		while(iter.hasNext() && ((o = iter.next()) == null || o.isDestructionNecessary(dateActuelle)))
 		{
 			firstNotDeadNow++;
+			old.add(o);
 			if(printProx && o != null)
 			{
 				buffer.removeSupprimable(o);
@@ -182,7 +177,7 @@ public class ObstaclesMemory implements DynamicObstacles
 			nextDeathDate = o.getDeathDate();
 
 		// TODO
-		return null;
+		return old;
 //		return firstNotDeadNow != firstNotDeadNowSave;
 	}
 
