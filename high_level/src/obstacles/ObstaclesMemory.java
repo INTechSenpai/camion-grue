@@ -21,6 +21,7 @@ import java.util.List;
 import pfg.config.Config;
 import pfg.graphic.AbstractPrintBuffer;
 import pfg.kraken.obstacles.Obstacle;
+import pfg.kraken.obstacles.container.DynamicObstacles;
 import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
 
@@ -32,7 +33,7 @@ import senpai.ConfigInfoSenpai;
  *
  */
 
-public class ObstaclesMemory
+public class ObstaclesMemory implements DynamicObstacles
 {
 	// Les obstacles mobiles, c'est-à-dire des obstacles de proximité
 	private volatile LinkedList<ObstacleProximity> listObstaclesMobiles = new LinkedList<ObstacleProximity>();
@@ -215,6 +216,22 @@ public class ObstaclesMemory
 	public synchronized ObstacleProximity pollMortTot()
 	{
 		return listObstaclesMortsTot.poll();
+	}
+
+	@Override
+	public Iterator<Obstacle> getFutureDynamicObstacles(long date)
+	{
+		ObstaclesIteratorFutur iter = new ObstaclesIteratorFutur(log, this);
+		iter.init(date, firstNotDeadNow); // TODO vérifier
+		return iter;
+	}
+
+	@Override
+	public Iterator<Obstacle> getCurrentDynamicObstacles()
+	{
+		ObstaclesIteratorPresent iter = new ObstaclesIteratorPresent(log, this);
+		iter.reinit();
+		return iter;
 	}
 
 }

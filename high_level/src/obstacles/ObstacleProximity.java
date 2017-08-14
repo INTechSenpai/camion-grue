@@ -14,7 +14,6 @@
 
 package obstacles;
 
-import pfg.kraken.Couleur;
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.utils.XY;
 import senpai.CouleurSenpai;
@@ -31,20 +30,20 @@ public class ObstacleProximity extends RectangularObstacle
 	private static final long serialVersionUID = -3518004359091355796L;
 	private long death_date;
 	public final SensorsData mesureOrigine;
-	public final CapteursRobot capteurOrigine;
+	public final int nbCapteurOrigine;
 
-	public ObstacleProximity(XY position, int sizeX, int sizeY, double angle, CouleurSenpai c, long death_date, SensorsData mesureOrigine, CapteursRobot capteurOrigine)
+	public ObstacleProximity(XY position, int sizeX, int sizeY, double angle, CouleurSenpai c, long death_date, SensorsData mesureOrigine, int nbCapteurOrigine)
 	{
 		super(position, sizeX, sizeY, angle, c.couleur, c.l);
 		this.mesureOrigine = mesureOrigine;
-		this.capteurOrigine = capteurOrigine;
+		this.nbCapteurOrigine = nbCapteurOrigine;
 		this.death_date = death_date;
 	}
 
 	@Override
 	public String toString()
 	{
-		return super.toString() + ", meurt à " + death_date + " ms";
+		return "Obstacle de proximité en " + position + ", né à " + mesureOrigine.dateCreation + "ms, meurt à " + death_date + "ms, origine : "+CapteursRobot.values[nbCapteurOrigine]+" (mesure : "+mesureOrigine.mesures[nbCapteurOrigine]+")";
 	}
 
 	public boolean isDestructionNecessary(long date)

@@ -16,6 +16,7 @@ package obstacles;
 
 import java.util.Iterator;
 
+import pfg.kraken.obstacles.Obstacle;
 import pfg.log.Log;
 /**
  * Itérator permettant de manipuler facilement les obstacles mobiles
@@ -24,7 +25,7 @@ import pfg.log.Log;
  *
  */
 
-public abstract class ObstaclesIterator implements Iterator<ObstacleProximity>
+public abstract class ObstaclesIterator implements Iterator<Obstacle>
 {
 	protected Log log;
 	protected ObstaclesMemory memory;
