@@ -55,7 +55,7 @@ public abstract class JUnit_Test
 	{
 		System.out.println("----- DÉBUT DU TEST " + testName.getMethodName() + " -----");
 
-		container = new Senpai("senpai.conf");
+		container = new Senpai("senpai-test.conf");
 		config = container.getService(Config.class);
 		log = container.getService(Log.class);
 		log.write("Test unitaire : " + testName.getMethodName(), Subject.DUMMY);
