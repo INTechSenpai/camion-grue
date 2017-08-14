@@ -16,7 +16,7 @@ package scripts;
 
 import exceptions.UnableToMoveException;
 import robot.RobotReal;
-import table.RealTable;
+import table.Table;
 
 /**
  * Un nœud du graphe
@@ -34,7 +34,7 @@ public class NodeMove extends ScriptDAGNode
 	}
 
 	@Override
-	public void execute(RealTable table, RobotReal robot) throws InterruptedException, UnableToMoveException
+	public void execute(Table table, RobotReal robot) throws InterruptedException, UnableToMoveException
 	{
 		// déplace, tout ça
 	}

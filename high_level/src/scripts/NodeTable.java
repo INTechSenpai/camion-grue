@@ -17,7 +17,7 @@ package scripts;
 import robot.RobotReal;
 import table.EtatElement;
 import table.GameElementNames;
-import table.RealTable;
+import table.Table;
 
 /**
  * Un nœud du graphe
@@ -31,14 +31,14 @@ public class NodeTable extends ScriptDAGNode
 
 	private GameElementNames elementDone;
 	
-	public NodeTable(RealTable table, GameElementNames elementDone, ScriptDAGNode succes)
+	public NodeTable(Table table, GameElementNames elementDone, ScriptDAGNode succes)
 	{
 		super(succes, null); // échec impossible
 		this.elementDone = elementDone;
 	}
 
 	@Override
-	public void execute(RealTable table, RobotReal robot)
+	public void execute(Table table, RobotReal robot)
 	{
 		table.setDone(elementDone, EtatElement.PRIS_PAR_NOUS);
 	}

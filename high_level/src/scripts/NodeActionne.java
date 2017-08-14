@@ -17,7 +17,7 @@ package scripts;
 import comm.CommProtocol;
 import exceptions.ActionneurException;
 import robot.RobotReal;
-import table.RealTable;
+import table.Table;
 
 /**
  * Un nœud du graphe
@@ -39,7 +39,7 @@ public class NodeActionne extends ScriptDAGNode
 	}
 
 	@Override
-	public void execute(RealTable table, RobotReal robot) throws InterruptedException, ActionneurException
+	public void execute(Table table, RobotReal robot) throws InterruptedException, ActionneurException
 	{
 		robot.execute(ordre, param);
 	}
