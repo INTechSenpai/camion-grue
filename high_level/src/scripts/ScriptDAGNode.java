@@ -18,7 +18,7 @@ import java.io.Serializable;
 
 import exceptions.ActionneurException;
 import exceptions.UnableToMoveException;
-import robot.RobotReal;
+import robot.Robot;
 import table.Table;
 
 /**
@@ -39,6 +39,6 @@ public abstract class ScriptDAGNode implements Serializable
 		this.echec = echec;
 	}
 	
-	public abstract void execute(Table table, RobotReal robot) throws InterruptedException, UnableToMoveException, ActionneurException;
+	public abstract void execute(Table table, Robot robot) throws InterruptedException, UnableToMoveException, ActionneurException;
 	
 }

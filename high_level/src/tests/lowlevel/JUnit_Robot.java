@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import buffer.OutgoingOrderBuffer;
 import comm.CommProtocol.Id;
-import robot.RobotReal;
+import robot.Robot;
 import robot.Speed;
 import senpai.ConfigInfoSenpai;
 import senpai.Subject;
@@ -39,7 +39,7 @@ import tests.JUnit_Test;
 public class JUnit_Robot extends JUnit_Test
 {
 
-	private RobotReal robot;
+	private Robot robot;
 //	private AStarCourbe astar;
 //	private CheminPathfinding chemin;
 //	private RealGameState state;
@@ -94,7 +94,7 @@ public class JUnit_Robot extends JUnit_Test
 	{
 		super.setUp();
 //		state = container.getService(RealGameState.class);
-		robot = container.getService(RobotReal.class);
+		robot = container.getService(Robot.class);
 //		chemin = container.getService(CheminPathfinding.class);
 //		astar = container.getService(AStarCourbe.class);
 //		pathcache = container.getService(PathCache.class);

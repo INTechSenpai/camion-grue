@@ -28,7 +28,7 @@ import pfg.log.Log;
 
 import org.junit.After;
 
-import robot.RobotReal;
+import robot.Robot;
 import senpai.Senpai;
 import senpai.Subject;
 
@@ -68,7 +68,7 @@ public abstract class JUnit_Test
 		/*
 		 * La position initiale du robot
 		 */
-		RobotReal r = container.getService(RobotReal.class);
+		Robot r = container.getService(Robot.class);
 		r.setCinematique(new Cinematique(0, 1800, -Math.PI / 3, true, 0));
 	}
 

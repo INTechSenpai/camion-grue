@@ -20,7 +20,7 @@ import pfg.config.Config;
 import pfg.graphic.Fenetre;
 import pfg.graphic.printable.Layer;
 import pfg.graphic.printable.Printable;
-import robot.RobotReal;
+import robot.Robot;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XY_RW;
@@ -47,7 +47,7 @@ public abstract class Capteur implements Printable
 	protected double orientationRelativeRotate;
 	protected XY_RW positionRelativeRotate;
 	private TypeCapteur type;
-	private RobotReal robot;
+	private Robot robot;
 
 	public Capteur(Config config, XY positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
 	{

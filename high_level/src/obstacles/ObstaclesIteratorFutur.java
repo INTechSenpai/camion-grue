@@ -37,6 +37,7 @@ public class ObstaclesIteratorFutur extends ObstaclesIterator
 	@Override
 	public ObstaclesIteratorFutur clone()
 	{
+		assert initialized;
 		ObstaclesIteratorFutur cloned_manager = new ObstaclesIteratorFutur(log, memory);
 		copy(cloned_manager, dateInit);
 		return cloned_manager;
@@ -49,6 +50,7 @@ public class ObstaclesIteratorFutur extends ObstaclesIterator
 	 */
 	public void copy(ObstaclesIteratorFutur other, long date)
 	{
+		assert initialized;
 		other.init(date, firstNotDead);
 	}
 
@@ -57,6 +59,7 @@ public class ObstaclesIteratorFutur extends ObstaclesIterator
 	 */
 	public void reinit()
 	{
+		assert initialized;
 		nbTmp = firstNotDead - 1;
 	}
 
@@ -68,6 +71,7 @@ public class ObstaclesIteratorFutur extends ObstaclesIterator
 	 */
 	public void init(long date, int firstNotDead)
 	{
+		initialized = true;
 		this.firstNotDead = firstNotDead;
 		while(this.firstNotDead < memory.size())
 		{

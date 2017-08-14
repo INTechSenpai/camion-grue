@@ -16,7 +16,6 @@ package capteurs;
 
 import senpai.ConfigInfoSenpai;
 import senpai.CouleurSenpai;
-import senpai.Senpai;
 import senpai.Subject;
 
 import java.lang.reflect.Constructor;
@@ -72,7 +71,7 @@ public class CapteursProcess
 
 	private List<SensorsData> mesuresScan = new ArrayList<SensorsData>();
 
-	public CapteursProcess(Senpai container, Log log, Table table, OutgoingOrderBuffer serie, Config config, ObstaclesBuffer obsbuffer)
+	public CapteursProcess(Log log, Table table, OutgoingOrderBuffer serie, Config config, ObstaclesBuffer obsbuffer)
 	{
 		this.table = table;
 		this.log = log;

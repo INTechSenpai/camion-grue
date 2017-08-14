@@ -15,7 +15,7 @@
 package scripts;
 
 import exceptions.UnableToMoveException;
-import robot.RobotReal;
+import robot.Robot;
 import table.Table;
 
 /**
@@ -34,7 +34,7 @@ public class NodeMove extends ScriptDAGNode
 	}
 
 	@Override
-	public void execute(Table table, RobotReal robot) throws InterruptedException, UnableToMoveException
+	public void execute(Table table, Robot robot) throws InterruptedException, UnableToMoveException
 	{
 		// déplace, tout ça
 	}

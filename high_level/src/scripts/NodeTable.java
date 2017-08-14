@@ -14,7 +14,7 @@
 
 package scripts;
 
-import robot.RobotReal;
+import robot.Robot;
 import table.EtatElement;
 import table.GameElementNames;
 import table.Table;
@@ -38,7 +38,7 @@ public class NodeTable extends ScriptDAGNode
 	}
 
 	@Override
-	public void execute(Table table, RobotReal robot)
+	public void execute(Table table, Robot robot)
 	{
 		table.setDone(elementDone, EtatElement.PRIS_PAR_NOUS);
 	}

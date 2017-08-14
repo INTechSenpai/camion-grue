@@ -21,7 +21,7 @@ import exceptions.ActionneurException;
 import exceptions.UnableToMoveException;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.robot.RobotState;
-import robot.RobotReal;
+import robot.Robot;
 import table.Table;
 
 /**
@@ -49,7 +49,7 @@ public class ScriptDAG implements Serializable
 		this.graphe = graphe;
 	}
 
-	protected void run(RobotState state, Table table, RobotReal robot) throws InterruptedException, UnableToMoveException, ActionneurException
+	protected void run(RobotState state, Table table, Robot robot) throws InterruptedException, UnableToMoveException, ActionneurException
 	{
 		ScriptDAGNode current = graphe.get(0);
 		assert state.getCinematique().equals(pointEntree);

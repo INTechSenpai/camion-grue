@@ -38,6 +38,10 @@ public class ObstaclesMemory implements DynamicObstacles
 	// Les obstacles mobiles, c'est-à-dire des obstacles de proximité
 	private volatile LinkedList<ObstacleProximity> listObstaclesMobiles = new LinkedList<ObstacleProximity>();
 	private volatile LinkedList<ObstacleProximity> listObstaclesMortsTot = new LinkedList<ObstacleProximity>();
+	
+	// n'est utilisé que dans les assert
+	private volatile LinkedList<ObstacleProximity> listObstaclesDetruits = new LinkedList<ObstacleProximity>();
+	
 	private volatile int size = 0;
 	private volatile int indicePremierObstacle = 0;
 	private volatile int firstNotDeadNow = 0;
@@ -48,6 +52,11 @@ public class ObstaclesMemory implements DynamicObstacles
 	protected Log log;
 	private AbstractPrintBuffer buffer;
 
+	private boolean checkSize()
+	{
+		return size == listObstaclesDetruits.size() + listObstaclesMobiles.size();
+	}
+	
 	public ObstaclesMemory(Log log, AbstractPrintBuffer buffer, Config config)
 	{
 		this.log = log;
@@ -65,6 +74,9 @@ public class ObstaclesMemory implements DynamicObstacles
 			buffer.addSupprimable(obstacle);
 
 		size++;
+		
+		assert checkSize();
+
 		return obstacle;
 	}
 
@@ -75,6 +87,7 @@ public class ObstaclesMemory implements DynamicObstacles
 
 	public synchronized ObstacleProximity getObstacle(int nbTmp)
 	{
+		assert nbTmp >= indicePremierObstacle;
 		if(nbTmp < indicePremierObstacle)
 		{
 			// log.critical("Erreur : demande d'un vieil obstacle : "+nbTmp);
@@ -156,6 +169,7 @@ public class ObstaclesMemory implements DynamicObstacles
 		{
 			indicePremierObstacle++;
 			o = iter.next();
+			assert listObstaclesDetruits.add(o);
 			iter.remove();
 			tmp++;
 		}
@@ -176,6 +190,8 @@ public class ObstaclesMemory implements DynamicObstacles
 		if(o != null && o.getDeathDate() > dateActuelle)
 			nextDeathDate = o.getDeathDate();
 
+		assert checkSize();
+		
 		// TODO
 		return old;
 //		return firstNotDeadNow != firstNotDeadNowSave;

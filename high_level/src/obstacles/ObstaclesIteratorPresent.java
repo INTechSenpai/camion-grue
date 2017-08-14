@@ -37,6 +37,7 @@ public class ObstaclesIteratorPresent extends ObstaclesIterator
 	 */
 	public void reinit()
 	{
+		initialized = true;
 		nbTmp = memory.getFirstNotDeadNow() - 1;
 	}
 
@@ -47,6 +48,7 @@ public class ObstaclesIteratorPresent extends ObstaclesIterator
 	 */
 	public boolean hasNextDead()
 	{
+		assert initialized;
 		int firstNotDeadNow = memory.getFirstNotDeadNow();
 		while(nbTmp + 1 < firstNotDeadNow && memory.getObstacle(nbTmp + 1) == null)
 			nbTmp++;
@@ -59,6 +61,7 @@ public class ObstaclesIteratorPresent extends ObstaclesIterator
 	 */
 	public void save()
 	{
+		assert initialized;
 		save = nbTmp;
 	}
 
@@ -67,6 +70,7 @@ public class ObstaclesIteratorPresent extends ObstaclesIterator
 	 */
 	public void load()
 	{
+		assert initialized;
 		nbTmp = save;
 	}
 }

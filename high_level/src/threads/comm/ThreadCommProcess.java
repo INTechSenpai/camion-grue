@@ -24,7 +24,7 @@ import comm.CommProtocol.InOrder;
 import pfg.config.Config;
 import pfg.log.Log;
 import pfg.kraken.robot.Cinematique;
-import robot.RobotReal;
+import robot.Robot;
 import senpai.Senpai;
 import senpai.Senpai.ErrorCode;
 import senpai.Severity;
@@ -43,14 +43,14 @@ public class ThreadCommProcess extends Thread
 	protected Config config;
 	private IncomingOrderBuffer serie;
 	private SensorsDataBuffer buffer;
-	private RobotReal robot;
+	private Robot robot;
 	private Senpai container;
 	private Cinematique current = new Cinematique();
 
 	private boolean capteursOn = false;
 	private int nbCapteurs;
 
-	public ThreadCommProcess(Log log, Config config, IncomingOrderBuffer serie, SensorsDataBuffer buffer, RobotReal robot, Senpai container)
+	public ThreadCommProcess(Log log, Config config, IncomingOrderBuffer serie, SensorsDataBuffer buffer, Robot robot, Senpai container)
 	{
 		this.container = container;
 		this.log = log;
