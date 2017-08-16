@@ -65,12 +65,14 @@ public class ThreadPeremption extends Thread
 			while(true)
 			{
 				// TODO
-				List<Obstacle> oldObs = memory.deleteOldObstacles();
-				for(Obstacle o : oldObs)
-					buffer.addOldObstacle(o);
-				
-				buffer.notify();
-				
+				synchronized(buffer)
+				{
+					List<Obstacle> oldObs = memory.deleteOldObstacles();
+					for(Obstacle o : oldObs)
+						buffer.addOldObstacle(o);
+					
+					buffer.notify();
+				}
 				
 //				if(memory.deleteOldObstacles())
 //					dstarlite.updateObstaclesEnnemi();
