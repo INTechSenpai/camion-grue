@@ -16,6 +16,7 @@ package threads;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Queue;
@@ -25,7 +26,6 @@ import buffer.OutgoingOrderBuffer;
 import comm.Ticket;
 import pfg.config.Config;
 import pfg.log.Log;
-import remoteControl.Commandes;
 import senpai.Subject;
 import senpai.ConfigInfoSenpai;
 import senpai.Senpai;
@@ -47,7 +47,30 @@ public class ThreadRemoteControl extends Thread
 	private ServerSocket ssocket = null;
 	private boolean remote;
 	private double l;
+	private int port;
 
+	public enum Commandes implements Serializable
+	{
+		SPEED_UP, // 0
+		SPEED_DOWN, // 1
+		SET_SPEED, // 2
+		TURN_RIGHT, // 3
+		TURN_LEFT, // 4
+		SET_DIRECTION, // 5
+		STOP, // 6
+		RESET_WHEELS, // 7
+		SHUTDOWN, // 8
+		PING, // 9
+		LEVE_FILET, // 10
+		BAISSE_FILET, // 11
+		FERME_FILET, // 12
+		OUVRE_FILET, // 13
+		EJECTE_GAUCHE, // 14
+		EJECTE_DROITE, // 15
+		REARME_GAUCHE, // 16
+		REARME_DROITE; // 17
+	}
+	
 	private class CommandesParam
 	{
 		public Commandes com;
@@ -62,6 +85,11 @@ public class ThreadRemoteControl extends Thread
 		}		
 	}
 	
+	/**
+	 * Étant donné que l'écoute est bloquante, il faut un thread pour écouter et un thread pour exécuter
+	 * @author pf
+	 *
+	 */
 	private class ThreadListen extends Thread
 	{
 		protected Log log;
@@ -114,7 +142,6 @@ public class ThreadRemoteControl extends Thread
 		}
 
 	}
-
 	
 	public ThreadRemoteControl(Log log, Config config, OutgoingOrderBuffer data, Senpai container)
 	{
@@ -123,6 +150,7 @@ public class ThreadRemoteControl extends Thread
 		this.container = container;
 		remote = config.getBoolean(ConfigInfoSenpai.REMOTE_CONTROL);
 		l = config.getDouble(ConfigInfoSenpai.CENTRE_ROTATION_ROUE_X) / 1000.;
+		port = config.getInt(ConfigInfoSenpai.REMOTE_CONTROL_PORT_NUMBER);
 	}
 
 	@Override
@@ -139,7 +167,7 @@ public class ThreadRemoteControl extends Thread
 					Thread.sleep(10000);
 			}
 
-			ssocket = new ServerSocket(13371);
+			ssocket = new ServerSocket(port);
 			control(ssocket.accept());
 		}
 		catch(InterruptedException | IOException | ClassNotFoundException e)

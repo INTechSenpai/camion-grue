@@ -27,6 +27,7 @@ import pfg.graphic.Fenetre;
 import pfg.graphic.printable.Layer;
 import pfg.graphic.printable.Printable;
 import pfg.kraken.robot.Cinematique;
+import pfg.kraken.robot.RobotState;
 import pfg.kraken.utils.XY;
 import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
@@ -38,7 +39,7 @@ import senpai.Subject;
  * @author pf
  */
 
-public class Robot implements Printable
+public class Robot extends RobotState implements Printable
 {
 	/*
 	 * DÉPLACEMENT HAUT NIVEAU
@@ -46,7 +47,6 @@ public class Robot implements Printable
 
 	private static final long serialVersionUID = 1L;
 
-	protected Cinematique cinematique;
 	protected volatile boolean symetrie;
 	protected Log log;
 	protected volatile boolean filetBaisse = false;
@@ -68,12 +68,6 @@ public class Robot implements Printable
 	{
 		return cinematique.toString();
 	}
-
-	public Cinematique getCinematique()
-	{
-		return cinematique;
-	}
-
 
 	protected volatile boolean matchDemarre = false;
 	protected volatile long dateDebutMatch;
