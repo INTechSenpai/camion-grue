@@ -399,4 +399,19 @@ public class OutgoingOrderBuffer
 		}
 	}
 
+	/**
+	 * Renvoie une estimation de la latence de la comm, en μs
+	 * @throws InterruptedException 
+	 */
+	public void checkLatence() throws InterruptedException
+	{
+		int nbEssais = 10000;
+		long avant = System.currentTimeMillis();
+		for(int i = 0; i < nbEssais; i++)
+			ping().attendStatus();
+		double latency = 1000. * (System.currentTimeMillis() - avant) / (2*nbEssais);
+		// on divise par 2 car il s'agit d'un aller-retour
+		log.write("Latence estimée : "+latency+" μs", latency >= 200 ? Severity.CRITICAL : (latency >= 50 ? Severity.WARNING : Severity.INFO), Subject.COMM);
+	}
+	
 }

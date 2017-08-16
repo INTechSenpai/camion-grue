@@ -93,6 +93,10 @@ public class JUnit_Robot extends JUnit_Test
 	public void setUp() throws Exception
 	{
 		super.setUp();
+		
+		// il est nécessaire que les communications ne soient pas simulées
+		assert !config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
+
 //		state = container.getService(RealGameState.class);
 		robot = container.getService(Robot.class);
 //		chemin = container.getService(CheminPathfinding.class);

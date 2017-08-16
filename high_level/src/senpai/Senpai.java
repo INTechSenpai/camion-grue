@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import buffer.OutgoingOrderBuffer;
 import comm.Communication;
 import obstacles.ObstaclesFixes;
 import pfg.config.Config;
@@ -36,6 +37,7 @@ import pfg.kraken.Kraken;
 import pfg.kraken.astar.TentacularAStar;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.log.Log;
+import robot.Robot;
 import robot.Speed;
 import threads.ThreadName;
 import threads.ThreadShutdown;
@@ -195,6 +197,7 @@ public class Senpai
 		injector.addService(Senpai.class, this);
 		injector.addService(Log.class, log);
 		injector.addService(Config.class, config);
+		injector.addService(Robot.class, new Robot(log));
 		Fenetre f = debug.getFenetre(new Vec2RO(0,1000));
 		injector.addService(Fenetre.class, f);
 		injector.addService(AbstractPrintBuffer.class, f.getPrintBuffer());
@@ -273,7 +276,10 @@ public class Senpai
 		try {
 			simuleComm = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM); 
 			if(!simuleComm)
+			{
 				injector.getService(Communication.class).initialize();
+				injector.getService(OutgoingOrderBuffer.class).checkLatence();
+			}
 			else
 				log.write("COMMUNICATION SIMULÉE !", Severity.CRITICAL, Subject.DUMMY);						
 		} catch (InjectorException e) {

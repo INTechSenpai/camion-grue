@@ -22,6 +22,7 @@ import comm.Ticket;
 import comm.CommProtocol.Id;
 import comm.CommProtocol.State;
 import pfg.kraken.utils.XY;
+import senpai.ConfigInfoSenpai;
 import tests.JUnit_Test;
 
 /**
@@ -42,6 +43,9 @@ public class JUnit_Serie extends JUnit_Test
 	{
 		super.setUp();
 		data = container.getService(OutgoingOrderBuffer.class);
+		
+		// il est nécessaire que les communications ne soient pas simulées
+		assert !config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 	}
 	
 	/**
@@ -71,13 +75,7 @@ public class JUnit_Serie extends JUnit_Test
 	@Test
 	public void test_latence() throws Exception
 	{
-		int nbEssais = 1000000;
-		long avant = System.currentTimeMillis();
-		for(int i = 0; i < nbEssais; i++)
-			data.ping().attendStatus();
-
-		// on divise par 2 car il s'agit d'un aller-retour
-		System.out.println("Latence estimée : "+(1000. * (System.currentTimeMillis() - avant) / (2*nbEssais))+" μs");
+		data.checkLatence();
 	}
 	
 	/**
