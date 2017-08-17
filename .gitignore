@@ -27,9 +27,9 @@ high_level/The-Kraken-Pathfinding
 *.user
 *.project
 build/
-high_level/graphic.conf
-high_level/kraken.conf
-high_level/senpai.conf
+high_level/graphic*.conf
+high_level/kraken*.conf
+high_level/senpai*.conf
 high_level/logs/
 high_level/junit/
 high_level/videos/
