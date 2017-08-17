@@ -45,7 +45,6 @@ public class ThreadRemoteControl extends Thread
 	private OutgoingOrderBuffer data;
 	private Senpai container;
 	private ServerSocket ssocket = null;
-	private boolean remote;
 	private double l;
 	private int port;
 
@@ -148,7 +147,6 @@ public class ThreadRemoteControl extends Thread
 		this.log = log;
 		this.data = data;
 		this.container = container;
-		remote = config.getBoolean(ConfigInfoSenpai.REMOTE_CONTROL);
 		l = config.getDouble(ConfigInfoSenpai.CENTRE_ROTATION_ROUE_X) / 1000.;
 		port = config.getInt(ConfigInfoSenpai.REMOTE_CONTROL_PORT_NUMBER);
 	}
@@ -160,13 +158,6 @@ public class ThreadRemoteControl extends Thread
 		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.DUMMY);
 		try
 		{
-			if(!remote)
-			{
-				log.write(getClass().getSimpleName() + " annulé", Subject.DUMMY);
-				while(true)
-					Thread.sleep(10000);
-			}
-
 			ssocket = new ServerSocket(port);
 			control(ssocket.accept());
 		}

@@ -30,6 +30,7 @@ import pfg.config.Config;
 import pfg.graphic.PrintBuffer;
 import pfg.graphic.ThreadComm;
 import pfg.graphic.ThreadPrinting;
+import pfg.graphic.ThreadSaveVideo;
 import pfg.graphic.DebugTool;
 import pfg.graphic.Fenetre;
 import pfg.graphic.Vec2RO;
@@ -141,6 +142,18 @@ public class Senpai
 				if(injector.getService(n.c).isAlive())
 					log.write(n.c.getSimpleName() + " encore vivant !", Severity.CRITICAL, Subject.DUMMY);
 	
+			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_DIFFERENTIAL))
+				injector.getService(ThreadSaveVideo.class).interrupt();
+
+			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_EXTERNAL))
+				injector.getService(ThreadComm.class).interrupt();
+
+			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ENABLE))
+				injector.getService(ThreadPrinting.class).interrupt();
+			
+			if(config.getBoolean(ConfigInfoSenpai.REMOTE_CONTROL))
+				injector.getService(ThreadRemoteControl.class).interrupt();
+			
 			injector.getService(ThreadShutdown.class).interrupt();
 		} catch(InjectorException e)
 		{
@@ -284,8 +297,11 @@ public class Senpai
 		 */
 		try {
 			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_DIFFERENTIAL))
+				injector.getService(ThreadSaveVideo.class).start();
+
+			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_EXTERNAL))
 				injector.getService(ThreadComm.class).start();
-			
+
 			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ENABLE))
 				injector.getService(ThreadPrinting.class).start();
 			
