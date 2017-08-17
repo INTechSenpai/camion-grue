@@ -1,8 +1,9 @@
 from PyQt5.QtWidgets import (QWidget, QGridLayout, QSplitter, QApplication, QFrame, QPushButton, QTabWidget, QSlider,
                              QLabel, QLineEdit, QComboBox, QScrollArea, QCheckBox, QTextEdit, QHBoxLayout, QVBoxLayout, QLayoutItem)
-from PyQt5.QtGui import (QIcon, QPixmap, QFont, QColor)
-from PyQt5.QtCore import Qt
-import sys
+from PyQt5.QtGui import (QIcon, QPixmap, QFont, QColor, QPainter, QPen, QStaticText, QTextOption)
+from PyQt5.QtCore import (Qt, QRect)
+import sys, math, random
+import pyqtgraph
 from CommandList import *
 
 
@@ -23,16 +24,15 @@ class MainWindow(QWidget):
         self.consolePanel = ConsolePanel(self)
         self.consolePanel.setFrameShape(QFrame.StyledPanel)
         self.graphPanel = GraphPanel(self)
-        self.graphPanel.setFrameShape(QFrame.StyledPanel)
 
         self.splitter = QSplitter(Qt.Horizontal)
         self.splitter.addWidget(self.commandPanelScrollArea)
         self.splitter.addWidget(self.consolePanel)
         self.splitter.addWidget(self.graphPanel)
 
-        self.splitter.setStretchFactor(0, 1)
-        self.splitter.setStretchFactor(1, 2)
-        self.splitter.setStretchFactor(2, 2)
+        self.splitter.setStretchFactor(0, 0)
+        self.splitter.setStretchFactor(1, 0)
+        self.splitter.setStretchFactor(2, 1)
 
         grid.addWidget(self.toolBar, 0, 0)
         grid.addWidget(self.splitter, 1, 0)
@@ -42,6 +42,7 @@ class MainWindow(QWidget):
         self.setLayout(grid)
         self.setWindowTitle('Lowlevel Interface')
         self.setWindowIcon(QIcon('intech.ico'))
+        self.resize(1024, 512)
         self.show()
 
 
@@ -173,10 +174,6 @@ class AnnotatedSlider(QWidget):
         if sMax < sMin:
             return
         self.slider.setRange(sMin, sMax)
-        if self.slider.value() == self.sMax:
-            self.slider.setValue(sMax)
-        elif self.slider.value() == self.sMin:
-            self.slider.setValue(sMin)
         self.lineEdit.setText(str(self.slider.value()))
         self.sMin = sMin
         self.sMax = sMax
@@ -220,7 +217,7 @@ class CommandPanel(QWidget):
         grid = QGridLayout()
         row = 0
         for command in COMMAND_LIST:
-            if command.type != CommandType.SUBSCRIPTION:
+            if command.type == CommandType.SHORT_ORDER or command.type == CommandType.LONG_ORDER:
                 cb = CommandBox(self, command)
                 cb.setFrameShape(QFrame.StyledPanel)
                 grid.addWidget(cb, row, 0)
@@ -245,6 +242,7 @@ class CommandBox(QFrame):
             self.nameButton.setAlignment(Qt.AlignCenter)
         self.sendButton = QPushButton(self)
         self.sendButton.setIcon(QIcon('send.ico'))
+        self.sendButton.clicked.connect(self.send)
 
         grid.addWidget(self.id, 0, 0)
         grid.addWidget(self.nameButton, 0, 1)
@@ -254,16 +252,22 @@ class CommandBox(QFrame):
         grid.setColumnStretch(1, 1)
         grid.setColumnStretch(2, 0)
 
-        self.label_lineEdit_field = []
+        self.label_widget_field = []
         row = 1
         for field in self.command.inputFormat:
             label = QLabel(field.name, self)
             label.setHidden(True)
             grid.addWidget(label, row, 0)
-            lineEdit = QLineEdit(str(field.default), self)
-            lineEdit.setHidden(True)
-            grid.addWidget(lineEdit, row, 1)
-            self.label_lineEdit_field.append((label, lineEdit, field))
+            if len(field.legend) == 0:
+                widget = QLineEdit(self)
+                widget.textChanged.connect(self.checkTextFields)
+            else:
+                widget = QComboBox(self)
+                for value, name in field.legend.items():
+                    widget.addItem(name)
+            widget.setHidden(True)
+            grid.addWidget(widget, row, 1)
+            self.label_widget_field.append((label, widget, field))
             row += 1
         self.bReset = QPushButton(self)
         self.bReset.setIcon(QIcon('reset.ico'))
@@ -271,6 +275,7 @@ class CommandBox(QFrame):
         self.bReset.setHidden(True)
         grid.addWidget(self.bReset, 1, 2)
         self.setLayout(grid)
+        self.reset_values()
 
     def click_event(self):
         if self.nameButton.isChecked():
@@ -280,19 +285,73 @@ class CommandBox(QFrame):
 
     def expand(self):
         self.bReset.setHidden(False)
-        for label, lineEdit, field in self.label_lineEdit_field:
+        for label, widget, field in self.label_widget_field:
             label.setHidden(False)
-            lineEdit.setHidden(False)
+            widget.setHidden(False)
 
     def collapse(self):
         self.bReset.setHidden(True)
-        for label, lineEdit, field in self.label_lineEdit_field:
+        for label, widget, field in self.label_widget_field:
             label.setHidden(True)
-            lineEdit.setHidden(True)
+            widget.setHidden(True)
 
     def reset_values(self):
-        for label, lineEdit, field in self.label_lineEdit_field:
-            lineEdit.setText(str(field.default))
+        for label, widget, field in self.label_widget_field:
+            if isinstance(widget, QLineEdit):
+                widget.setText(str(field.default))
+            elif isinstance(widget, QComboBox):
+                i = 0
+                for value, name in field.legend.items():
+                    if value == field.default:
+                        widget.setCurrentIndex(i)
+                        break
+                    i += 1
+            else:
+                raise Exception("Unknown widget type")
+
+    def send(self):
+        args = []
+        for label, widget, field in self.label_widget_field:
+            value = None
+            if isinstance(widget, QLineEdit):
+                if self.checkTextFields():
+                    value = int(widget.text())
+            elif isinstance(widget, QComboBox):
+                for v, name in field.legend.items():
+                    if name == widget.currentText():
+                        value = v
+            else:
+                raise Exception("Unknown widget type")
+            if value is None:
+                print("Cannot send incorrect value")
+                return
+            else:
+                args.append(value)
+        print("TODO: Send command with args", args)
+
+    def checkTextFields(self):
+        allOk = True
+        for label, widget, field in self.label_widget_field:
+            if isinstance(widget, QLineEdit):
+                try:
+                    value = int(widget.text())
+                    if field.type == NumberType.UINT8 and (value < 0 or value > 255):
+                        raise ValueError
+                    elif field.type == NumberType.INT8 and (value < -128 or value > 127):
+                        raise ValueError
+                    elif field.type == NumberType.UINT16 and (value < 0 or value > 65535):
+                        raise ValueError
+                    elif field.type == NumberType.INT16 and (value < -32768 or value > 32767):
+                        raise ValueError
+                    elif field.type == NumberType.UINT32 and (value < 0 or value > 4294967295):
+                        raise ValueError
+                    elif field.type == NumberType.INT32 and (value < -2147483648 or value > 2147483647):
+                        raise ValueError
+                    widget.setStyleSheet("")
+                except ValueError:
+                    widget.setStyleSheet("background-color: rgb(249, 83, 83)")
+                    allOk = False
+        return allOk
 
 
 class ConsolePanel(QFrame):
@@ -443,12 +502,281 @@ class ConsolePanel(QFrame):
         self.formatTextToConsole(self.consoleText)
 
 
-class GraphPanel(QFrame):
+class GraphPanel(QWidget):
     def __init__(self, master):
         super().__init__(master)
         grid = QGridLayout()
-        grid.addWidget(QPushButton('prout', self))
+        grid.setContentsMargins(0, 0, 0, 0)
+
+        self.curveCommandList = []
+        self.scatterCommandList = []
+        for command in COMMAND_LIST:
+            if command.type == CommandType.SUBSCRIPTION_CURVE_DATA:
+                self.curveCommandList.append(command)
+            elif command.type == CommandType.SUBSCRIPTION_SCATTER_DATA:
+                self.scatterCommandList.append(command)
+
+        scrollArea = QScrollArea(self)
+        scrollArea.setFrameShape(QFrame.StyledPanel)
+        scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.graphSettings = GraphSettings(scrollArea, self.update_displayed_data, self.curveCommandList, self.scatterCommandList)
+        scrollArea.setWidgetResizable(True)
+        scrollArea.setWidget(self.graphSettings)
+
+        self.graphCurveArea = GraphCurveArea(self, self.curveCommandList)
+        self.graphCurveArea.setFrameShape(QFrame.StyledPanel)
+
+        self.graphScatterArea = GraphScatterArea(self, self.scatterCommandList)
+        self.graphScatterArea.setFrameShape(QFrame.StyledPanel)
+
+        subSplitter = QSplitter(Qt.Horizontal)
+        subSplitter.addWidget(self.graphCurveArea)
+        subSplitter.addWidget(self.graphScatterArea)
+
+        splitter = QSplitter(Qt.Vertical)
+        splitter.addWidget(scrollArea)
+        splitter.addWidget(subSplitter)
+        splitter.setCollapsible(1, False)
+        splitter.setStretchFactor(1, 1)
+
+        grid.addWidget(splitter)
         self.setLayout(grid)
+
+    def update_displayed_data(self):
+        checkboxes = self.graphSettings.getCheckboxes()
+        atLeastOneCurve = False
+        for command in self.curveCommandList:
+            for checkbox in checkboxes[command.name]:
+                if checkbox.isChecked():
+                    atLeastOneCurve = True
+                    break
+            if atLeastOneCurve:
+                break
+        atLeastOneScatter = False
+        for command in self.scatterCommandList:
+            for checkbox in checkboxes[command.name]:
+                if checkbox.isChecked():
+                    atLeastOneScatter = True
+                    break
+            if atLeastOneScatter:
+                break
+        if atLeastOneCurve and atLeastOneScatter:
+            self.graphCurveArea.show()
+            self.graphScatterArea.show()
+        elif atLeastOneScatter:
+            self.graphCurveArea.hide()
+            self.graphScatterArea.show()
+        else:
+            self.graphCurveArea.show()
+            self.graphScatterArea.hide()
+        self.graphCurveArea.update_graph(checkboxes)
+        self.graphScatterArea.update_graph(checkboxes)
+
+    # data format : {command.name: {field.name: {"x": [], "y": []}, ...}, ...}
+    def update_data(self, curveData=None, scatterData=None, origin=None, xMin = None, xMax=None):
+        if xMin is not None and xMax is not None:
+            self.graphCurveArea.setRange(xMin, xMax)
+        if origin is not None:
+            self.graphCurveArea.setOrigin(origin)
+        if curveData is not None:
+            for commandName, fieldDict in curveData.items():
+                for fieldName, points in fieldDict.items():
+                    self.graphCurveArea.setData(commandName, fieldName, points["x"], points["y"])
+        if scatterData is not None:
+            for commandName, pointsDict in scatterData.items():
+                self.graphScatterArea.setData(commandName, pointsDict["x"], pointsDict["y"], pointsDict["color"])
+        self.update_displayed_data()
+
+
+class GraphSettings(QWidget):
+    def __init__(self, master, update_callback, commandList_curves, commandList_scatter):
+        super().__init__(master)
+        grid = QGridLayout()
+        grid.setContentsMargins(5,5,5,5)
+        self.checkboxes = {}
+        column = 0
+        for command in commandList_curves:
+            checkboxList = []
+            cbGroup = GraphSettingGroup(self, update_callback, command.name, command.outputFormat, checkboxList)
+            grid.addWidget(cbGroup, 0, column)
+            self.checkboxes[command.name] = checkboxList
+            column += 1
+        checkboxList = []
+        cbGroup = GraphSettingGroup(self, update_callback, "Scatter graphs", commandList_scatter, checkboxList)
+        grid.addWidget(cbGroup, 0, column)
+        for checkbox in checkboxList:
+            self.checkboxes[checkbox.text()] = [checkbox]
+        grid.setRowStretch(1, 1)
+        grid.setColumnStretch(column + 1, 1)
+        self.setLayout(grid)
+
+    def getCheckboxes(self):
+        return self.checkboxes
+
+
+class GraphSettingGroup(QFrame):
+    def __init__(self, master, update_callback, title, fieldList, checkboxList):
+        super().__init__(master)
+        self.update_callback = update_callback
+        self.setFrameShape(QFrame.Panel)
+        self.setFrameShadow(QFrame.Sunken)
+        self.setStyleSheet("background-color: rgb(29, 31, 33)")
+        grid = QVBoxLayout()
+        grid.setContentsMargins(5,0,5,5)
+        grid.setSpacing(0)
+        buttonTitle = QPushButton(title, self)
+        buttonTitle.clicked.connect(self.globalToggle)
+        buttonTitle.setFlat(True)
+        buttonTitle.setStyleSheet("color: rgb(197, 200, 198)")
+        grid.addWidget(buttonTitle, stretch=0, alignment=Qt.AlignTop)
+        self.cbList = []
+        for field in fieldList:
+            cb = QCheckBox(field.name, self)
+            if isinstance(field, InfoField):
+                r, g, b, a = field.color.getRgb()
+            else:
+                r, g, b = (197, 200, 198)
+            cb.setStyleSheet("color: rgb("+ str(r) + "," + str(g) + "," + str(b) + ")")
+            cb.clicked.connect(update_callback)
+            grid.addWidget(cb, stretch=0, alignment=Qt.AlignTop)
+            checkboxList.append(cb)
+            self.cbList.append(cb)
+        self.setLayout(grid)
+
+    def globalToggle(self):
+        turnOn = False
+        for cb in self.cbList:
+            if not cb.isChecked():
+                turnOn = True
+                break
+        for cb in self.cbList:
+            cb.setChecked(turnOn)
+        self.update_callback()
+
+
+class GraphCurveArea(QFrame):
+    def __init__(self, master, commandList):
+        super().__init__(master)
+        grid = QGridLayout()
+        grid.setContentsMargins(0,0,0,0)
+        pyqtgraph.setConfigOption('background', QColor(29, 31, 33))
+        self.plotWidget = pyqtgraph.PlotWidget(self)
+        self.plotWidget.setLabel('bottom', 't', units='ms')
+        self.plotItem = self.plotWidget.getPlotItem()
+        self.plotItem.showAxis('left', False)
+        self.plot = self.plotItem.plot(pen=QColor(255, 255, 255, 0))
+        grid.addWidget(self.plotWidget, 0, 0)
+        self.setLayout(grid)
+        self.origin = 0
+        self.xMin = 0
+        self.xMax = 0
+        self.data = {}
+        axisColumn = 3
+        for command in commandList:
+            viewBox = pyqtgraph.ViewBox()
+            axis = pyqtgraph.AxisItem('right')
+            self.plotItem.layout.addItem(axis, 2, axisColumn)
+            axisColumn += 1
+            self.plotItem.scene().addItem(viewBox)
+            axis.linkToView(viewBox)
+            viewBox.setXLink(self.plotItem)
+            axis.setLabel(command.name)
+            self.data[command.name] = {"viewBox": viewBox, "axis": axis, "data": {}}
+            for field in command.outputFormat:
+                self.data[command.name]["data"][field.name] = {"x": [], "y": []}
+                plot = pyqtgraph.PlotCurveItem()
+                plot.setPen(field.color)
+                self.data[command.name]["viewBox"].addItem(plot)
+                self.data[command.name]["data"][field.name]["plot"] = plot
+        self.updateViews()
+        self.plotItem.vb.sigResized.connect(self.updateViews)
+
+    # self.data format: {channelName: {"viewBox": viewBox, "axis": axis, "data": {fieldName: {"x": [], "y": []}, ...}}, ...}
+    def setData(self, commandName, fieldName, x, y):
+        self.data[commandName]["data"][fieldName]["x"] = x
+        self.data[commandName]["data"][fieldName]["y"] = y
+
+    def setOrigin(self, origin):
+        self.origin = origin
+
+    def setRange(self, xMin, xMax):
+        if xMin <= xMax:
+            self.xMin = xMin
+            self.xMax = xMax
+
+    def update_graph(self, checkboxes):
+        self.plot.setData(x=[self.xMin - self.origin, self.xMax - self.origin], y=[1, 1])
+        for name, cbList in checkboxes.items():
+            if name in self.data:
+                atLeastOneCbChecked = False
+                for checkbox in cbList:
+                    data = self.data[name]["data"][checkbox.text()]
+                    if checkbox.isChecked():
+                        atLeastOneCbChecked = True
+                        data["plot"].setData(x=[x - self.origin for x in data["x"]], y=data["y"])
+                    else:
+                        data["plot"].setData(x=[], y=[])
+                self.data[name]["axis"].setVisible(atLeastOneCbChecked)
+
+    def updateViews(self):
+        for name, dic in self.data.items():
+            dic["viewBox"].setGeometry(self.plotItem.vb.sceneBoundingRect())
+            dic["viewBox"].linkedViewChanged(self.plotItem.vb, dic["viewBox"].XAxis)
+
+
+class GraphScatterArea(QFrame):
+    def __init__(self, master, commandList):
+        super().__init__(master)
+        grid = QGridLayout()
+        grid.setContentsMargins(0,0,0,0)
+        pyqtgraph.setConfigOption('background', QColor(29, 31, 33))
+        self.plotWidget = pyqtgraph.PlotWidget(self)
+        self.plotWidget.setLabel('left', 'Y', units='mm')
+        self.plotWidget.setLabel('bottom', 'X', units='mm')
+        grid.addWidget(self.plotWidget, 0, 0)
+        self.setLayout(grid)
+        self.data = {}
+        for command in commandList:
+            plot = self.plotWidget.getPlotItem()
+            scatterPlotItem = pyqtgraph.ScatterPlotItem(pxMode=False)
+            plot.addItem(scatterPlotItem)
+            self.data[command.name] = {"plot": scatterPlotItem, "data": []}
+
+    def setData(self, commandName, x, y, color):
+        self.data[commandName]["data"] = []
+        if len(x) == len(y) == len(color):
+            for i in range(len(x)):
+                self.data[commandName]["data"].append({'pos': (x[i], y[i]), 'pen': {'color': color[i]}, 'brush': color[i]})
+        else:
+            raise Exception("Data length error")
+
+    def update_graph(self, checkboxes):
+        for name, cbList in checkboxes.items():
+            if name in self.data:
+                if len(cbList) == 1:
+                    data = self.data[name]
+                    if cbList[0].isChecked():
+                        data["plot"].setData(spots=data["data"], pxMode=True, size=2)
+                    else:
+                        data["plot"].setData([])
+                else:
+                    raise Exception("Invalid checkboxes structure")
+
+
+def randomDataDict():
+    size = 20
+    dic = {"x": list(range(size)), "y": []}
+    y = 5
+    for i in range(size):
+        dic["y"].append(y)
+        y += random.randint(-3, 3)
+    return dic
+
+def randomColor(size):
+    output = []
+    for i in range(size):
+        output.append(QColor(random.randint(0, 16777215)))
+    return output
 
 
 if __name__ == '__main__':
@@ -463,4 +791,14 @@ if __name__ == '__main__':
 624272_order_Order launched
 624273_answer_Answer of the order !
 """)
+    d = {
+        "Direction": {"Aim direction": randomDataDict(), "Real direction": randomDataDict()},
+        "Speed PID": {"P err": randomDataDict(), "I err": randomDataDict(), "D err": randomDataDict()},
+        "Translation PID": {"P err": randomDataDict(), "I err": randomDataDict(), "D err": randomDataDict()},
+        "Trajectory PID": {"Translation err": randomDataDict(), "Angular err": randomDataDict()}
+    }
+    s = {
+        "Odometry and Sensors" : {"x": [1,2,3,4,5], "y": [5,4,3,1,2], "color": randomColor(5)}
+    }
+    main.graphPanel.update_data(curveData=d, scatterData=s, origin=15, xMin=0, xMax=19)
     sys.exit(app.exec_())
