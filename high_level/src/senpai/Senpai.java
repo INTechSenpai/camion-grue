@@ -27,7 +27,9 @@ import buffer.OutgoingOrderBuffer;
 import comm.Communication;
 import obstacles.ObstaclesFixes;
 import pfg.config.Config;
-import pfg.graphic.AbstractPrintBuffer;
+import pfg.graphic.PrintBuffer;
+import pfg.graphic.ThreadComm;
+import pfg.graphic.ThreadPrinting;
 import pfg.graphic.DebugTool;
 import pfg.graphic.Fenetre;
 import pfg.graphic.Vec2RO;
@@ -40,6 +42,7 @@ import pfg.log.Log;
 import robot.Robot;
 import robot.Speed;
 import threads.ThreadName;
+import threads.ThreadRemoteControl;
 import threads.ThreadShutdown;
 
 /**
@@ -200,7 +203,7 @@ public class Senpai
 		injector.addService(Robot.class, new Robot(log));
 		Fenetre f = debug.getFenetre(new Vec2RO(0,1000));
 		injector.addService(Fenetre.class, f);
-		injector.addService(AbstractPrintBuffer.class, f.getPrintBuffer());
+		injector.addService(PrintBuffer.class, f.getPrintBuffer());
 		
 
 		Speed.TEST.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_TEST) / 1000.;
@@ -258,7 +261,7 @@ public class Senpai
 		{
 			log.write("Mise en place du hook d'arrêt", Subject.DUMMY);
 			Runtime.getRuntime().addShutdownHook(injector.getService(ThreadShutdown.class));
-			Obstacle.set(log, injector.getService(AbstractPrintBuffer.class));
+			Obstacle.set(log, injector.getService(PrintBuffer.class));
 			Obstacle.useConfig(config);
 		}
 		catch(InjectorException e)
@@ -268,12 +271,27 @@ public class Senpai
 			assert false : e;
 		}
 		
+		if(!config.getBoolean(ConfigInfoSenpai.GRAPHIC_ENABLE))
+		{
+			ConfigInfoSenpai.unsetGraphic();
+			config.reload();
+		}
+		
 		startAllThreads();
 		
 		/**
 		 * L'initialisation est bloquante (on attend le LL), donc on le f ait le plus tardivement possible
 		 */
 		try {
+			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_DIFFERENTIAL))
+				injector.getService(ThreadComm.class).start();
+			
+			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ENABLE))
+				injector.getService(ThreadPrinting.class).start();
+			
+			if(config.getBoolean(ConfigInfoSenpai.REMOTE_CONTROL))
+				injector.getService(ThreadRemoteControl.class).start();
+
 			simuleComm = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM); 
 			if(!simuleComm)
 			{
@@ -283,6 +301,7 @@ public class Senpai
 			else
 				log.write("COMMUNICATION SIMULÉE !", Severity.CRITICAL, Subject.DUMMY);						
 		} catch (InjectorException e) {
+			assert false;
 			e.printStackTrace();
 		}
 	}

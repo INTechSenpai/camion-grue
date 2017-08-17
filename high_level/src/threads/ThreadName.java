@@ -28,9 +28,6 @@ import threads.comm.ThreadCommEmitter;
 public enum ThreadName
 {
 	CAPTEURS(ThreadCapteurs.class),
-	FENETRE(ThreadFenetre.class),
-	PRINT_SERVER(ThreadPrintServer.class),
-	REMOTE_CONTROL(ThreadRemoteControl.class),
 	PEREMPTION(ThreadPeremption.class),
 	SERIAL_INPUT_ORDRE(ThreadCommProcess.class),
 	SERIAL_INPUT_TRAME(ThreadCommListener.class),
