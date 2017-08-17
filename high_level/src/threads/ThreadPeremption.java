@@ -68,8 +68,7 @@ public class ThreadPeremption extends Thread
 				synchronized(buffer)
 				{
 					List<Obstacle> oldObs = memory.deleteOldObstacles();
-					for(Obstacle o : oldObs)
-						buffer.addOldObstacle(o);
+					buffer.addAllOldObstacle(oldObs);
 					
 					buffer.notify();
 				}

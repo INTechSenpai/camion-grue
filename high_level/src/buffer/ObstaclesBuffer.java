@@ -14,6 +14,7 @@
 
 package buffer;
 
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -82,9 +83,9 @@ public class ObstaclesBuffer
 	 * 
 	 * @param elem
 	 */
-	public synchronized void addOldObstacle(Obstacle elem)
+	public synchronized void addAllOldObstacle(List<Obstacle> elem)
 	{
-		bufferOldObstacles.add(elem);
+		bufferOldObstacles.addAll(elem);
 	}
 
 	/**
