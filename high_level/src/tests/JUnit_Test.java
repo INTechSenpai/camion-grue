@@ -29,6 +29,7 @@ import pfg.log.Log;
 import org.junit.After;
 
 import robot.Robot;
+import senpai.ConfigInfoSenpai;
 import senpai.Senpai;
 import senpai.Subject;
 
@@ -46,6 +47,7 @@ public abstract class JUnit_Test
 	protected Senpai container;
 	protected Config config;
 	protected Log log;
+	private long timeoutAffichage;
 
 	@Rule
 	public TestName testName = new TestName();
@@ -57,7 +59,8 @@ public abstract class JUnit_Test
 
 		container = new Senpai("senpai-test.conf");
 		config = container.getService(Config.class);
-		log = container.getService(Log.class);
+		timeoutAffichage = config.getLong(ConfigInfoSenpai.AFFICHAGE_TIMEOUT);
+		log = container.getService(Log.class);		
 		log.write("Test unitaire : " + testName.getMethodName(), Subject.DUMMY);
 /*		synchronized(config)
 		{
@@ -77,7 +80,7 @@ public abstract class JUnit_Test
 	{
 		Fenetre f = container.getExistingService(Fenetre.class);
 		if(f != null)
-			f.waitUntilExit();
+			f.waitUntilExit(timeoutAffichage);
 		container.destructor();
 	}
 

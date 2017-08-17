@@ -24,6 +24,7 @@ import pfg.config.ConfigInfo;
 
 public enum ConfigInfoSenpai implements ConfigInfo
 {
+	AFFICHAGE_TIMEOUT(5000), // timeout sur l'affichage (0 pour infini)
 	REMOTE_CONTROL_PORT_NUMBER(13371), // port de la télécommande
 	LL_PORT_NUMBER(22222), // TODO
 	LL_HOSTNAME_SERVER("127.0.0.1"), // TODO // soit un hostname, soit l'adresse ip
