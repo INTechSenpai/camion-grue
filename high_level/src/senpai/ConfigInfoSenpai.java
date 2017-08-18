@@ -185,7 +185,9 @@ public enum ConfigInfoSenpai implements ConfigInfo
 							// d'affichage ?
 	GRAPHIC_DIFFERENTIAL(true), // sauvegarde d'une "vidéo" pour visionner les
 								// images plus tard
-	GRAPHIC_ZOOM(0); // zoom de la fenêtre. Si 0, aucun zoom. Sinon, zoom + focus sur le robot
+	GRAPHIC_ZOOM(0), // zoom de la fenêtre. Si 0, aucun zoom. Sinon, zoom + focus sur le robot
+	GRAPHIC_COMM_CHART(false), // active les graphes de debug de la communication
+	GRAPHIC_CAPTEURS_CHART(false); // active les graphes de debug des capteurs
 
 
 	private Object defaultValue;

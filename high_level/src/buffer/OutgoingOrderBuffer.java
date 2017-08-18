@@ -14,6 +14,7 @@
 
 package buffer;
 
+import java.awt.Graphics;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Queue;
@@ -27,7 +28,13 @@ import comm.CommProtocol.Id;
 import pfg.log.Log;
 import robot.Speed;
 import senpai.Subject;
+import senpai.ConfigInfoSenpai;
 import senpai.Severity;
+import pfg.config.Config;
+import pfg.graphic.Chart;
+import pfg.graphic.Fenetre;
+import pfg.graphic.PrintBuffer;
+import pfg.graphic.printable.Printable;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.robot.CinematiqueObs;
 import pfg.kraken.utils.XY;
@@ -44,13 +51,16 @@ import pfg.kraken.utils.XY_RW;
  *
  */
 
-public class OutgoingOrderBuffer
+public class OutgoingOrderBuffer implements Printable
 {
+	private static final long serialVersionUID = 1L;
 	protected Log log;
 
-	public OutgoingOrderBuffer(Log log)
+	public OutgoingOrderBuffer(Log log, Config config, PrintBuffer print)
 	{
 		this.log = log;
+		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_COMM_CHART))
+			print.add(this);
 	}
 
 	private Queue<Order> bufferBassePriorite = new ConcurrentLinkedQueue<Order>();
@@ -412,6 +422,18 @@ public class OutgoingOrderBuffer
 		double latency = 1000. * (System.currentTimeMillis() - avant) / (2*nbEssais);
 		// on divise par 2 car il s'agit d'un aller-retour
 		log.write("Latence estimée : "+latency+" μs", latency >= 200 ? Severity.CRITICAL : (latency >= 50 ? Severity.WARNING : Severity.INFO), Subject.COMM);
+	}
+
+	@Override
+	public void print(Graphics g, Fenetre f, Chart a)
+	{
+		a.addData("Buffer d'ordre sortants", (double) (bufferBassePriorite.size() + bufferTrajectoireCourbe.size()));
+	}
+
+	@Override
+	public int getLayer()
+	{
+		return 0;
 	}
 	
 }

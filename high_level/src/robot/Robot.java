@@ -23,7 +23,7 @@ import comm.Ticket;
 import exceptions.ActionneurException;
 import exceptions.UnableToMoveException;
 import pfg.config.Config;
-import pfg.graphic.AffichageDebug;
+import pfg.graphic.Chart;
 import pfg.graphic.Fenetre;
 import pfg.graphic.printable.Layer;
 import pfg.graphic.printable.Printable;
@@ -137,7 +137,7 @@ public class Robot extends RobotState implements Printable
 	}
 
 	@Override
-	public void print(Graphics g, Fenetre f, AffichageDebug a)
+	public void print(Graphics g, Fenetre f, Chart a)
 	{
 /*		if(print)
 		{

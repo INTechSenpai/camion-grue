@@ -15,7 +15,10 @@
 package buffer;
 
 import capteurs.SensorsData;
+import pfg.config.Config;
+import pfg.graphic.PrintBuffer;
 import pfg.log.Log;
+import senpai.ConfigInfoSenpai;
 
 /**
  * Buffer qui contient les infos provenant des capteurs du LL
@@ -26,8 +29,12 @@ import pfg.log.Log;
 
 public class SensorsDataBuffer extends IncomingBuffer<SensorsData>
 {
-	public SensorsDataBuffer(Log log)
+	private static final long serialVersionUID = 1L;
+
+	public SensorsDataBuffer(Log log, Config config, PrintBuffer print)
 	{
-		super(log);
+		super(log, "Buffer des capteurs");
+		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_CAPTEURS_CHART))
+			print.add(this);
 	}
 }

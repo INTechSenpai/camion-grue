@@ -14,12 +14,19 @@
 
 package buffer;
 
+import java.awt.Graphics;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import pfg.config.Config;
+import pfg.graphic.Chart;
+import pfg.graphic.Fenetre;
+import pfg.graphic.PrintBuffer;
+import pfg.graphic.printable.Printable;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.log.Log;
+import senpai.ConfigInfoSenpai;
 
 /**
  * Buffer qui contient les obstacles nouveaux / périmés
@@ -28,14 +35,17 @@ import pfg.log.Log;
  *
  */
 
-public class ObstaclesBuffer
+public class ObstaclesBuffer implements Printable
 {
+	private static final long serialVersionUID = 1L;
 	protected Log log;
 	private boolean needToWait = true;
 	
-	public ObstaclesBuffer(Log log)
+	public ObstaclesBuffer(Log log, Config config, PrintBuffer print)
 	{
 		this.log = log;
+		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_COMM_CHART))
+			print.add(this);
 	}
 
 	public synchronized void clear()
@@ -102,5 +112,18 @@ public class ObstaclesBuffer
 	public boolean needToWait()
 	{
 		return needToWait;
+	}
+
+	@Override
+	public void print(Graphics g, Fenetre f, Chart a)
+	{
+		a.addData("Buffer d'obstacles nouveaux", (double) (bufferNewObstacles.size()));
+		a.addData("Buffer d'obstacles anciens", (double) (bufferOldObstacles.size()));
+	}
+
+	@Override
+	public int getLayer() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

@@ -15,7 +15,10 @@
 package buffer;
 
 import comm.Paquet;
+import pfg.config.Config;
+import pfg.graphic.PrintBuffer;
 import pfg.log.Log;
+import senpai.ConfigInfoSenpai;
 
 /**
  * Buffer qui contient les ordres provenant de la série
@@ -26,8 +29,12 @@ import pfg.log.Log;
 
 public class IncomingOrderBuffer extends IncomingBuffer<Paquet>
 {
-	public IncomingOrderBuffer(Log log)
+	private static final long serialVersionUID = 1L;
+
+	public IncomingOrderBuffer(Log log, Config config, PrintBuffer print)
 	{
-		super(log);
+		super(log, "Buffer d'ordres");
+		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_COMM_CHART))
+			print.add(this);
 	}
 }

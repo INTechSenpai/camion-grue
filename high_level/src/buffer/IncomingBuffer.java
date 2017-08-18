@@ -15,21 +15,28 @@
 
 package buffer;
 
+import java.awt.Graphics;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import pfg.log.Log;
 import senpai.Severity;
 import senpai.Subject;
+import pfg.graphic.Chart;
+import pfg.graphic.Fenetre;
+import pfg.graphic.printable.Printable;
 
-public class IncomingBuffer<T> {
-
+public class IncomingBuffer<T> implements Printable
+{
+	private static final long serialVersionUID = 1L;
 	protected Log log;
 	private boolean warning = false;
+	private String nom;
 	
-	public IncomingBuffer(Log log)
+	public IncomingBuffer(Log log, String nom)
 	{
 		this.log = log;
+		this.nom = nom;
 	}
 
 	/**
@@ -80,5 +87,17 @@ public class IncomingBuffer<T> {
 			warning = false;
 		}
 		return out;
+	}
+
+	@Override
+	public void print(Graphics g, Fenetre f, Chart a)
+	{
+		a.addData(nom, (double) buffer.size());
+	}
+
+	@Override
+	public int getLayer()
+	{
+		return 0;
 	}
 }
