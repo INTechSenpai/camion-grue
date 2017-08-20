@@ -1,24 +1,23 @@
 from PyQt5.QtWidgets import (QWidget, QGridLayout, QSplitter, QApplication, QFrame, QPushButton, QTabWidget, QSlider,
                              QLabel, QLineEdit, QComboBox, QScrollArea, QCheckBox, QTextEdit, QHBoxLayout, QVBoxLayout, QLayoutItem)
-from PyQt5.QtGui import (QIcon, QPixmap, QFont, QColor, QPainter, QPen, QStaticText, QTextOption)
-from PyQt5.QtCore import (Qt, QRect)
-import sys, math, random
+from PyQt5.QtGui import (QIcon, QPixmap, QFont)
+from PyQt5.QtCore import Qt
+import sys, random
 import pyqtgraph
 from CommandList import *
-
-
-DEFAULT_ROBOT_IP = "172.16.0.2"
+from backend import Backend
+from communication import DEFAULT_ROBOT_IP
 
 
 class MainWindow(QWidget):
-    def __init__(self):
+    def __init__(self, toolbarConnect, toolbarDisconnect, toolbarSetTime, toolbarSetZoom, toolbarErase, toolbarCancelCut, toolbarCut, panelSend):
         super().__init__()
         grid = QGridLayout()
 
-        self.toolBar = ToolBar(self)
+        self.toolBar = ToolBar(self, toolbarConnect, toolbarDisconnect, toolbarSetTime, toolbarSetZoom, toolbarErase, toolbarCancelCut, toolbarCut)
         self.commandPanelScrollArea = QScrollArea(self)
         self.commandPanelScrollArea.setFrameShape(QFrame.StyledPanel)
-        self.commandPanel = CommandPanel(self.commandPanelScrollArea)
+        self.commandPanel = CommandPanel(self.commandPanelScrollArea, panelSend)
         self.commandPanelScrollArea.setWidgetResizable(True)
         self.commandPanelScrollArea.setWidget(self.commandPanel)
         self.consolePanel = ConsolePanel(self)
@@ -41,16 +40,21 @@ class MainWindow(QWidget):
 
         self.setLayout(grid)
         self.setWindowTitle('Lowlevel Interface')
-        self.setWindowIcon(QIcon('intech.ico'))
+        self.setWindowIcon(QIcon('img/intech.ico'))
         self.resize(1024, 512)
         self.show()
 
 
 class ToolBar(QWidget):
-    def __init__(self, master):
+    def __init__(self, master, mConnectTo, mDisconnect, mSetTime, mSetZoom, mEraseBeforeCut, mCancelCut, mCut):
         super().__init__(master)
-        grid = QGridLayout()
 
+        # Callbacks
+        self.connectTo = mConnectTo
+        self.closeConnection = mDisconnect
+        self.setTimeValue = mSetTime
+
+        # Widgets
         self.protocolTabs = QTabWidget(self)
         self.ipChooser = IpChooser(self)
         self.serialChooser = SerialChooser(self)
@@ -58,30 +62,121 @@ class ToolBar(QWidget):
         self.protocolTabs.addTab(self.ipChooser, "TCP/IP")
         self.protocolTabs.addTab(self.serialChooser, "COM")
 
-        self.bConnect = QPushButton('Connect', self)
-        self.bDefineStartTime = QPushButton("Define start time")
-        self.bCancelDefinition = QPushButton("Cancel definition")
-        self.bEraseBeforeStartTime = QPushButton("Erase before start time")
+        self.iconConnect = QIcon("img/connect.png")
+        self.iconDisconnect = QIcon("img/disconnect.png")
+        self.iconPlay = QIcon("img/play.png")
+        self.iconPause = QIcon("img/pause.png")
 
-        self.timeSlider = AnnotatedSlider(self, 0, 10, unit="ms", icon=None)
-        self.zoomSlider = AnnotatedSlider(self, 0, 5, unit="ms", icon=None)
+        self.bConnect = QPushButton(self.iconConnect, "", self)
+        self.bConnect.clicked.connect(self.connexionMgr)
+        self.connected = False
+        self.connecting = False
+        self.bErase = QPushButton(QIcon("img/erase.png"), "", self)
+        self.bErase.setEnabled(False)
+        self.bErase.clicked.connect(mEraseBeforeCut)
+        self.bUncut = QPushButton(QIcon("img/uncut.png"), "", self)
+        self.bUncut.setEnabled(False)
+        self.bUncut.clicked.connect(mCancelCut)
+        self.bCut = QPushButton(QIcon("img/cut.png"), "", self)
+        self.bCut.clicked.connect(mCut)
+        self.bPlayPause = QPushButton(self.iconPlay, "", self)
+        self.bPlayPause.clicked.connect(self.playPauseToggle)
+        self.paused = True
 
-        grid.addWidget(self.protocolTabs, 0, 0, 2, 1)
+        self.timeSlider = AnnotatedSlider(self, 0, 10, unit="ms", icon=None, callback=self.timeSliderMoved)
+        self.zoomSlider = AnnotatedSlider(self, 100, 10000, unit="ms", icon=None, callback=mSetZoom)
+        self.zoomSlider.setValue(1000)
+        mSetZoom(1000)
+
+        # Layout
+        grid = QGridLayout()
+        grid.addWidget(self.protocolTabs, 0, 0)
         grid.addWidget(self.bConnect, 0, 1)
-        grid.addWidget(self.bDefineStartTime, 0, 2)
-        grid.addWidget(self.bCancelDefinition, 1, 2)
-        grid.addWidget(self.bEraseBeforeStartTime, 1, 1)
-        grid.addWidget(self.timeSlider, 0, 3, 2, 1)
-        grid.addWidget(self.zoomSlider, 0, 4, 2, 1)
+        grid.addWidget(self.bErase, 0, 2)
+        grid.addWidget(self.bUncut, 0, 3)
+        grid.addWidget(self.bCut, 0, 4)
+        grid.addWidget(self.bPlayPause, 0, 5)
+        grid.addWidget(self.timeSlider, 0, 6)
+        grid.addWidget(self.zoomSlider, 0, 7)
 
-        grid.setColumnStretch(0, 0)
-        grid.setColumnStretch(1, 0)
-        grid.setColumnStretch(2, 0)
-        grid.setColumnStretch(3, 2)
-        grid.setColumnStretch(4, 1)
+        grid.setColumnStretch(6, 2)
+        grid.setColumnStretch(7, 1)
         grid.setSpacing(5)
         grid.setContentsMargins(0,0,0,0)
         self.setLayout(grid)
+
+    def connexionMgr(self):
+        if not self.connecting:
+            if self.connected:
+                self.closeConnection()
+                self.ipChooser.markBlank()
+                self.serialChooser.markBlank()
+                self.protocolTabs.setEnabled(True)
+                self.bConnect.setIcon(self.iconConnect)
+                self.connected = False
+            else:
+                self.connecting = True
+                self.ipChooser.markBlank()
+                self.serialChooser.markBlank()
+                self.protocolTabs.setEnabled(False)
+                self.bConnect.setEnabled(False)
+                if self.isIpMode():
+                    self.connectTo(ip=self.ipChooser.getIp())
+                else:
+                    self.connectTo(com=self.serialChooser.getEntry())
+
+    def isIpMode(self):
+        return self.protocolTabs.currentIndex() == 0
+
+    def playPauseToggle(self):
+        if self.paused:
+            tMin, tMax = self.timeSlider.getBounds()
+            self.timeSlider.setValue(tMax)
+            self.paused = False
+            self.bPlayPause.setIcon(self.iconPause)
+        else:
+            self.paused = True
+            self.bPlayPause.setIcon(self.iconPlay)
+
+    def timeSliderMoved(self, value):
+        if not self.paused:
+            self.paused = True
+            self.bPlayPause.setIcon(self.iconPlay)
+        self.setTimeValue(value)
+
+    # Methods available for the backend
+    def setTimeBounds(self, tMin, tMax):
+        self.timeSlider.setBounds(tMin, tMax)
+        if not self.paused:
+            self.timeSlider.setValue(tMax)
+
+    def enableSecondaryIcons(self, enable):
+        self.bErase.setEnabled(enable)
+        self.bUncut.setEnabled(enable)
+
+    def connexionFailed(self):
+        self.connected = False
+        self.connecting = False
+        self.protocolTabs.setEnabled(True)
+        self.bConnect.setEnabled(True)
+        if self.isIpMode():
+            self.ipChooser.markWrong()
+            self.serialChooser.markBlank()
+        else:
+            self.ipChooser.markBlank()
+            self.serialChooser.markWrong()
+
+    def connexionSucceeded(self):
+        self.connected = True
+        self.connecting = False
+        self.bConnect.setIcon(self.iconDisconnect)
+        self.bConnect.setEnabled(True)
+        if self.isIpMode():
+            self.ipChooser.markConnected()
+            self.serialChooser.markBlank()
+        else:
+            self.ipChooser.markBlank()
+            self.serialChooser.markConnected()
 
 
 class IpChooser(QWidget):
@@ -120,7 +215,11 @@ class SerialChooser(QWidget):
         self.comboBox.addItems(entries)
 
     def getEntry(self):
-        return self.comboBox.currentText()
+        strList = self.comboBox.currentText().split()
+        if len(strList) > 0:
+            return strList[0]
+        else:
+            return ""
 
     def markBlank(self):
         self.comboBox.setStyleSheet("")
@@ -133,8 +232,9 @@ class SerialChooser(QWidget):
 
 
 class AnnotatedSlider(QWidget):
-    def __init__(self, master, sMin, sMax, unit, icon):
+    def __init__(self, master, sMin, sMax, unit, icon, callback):
         super().__init__(master)
+        self.callback = callback
         if sMax < sMin:
             raise ValueError
         grid = QGridLayout()
@@ -198,11 +298,13 @@ class AnnotatedSlider(QWidget):
         try:
             newValue = self._string_to_int(self.lineEdit.text())
             self.slider.setValue(newValue)
+            self.callback(newValue)
         except ValueError:
             self.lineEdit.setText(str(self.slider.value()))
 
     def _slider_moved_by_user(self, value):
         self.lineEdit.setText(str(value))
+        self.callback(value)
 
     def _string_to_int(self, string):
         val = int(string)
@@ -212,13 +314,13 @@ class AnnotatedSlider(QWidget):
 
 
 class CommandPanel(QWidget):
-    def __init__(self, master):
+    def __init__(self, master, sendMethod):
         super().__init__(master)
         grid = QGridLayout()
         row = 0
         for command in COMMAND_LIST:
             if command.type == CommandType.SHORT_ORDER or command.type == CommandType.LONG_ORDER:
-                cb = CommandBox(self, command)
+                cb = CommandBox(self, command, sendMethod)
                 cb.setFrameShape(QFrame.StyledPanel)
                 grid.addWidget(cb, row, 0)
                 row += 1
@@ -228,9 +330,10 @@ class CommandPanel(QWidget):
 
 
 class CommandBox(QFrame):
-    def __init__(self, master, command):
+    def __init__(self, master, command, sendCallback):
         super().__init__(master)
         self.command = command
+        self.sendCallback = sendCallback
         grid = QGridLayout()
         self.id = QLabel('0x%02x' % command.id, self)
         if len(command.inputFormat) > 0:
@@ -241,7 +344,7 @@ class CommandBox(QFrame):
             self.nameButton = QLabel(command.name, self)
             self.nameButton.setAlignment(Qt.AlignCenter)
         self.sendButton = QPushButton(self)
-        self.sendButton.setIcon(QIcon('send.ico'))
+        self.sendButton.setIcon(QIcon('img/send.png'))
         self.sendButton.clicked.connect(self.send)
 
         grid.addWidget(self.id, 0, 0)
@@ -270,7 +373,7 @@ class CommandBox(QFrame):
             self.label_widget_field.append((label, widget, field))
             row += 1
         self.bReset = QPushButton(self)
-        self.bReset.setIcon(QIcon('reset.ico'))
+        self.bReset.setIcon(QIcon('img/reset.png'))
         self.bReset.clicked.connect(self.reset_values)
         self.bReset.setHidden(True)
         grid.addWidget(self.bReset, 1, 2)
@@ -323,11 +426,10 @@ class CommandBox(QFrame):
             else:
                 raise Exception("Unknown widget type")
             if value is None:
-                print("Cannot send incorrect value")
                 return
             else:
                 args.append(value)
-        print("TODO: Send command with args", args)
+        self.sendCallback(self.command, args)
 
     def checkTextFields(self):
         allOk = True
@@ -348,8 +450,10 @@ class CommandBox(QFrame):
                     elif field.type == NumberType.INT32 and (value < -2147483648 or value > 2147483647):
                         raise ValueError
                     widget.setStyleSheet("")
+                    self.sendButton.setEnabled(True)
                 except ValueError:
                     widget.setStyleSheet("background-color: rgb(249, 83, 83)")
+                    self.sendButton.setEnabled(False)
                     allOk = False
         return allOk
 
@@ -447,7 +551,7 @@ class ConsolePanel(QFrame):
                     columnCount += 1
             self.cbArea.addLayout(line)
 
-    def formatTextToConsole(self, text):
+    def formatTextToConsole(self, text): # todo add support for spyOrder channel
         textLines = text.splitlines(keepends=True)
         lineNb = 0
         for line in textLines:
@@ -461,19 +565,19 @@ class ConsolePanel(QFrame):
             except ValueError:
                 print("Incorrect timestamp :", sLine[0])
                 continue
-            if sLine[1] == "info":
+            if sLine[1] == INFO_CHANNEL_NAME:
                 if not self.cbInfo.isChecked():
                     continue
                 color = self.textColor
-            elif sLine[1] == "error":
+            elif sLine[1] == ERROR_CHANNEL_NAME:
                 if not self.cbErrors.isChecked():
                     continue
                 color = self.errorColor
-            elif sLine[1] == "order":
+            elif sLine[1] == ORDER_DESCRIPTOR:
                 if not self.cbOrders.isChecked():
                     continue
                 color = self.orderColor
-            elif sLine[1] == "answer":
+            elif sLine[1] == ANSWER_DESCRIPTOR:
                 if not self.cbAnswers.isChecked():
                     continue
                 color = self.answerColor
@@ -490,7 +594,7 @@ class ConsolePanel(QFrame):
 
     def setText(self, newText):
         self.consoleText = newText
-        self.console.setPlainText("")
+        self.console.clear()
         self.formatTextToConsole(newText)
 
     def appendText(self, text):
@@ -541,6 +645,7 @@ class GraphPanel(QWidget):
 
         grid.addWidget(splitter)
         self.setLayout(grid)
+        self.update_displayed_data()
 
     def update_displayed_data(self):
         checkboxes = self.graphSettings.getCheckboxes()
@@ -572,7 +677,8 @@ class GraphPanel(QWidget):
         self.graphCurveArea.update_graph(checkboxes)
         self.graphScatterArea.update_graph(checkboxes)
 
-    # data format : {command.name: {field.name: {"x": [], "y": []}, ...}, ...}
+    # curve data format : {command.name: {field.name: {"x": [], "y": []}, ...}, ...}
+    # scatter data format : {command.name: {"x": [], "y": [], "color": []}, ...}
     def update_data(self, curveData=None, scatterData=None, origin=None, xMin = None, xMax=None):
         if xMin is not None and xMax is not None:
             self.graphCurveArea.setRange(xMin, xMax)
@@ -661,6 +767,7 @@ class GraphCurveArea(QFrame):
         grid.setContentsMargins(0,0,0,0)
         pyqtgraph.setConfigOption('background', QColor(29, 31, 33))
         self.plotWidget = pyqtgraph.PlotWidget(self)
+        self.plotWidget.setEnabled(False)
         self.plotWidget.setLabel('bottom', 't', units='ms')
         self.plotItem = self.plotWidget.getPlotItem()
         self.plotItem.showAxis('left', False)
@@ -731,6 +838,7 @@ class GraphScatterArea(QFrame):
         grid.setContentsMargins(0,0,0,0)
         pyqtgraph.setConfigOption('background', QColor(29, 31, 33))
         self.plotWidget = pyqtgraph.PlotWidget(self)
+        self.plotWidget.setEnabled(False)
         self.plotWidget.setLabel('left', 'Y', units='mm')
         self.plotWidget.setLabel('bottom', 'X', units='mm')
         grid.addWidget(self.plotWidget, 0, 0)
@@ -781,24 +889,27 @@ def randomColor(size):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    main = MainWindow()
-    main.consolePanel.setText(
-"""424242_info_loli is here !
-424252_info_loli is not here !
-424262_info_loli is there !
-424272_error_This is normal !
-424282_info_loli is very long like this line, which is especially long !
-624272_order_Order launched
-624273_answer_Answer of the order !
-""")
-    d = {
-        "Direction": {"Aim direction": randomDataDict(), "Real direction": randomDataDict()},
-        "Speed PID": {"P err": randomDataDict(), "I err": randomDataDict(), "D err": randomDataDict()},
-        "Translation PID": {"P err": randomDataDict(), "I err": randomDataDict(), "D err": randomDataDict()},
-        "Trajectory PID": {"Translation err": randomDataDict(), "Angular err": randomDataDict()}
-    }
-    s = {
-        "Odometry and Sensors" : {"x": [1,2,3,4,5], "y": [5,4,3,1,2], "color": randomColor(5)}
-    }
-    main.graphPanel.update_data(curveData=d, scatterData=s, origin=15, xMin=0, xMax=19)
+    backend = Backend()
+    main = MainWindow(backend.connect, backend.disconnect, backend.setCurrentTime, backend.setZoom, backend.eraseBeforeCut, backend.cancelLastCut, backend.addCut, backend.sendOrder)
+    backend.setGraphicalInterface(main.toolBar, main.consolePanel, main.graphPanel)
+    backend.startBackgroundTask()
+#     main.consolePanel.setText(
+# """424242_info_loli is here !
+# 424252_info_loli is not here !
+# 424262_info_loli is there !
+# 424272_error_This is normal !
+# 424282_info_loli is very long like this line, which is especially long !
+# 624272_order_Order launched
+# 624273_answer_Answer of the order !
+# """)
+#     d = {
+#         "Direction": {"Aim direction": randomDataDict(), "Real direction": randomDataDict()},
+#         "Speed PID": {"P err": randomDataDict(), "I err": randomDataDict(), "D err": randomDataDict()},
+#         "Translation PID": {"P err": randomDataDict(), "I err": randomDataDict(), "D err": randomDataDict()},
+#         "Trajectory PID": {"Translation err": randomDataDict(), "Angular err": randomDataDict()}
+#     }
+#     s = {
+#         "Odometry and Sensors" : {"x": [1,2,3,4,5], "y": [5,4,3,1,2], "color": randomColor(5)}
+#     }
+#     main.graphPanel.update_data(curveData=d, scatterData=s, origin=15, xMin=0, xMax=19)
     sys.exit(app.exec_())

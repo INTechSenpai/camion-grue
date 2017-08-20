@@ -1,6 +1,18 @@
 from enum import Enum
 from PyQt5.QtGui import QColor
 
+INFO_CHANNEL        = 0x01
+ERROR_CHANNEL       = 0x02
+TRACE_CHANNEL       = 0x03
+SPY_ORDER_CHANNEL   = 0x04
+
+INFO_CHANNEL_NAME       = "info"
+ERROR_CHANNEL_NAME      = "error"
+TRACE_CHANNEL_NAME      = "trace"
+SPY_ORDER_CHANNEL_NAME  = "spyOrder"
+ORDER_DESCRIPTOR        = "order"
+ANSWER_DESCRIPTOR       = "answer"
+
 
 class Command:
     def __init__(self, ID, name, t, inputFormat, outputFormat, outputInfoFrame=False):
