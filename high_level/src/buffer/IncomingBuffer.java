@@ -23,7 +23,7 @@ import pfg.log.Log;
 import senpai.Severity;
 import senpai.Subject;
 import pfg.graphic.Chart;
-import pfg.graphic.Fenetre;
+import pfg.graphic.GraphicPanel;
 import pfg.graphic.printable.Printable;
 
 public class IncomingBuffer<T> implements Printable
@@ -90,7 +90,7 @@ public class IncomingBuffer<T> implements Printable
 	}
 
 	@Override
-	public void print(Graphics g, Fenetre f, Chart a)
+	public void print(Graphics g, GraphicPanel f, Chart a)
 	{
 		a.addData(nom, (double) buffer.size());
 	}

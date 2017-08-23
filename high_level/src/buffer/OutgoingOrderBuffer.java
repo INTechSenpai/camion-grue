@@ -32,7 +32,7 @@ import senpai.ConfigInfoSenpai;
 import senpai.Severity;
 import pfg.config.Config;
 import pfg.graphic.Chart;
-import pfg.graphic.Fenetre;
+import pfg.graphic.GraphicPanel;
 import pfg.graphic.PrintBuffer;
 import pfg.graphic.printable.Printable;
 import pfg.kraken.robot.Cinematique;
@@ -425,7 +425,7 @@ public class OutgoingOrderBuffer implements Printable
 	}
 
 	@Override
-	public void print(Graphics g, Fenetre f, Chart a)
+	public void print(Graphics g, GraphicPanel f, Chart a)
 	{
 		a.addData("Buffer d'ordre sortants", (double) (bufferBassePriorite.size() + bufferTrajectoireCourbe.size()));
 	}

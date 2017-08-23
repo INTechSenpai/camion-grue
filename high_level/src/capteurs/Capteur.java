@@ -18,7 +18,7 @@ import java.awt.Graphics;
 
 import pfg.config.Config;
 import pfg.graphic.Chart;
-import pfg.graphic.Fenetre;
+import pfg.graphic.GraphicPanel;
 import pfg.graphic.printable.Layer;
 import pfg.graphic.printable.Printable;
 import robot.Robot;
@@ -77,7 +77,7 @@ public abstract class Capteur implements Printable
 	public abstract void computePosOrientationRelative(Cinematique c, double angleRoueGauche, double angleRoueDroite);
 
 	@Override
-	public void print(Graphics g, Fenetre f, Chart a)
+	public void print(Graphics g, GraphicPanel f, Chart a)
 	{
 		if(robot.isCinematiqueInitialised())
 		{

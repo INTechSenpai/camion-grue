@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import pfg.config.Config;
 import pfg.graphic.Chart;
-import pfg.graphic.Fenetre;
+import pfg.graphic.GraphicPanel;
 import pfg.graphic.PrintBuffer;
 import pfg.graphic.printable.Printable;
 import pfg.kraken.obstacles.Obstacle;
@@ -115,7 +115,7 @@ public class ObstaclesBuffer implements Printable
 	}
 
 	@Override
-	public void print(Graphics g, Fenetre f, Chart a)
+	public void print(Graphics g, GraphicPanel f, Chart a)
 	{
 		a.addData("Buffer d'obstacles nouveaux", (double) (bufferNewObstacles.size()));
 		a.addData("Buffer d'obstacles anciens", (double) (bufferOldObstacles.size()));

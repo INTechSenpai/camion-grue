@@ -22,7 +22,7 @@ import org.junit.runner.Request;
 import org.junit.runner.Result;
 
 import pfg.config.Config;
-import pfg.graphic.Fenetre;
+import pfg.graphic.WindowFrame;
 import pfg.kraken.robot.Cinematique;
 import pfg.log.Log;
 
@@ -78,7 +78,7 @@ public abstract class JUnit_Test
 	@After
 	public void tearDown() throws Exception
 	{
-		Fenetre f = container.getExistingService(Fenetre.class);
+		WindowFrame f = container.getExistingService(WindowFrame.class);
 		if(f != null)
 			f.waitUntilExit(timeoutAffichage);
 		container.destructor();

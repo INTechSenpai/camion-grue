@@ -32,8 +32,9 @@ import pfg.graphic.ThreadComm;
 import pfg.graphic.ThreadPrinting;
 import pfg.graphic.ThreadSaveVideo;
 import pfg.graphic.DebugTool;
-import pfg.graphic.Fenetre;
+import pfg.graphic.GraphicPanel;
 import pfg.graphic.Vec2RO;
+import pfg.graphic.WindowFrame;
 import pfg.injector.Injector;
 import pfg.injector.InjectorException;
 import pfg.kraken.Kraken;
@@ -114,7 +115,7 @@ public class Senpai
 			s.close();
 
 		// On appelle le destructeur du PrintBuffer
-		Fenetre f = injector.getExistingService(Fenetre.class);
+		WindowFrame f = injector.getExistingService(WindowFrame.class);
 		if(f != null)
 			f.close();
 
@@ -206,18 +207,14 @@ public class Senpai
 
 		injector = new Injector();
 
-		DebugTool debug = new DebugTool();
-		log = debug.getLog(Severity.INFO);
+		DebugTool debug = new DebugTool(Severity.INFO);
+		log = debug.getLog();
 		config = new Config(ConfigInfoSenpai.values(), configFile, false);
 
 		injector.addService(Senpai.class, this);
 		injector.addService(Log.class, log);
 		injector.addService(Config.class, config);
-		injector.addService(Robot.class, new Robot(log));
-		Fenetre f = debug.getFenetre(new Vec2RO(0,1000));
-		injector.addService(Fenetre.class, f);
-		injector.addService(PrintBuffer.class, f.getPrintBuffer());
-		
+		injector.addService(Robot.class, new Robot(log));		
 
 		Speed.TEST.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_TEST) / 1000.;
 		Speed.REPLANIF.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_REPLANIF) / 1000.;
@@ -296,14 +293,21 @@ public class Senpai
 		 * L'initialisation est bloquante (on attend le LL), donc on le f ait le plus tardivement possible
 		 */
 		try {
+			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ENABLE))
+			{
+				WindowFrame f = debug.getWindowFrame(new Vec2RO(0,1000));
+				injector.addService(WindowFrame.class, f);
+				injector.addService(PrintBuffer.class, f.getPrintBuffer());
+			}
+			
 			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_DIFFERENTIAL))
-				injector.getService(ThreadSaveVideo.class).start();
+				debug.getThreadSaveVideo().start();
 
 			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_EXTERNAL))
-				injector.getService(ThreadComm.class).start();
+				debug.getThreadComm().start();
 
 			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ENABLE))
-				injector.getService(ThreadPrinting.class).start();
+				debug.getThreadPrinting().start();
 			
 			if(config.getBoolean(ConfigInfoSenpai.REMOTE_CONTROL))
 				injector.getService(ThreadRemoteControl.class).start();
