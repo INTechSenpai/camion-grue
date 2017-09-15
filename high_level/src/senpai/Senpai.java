@@ -21,18 +21,19 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import buffer.OutgoingOrderBuffer;
 import comm.Communication;
 import obstacles.ObstaclesFixes;
 import pfg.config.Config;
+import pfg.config.ConfigInfo;
 import pfg.graphic.PrintBuffer;
 import pfg.graphic.ThreadComm;
 import pfg.graphic.ThreadPrinting;
 import pfg.graphic.ThreadSaveVideo;
 import pfg.graphic.DebugTool;
-import pfg.graphic.GraphicPanel;
 import pfg.graphic.Vec2RO;
 import pfg.graphic.WindowFrame;
 import pfg.injector.Injector;
@@ -284,8 +285,11 @@ public class Senpai
 		
 		if(!config.getBoolean(ConfigInfoSenpai.GRAPHIC_ENABLE))
 		{
-			ConfigInfoSenpai.unsetGraphic();
-			config.reload();
+			HashMap<ConfigInfo, Object> override = new HashMap<ConfigInfo, Object>();
+			List<ConfigInfo> graphicConf = ConfigInfoSenpai.getGraphicConfigInfo();
+			for(ConfigInfo c : graphicConf)
+				override.put(c, false);
+			config.override(override);
 		}
 		
 		startAllThreads();
