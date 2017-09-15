@@ -45,7 +45,7 @@ public class ConstructTrajectory
 		String output = args[6];
 		
 		// TODO
-		Kraken k = Kraken.getKraken(null);
+//		Kraken k = Kraken.getKraken(null);
 		
 		// calcul trajet par bézier
 		
