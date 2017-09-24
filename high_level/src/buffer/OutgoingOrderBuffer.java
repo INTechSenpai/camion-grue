@@ -14,8 +14,6 @@
 
 package buffer;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Queue;
@@ -33,9 +31,8 @@ import senpai.ConfigInfoSenpai;
 import senpai.Severity;
 import pfg.config.Config;
 import pfg.graphic.Chart;
-import pfg.graphic.GraphicPanel;
 import pfg.graphic.PrintBuffer;
-import pfg.graphic.printable.Printable;
+import pfg.graphic.printable.Plottable;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.robot.CinematiqueObs;
 import pfg.kraken.utils.XY;
@@ -52,7 +49,7 @@ import pfg.kraken.utils.XY_RW;
  *
  */
 
-public class OutgoingOrderBuffer implements Printable
+public class OutgoingOrderBuffer implements Plottable
 {
 	private static final long serialVersionUID = 1L;
 	protected Log log;
@@ -61,7 +58,7 @@ public class OutgoingOrderBuffer implements Printable
 	{
 		this.log = log;
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_COMM_CHART))
-			print.add(this, Color.BLACK, 0);
+			print.addPlottable(this);
 	}
 
 	private Queue<Order> bufferBassePriorite = new ConcurrentLinkedQueue<Order>();
@@ -426,7 +423,7 @@ public class OutgoingOrderBuffer implements Printable
 	}
 
 	@Override
-	public void print(Graphics g, GraphicPanel f, Chart a)
+	public void plot(Chart a)
 	{
 		a.addData("Buffer d'ordre sortants", (double) (bufferBassePriorite.size() + bufferTrajectoireCourbe.size()));
 	}

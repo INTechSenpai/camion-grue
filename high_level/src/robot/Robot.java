@@ -23,9 +23,7 @@ import comm.Ticket;
 import exceptions.ActionneurException;
 import exceptions.UnableToMoveException;
 import pfg.config.Config;
-import pfg.graphic.Chart;
 import pfg.graphic.GraphicPanel;
-import pfg.graphic.printable.Layer;
 import pfg.graphic.printable.Printable;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.robot.RobotState;
@@ -132,7 +130,7 @@ public class Robot extends RobotState implements Printable
 	}
 
 	@Override
-	public void print(Graphics g, GraphicPanel f, Chart a)
+	public void print(Graphics g, GraphicPanel f)
 	{
 /*		if(print)
 		{

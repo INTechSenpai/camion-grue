@@ -73,7 +73,7 @@ public class ObstaclesMemory implements DynamicObstacles
 		listObstaclesMobiles.add(obstacle);
 
 		if(printProx)
-			buffer.addSupprimable(obstacle, CouleurSenpai.OBSTACLES.couleur, Layer.MIDDLE.layer);
+			buffer.addTemporaryPrintable(obstacle, CouleurSenpai.OBSTACLES.couleur, Layer.MIDDLE.layer);
 
 		size++;
 		
@@ -109,7 +109,7 @@ public class ObstaclesMemory implements DynamicObstacles
 
 		if(printProx)
 		{
-			buffer.removeSupprimable(o);
+			buffer.removePrintable(o);
 		}
 
 		listObstaclesMortsTot.add(o);
@@ -185,7 +185,7 @@ public class ObstaclesMemory implements DynamicObstacles
 			old.add(o);
 			if(printProx && o != null)
 			{
-				buffer.removeSupprimable(o);
+				buffer.removePrintable(o);
 			}
 		}
 

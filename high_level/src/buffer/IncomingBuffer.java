@@ -15,7 +15,6 @@
 
 package buffer;
 
-import java.awt.Graphics;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -23,10 +22,9 @@ import pfg.log.Log;
 import senpai.Severity;
 import senpai.Subject;
 import pfg.graphic.Chart;
-import pfg.graphic.GraphicPanel;
-import pfg.graphic.printable.Printable;
+import pfg.graphic.printable.Plottable;
 
-public class IncomingBuffer<T> implements Printable
+public class IncomingBuffer<T> implements Plottable
 {
 	private static final long serialVersionUID = 1L;
 	protected Log log;
@@ -90,7 +88,7 @@ public class IncomingBuffer<T> implements Printable
 	}
 
 	@Override
-	public void print(Graphics g, GraphicPanel f, Chart a)
+	public void plot(Chart a)
 	{
 		a.addData(nom, (double) buffer.size());
 	}

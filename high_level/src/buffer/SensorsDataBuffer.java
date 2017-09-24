@@ -14,7 +14,6 @@
 
 package buffer;
 
-import java.awt.Color;
 import capteurs.SensorsData;
 import pfg.config.Config;
 import pfg.graphic.PrintBuffer;
@@ -36,6 +35,6 @@ public class SensorsDataBuffer extends IncomingBuffer<SensorsData>
 	{
 		super(log, "Buffer des capteurs");
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_CAPTEURS_CHART))
-			print.add(this, Color.BLACK, 0);
+			print.addPlottable(this);
 	}
 }

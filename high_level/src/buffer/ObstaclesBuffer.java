@@ -14,17 +14,14 @@
 
 package buffer;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import pfg.config.Config;
 import pfg.graphic.Chart;
-import pfg.graphic.GraphicPanel;
 import pfg.graphic.PrintBuffer;
-import pfg.graphic.printable.Printable;
+import pfg.graphic.printable.Plottable;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
@@ -36,7 +33,7 @@ import senpai.ConfigInfoSenpai;
  *
  */
 
-public class ObstaclesBuffer implements Printable
+public class ObstaclesBuffer implements Plottable
 {
 	private static final long serialVersionUID = 1L;
 	protected Log log;
@@ -46,7 +43,7 @@ public class ObstaclesBuffer implements Printable
 	{
 		this.log = log;
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_COMM_CHART))
-			print.add(this, Color.BLACK, 0);
+			print.addPlottable(this);
 	}
 
 	public synchronized void clear()
@@ -116,7 +113,7 @@ public class ObstaclesBuffer implements Printable
 	}
 
 	@Override
-	public void print(Graphics g, GraphicPanel f, Chart a)
+	public void plot(Chart a)
 	{
 		a.addData("Buffer d'obstacles nouveaux", (double) (bufferNewObstacles.size()));
 		a.addData("Buffer d'obstacles anciens", (double) (bufferOldObstacles.size()));
