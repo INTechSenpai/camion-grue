@@ -22,7 +22,6 @@ import obstacles.ObstacleProximity;
 import obstacles.ObstaclesIteratorPresent;
 import obstacles.ObstaclesMemory;
 import pfg.kraken.utils.XY;
-import senpai.CouleurSenpai;
 
 /**
  * Tests unitaires de l'obstacle memory manager
@@ -51,7 +50,7 @@ public class JUnit_OMMemory extends JUnit_Test
 	{
 		iterator.reinit();
 		Assert.assertTrue(!iterator.hasNext());
-		memory.add(new ObstacleProximity(new XY(-400, 1300), 200, 200, 0, CouleurSenpai.BLANC, 0, null, 0));
+		memory.add(new ObstacleProximity(new XY(-400, 1300), 200, 200, 0, 0, null, 0));
 		Assert.assertTrue(iterator.hasNext());
 	}
 

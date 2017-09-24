@@ -39,8 +39,8 @@ import pfg.graphic.WindowFrame;
 import pfg.injector.Injector;
 import pfg.injector.InjectorException;
 import pfg.kraken.Kraken;
-import pfg.kraken.astar.TentacularAStar;
 import pfg.kraken.obstacles.Obstacle;
+import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.utils.XY;
 import pfg.log.Log;
 import robot.Robot;
@@ -190,7 +190,7 @@ public class Senpai
 	 * @throws ContainerException si un autre container est déjà instancié
 	 * @throws InterruptedException
 	 */
-	public Senpai(String configFile) throws InterruptedException
+	public Senpai(String...profiles) throws InterruptedException
 	{
 		/**
 		 * On vérifie qu'il y ait un seul container à la fois
@@ -211,12 +211,12 @@ public class Senpai
 
 		DebugTool debug = new DebugTool(Severity.INFO);
 		log = debug.getLog();
-		config = new Config(ConfigInfoSenpai.values(), configFile, false);
+		config = new Config(ConfigInfoSenpai.values(), false, "senpai.conf", profiles);
 
-		injector.addService(Senpai.class, this);
-		injector.addService(Log.class, log);
-		injector.addService(Config.class, config);
-		injector.addService(Robot.class, new Robot(log));		
+		injector.addService(this);
+		injector.addService(log);
+		injector.addService(config);
+		injector.addService(new Robot(log));		
 
 		Speed.TEST.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_TEST) / 1000.;
 		Speed.REPLANIF.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_REPLANIF) / 1000.;
@@ -261,10 +261,17 @@ public class Senpai
 		for(ObstaclesFixes o : ObstaclesFixes.values())
 			obstaclesFixes.add(o.obstacle);
 		
-//		Kraken k = Kraken.getKraken(obstaclesFixes, injector.getService(ObstaclesMemory.class), null);
-		Kraken k = Kraken.getKraken(null, new XY(-1500, 0), new XY(1500, 2000));
+
+		int demieLargeurNonDeploye = config.getInt(ConfigInfoSenpai.LARGEUR_NON_DEPLOYE) / 2;
+		int demieLongueurArriere = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
+		int demieLongueurAvant = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
+
+		RectangularObstacle robotTemplate = new RectangularObstacle(demieLargeurNonDeploye, demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
+		injector.addService(RectangularObstacle.class, robotTemplate);
 		
-		injector.addService(TentacularAStar.class, k.getAStar());
+		Kraken k = new Kraken(robotTemplate, obstaclesFixes, new XY(-1500, 0), new XY(1500, 2000), profiles);
+		
+		injector.addService(k);
 		
 		/**
 		 * Planification du hook de fermeture
@@ -273,8 +280,6 @@ public class Senpai
 		{
 			log.write("Mise en place du hook d'arrêt", Subject.DUMMY);
 			Runtime.getRuntime().addShutdownHook(injector.getService(ThreadShutdown.class));
-			Obstacle.set(log, injector.getService(PrintBuffer.class));
-			Obstacle.useConfig(config);
 		}
 		catch(InjectorException e)
 		{

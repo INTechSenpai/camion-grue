@@ -16,7 +16,6 @@ package obstacles;
 
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.utils.XY;
-import senpai.CouleurSenpai;
 import capteurs.CapteursRobot;
 import capteurs.SensorsData;
 
@@ -32,9 +31,9 @@ public class ObstacleProximity extends RectangularObstacle
 	public final SensorsData mesureOrigine;
 	public final int nbCapteurOrigine;
 
-	public ObstacleProximity(XY position, int sizeX, int sizeY, double angle, CouleurSenpai c, long death_date, SensorsData mesureOrigine, int nbCapteurOrigine)
+	public ObstacleProximity(XY position, int sizeX, int sizeY, double angle, long death_date, SensorsData mesureOrigine, int nbCapteurOrigine)
 	{
-		super(position, sizeX, sizeY, angle, c.couleur, c.l);
+		super(position, sizeX, sizeY, angle);
 		this.mesureOrigine = mesureOrigine;
 		this.nbCapteurOrigine = nbCapteurOrigine;
 		this.death_date = death_date;

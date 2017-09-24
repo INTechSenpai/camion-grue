@@ -14,6 +14,7 @@
 
 package buffer;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.util.List;
 import java.util.Queue;
@@ -45,7 +46,7 @@ public class ObstaclesBuffer implements Printable
 	{
 		this.log = log;
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_COMM_CHART))
-			print.add(this);
+			print.add(this, Color.BLACK, 0);
 	}
 
 	public synchronized void clear()
@@ -119,11 +120,5 @@ public class ObstaclesBuffer implements Printable
 	{
 		a.addData("Buffer d'obstacles nouveaux", (double) (bufferNewObstacles.size()));
 		a.addData("Buffer d'obstacles anciens", (double) (bufferOldObstacles.size()));
-	}
-
-	@Override
-	public int getLayer() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

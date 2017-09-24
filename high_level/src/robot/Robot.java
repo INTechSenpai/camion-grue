@@ -73,7 +73,6 @@ public class Robot extends RobotState implements Printable
 	protected volatile boolean matchDemarre = false;
 	protected volatile long dateDebutMatch;
 	private boolean simuleSerie;
-	private int demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge;
 	private boolean print, printTrace;
 	private OutgoingOrderBuffer out;
 	private volatile boolean cinematiqueInitialised = false;
@@ -88,10 +87,6 @@ public class Robot extends RobotState implements Printable
 		// c'est le LL qui fournira la position
 		cinematique = new Cinematique(0, 300, 0, true, 3);
 		print = config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS);
-		demieLargeurNonDeploye = config.getInt(ConfigInfoSenpai.LARGEUR_NON_DEPLOYE) / 2;
-		demieLongueurArriere = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
-		demieLongueurAvant = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
-		marge = config.getInt(ConfigInfoSenpai.DILATATION_OBSTACLE_ROBOT);
 		printTrace = config.getBoolean(ConfigInfoSenpai.GRAPHIC_TRACE_ROBOT);
 
 		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
@@ -145,32 +140,6 @@ public class Robot extends RobotState implements Printable
 			o.update(cinematique.getPosition(), cinematique.orientationReelle);
 			o.print(g, f, robot);
 		}*/
-	}
-
-	@Override
-	public int getLayer()
-	{
-		return Layer.FOREGROUND.ordinal();
-	}
-
-	public int getDemieLargeurGauche()
-	{
-		return demieLargeurNonDeploye;
-	}
-
-	public int getDemieLargeurDroite()
-	{
-		return demieLargeurNonDeploye;
-	}
-
-	public int getDemieLongueurAvant()
-	{
-		return demieLongueurAvant;
-	}
-
-	public int getDemieLongueurArriere()
-	{
-		return demieLongueurArriere;
 	}
 
 	/*

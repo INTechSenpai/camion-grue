@@ -21,9 +21,11 @@ import java.util.List;
 
 import pfg.config.Config;
 import pfg.graphic.PrintBuffer;
+import pfg.graphic.printable.Layer;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.container.DynamicObstacles;
 import pfg.log.Log;
+import senpai.CouleurSenpai;
 
 /**
  * Mémorise tous les obstacles mobiles qu'on a rencontré jusque là.
@@ -71,7 +73,7 @@ public class ObstaclesMemory implements DynamicObstacles
 		listObstaclesMobiles.add(obstacle);
 
 		if(printProx)
-			buffer.addSupprimable(obstacle);
+			buffer.addSupprimable(obstacle, CouleurSenpai.OBSTACLES.couleur, Layer.MIDDLE.layer);
 
 		size++;
 		

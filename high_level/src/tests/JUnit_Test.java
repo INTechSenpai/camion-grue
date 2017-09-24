@@ -25,7 +25,7 @@ import pfg.config.Config;
 import pfg.graphic.WindowFrame;
 import pfg.kraken.robot.Cinematique;
 import pfg.log.Log;
-
+import java.util.Arrays;
 import org.junit.After;
 
 import robot.Robot;
@@ -57,7 +57,7 @@ public abstract class JUnit_Test
 	{
 		System.out.println("----- DÉBUT DU TEST " + testName.getMethodName() + " -----");
 
-		container = new Senpai("senpai-test.conf");
+		container = new Senpai("default", "test");
 		config = container.getService(Config.class);
 		timeoutAffichage = config.getLong(ConfigInfoSenpai.AFFICHAGE_TIMEOUT);
 		log = container.getService(Log.class);		

@@ -1,3 +1,5 @@
+import java.util.Arrays;
+import java.util.List;
 import senpai.Senpai;
 
 /*
@@ -27,25 +29,29 @@ public class FollowTrajectory
 		// TODO
 		if(args.length == 0)
 		{
-			System.out.println("Usage : ./run.sh "+FollowTrajectory.class.getSimpleName()+" test.path [-c file.conf] [-y]");
+			System.out.println("Usage : ./run.sh "+FollowTrajectory.class.getSimpleName()+" test.path [-p config-profile] [-y]");
 			System.out.println("-y : ne demande pas la confirmation de l'utilisateur");
 			return;
 		}
 		
 		String filename = args[0];
 		
-		String configFile = "senpai.conf";
+		List<String> configProfile = Arrays.asList("default");
 		boolean needValidation = true;
 		
 		for(int i = 1; i < args.length; i++)
 		{
 			if(args[i].equals("-c"))
-				configFile = args[++i];
+				configProfile.add(args[++i]);
 			else if(args[i].equals("-y"))
 				needValidation = false;
 		}
 		
-		Senpai senpai = new Senpai(filename);
+		String[] profilesArray = new String[configProfile.size()];
+		for(int i = 0; i < profilesArray.length; i++)
+			profilesArray[i] = configProfile.get(i);
+		
+		Senpai senpai = new Senpai(profilesArray);
 		// display la trajectoire et attend la validation de l'utilisateur (selon needValidation)
 	}
 }

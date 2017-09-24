@@ -94,10 +94,4 @@ public class IncomingBuffer<T> implements Printable
 	{
 		a.addData(nom, (double) buffer.size());
 	}
-
-	@Override
-	public int getLayer()
-	{
-		return 0;
-	}
 }

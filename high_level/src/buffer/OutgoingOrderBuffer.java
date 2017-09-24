@@ -14,6 +14,7 @@
 
 package buffer;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -60,7 +61,7 @@ public class OutgoingOrderBuffer implements Printable
 	{
 		this.log = log;
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_COMM_CHART))
-			print.add(this);
+			print.add(this, Color.BLACK, 0);
 	}
 
 	private Queue<Order> bufferBassePriorite = new ConcurrentLinkedQueue<Order>();
@@ -428,12 +429,6 @@ public class OutgoingOrderBuffer implements Printable
 	public void print(Graphics g, GraphicPanel f, Chart a)
 	{
 		a.addData("Buffer d'ordre sortants", (double) (bufferBassePriorite.size() + bufferTrajectoireCourbe.size()));
-	}
-
-	@Override
-	public int getLayer()
-	{
-		return 0;
 	}
 	
 }

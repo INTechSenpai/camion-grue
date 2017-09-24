@@ -17,7 +17,6 @@ package obstacles;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.utils.XY;
-import senpai.CouleurSenpai;
 
 /**
  * Enumération des obstacles fixes.
@@ -31,10 +30,10 @@ import senpai.CouleurSenpai;
 public enum ObstaclesFixes
 {
 	// bords
-	BORD_BAS(new RectangularObstacle(new XY(0, 0), 3000, 5, CouleurSenpai.OBSTACLES.couleur, CouleurSenpai.OBSTACLES.l), true, false),
-	BORD_GAUCHE(new RectangularObstacle(new XY(-1500, 1000), 5, 2000, CouleurSenpai.OBSTACLES.couleur, CouleurSenpai.OBSTACLES.l), true, false),
-	BORD_DROITE(new RectangularObstacle(new XY(1500, 1000), 5, 2000, CouleurSenpai.OBSTACLES.couleur, CouleurSenpai.OBSTACLES.l), true, false),
-	BORD_HAUT(new RectangularObstacle(new XY(0, 2000), 3000, 5, CouleurSenpai.OBSTACLES.couleur, CouleurSenpai.OBSTACLES.l), true, false);
+	BORD_BAS(new RectangularObstacle(new XY(0, 0), 3000, 5), true, false),
+	BORD_GAUCHE(new RectangularObstacle(new XY(-1500, 1000), 5, 2000), true, false),
+	BORD_DROITE(new RectangularObstacle(new XY(1500, 1000), 5, 2000), true, false),
+	BORD_HAUT(new RectangularObstacle(new XY(0, 2000), 3000, 5), true, false);
 
 	public final Obstacle obstacle;
 	private final boolean[] visible = new boolean[2];

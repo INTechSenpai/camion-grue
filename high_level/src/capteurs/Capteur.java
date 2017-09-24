@@ -109,10 +109,4 @@ public abstract class Capteur implements Printable
 		}
 	}
 
-	@Override
-	public int getLayer()
-	{
-		return Layer.FOREGROUND.ordinal();
-	}
-
 }

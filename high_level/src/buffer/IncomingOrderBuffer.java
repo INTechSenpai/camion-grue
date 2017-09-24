@@ -14,6 +14,7 @@
 
 package buffer;
 
+import java.awt.Color;
 import comm.Paquet;
 import pfg.config.Config;
 import pfg.graphic.PrintBuffer;
@@ -35,6 +36,6 @@ public class IncomingOrderBuffer extends IncomingBuffer<Paquet>
 	{
 		super(log, "Buffer d'ordres");
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_COMM_CHART))
-			print.add(this);
+			print.add(this, Color.BLACK, 0);
 	}
 }

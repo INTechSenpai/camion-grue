@@ -29,7 +29,7 @@ import capteurs.SensorsData.TraitementEtat;
 import obstacles.ObstacleProximity;
 import obstacles.ObstaclesFixes;
 import pfg.config.Config;
-import pfg.kraken.obstacles.ObstacleRobot;
+import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XY_RW;
@@ -56,7 +56,7 @@ public class CapteursProcess
 	private int nbCapteurs;
 	private int largeurEnnemi, longueurEnnemi;
 	private int distanceApproximation;
-	private ObstacleRobot obstacleRobot;
+	private RectangularObstacle obstacleRobot;
 	private Capteur[] capteurs;
 	private double imprecisionMaxPos;
 	private double imprecisionMaxAngle;
@@ -71,7 +71,7 @@ public class CapteursProcess
 
 	private List<SensorsData> mesuresScan = new ArrayList<SensorsData>();
 
-	public CapteursProcess(Log log, Table table, OutgoingOrderBuffer serie, Config config, ObstaclesBuffer obsbuffer)
+	public CapteursProcess(Log log, RectangularObstacle obstacleRobot, Table table, OutgoingOrderBuffer serie, Config config, ObstaclesBuffer obsbuffer)
 	{
 		this.table = table;
 		this.log = log;
@@ -89,14 +89,8 @@ public class CapteursProcess
 		peremptionCorrection = config.getInt(ConfigInfoSenpai.PEREMPTION_CORRECTION);
 		enableCorrection = config.getBoolean(ConfigInfoSenpai.ENABLE_CORRECTION);
 
-		int demieLargeurNonDeploye = config.getInt(ConfigInfoSenpai.LARGEUR_NON_DEPLOYE) / 2;
-		int demieLongueurArriere = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
-		int demieLongueurAvant = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
-
-		// on ne veut pas prendre en compte la marge quand on vérifie qu'on
-		// collisionne un élément de jeu
-		obstacleRobot = new ObstacleRobot(demieLargeurNonDeploye, demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
-
+		this.obstacleRobot = obstacleRobot;
+		
 		capteurs = new Capteur[nbCapteurs];
 
 		for(int i = 0; i < nbCapteurs; i++)
@@ -147,7 +141,7 @@ public class CapteursProcess
 				positionEnnemi.plus(capteurs[i].positionRelativeRotate);
 				positionEnnemi.rotate(orientationRobot);
 				positionEnnemi.plus(positionRobot);
-				ObstacleProximity obs = new ObstacleProximity(positionEnnemi, longueurEnnemi, (int)(data.mesures[i] * 0.2), orientationRobot + capteurs[i].orientationRelativeRotate, CouleurSenpai.SCAN, System.currentTimeMillis(), data, i);
+				ObstacleProximity obs = new ObstacleProximity(positionEnnemi, longueurEnnemi, (int)(data.mesures[i] * 0.2), orientationRobot + capteurs[i].orientationRelativeRotate, System.currentTimeMillis(), data, i);
 
 				if(obs.isHorsTable())
 					continue; // hors table
@@ -243,7 +237,7 @@ public class CapteursProcess
 				positionEnnemi.rotate(orientationRobot);
 				positionEnnemi.plus(positionRobot);
 	
-				ObstacleProximity obs = new ObstacleProximity(positionEnnemi, longueurEnnemi, largeurEnnemi, orientationRobot + capteurs[i].orientationRelativeRotate, c.type.couleurOrig, System.currentTimeMillis() + dureeAvantPeremption, data, i);
+				ObstacleProximity obs = new ObstacleProximity(positionEnnemi, longueurEnnemi, largeurEnnemi, orientationRobot + capteurs[i].orientationRelativeRotate, System.currentTimeMillis() + dureeAvantPeremption, data, i);
 	
 				if(obs.isHorsTable())
 				{
