@@ -20,7 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import pfg.config.Config;
-import pfg.graphic.PrintBuffer;
+import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.container.DynamicObstacles;
@@ -52,14 +52,14 @@ public class ObstaclesMemory implements DynamicObstacles
 	private final int tempsAvantSuppression = 2000;
 
 	protected Log log;
-	private PrintBuffer buffer;
+	private GraphicDisplay buffer;
 
 	private boolean checkSize()
 	{
 		return size == listObstaclesDetruits.size() + listObstaclesMobiles.size();
 	}
 	
-	public ObstaclesMemory(Log log, PrintBuffer buffer, Config config)
+	public ObstaclesMemory(Log log, GraphicDisplay buffer, Config config)
 	{
 		this.log = log;
 		this.buffer = buffer;

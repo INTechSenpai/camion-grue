@@ -1,5 +1,20 @@
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
+
+import obstacles.ObstaclesFixes;
+import pfg.config.Config;
+import pfg.graphic.GraphicDisplay;
+import pfg.graphic.printable.Layer;
 import pfg.kraken.Kraken;
+import pfg.kraken.exceptions.PathfindingException;
+import pfg.kraken.obstacles.Obstacle;
+import pfg.kraken.obstacles.RectangularObstacle;
+import pfg.kraken.robot.ItineraryPoint;
+import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
+import senpai.ConfigInfoSenpai;
+import senpai.KnownPathManager;
 
 /*
  * Copyright (C) 2013-2017 Pierre-François Gimenez
@@ -26,9 +41,9 @@ public class ConstructTrajectory
 
 	public static void main(String[] args)
 	{
-		if(args.length != 7)
+		if(args.length != 6)
 		{
-			System.out.println("Usage : ./run.sh "+ConstructTrajectory.class.getSimpleName()+" x_depart y_depart o_depart x_arrivee y_arrivee o_arrivee output.path");
+			System.out.println("Usage : ./run.sh "+ConstructTrajectory.class.getSimpleName()+" x_depart y_depart o_depart x_arrivee y_arrivee output.path");
 			return;
 		}
 		
@@ -39,20 +54,42 @@ public class ConstructTrajectory
 		
 		x = Double.parseDouble(args[3]);
 		y = Double.parseDouble(args[4]);
-		o = Double.parseDouble(args[5]);
-		XYO arrivee = new XYO(x,y,o);
+//		o = Double.parseDouble(args[5]);
+		XY arrivee = new XY(x,y);
 		
-		String output = args[6];
+		String output = args[5];
 		
-		// TODO
-//		Kraken k = Kraken.getKraken(null);
+		List<Obstacle> obsList = new ArrayList<Obstacle>();
+
+		for(ObstaclesFixes obs : ObstaclesFixes.values())
+			obsList.add(obs.obstacle);
 		
-		// calcul trajet par bézier
+		Config config = new Config(ConfigInfoSenpai.values(), false, "senpai.conf", "default");
+		int demieLargeurNonDeploye = config.getInt(ConfigInfoSenpai.LARGEUR_NON_DEPLOYE) / 2;
+		int demieLongueurArriere = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
+		int demieLongueurAvant = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
+
+		RectangularObstacle robotTemplate = new RectangularObstacle(demieLargeurNonDeploye, demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
+		Kraken kraken = new Kraken(robotTemplate, obsList, new XY(-1500,0), new XY(1500, 2000), "default", "noLL");
 		
-		// affiche trajet
-		
-		// sauvegarde trajet
-		
+		GraphicDisplay display = kraken.getGraphicDisplay();
+
+		for(Obstacle obs : obsList)
+			display.addPrintable(obs, Color.BLACK, Layer.MIDDLE.layer);
+		display.refresh();
+		try
+		{
+			kraken.initializeNewSearch(depart, arrivee);
+			List<ItineraryPoint> path = kraken.search();
+			for(ItineraryPoint p : path)
+				display.addPrintable(p, Color.BLACK, Layer.FOREGROUND.layer);
+			display.refresh();
+			KnownPathManager.savePath(output, path);
+		}
+		catch(PathfindingException e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 }

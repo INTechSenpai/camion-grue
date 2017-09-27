@@ -29,8 +29,8 @@ import comm.Communication;
 import obstacles.ObstaclesFixes;
 import pfg.config.Config;
 import pfg.config.ConfigInfo;
-import pfg.graphic.PrintBuffer;
-import pfg.graphic.ThreadComm;
+import pfg.graphic.GraphicDisplay;
+import pfg.graphic.ThreadPrintServer;
 import pfg.graphic.ThreadPrinting;
 import pfg.graphic.ThreadSaveVideo;
 import pfg.graphic.DebugTool;
@@ -149,7 +149,7 @@ public class Senpai
 				injector.getService(ThreadSaveVideo.class).interrupt();
 
 			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_EXTERNAL))
-				injector.getService(ThreadComm.class).interrupt();
+				injector.getService(ThreadPrintServer.class).interrupt();
 
 			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ENABLE))
 				injector.getService(ThreadPrinting.class).interrupt();
@@ -162,10 +162,6 @@ public class Senpai
 		{
 			assert false : e;
 		}
-		// fermeture du log
-		log.write("Code d'erreur : " + errorCode, Subject.DUMMY);
-		log.write("Fermeture du log", Subject.DUMMY);
-		log.close();
 		nbInstances--;
 		printMessage("outro.txt");
 
@@ -307,7 +303,7 @@ public class Senpai
 			{
 				WindowFrame f = debug.getWindowFrame(new Vec2RO(0,1000));
 				injector.addService(WindowFrame.class, f);
-				injector.addService(PrintBuffer.class, f.getPrintBuffer());
+				injector.addService(GraphicDisplay.class, f.getPrintBuffer());
 			}
 			
 			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_DIFFERENTIAL))

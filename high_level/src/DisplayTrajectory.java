@@ -1,3 +1,7 @@
+import java.util.List;
+
+import pfg.kraken.robot.ItineraryPoint;
+import senpai.KnownPathManager;
 
 /*
  * Copyright (C) 2013-2017 Pierre-François Gimenez
@@ -24,14 +28,18 @@ public class DisplayTrajectory
 
 	public static void main(String[] args)
 	{
-		if(args.length != 1)
+		if(args.length < 1)
 		{
-			System.out.println("Usage : ./run.sh "+DisplayTrajectory.class.getSimpleName()+" chemin.path");
+			System.out.println("Usage : ./run.sh "+DisplayTrajectory.class.getSimpleName()+" chemin.path [-v]");
+			System.out.println("-v ajoute des infos graphiques");
 			return;
 		}
 		
+		boolean verbose = false;
 		String filename = args[0];
-		// affiche trajet
+		if(args.length >= 2 && args[1].equals("-v"))
+			verbose = true;
+		List<ItineraryPoint> path = KnownPathManager.loadPath(filename);
 	}
 	
 }

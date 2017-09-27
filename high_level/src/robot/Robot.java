@@ -56,11 +56,11 @@ public class Robot extends RobotState implements Printable
 		this.log = log;
 		cinematique = new Cinematique();
 	}
-
+/*
 	public int codeForPFCache()
 	{
 		return cinematique.codeForPFCache();
-	}
+	}*/
 
 	@Override
 	public String toString()

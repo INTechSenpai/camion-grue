@@ -31,7 +31,7 @@ import senpai.ConfigInfoSenpai;
 import senpai.Severity;
 import pfg.config.Config;
 import pfg.graphic.Chart;
-import pfg.graphic.PrintBuffer;
+import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Plottable;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.robot.CinematiqueObs;
@@ -54,7 +54,7 @@ public class OutgoingOrderBuffer implements Plottable
 	private static final long serialVersionUID = 1L;
 	protected Log log;
 
-	public OutgoingOrderBuffer(Log log, Config config, PrintBuffer print)
+	public OutgoingOrderBuffer(Log log, Config config, GraphicDisplay print)
 	{
 		this.log = log;
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_COMM_CHART))

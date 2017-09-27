@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import pfg.config.Config;
 import pfg.graphic.Chart;
-import pfg.graphic.PrintBuffer;
+import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Plottable;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.log.Log;
@@ -39,7 +39,7 @@ public class ObstaclesBuffer implements Plottable
 	protected Log log;
 	private boolean needToWait = true;
 	
-	public ObstaclesBuffer(Log log, Config config, PrintBuffer print)
+	public ObstaclesBuffer(Log log, Config config, GraphicDisplay print)
 	{
 		this.log = log;
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_COMM_CHART))
