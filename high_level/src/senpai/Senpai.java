@@ -205,7 +205,7 @@ public class Senpai
 
 		injector = new Injector();
 
-		DebugTool debug = new DebugTool(Severity.INFO);
+		DebugTool debug = DebugTool.getDebugTool(new Vec2RO(0,1000), Severity.INFO);
 		log = debug.getLog();
 		config = new Config(ConfigInfoSenpai.values(), false, "senpai.conf", profiles);
 
@@ -301,19 +301,18 @@ public class Senpai
 		try {
 			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ENABLE))
 			{
-				WindowFrame f = debug.getWindowFrame(new Vec2RO(0,1000));
+				WindowFrame f = debug.getWindowFrame();
 				injector.addService(WindowFrame.class, f);
 				injector.addService(GraphicDisplay.class, f.getPrintBuffer());
 			}
 			
 			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_DIFFERENTIAL))
-				debug.getThreadSaveVideo().start();
+				debug.startSaveVideo();
 
 			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_EXTERNAL))
-				debug.getThreadComm().start();
+				debug.startPrintServer();
 
-			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ENABLE))
-				debug.getThreadPrinting().start();
+			debug.startAutomaticRefresh();
 			
 			if(config.getBoolean(ConfigInfoSenpai.REMOTE_CONTROL))
 				injector.getService(ThreadRemoteControl.class).start();
