@@ -14,7 +14,7 @@
 
 package senpai;
 
-import pfg.log.SeverityCategory;
+import pfg.graphic.log.SeverityCategory;
 
 /**
  * Les différents niveaux de sévérité

@@ -14,7 +14,7 @@
 
 package senpai;
 
-import pfg.log.LogCategory;
+import pfg.graphic.log.LogCategory;
 
 /**
  * Les différents sujets de log

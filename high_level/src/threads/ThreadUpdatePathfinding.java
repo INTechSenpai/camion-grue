@@ -21,7 +21,7 @@ import buffer.OutgoingOrderBuffer;
 import buffer.ObstaclesBuffer;
 import pfg.kraken.astar.TentacularAStar;
 import pfg.kraken.obstacles.Obstacle;
-import pfg.log.Log;
+import pfg.graphic.log.Log;
 import senpai.Severity;
 import senpai.Subject;
 

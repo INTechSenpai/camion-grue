@@ -28,7 +28,7 @@ import pfg.graphic.printable.Printable;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.robot.RobotState;
 import pfg.kraken.utils.XY;
-import pfg.log.Log;
+import pfg.graphic.log.Log;
 import senpai.ConfigInfoSenpai;
 import senpai.Subject;
 

@@ -14,7 +14,7 @@
 
 package obstacles;
 
-import pfg.log.Log;
+import pfg.graphic.log.Log;
 
 /**
  * Itérator permettant de manipuler facilement les obstacles mobiles dans le

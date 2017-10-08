@@ -22,7 +22,7 @@ import comm.Paquet;
 import comm.CommProtocol.Id;
 import comm.CommProtocol.InOrder;
 import pfg.config.Config;
-import pfg.log.Log;
+import pfg.graphic.log.Log;
 import pfg.kraken.robot.Cinematique;
 import robot.Robot;
 import senpai.Senpai;

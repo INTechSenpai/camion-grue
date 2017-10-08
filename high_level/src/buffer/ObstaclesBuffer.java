@@ -23,7 +23,7 @@ import pfg.graphic.Chart;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Plottable;
 import pfg.kraken.obstacles.Obstacle;
-import pfg.log.Log;
+import pfg.graphic.log.Log;
 import senpai.ConfigInfoSenpai;
 
 /**

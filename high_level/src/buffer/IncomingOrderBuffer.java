@@ -17,7 +17,7 @@ package buffer;
 import comm.Paquet;
 import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
-import pfg.log.Log;
+import pfg.graphic.log.Log;
 import senpai.ConfigInfoSenpai;
 
 /**

@@ -14,7 +14,7 @@
 
 package table;
 
-import pfg.log.Log;
+import pfg.graphic.log.Log;
 
 /**
  * Gère les éléments de jeux

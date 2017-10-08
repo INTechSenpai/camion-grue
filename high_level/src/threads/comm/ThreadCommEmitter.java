@@ -17,7 +17,7 @@ package threads.comm;
 import buffer.OutgoingOrderBuffer;
 import comm.Communication;
 import comm.Order;
-import pfg.log.Log;
+import pfg.graphic.log.Log;
 import senpai.Subject;
 
 /**

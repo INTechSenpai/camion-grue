@@ -33,7 +33,7 @@ import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XY_RW;
-import pfg.log.Log;
+import pfg.graphic.log.Log;
 import table.GameElementNames;
 import table.Table;
 import table.EtatElement;

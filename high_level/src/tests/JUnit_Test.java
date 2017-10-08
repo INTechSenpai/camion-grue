@@ -24,7 +24,7 @@ import org.junit.runner.Result;
 import pfg.config.Config;
 import pfg.graphic.WindowFrame;
 import pfg.kraken.robot.Cinematique;
-import pfg.log.Log;
+import pfg.graphic.log.Log;
 import java.util.Arrays;
 import org.junit.After;
 

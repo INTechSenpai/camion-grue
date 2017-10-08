@@ -14,7 +14,7 @@
 
 package threads;
 
-import pfg.log.Log;
+import pfg.graphic.log.Log;
 import senpai.Subject;
 import senpai.Senpai;
 import senpai.Senpai.ErrorCode;

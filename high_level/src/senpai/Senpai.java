@@ -31,7 +31,6 @@ import pfg.config.Config;
 import pfg.config.ConfigInfo;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.ThreadPrintServer;
-import pfg.graphic.ThreadPrinting;
 import pfg.graphic.ThreadSaveVideo;
 import pfg.graphic.DebugTool;
 import pfg.graphic.Vec2RO;
@@ -42,7 +41,7 @@ import pfg.kraken.Kraken;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.utils.XY;
-import pfg.log.Log;
+import pfg.graphic.log.Log;
 import robot.Robot;
 import robot.Speed;
 import threads.ThreadName;
@@ -145,15 +144,6 @@ public class Senpai
 				if(injector.getService(n.c).isAlive())
 					log.write(n.c.getSimpleName() + " encore vivant !", Severity.CRITICAL, Subject.DUMMY);
 	
-			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_DIFFERENTIAL))
-				injector.getService(ThreadSaveVideo.class).interrupt();
-
-			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_EXTERNAL))
-				injector.getService(ThreadPrintServer.class).interrupt();
-
-			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ENABLE))
-				injector.getService(ThreadPrinting.class).interrupt();
-			
 			if(config.getBoolean(ConfigInfoSenpai.REMOTE_CONTROL))
 				injector.getService(ThreadRemoteControl.class).interrupt();
 			
@@ -311,8 +301,6 @@ public class Senpai
 
 			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_EXTERNAL))
 				debug.startPrintServer();
-
-			debug.startAutomaticRefresh();
 			
 			if(config.getBoolean(ConfigInfoSenpai.REMOTE_CONTROL))
 				injector.getService(ThreadRemoteControl.class).start();

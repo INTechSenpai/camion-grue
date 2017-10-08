@@ -24,7 +24,7 @@ import java.net.UnknownHostException;
 import comm.CommProtocol.Id;
 import exceptions.UnexpectedClosedCommException;
 import pfg.config.Config;
-import pfg.log.Log;
+import pfg.graphic.log.Log;
 import senpai.ConfigInfoSenpai;
 import senpai.Severity;
 import senpai.Subject;

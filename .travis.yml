@@ -1,8 +1,13 @@
 language : java
 install :
-    - cd high_level
-    - echo "SIMULE_COMM = true" > senpai.conf
+    - git clone https://github.com/PFGimenez/The-Kraken-Pathfinding.git --depth 1
+    - cd The-Kraken-Pathfinding
+    - ./install_dependencies.sh
+    - cd core
+    - mvn install
+    - cd ../..
 script :
+    - cd high_level
     - ./update.sh
 jdk :
     - oraclejdk8

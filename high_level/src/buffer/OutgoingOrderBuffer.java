@@ -24,7 +24,7 @@ import comm.Order;
 import comm.Ticket;
 import comm.CommProtocol.Channel;
 import comm.CommProtocol.Id;
-import pfg.log.Log;
+import pfg.graphic.log.Log;
 import robot.Speed;
 import senpai.Subject;
 import senpai.ConfigInfoSenpai;

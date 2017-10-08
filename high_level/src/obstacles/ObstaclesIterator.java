@@ -17,7 +17,7 @@ package obstacles;
 import java.util.Iterator;
 
 import pfg.kraken.obstacles.Obstacle;
-import pfg.log.Log;
+import pfg.graphic.log.Log;
 /**
  * Itérator permettant de manipuler facilement les obstacles mobiles
  * 

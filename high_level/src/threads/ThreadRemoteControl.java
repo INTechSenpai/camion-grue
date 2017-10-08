@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import buffer.OutgoingOrderBuffer;
 import comm.Ticket;
 import pfg.config.Config;
-import pfg.log.Log;
+import pfg.graphic.log.Log;
 import senpai.Subject;
 import senpai.ConfigInfoSenpai;
 import senpai.Senpai;

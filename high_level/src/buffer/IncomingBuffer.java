@@ -18,7 +18,7 @@ package buffer;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import pfg.log.Log;
+import pfg.graphic.log.Log;
 import senpai.Severity;
 import senpai.Subject;
 import pfg.graphic.Chart;
