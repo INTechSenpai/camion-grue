@@ -6,12 +6,15 @@
     <property name="source" value="1.8"/>
     <property name="junit.output.dir" value="junit"/>
     <path id="Eurobotruck.classpath">
-        <pathelement location="bin"/>
-        <pathelement location="config/core/lib/ini4j-0.5.5-SNAPSHOT-jdk14.jar"/>
-        <pathelement location="graphic-toolbox/core/lib/jcommon-1.0.13.jar"/>
-        <pathelement location="graphic-toolbox/core/lib/jfreechart-1.0.13.jar"/>
-        <pathelement location="lib/hamcrest-core-1.3.jar"/>
-        <pathelement location="lib/junit.jar"/>
+	<pathelement location="bin"/>
+	<pathelement location="${user.home}/.m2/repository/pfg/injector/dependency-injector/1.1/dependency-injector-1.1.jar"/>
+	<pathelement location="${user.home}/.m2/repository/pfg/config/config/1.2/config-1.2.jar"/>
+	<pathelement location="${user.home}/.m2/repository/org/jfree/jcommon/1.0.23/jcommon-1.0.23.jar"/>
+	<pathelement location="${user.home}/.m2/repository/org/jfree/jfreechart/1.0.19/jfreechart-1.0.19.jar"/>
+	<pathelement location="${user.home}/.m2/repository/pfg/graphic/graphic-toolbox/1.0/graphic-toolbox-1.0.jar"/>
+	<pathelement location="${user.home}/.m2/repository/pfg/kraken/kraken/1.1.1/kraken-1.1.1.jar"/>
+	<pathelement location="${user.home}/.m2/repository/junit/junit/4.12/junit-4.12.jar"/>
+	
     </path>
     <target name="init">
         <mkdir dir="bin"/>
@@ -32,10 +35,6 @@
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
             <src path="src"/>
-            <src path="dependency-injector/src"/>
-            <src path="config/core/src"/>
-            <src path="graphic-toolbox/core/src"/>
-            <src path="The-Kraken-Pathfinding/core/src"/>
             <classpath refid="Eurobotruck.classpath"/>
         </javac>
     </target>
