@@ -9,14 +9,10 @@ TODO list :
 - améliorer Kraken (objectif : 500 ms max)
 - outils de debug
 - tourelles
-- faire dépendre la vitesse de la courbure et de la marge latérale (autoriser à racler les bords ?). Attention à la vitesse minimale !
 - préparer des démos à l'avance
-- courbure max augmentée dans Kraken
 - autocomplétion de tests + zsh + boot rapide sur linux
-- hardware HL : à définir (GPU ?)
-- communication par socket TCP/IP (client)
 - outil de debug de trajectoire courbe (créer facilement des trajectoires)
-- télécommande HL ?
+- télécommande HL
 
 ## LL
 
