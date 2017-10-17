@@ -1,2 +1,1 @@
-ant clean
-ant
+mvn clean compile assembly:single
