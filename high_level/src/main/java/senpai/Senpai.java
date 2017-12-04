@@ -27,8 +27,6 @@ import java.util.List;
 import pfg.config.Config;
 import pfg.config.ConfigInfo;
 import pfg.graphic.GraphicDisplay;
-import pfg.graphic.ThreadPrintServer;
-import pfg.graphic.ThreadSaveVideo;
 import pfg.graphic.DebugTool;
 import pfg.graphic.Vec2RO;
 import pfg.graphic.WindowFrame;

@@ -17,7 +17,6 @@ package senpai.table;
 import pfg.kraken.obstacles.CircularObstacle;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.utils.XY;
-import senpai.capteurs.CapteursRobot;
 
 /**
  * Enumérations contenant tous les éléments de jeux
@@ -38,7 +37,7 @@ public enum GameElementNames
 		obstacle = obs;
 	}
 
-	public boolean isVisible(CapteursRobot c, boolean sureleve)
+	public boolean isVisible(boolean sureleve)
 	{
 		// les capteurs bas les voient, les hauts non
 		return !sureleve;

@@ -15,7 +15,6 @@
 package senpai.capteurs;
 
 import senpai.ConfigInfoSenpai;
-import senpai.CouleurSenpai;
 import senpai.Subject;
 import senpai.buffer.ObstaclesBuffer;
 import senpai.buffer.OutgoingOrderBuffer;
@@ -113,47 +112,6 @@ public class CapteursProcess
 				buffer.add(c);*/
 	}
 
-	public synchronized void startScan()
-	{
-		mesuresScan.clear();
-		scan = true;
-	}
-
-	public synchronized void endScan()
-	{
-		// on ne s'occupe que des tof avant
-		int[] tofAvant = new int[] {CapteursRobot.ToF_AVANT_DROITE.ordinal(), CapteursRobot.ToF_AVANT_GAUCHE.ordinal()};
-		for(SensorsData data : mesuresScan)
-		{			
-			double orientationRobot = data.cinematique.orientationReelle;
-			XY positionRobot = data.cinematique.getPosition();
-			for(int i = 0; i < nbCapteurs; i++)
-				data.etats[i] = TraitementEtat.DESACTIVE_SCAN;
-			for(int j = 0; j < 2; j++)
-			{
-				int i = tofAvant[j];
-				data.etats[i] = TraitementEtat.SCAN;
- 				XY positionVue = getPositionVue(data, i, capteurs[i], data.mesures[i], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);
-				if(positionVue == null)
-					continue;
-				
-				XY_RW positionEnnemi = new XY_RW(data.mesures[i] + longueurEnnemi / 2, capteurs[i].orientationRelativeRotate, true);
-				positionEnnemi.plus(capteurs[i].positionRelativeRotate);
-				positionEnnemi.rotate(orientationRobot);
-				positionEnnemi.plus(positionRobot);
-				ObstacleProximity obs = new ObstacleProximity(positionEnnemi, longueurEnnemi, (int)(data.mesures[i] * 0.2), orientationRobot + capteurs[i].orientationRelativeRotate, System.currentTimeMillis(), data, i);
-
-				if(obs.isHorsTable())
-					continue; // hors table
-
-				obsbuffer.addNewObstacle(obs);
-			}
-
-		}
-		
-		scan = false;
-	}
-
 	/**
 	 * Met à jour les obstacles mobiles
 	 */
@@ -219,7 +177,7 @@ public class CapteursProcess
 					continue;
 	
 				for(GameElementNames o : GameElementNames.values())
-					if(table.isDone(o) != EtatElement.PRIS_PAR_NOUS && o.isVisible(c, capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
+					if(table.isDone(o) != EtatElement.PRIS_PAR_NOUS && o.isVisible(capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
 					{
 						log.write("Élément de jeu vu : " + o, Subject.CAPTEURS);
 						stop = true;
@@ -290,13 +248,13 @@ public class CapteursProcess
 		{
 			if(k == 0)
 			{
-				index1 = CapteursRobot.ToF_LATERAL_GAUCHE_AVANT.ordinal();
-				index2 = CapteursRobot.ToF_LATERAL_GAUCHE_ARRIERE.ordinal();
+				index1 = CapteursRobot.ToF_LATERAL_AVANT_GAUCHE.ordinal();
+				index2 = CapteursRobot.ToF_LATERAL_ARRIERE_GAUCHE.ordinal();
 			}
 			else
 			{
-				index1 = CapteursRobot.ToF_LATERAL_DROITE_AVANT.ordinal();
-				index2 = CapteursRobot.ToF_LATERAL_DROITE_ARRIERE.ordinal();
+				index1 = CapteursRobot.ToF_LATERAL_AVANT_DROIT.ordinal();
+				index2 = CapteursRobot.ToF_LATERAL_ARRIERE_DROIT.ordinal();
 			}
 			
 			// on serait pas assez précis

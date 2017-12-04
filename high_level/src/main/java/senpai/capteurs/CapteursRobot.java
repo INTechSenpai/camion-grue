@@ -32,30 +32,30 @@ public enum CapteursRobot
 	// ; [10] ToF Flan Arrière Droit ; [11] ToF Flan Avant Droit ; [12]
 	// ToF Avant Droit
 
-	ToF_LONG_AVANT(CapteurImmobile.class, new XY(224, 0), 0, TypeCapteur.ToF_LONG, true),
+	
+	ToF_AVANT(CapteurImmobile.class, new XY(243, 0), 0, TypeCapteur.ToF_COURT),
+	
+	ToF_COIN_AVANT_GAUCHE(CapteurImmobile.class, new XY(243, 80), Math.PI / 4, TypeCapteur.ToF_COURT),
 
-	IR_AVANT_GAUCHE(CapteurMobile.class, new XY(233, 86), 10. / 180. * Math.PI, TypeCapteur.IR, true),
+	ToF_COIN_AVANT_DROIT(CapteurImmobile.class, new XY(243, -80), -Math.PI / 4, TypeCapteur.ToF_COURT),
 
-	ToF_LONG_ARRIERE(CapteurImmobile.class, new XY(0, 0), 180. / 180. * Math.PI, TypeCapteur.ToF_LONG, true),
+	ToF_LATERAL_AVANT_GAUCHE(CapteurImmobile.class, new XY(139, 88), Math.PI / 2, TypeCapteur.ToF_COURT),
 
-	IR_AVANT_DROITE(CapteurMobile.class, new XY(233, -86), -10. / 180. * Math.PI, TypeCapteur.IR, true),
+	ToF_LATERAL_AVANT_DROIT(CapteurImmobile.class, new XY(139, -88), -Math.PI / 2, TypeCapteur.ToF_COURT),
 
-	ToF_AVANT_GAUCHE(CapteurMobile.class, new XY(235, 60), 25. / 180. * Math.PI, TypeCapteur.ToF_COURT, false),
+	ToF_LATERAL_ARRIERE_GAUCHE(CapteurImmobile.class, new XY(-139, 88), Math.PI / 2, TypeCapteur.ToF_COURT),
 
-	ToF_LATERAL_GAUCHE_AVANT(CapteurImmobile.class, new XY(140, 102), Math.PI / 2, TypeCapteur.ToF_COURT, false),
+	ToF_LATERAL_ARRIERE_DROIT(CapteurImmobile.class, new XY(-139, -88), -Math.PI / 2, TypeCapteur.ToF_COURT),
 
-	ToF_LATERAL_GAUCHE_ARRIERE(CapteurImmobile.class, new XY(55, 102), Math.PI / 2, TypeCapteur.ToF_COURT, false),
+	ToF_ARRIERE_GAUCHE(CapteurImmobile.class, new XY(-164, 80), -Math.PI, TypeCapteur.ToF_COURT),
 
-	ToF_ARRIERE_GAUCHE(CapteurImmobile.class, new XY(-53, 85), 170. / 180. * Math.PI, TypeCapteur.ToF_COURT, false),
+	ToF_ARRIERE_DROITE(CapteurImmobile.class, new XY(-164, -80), -Math.PI, TypeCapteur.ToF_COURT),
+	
+	TOURELLE_GAUCHE(CapteurMobile.class, new XY(0,0), 0, TypeCapteur.ToF_LONG),
 
-	ToF_ARRIERE_DROITE(CapteurImmobile.class, new XY(-53, -85), -170. / 180. * Math.PI, TypeCapteur.ToF_COURT, false),
+	TOURELLE_DROITE(CapteurMobile.class, new XY(0,0), 0, TypeCapteur.ToF_LONG);
 
-	ToF_LATERAL_DROITE_ARRIERE(CapteurImmobile.class, new XY(55, -102), -Math.PI / 2, TypeCapteur.ToF_COURT, false),
-
-	ToF_LATERAL_DROITE_AVANT(CapteurImmobile.class, new XY(140, -102), -Math.PI / 2, TypeCapteur.ToF_COURT, false),
-
-	ToF_AVANT_DROITE(CapteurMobile.class, new XY(235, -60), -25. / 180. * Math.PI, TypeCapteur.ToF_COURT, false);
-
+	
 	public final Class<? extends Capteur> classe;
 	public final XY pos;
 	public final double angle;
@@ -63,13 +63,13 @@ public enum CapteursRobot
 	public final boolean sureleve;
 	public final static CapteursRobot[] values = values();
 
-	private <S extends Capteur> CapteursRobot(Class<S> classe, XY pos, double angle, TypeCapteur type, boolean sureleve)
+	private <S extends Capteur> CapteursRobot(Class<S> classe, XY pos, double angle, TypeCapteur type)
 	{
+		sureleve = name().startsWith("TOURELLE_"); // les tourelles sont surélevées
 		this.classe = classe;
 		this.pos = pos;
 		this.angle = angle;
 		this.type = type;
-		this.sureleve = sureleve;
 	}
 
 }
