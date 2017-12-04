@@ -337,7 +337,7 @@ public class CapteursProcess
 			// log.debug("Correction : "+deltaX+" "+deltaY+"
 			// "+deltaOrientation);
 
-			Cinematique correction = new Cinematique(deltaX, deltaY, deltaOrientation, true, 0);
+			Cinematique correction = new Cinematique(deltaX, deltaY, deltaOrientation, true, 0, false);
 			if(System.currentTimeMillis() - dateLastMesureCorrection > peremptionCorrection) // trop
 																								// de
 																								// temps

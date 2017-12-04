@@ -136,7 +136,7 @@ public class ThreadCommProcess extends Thread
 					if(theorique == null)
 					{
 //						log.debug("Cinématique théorique inconnue !", Verbose.PF.masque);
-						current = new Cinematique(xRobot, yRobot, orientationRobot, true, 0);
+						current = new Cinematique(xRobot, yRobot, orientationRobot, true, 0, false);
 					}
 					else
 					{

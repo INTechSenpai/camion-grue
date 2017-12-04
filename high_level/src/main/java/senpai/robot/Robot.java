@@ -84,7 +84,7 @@ public class Robot extends RobotState implements Printable
 		this.out = out;
 		
 		// c'est le LL qui fournira la position
-		cinematique = new Cinematique(0, 300, 0, true, 3);
+		cinematique = new Cinematique(0, 300, 0, true, 3, false);
 		print = config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS);
 		printTrace = config.getBoolean(ConfigInfoSenpai.GRAPHIC_TRACE_ROBOT);
 
