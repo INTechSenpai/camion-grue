@@ -33,11 +33,25 @@ public enum ObstaclesFixes
 	BORD_BAS(new RectangularObstacle(new XY(0, 0), 3000, 5), true, false),
 	BORD_GAUCHE(new RectangularObstacle(new XY(-1500, 1000), 5, 2000), true, false),
 	BORD_DROITE(new RectangularObstacle(new XY(1500, 1000), 5, 2000), true, false),
-	BORD_HAUT(new RectangularObstacle(new XY(0, 2000), 3000, 5), true, false);
+	BORD_HAUT(new RectangularObstacle(new XY(0, 2000), 3000, 5), true, false),
 
+	BAC_EPURATION(new RectangularObstacle(new XY(0, 250 / 2), 1200, 250), true, false),
+
+	DISTRIBUTEUR_MONOCOLOR_DROIT(new RectangularObstacle(new XY(1450, 2000-840), 100, 55), false, true),
+	DISTRIBUTEUR_MONOCOLOR_GAUCHE(new RectangularObstacle(new XY(-1450, 2000-840), 100, 55), false, true),
+	
+	DISTRIBUTEUR_BICOLOR_GAUCHE(new RectangularObstacle(new XY(-890, 50), 55, 100), false, true),
+	DISTRIBUTEUR_BICOLOR_DROIT(new RectangularObstacle(new XY(890, 50), 55, 100), false, true),
+
+	ZONE_DEPART_GAUCHE(new RectangularObstacle(new XY(1300, 1675), 400, 650), false, false),
+	ZONE_DEPART_DROITE(new RectangularObstacle(new XY(-1300, 1675), 400, 650), false, false),
+
+	ZONE_CONSTRUCTION_GAUCHE(new RectangularObstacle(new XY(1100-560/2, 2000-180/2), 560, 180), false, false),
+	ZONE_CONSTRUCTION_DROITE(new RectangularObstacle(new XY(-1100+560/2, 2000-180/2), 560, 180), false, false);
+	
 	public final Obstacle obstacle;
 	private final boolean[] visible = new boolean[2];
-	public final boolean bordure;
+	public final boolean bordure; // TODO : utilisé ?
 
 	private ObstaclesFixes(Obstacle obstacle, boolean visibleBas, boolean visibleHaut)
 	{

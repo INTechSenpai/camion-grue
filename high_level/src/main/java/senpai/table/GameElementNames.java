@@ -14,8 +14,8 @@
 
 package senpai.table;
 
-import pfg.kraken.obstacles.CircularObstacle;
 import pfg.kraken.obstacles.Obstacle;
+import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.utils.XY;
 
 /**
@@ -27,14 +27,50 @@ import pfg.kraken.utils.XY;
 
 public enum GameElementNames
 {
-	DUMMY_1(new CircularObstacle(new XY(100, 200), 500)),
-	DUMMY_2(new CircularObstacle(new XY(-1000, 700), 400));
+	CROIX_1_CENTRE(new RectangularObstacle(new XY(-650, 1460), 58, 58), ElementColor.JAUNE),
+	CROIX_1_GAUCHE(new RectangularObstacle(new XY(-650-58, 1460), 58, 58), ElementColor.VERT),
+	CROIX_1_DROITE(new RectangularObstacle(new XY(-650+58, 1460), 58, 58), ElementColor.ORANGE),
+	CROIX_1_HAUT(new RectangularObstacle(new XY(-650, 1460+58), 58, 58), ElementColor.NOIR),
+	CROIX_1_BAS(new RectangularObstacle(new XY(-650, 1460-58), 58, 58), ElementColor.BLEU),
+
+	CROIX_2_CENTRE(new RectangularObstacle(new XY(-400, 500), 58, 58), ElementColor.JAUNE),
+	CROIX_2_GAUCHE(new RectangularObstacle(new XY(-400-58, 500), 58, 58), ElementColor.VERT),
+	CROIX_2_DROITE(new RectangularObstacle(new XY(-400+58, 500), 58, 58), ElementColor.ORANGE),
+	CROIX_2_HAUT(new RectangularObstacle(new XY(-400, 500+58), 58, 58), ElementColor.NOIR),
+	CROIX_2_BAS(new RectangularObstacle(new XY(-400, 500-58), 58, 58), ElementColor.BLEU),
+
+	CROIX_3_CENTRE(new RectangularObstacle(new XY(-1200, 810), 58, 58), ElementColor.JAUNE),
+	CROIX_3_GAUCHE(new RectangularObstacle(new XY(-1200-58, 810), 58, 58), ElementColor.VERT),
+	CROIX_3_DROITE(new RectangularObstacle(new XY(-2100+58, 810), 58, 58), ElementColor.ORANGE),
+	CROIX_3_HAUT(new RectangularObstacle(new XY(-1200, 810+58), 58, 58), ElementColor.NOIR),
+	CROIX_3_BAS(new RectangularObstacle(new XY(-1200, 810-58), 58, 58), ElementColor.BLEU),
+	
+	
+	CROIX_4_CENTRE(new RectangularObstacle(new XY(650, 1460), 58, 58), ElementColor.JAUNE),
+	CROIX_4_GAUCHE(new RectangularObstacle(new XY(650-58, 1460), 58, 58), ElementColor.ORANGE),
+	CROIX_4_DROITE(new RectangularObstacle(new XY(650+58, 1460), 58, 58), ElementColor.VERT),
+	CROIX_4_HAUT(new RectangularObstacle(new XY(650, 1460+58), 58, 58), ElementColor.NOIR),
+	CROIX_4_BAS(new RectangularObstacle(new XY(650, 1460-58), 58, 58), ElementColor.BLEU),
+
+	CROIX_5_CENTRE(new RectangularObstacle(new XY(400, 500), 58, 58), ElementColor.JAUNE),
+	CROIX_5_GAUCHE(new RectangularObstacle(new XY(400-58, 500), 58, 58), ElementColor.ORANGE),
+	CROIX_5_DROITE(new RectangularObstacle(new XY(400+58, 500), 58, 58), ElementColor.VERT),
+	CROIX_5_HAUT(new RectangularObstacle(new XY(400, 500+58), 58, 58), ElementColor.NOIR),
+	CROIX_5_BAS(new RectangularObstacle(new XY(400, 500-58), 58, 58), ElementColor.BLEU),
+
+	CROIX_6_CENTRE(new RectangularObstacle(new XY(1200, 810), 58, 58), ElementColor.JAUNE),
+	CROIX_6_GAUCHE(new RectangularObstacle(new XY(1200-58, 810), 58, 58), ElementColor.ORANGE),
+	CROIX_6_DROITE(new RectangularObstacle(new XY(2100+58, 810), 58, 58), ElementColor.VERT),
+	CROIX_6_HAUT(new RectangularObstacle(new XY(1200, 810+58), 58, 58), ElementColor.NOIR),
+	CROIX_6_BAS(new RectangularObstacle(new XY(1200, 810-58), 58, 58), ElementColor.BLEU);
 
 	public final Obstacle obstacle;
+	public final ElementColor couleur;
 
-	private GameElementNames(Obstacle obs)
+	private GameElementNames(Obstacle obs, ElementColor couleur)
 	{
 		obstacle = obs;
+		this.couleur = couleur;
 	}
 
 	public boolean isVisible(boolean sureleve)
