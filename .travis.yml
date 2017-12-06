@@ -4,6 +4,7 @@ install :
     - cd The-Kraken-Pathfinding
     - ./install_dependencies.sh
     - cd core
+    - sed s/GRAPHIC_ENABLE\ =\ true// src/test/resources/kraken.conf -i
     - mvn install
     - cd ../..
 script :

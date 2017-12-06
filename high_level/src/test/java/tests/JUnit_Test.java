@@ -72,7 +72,7 @@ public abstract class JUnit_Test
 		 * La position initiale du robot
 		 */
 		Robot r = container.getService(Robot.class);
-		r.setCinematique(new Cinematique(0, 1800, -Math.PI / 3, true, 0));
+		r.setCinematique(new Cinematique(0, 1800, -Math.PI / 3, true, 0, false));
 	}
 
 	@After
@@ -92,6 +92,7 @@ public abstract class JUnit_Test
 	 */
 	public static void main(String[] args) throws ClassNotFoundException
 	{
+		assert args.length > 0;
 		String[] classAndMethod = args[0].split("#");
 		Request request = Request.method(Class.forName(classAndMethod[0]), classAndMethod[1]);
 
