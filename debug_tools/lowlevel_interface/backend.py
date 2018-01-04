@@ -1,6 +1,6 @@
 from communication import Communication, Message
 from CommandList import *
-import time, traceback
+import time
 from PyQt5.QtCore import QTimer
 
 
@@ -40,7 +40,7 @@ class Backend:
 
     def setGraphicalInterface(self, toolbar, console, graph):
         self.toolbar = toolbar
-        self.toolbar.setTimeBounds(0, 0)
+        self.toolbar.setTimeBounds(0)
         self.console = console
         self.graph = graph
 
@@ -48,7 +48,10 @@ class Backend:
         self.backgroundTask.start()
 
     def main_loop(self):
-        self.communication.communicate()
+        try:
+            self.communication.communicate()
+        except IOError:
+            self.toolbar.connexionFailed()
         if self.connecting:
             if self.communication.connectionSuccess is not None:
                 if self.communication.connectionSuccess:
@@ -67,8 +70,7 @@ class Backend:
                     self.tMin = self.tMax
                 self.updateTimeBounds()
             except (ValueError, IndexError) as e:
-                print("Incorrect message received")
-                traceback.print_tb(e.__traceback__)
+                print("[Incorrect message received]", e)
 
         if time.time() - self.lastRefreshTime > 0.1 and (self.needUpdateConsole or self.needUpdateCurveGraph or self.needUpdateScatterGraph):
             if self.needUpdateConsole:
@@ -83,7 +85,11 @@ class Backend:
             self.lastRefreshTime = time.time()
 
     def handleNewMessage(self, message):
-        command = self.command_from_id[message.id]
+        try:
+            command = self.command_from_id[message.id]
+        except KeyError:
+            print("Unknown message ID:", message.id)
+            return
         if command.outputInfoFrame == message.standard:
             raise ValueError("Incoherent frame type received")
         try:
@@ -124,7 +130,8 @@ class Backend:
                         i += 1
                 string += '\n'
                 self.consoleEntries.append((message.timestamp, string))
-                self.needUpdateConsole = True
+                if not self.toolbar.paused:
+                    self.needUpdateConsole = True
         except (IndexError, ValueError):
             print("Exception raised for command:", command.id)
             raise
@@ -179,7 +186,7 @@ class Backend:
     @staticmethod
     def interpretStrings(byteList, fieldList):
         if len(byteList) > 1:
-            string = byteList[0:len(byteList) - 2].decode(encoding='utf-8', errors='ignore')
+            string = byteList[0:-1].decode(encoding='utf-8', errors='ignore')
             return string.split("_", maxsplit=len(fieldList) - 1)
         else:
             return []
@@ -206,7 +213,8 @@ class Backend:
         pass
 
     def updateTimeBounds(self):
-        self.toolbar.setTimeBounds(self.tMin - self.tMax, 0)
+        print("Set bounds")
+        self.toolbar.setTimeBounds(self.tMax - self.tMin)
 
     # Methods called in the Qt thread
     def connect(self, ip=None, com=None):
@@ -217,6 +225,7 @@ class Backend:
         self.communication.disconnect()
 
     def setCurrentTime(self, timestamp):
+        print("Set current time")
         self.currentTime = timestamp + self.tMax
         self.needUpdateConsole = True
         self.needUpdateCurveGraph = True

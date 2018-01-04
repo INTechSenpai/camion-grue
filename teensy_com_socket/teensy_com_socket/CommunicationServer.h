@@ -45,13 +45,14 @@ enum Channel
 	INFO					= 0x01,
 	ERROR					= 0x02,
 	TRACE					= 0x03,
-	DIRECTION				= 0x04,
-	AIM_TRAJECTORY			= 0x05,
-	PID_SPEED				= 0x06,
-	PID_TRANS				= 0x07,
-	PID_TRAJECTORY			= 0x08,
-	BLOCKING_MGR			= 0x09,
-	STOPPING_MGR			= 0x0A
+	SPY_ORDER				= 0x04,
+	DIRECTION				= 0x05,
+	AIM_TRAJECTORY			= 0x06,
+	PID_SPEED				= 0x07,
+	PID_TRANS				= 0x08,
+	PID_TRAJECTORY			= 0x09,
+	BLOCKING_MGR			= 0x0A,
+	STOPPING_MGR			= 0x0B
 };
 
 

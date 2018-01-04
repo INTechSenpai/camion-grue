@@ -1,8 +1,9 @@
 import socket, threading, serial, time
 
 DEFAULT_ROBOT_IP = "172.16.0.2"
-ROBOT_TCP_PORT = 4242
-COMMUNICATION_TIMEOUT = 5  # seconds
+ROBOT_TCP_PORT = 80
+CONNEXION_TIMEOUT = 5  # seconds
+ORIGIN_TIMESTAMP = int(time.time() * 1000)
 
 
 class Communication:
@@ -50,6 +51,7 @@ class Communication:
                 b += bytearray([0xFF])
             b += bytearray(message.data)
             self.abstract_interface.sendBytes(b)
+            print("send: ", b)
 
     def available(self):
         return len(self.messageBuffer)
@@ -61,56 +63,61 @@ class Communication:
 
     def communicate(self):
         if self.abstract_interface is not None:
-            avail = self.abstract_interface.available()
-            if avail > 0:
-                self.rBuffer += bytearray(self.abstract_interface.read(avail))
-            while len(self.rBuffer) > 0:
-                byte = self.rBuffer[0]
-                self.rBuffer = self.rBuffer[1:]
-                endReached = False
-                if not self.readingMsg:
-                    if byte == 0xFF:
-                        self.readingMsg = True
+            try:
+                avail = self.abstract_interface.available()
+                if avail > 0:
+                    self.rBuffer += bytearray(self.abstract_interface.read(avail))
+                while len(self.rBuffer) > 0:
+                    byte = self.rBuffer[0]
+                    self.rBuffer = self.rBuffer[1:]
+                    endReached = False
+                    if not self.readingMsg:
+                        if byte == 0xFF:
+                            self.readingMsg = True
+                        else:
+                            print("Received incorrect byte:", byte)
+                    elif self.currentMsgId is None:
+                        self.currentMsgId = byte
+                    elif self.currentMsgLength is None:
+                        self.currentMsgLength = byte
+                        if byte == 0:
+                            endReached = True
                     else:
-                        print("Received incorrect byte:", byte)
-                elif self.currentMsgId is None:
-                    self.currentMsgId = byte
-                elif self.currentMsgLength is None:
-                    self.currentMsgLength = byte
-                    if byte == 0:
-                        endReached = True
-                else:
-                    self.currentMgsData.append(byte)
-                    if self.currentMsgLength == 0xFF and byte == '\0':
-                        endReached = True
-                    elif self.currentMsgLength != 0xFF and len(self.currentMgsData) == self.currentMsgLength:
-                        endReached = True
-                if endReached:
-                    message = Message(self.currentMsgId, bytes(self.currentMgsData), self.currentMsgLength != 0xFF)
-                    self.messageBuffer.append(message)
-                    self.readingMsg = False
-                    self.currentMsgId = None
-                    self.currentMsgLength = None
-                    self.currentMgsData = []
+                        self.currentMgsData.append(byte)
+                        if self.currentMsgLength == 0xFF and byte == 0x00:
+                            endReached = True
+                        elif self.currentMsgLength != 0xFF and len(self.currentMgsData) == self.currentMsgLength:
+                            endReached = True
+                    if endReached:
+                        message = Message(self.currentMsgId, bytes(self.currentMgsData), self.currentMsgLength != 0xFF)
+                        self.messageBuffer.append(message)
+                        self.readingMsg = False
+                        self.currentMsgId = None
+                        self.currentMsgLength = None
+                        self.currentMgsData = []
+            except IOError:
+                self.disconnect()
+                raise
 
 
 class Message:
     def __init__(self, ID, data=bytes(), standard=True):
-        if isinstance(ID, int) and 0 < ID < 256 and isinstance(data, bytes) and isinstance(standard, bool):
+        if isinstance(ID, int) and 0 <= ID < 256 and isinstance(data, bytes) and isinstance(standard, bool):
             self.id = ID
             self.data = data
-            self.timestamp = int(1000*time.time())
+            self.timestamp = int(1000*time.time() - ORIGIN_TIMESTAMP)
             self.standard = standard
-            if not standard and data[len(data) - 1] != '\0':
+            if not standard and data[len(data) - 1] != 0:
                 raise ValueError
         else:
+            print("ERR - id=", ID, "data=", data, "std=", standard)
             raise ValueError
 
 
 class Serial_interface:
     def __init__(self):
         self.serial = serial.Serial()
-        self.serial.timeout = COMMUNICATION_TIMEOUT
+        self.serial.timeout = CONNEXION_TIMEOUT
 
     def open(self, port):
         self.serial.port = port
@@ -139,7 +146,6 @@ class Serial_interface:
 class TCPIP_interface:
     def __init__(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.settimeout(COMMUNICATION_TIMEOUT)
         self.rBuffer = bytearray()
         self.receptionThread = threading.Thread(target=self._backgroundReception)
         self.isOpen = False
@@ -149,18 +155,21 @@ class TCPIP_interface:
             return False
         else:
             try:
+                self.socket.settimeout(CONNEXION_TIMEOUT)
                 self.socket.connect((ip, ROBOT_TCP_PORT))
                 self.isOpen = True
+                self.socket.setblocking(True)
                 self.receptionThread.start()
                 return True
-            except socket.timeout:
+            except (socket.timeout, ConnectionRefusedError) as e:
+                print("[CONNEXION ERROR]", e)
                 return False
 
     def close(self):
         if self.isOpen:
             self.isOpen = False
-            self.receptionThread.join()
             self.socket.close()
+            self.receptionThread.join()
 
     def sendBytes(self, b):
         if len(b) > 0:
@@ -181,6 +190,9 @@ class TCPIP_interface:
     def _backgroundReception(self):
         print("TCP/IP _backgroundReception start")
         while self.isOpen:
-            b = bytearray(self.socket.recv(4096))
-            self.rBuffer += b
+            try:
+                b = bytearray(self.socket.recv(4096))
+                self.rBuffer += b
+            except ConnectionAbortedError:
+                pass
         print("TCP/IP _backgroundReception end")

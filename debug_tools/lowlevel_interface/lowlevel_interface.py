@@ -9,6 +9,12 @@ from backend import Backend
 from communication import DEFAULT_ROBOT_IP
 
 
+def my_except_hook(t, value, traceback):
+    sys.__excepthook__(t, value, traceback)
+
+sys.excepthook = my_except_hook
+
+
 class MainWindow(QWidget):
     def __init__(self, toolbarConnect, toolbarDisconnect, toolbarSetTime, toolbarSetZoom, toolbarErase, toolbarCancelCut, toolbarCut, panelSend):
         super().__init__()
@@ -18,6 +24,7 @@ class MainWindow(QWidget):
         self.commandPanelScrollArea = QScrollArea(self)
         self.commandPanelScrollArea.setFrameShape(QFrame.StyledPanel)
         self.commandPanel = CommandPanel(self.commandPanelScrollArea, panelSend)
+        self.toolBar.set_enableSendButtons_callback(self.commandPanel.enableSendButtons)
         self.commandPanelScrollArea.setWidgetResizable(True)
         self.commandPanelScrollArea.setWidget(self.commandPanel)
         self.consolePanel = ConsolePanel(self)
@@ -53,6 +60,7 @@ class ToolBar(QWidget):
         self.connectTo = mConnectTo
         self.closeConnection = mDisconnect
         self.setTimeValue = mSetTime
+        self.enableSendButtons = None
 
         # Widgets
         self.protocolTabs = QTabWidget(self)
@@ -79,9 +87,9 @@ class ToolBar(QWidget):
         self.bUncut.clicked.connect(mCancelCut)
         self.bCut = QPushButton(QIcon("img/cut.png"), "", self)
         self.bCut.clicked.connect(mCut)
-        self.bPlayPause = QPushButton(self.iconPlay, "", self)
+        self.bPlayPause = QPushButton(self.iconPause, "", self)
         self.bPlayPause.clicked.connect(self.playPauseToggle)
-        self.paused = True
+        self.paused = False
 
         self.timeSlider = AnnotatedSlider(self, 0, 10, unit="ms", icon=None, callback=self.timeSliderMoved)
         self.zoomSlider = AnnotatedSlider(self, 100, 10000, unit="ms", icon=None, callback=mSetZoom)
@@ -105,6 +113,15 @@ class ToolBar(QWidget):
         grid.setContentsMargins(0,0,0,0)
         self.setLayout(grid)
 
+    def set_enableSendButtons_callback(self, func):
+        self.enableSendButtons = func
+        self.enableSendButtons(self.connected)
+
+    def setConnected(self, boolean):
+        if self.enableSendButtons is not None:
+            self.enableSendButtons(boolean)
+        self.connected = boolean
+
     def connexionMgr(self):
         if not self.connecting:
             if self.connected:
@@ -113,7 +130,7 @@ class ToolBar(QWidget):
                 self.serialChooser.markBlank()
                 self.protocolTabs.setEnabled(True)
                 self.bConnect.setIcon(self.iconConnect)
-                self.connected = False
+                self.setConnected(False)
             else:
                 self.connecting = True
                 self.ipChooser.markBlank()
@@ -140,25 +157,31 @@ class ToolBar(QWidget):
 
     def timeSliderMoved(self, value):
         if not self.paused:
-            self.paused = True
-            self.bPlayPause.setIcon(self.iconPlay)
+            sMin, sMax = self.timeSlider.getBounds()
+            if self.timeSlider.getValue() < sMax:
+                self.paused = True
+                self.bPlayPause.setIcon(self.iconPlay)
         self.setTimeValue(value)
 
     # Methods available for the backend
-    def setTimeBounds(self, tMin, tMax):
-        self.timeSlider.setBounds(tMin, tMax)
+    def setTimeBounds(self, timeSpan):
+        oldTimeSpan = self.timeSlider.getBoundsDistance()
+        self.timeSlider.setBounds(-timeSpan, 0)
         if not self.paused:
-            self.timeSlider.setValue(tMax)
+            self.timeSlider.setValue(0)
+        else:
+            self.timeSlider.setValue(-timeSpan + self.timeSlider.getValue() + oldTimeSpan)
 
     def enableSecondaryIcons(self, enable):
         self.bErase.setEnabled(enable)
         self.bUncut.setEnabled(enable)
 
     def connexionFailed(self):
-        self.connected = False
+        self.setConnected(False)
         self.connecting = False
         self.protocolTabs.setEnabled(True)
         self.bConnect.setEnabled(True)
+        self.bConnect.setIcon(self.iconConnect)
         if self.isIpMode():
             self.ipChooser.markWrong()
             self.serialChooser.markBlank()
@@ -167,7 +190,7 @@ class ToolBar(QWidget):
             self.serialChooser.markWrong()
 
     def connexionSucceeded(self):
-        self.connected = True
+        self.setConnected(True)
         self.connecting = False
         self.bConnect.setIcon(self.iconDisconnect)
         self.bConnect.setEnabled(True)
@@ -282,6 +305,9 @@ class AnnotatedSlider(QWidget):
     def getBounds(self):
         return self.sMin, self.sMax
 
+    def getBoundsDistance(self):
+        return self.sMax - self.sMin
+
     def getValue(self):
         return self.slider.value()
 
@@ -293,6 +319,7 @@ class AnnotatedSlider(QWidget):
             value = self.sMax
         self.slider.setValue(value)
         self.lineEdit.setText(str(value))
+        self.callback(value)
 
     def _value_typed_by_user(self):
         try:
@@ -316,17 +343,21 @@ class AnnotatedSlider(QWidget):
 class CommandPanel(QWidget):
     def __init__(self, master, sendMethod):
         super().__init__(master)
-        grid = QGridLayout()
+        self.grid = QGridLayout()
         row = 0
         for command in COMMAND_LIST:
             if command.type == CommandType.SHORT_ORDER or command.type == CommandType.LONG_ORDER:
                 cb = CommandBox(self, command, sendMethod)
                 cb.setFrameShape(QFrame.StyledPanel)
-                grid.addWidget(cb, row, 0)
+                self.grid.addWidget(cb, row, 0)
                 row += 1
-        grid.setRowStretch(row, 1)
-        grid.setContentsMargins(5,5,5,5)
-        self.setLayout(grid)
+        self.grid.setRowStretch(row, 1)
+        self.grid.setContentsMargins(5,5,5,5)
+        self.setLayout(self.grid)
+
+    def enableSendButtons(self, enable):
+        for i in range(self.grid.count()):
+            self.grid.itemAt(i).widget().enableSendButton(enable)
 
 
 class CommandBox(QFrame):
@@ -457,6 +488,9 @@ class CommandBox(QFrame):
                     allOk = False
         return allOk
 
+    def enableSendButton(self, enable):
+        self.sendButton.setEnabled(enable)
+
 
 class ConsolePanel(QFrame):
     def __init__(self, master):
@@ -475,6 +509,7 @@ class ConsolePanel(QFrame):
 
         self.console = QTextEdit(self)
         self.console.setReadOnly(True)
+        self.consoleVScrollBar = self.console.verticalScrollBar()
         self.font = "Consolas"
         self.fontSize = 9
         self.fontSize_small = 7
@@ -596,14 +631,18 @@ class ConsolePanel(QFrame):
         self.consoleText = newText
         self.console.clear()
         self.formatTextToConsole(newText)
+        self.consoleVScrollBar.setValue(self.consoleVScrollBar.maximum())
 
     def appendText(self, text):
         self.consoleText += text
         self.formatTextToConsole(text)
+        self.consoleVScrollBar.setValue(self.consoleVScrollBar.maximum())
 
     def settings_changed(self):
-        self.console.setPlainText("")
+        scrollValue = self.consoleVScrollBar.value()
+        self.console.clear()
         self.formatTextToConsole(self.consoleText)
+        self.consoleVScrollBar.setValue(scrollValue)
 
 
 class GraphPanel(QWidget):

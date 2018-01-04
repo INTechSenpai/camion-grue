@@ -138,11 +138,15 @@ void CommunicationServer::communicate()
 	/* Gestion des déconnexions */
 	for (uint8_t i = 0; i < MAX_SOCK_NUM; i++)
 	{
-		if (!ethernetClients[i].connected())
+		if (ethernetClients[i].getSocketNumber() < MAX_SOCK_NUM)
 		{
-			ethernetClients[i].stop();
-			subscriptionList[i] = 0;
-			printf("Client %u disconnected\n", i);
+			if (!ethernetClients[i].connected())
+			{
+				ethernetClients[i].stop();
+				subscriptionList[i] = 0;
+				printf("Client %u disconnected\n", i);
+				delay(100);
+			}
 		}
 	}
 }

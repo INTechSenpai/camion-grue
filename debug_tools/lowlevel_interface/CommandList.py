@@ -86,10 +86,14 @@ class NumberType(Enum):
 COMMAND_LIST = [
     # Channels
     Command(0x00, "Odometry and Sensors", CommandType.SUBSCRIPTION_SCATTER_DATA, [Field("Subscribe", NumberType.UINT8, {0x00: "No", 0x01: "Yes"})], [Field("x", NumberType.INT16, description="mm"), Field("y", NumberType.INT16, description="mm"), Field("Angle", NumberType.INT16, description="milli-radians")]),
-    Command(0x04, "Direction", CommandType.SUBSCRIPTION_CURVE_DATA, [Field("Subscribe", NumberType.UINT8, {0x00: "No", 0x01: "Yes"})], [InfoField("Aim direction", QColor(255,0,0)), InfoField("Real direction")], outputInfoFrame=True),
-    Command(0x06, "Speed PID", CommandType.SUBSCRIPTION_CURVE_DATA, [Field("Subscribe", NumberType.UINT8, {0x00: "No", 0x01: "Yes"})], [InfoField("P err", QColor(0,255,0)), InfoField("I err", QColor(0,0,255)), InfoField("D err")], outputInfoFrame=True),
-    Command(0x07, "Translation PID", CommandType.SUBSCRIPTION_CURVE_DATA, [Field("Subscribe", NumberType.UINT8, {0x00: "No", 0x01: "Yes"})], [InfoField("P err"), InfoField("I err"), InfoField("D err")], outputInfoFrame=True),
-    Command(0x08, "Trajectory PID", CommandType.SUBSCRIPTION_CURVE_DATA, [Field("Subscribe", NumberType.UINT8, {0x00: "No", 0x01: "Yes"})], [InfoField("Translation err"), InfoField("Angular err")], outputInfoFrame=True),
+    Command(0x01, "Info", CommandType.SUBSCRIPTION_TEXT, [], [InfoField("Info")], outputInfoFrame=True),
+    Command(0x02, "Error", CommandType.SUBSCRIPTION_TEXT, [], [InfoField("Error")], outputInfoFrame=True),
+    Command(0x03, "Trace", CommandType.SUBSCRIPTION_TEXT, [], [InfoField("Trace")], outputInfoFrame=True),
+    Command(0x04, "Spy orders", CommandType.SUBSCRIPTION_TEXT, [], [InfoField("Spy orders")], outputInfoFrame=True),
+    Command(0x05, "Direction", CommandType.SUBSCRIPTION_CURVE_DATA, [Field("Subscribe", NumberType.UINT8, {0x00: "No", 0x01: "Yes"})], [InfoField("Aim direction", QColor(255,0,0)), InfoField("Real direction")], outputInfoFrame=True),
+    Command(0x07, "Speed PID", CommandType.SUBSCRIPTION_CURVE_DATA, [Field("Subscribe", NumberType.UINT8, {0x00: "No", 0x01: "Yes"})], [InfoField("P err", QColor(0,255,0)), InfoField("I err", QColor(0,0,255)), InfoField("D err")], outputInfoFrame=True),
+    Command(0x08, "Translation PID", CommandType.SUBSCRIPTION_CURVE_DATA, [Field("Subscribe", NumberType.UINT8, {0x00: "No", 0x01: "Yes"})], [InfoField("P err"), InfoField("I err"), InfoField("D err")], outputInfoFrame=True),
+    Command(0x09, "Trajectory PID", CommandType.SUBSCRIPTION_CURVE_DATA, [Field("Subscribe", NumberType.UINT8, {0x00: "No", 0x01: "Yes"})], [InfoField("Translation err"), InfoField("Angular err")], outputInfoFrame=True),
 
     # Long orders
 
