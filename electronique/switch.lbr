@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="1" unitdist="mm" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.1" altunitdist="mm" altunit="mm"/>
+<grid distance="50" unitdist="mil" unit="mil" style="lines" multiple="1" display="yes" altdistance="5" altunitdist="mil" altunit="mil"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="yes"/>
@@ -79,15 +79,15 @@ by exp-lbrs.ulp</description>
 <package name="SWITCH_LPV-1">
 <description>&lt;b&gt;TOGGLE SWITCH&lt;/b&gt;</description>
 <wire x1="-4.064" y1="0" x2="-4.064" y2="8.208" width="0.1524" layer="21"/>
-<wire x1="-4.064" y1="0" x2="-3.683" y2="0" width="0.1524" layer="51"/>
-<wire x1="-3.683" y1="0" x2="-3.683" y2="-0.254" width="0.1524" layer="51"/>
-<wire x1="3.683" y1="-0.254" x2="3.429" y2="-0.254" width="0.1524" layer="51"/>
-<wire x1="3.683" y1="-0.254" x2="3.683" y2="0" width="0.1524" layer="51"/>
-<wire x1="3.683" y1="0" x2="4.064" y2="0" width="0.1524" layer="51"/>
-<wire x1="-3.429" y1="-0.254" x2="-3.429" y2="-0.889" width="0.1524" layer="51"/>
-<wire x1="-3.429" y1="-0.254" x2="-3.683" y2="-0.254" width="0.1524" layer="51"/>
-<wire x1="3.429" y1="-0.889" x2="2.54" y2="-0.889" width="0.1524" layer="51"/>
-<wire x1="3.429" y1="-0.889" x2="3.429" y2="-0.254" width="0.1524" layer="51"/>
+<wire x1="-4.064" y1="0" x2="-3.683" y2="0" width="0.1524" layer="21"/>
+<wire x1="-3.683" y1="0" x2="-3.683" y2="-0.254" width="0.1524" layer="21"/>
+<wire x1="3.683" y1="-0.254" x2="3.429" y2="-0.254" width="0.1524" layer="21"/>
+<wire x1="3.683" y1="-0.254" x2="3.683" y2="0" width="0.1524" layer="21"/>
+<wire x1="3.683" y1="0" x2="4.064" y2="0" width="0.1524" layer="21"/>
+<wire x1="-3.429" y1="-0.254" x2="-3.429" y2="-0.889" width="0.1524" layer="21"/>
+<wire x1="-3.429" y1="-0.254" x2="-3.683" y2="-0.254" width="0.1524" layer="21"/>
+<wire x1="3.429" y1="-0.889" x2="2.54" y2="-0.889" width="0.1524" layer="21"/>
+<wire x1="3.429" y1="-0.889" x2="3.429" y2="-0.254" width="0.1524" layer="21"/>
 <wire x1="2.54" y1="-4.112" x2="0.254" y2="-4.112" width="0.1524" layer="21"/>
 <wire x1="0.254" y1="-4.112" x2="-0.254" y2="-4.112" width="0.1524" layer="21"/>
 <wire x1="0.254" y1="-0.889" x2="-0.254" y2="-0.889" width="0.1524" layer="21"/>
@@ -100,36 +100,36 @@ by exp-lbrs.ulp</description>
 <wire x1="-4.064" y1="8.208" x2="-3.937" y2="8.335" width="0.1524" layer="21"/>
 <wire x1="-3.937" y1="8.335" x2="-2.54" y2="8.335" width="0.1524" layer="21"/>
 <wire x1="-2.54" y1="8.208" x2="2.54" y2="8.208" width="0.1524" layer="21"/>
-<wire x1="2.54" y1="-0.889" x2="2.54" y2="-1.397" width="0.1524" layer="51"/>
+<wire x1="2.54" y1="-0.889" x2="2.54" y2="-1.397" width="0.1524" layer="21"/>
 <wire x1="2.54" y1="-1.397" x2="2.54" y2="-4.112" width="0.1524" layer="21"/>
-<wire x1="2.54" y1="-0.889" x2="1.397" y2="-0.889" width="0.1524" layer="51"/>
+<wire x1="2.54" y1="-0.889" x2="1.397" y2="-0.889" width="0.1524" layer="21"/>
 <wire x1="1.397" y1="-0.889" x2="0.254" y2="-0.889" width="0.1524" layer="21"/>
-<wire x1="3.429" y1="-0.254" x2="1.143" y2="-0.254" width="0.1524" layer="51"/>
-<wire x1="3.683" y1="0" x2="1.143" y2="0" width="0.1524" layer="51"/>
+<wire x1="3.429" y1="-0.254" x2="1.143" y2="-0.254" width="0.1524" layer="21"/>
+<wire x1="3.683" y1="0" x2="1.143" y2="0" width="0.1524" layer="21"/>
 <wire x1="-1.016" y1="0" x2="1.143" y2="0" width="0.1524" layer="21"/>
-<wire x1="-1.016" y1="0" x2="-3.683" y2="0" width="0.1524" layer="51"/>
+<wire x1="-1.016" y1="0" x2="-3.683" y2="0" width="0.1524" layer="21"/>
 <wire x1="-1.143" y1="-0.254" x2="1.143" y2="-0.254" width="0.1524" layer="21"/>
-<wire x1="-1.143" y1="-0.254" x2="-3.429" y2="-0.254" width="0.1524" layer="51"/>
+<wire x1="-1.143" y1="-0.254" x2="-3.429" y2="-0.254" width="0.1524" layer="21"/>
 <wire x1="-1.397" y1="-0.889" x2="-0.254" y2="-0.889" width="0.1524" layer="21"/>
-<wire x1="-1.397" y1="-0.889" x2="-2.54" y2="-0.889" width="0.1524" layer="51"/>
-<wire x1="-2.54" y1="-0.889" x2="-3.429" y2="-0.889" width="0.1524" layer="51"/>
-<wire x1="-2.54" y1="-0.889" x2="-2.54" y2="-1.397" width="0.1524" layer="51"/>
+<wire x1="-1.397" y1="-0.889" x2="-2.54" y2="-0.889" width="0.1524" layer="21"/>
+<wire x1="-2.54" y1="-0.889" x2="-3.429" y2="-0.889" width="0.1524" layer="21"/>
+<wire x1="-2.54" y1="-0.889" x2="-2.54" y2="-1.397" width="0.1524" layer="21"/>
 <wire x1="-2.54" y1="-1.397" x2="-2.54" y2="-4.112" width="0.1524" layer="21"/>
 <rectangle x1="-0.635" y1="8.208" x2="0.635" y2="8.97" layer="21"/>
 <rectangle x1="-0.635" y1="11.51" x2="0.635" y2="14.05" layer="21"/>
 <rectangle x1="-0.635" y1="16.59" x2="0.635" y2="19.13" layer="21"/>
-<rectangle x1="-0.635" y1="8.97" x2="0.635" y2="11.51" layer="51"/>
-<rectangle x1="-0.635" y1="14.05" x2="0.635" y2="16.59" layer="51"/>
-<rectangle x1="3.429" y1="0" x2="4.064" y2="1.143" layer="51"/>
+<rectangle x1="-0.635" y1="8.97" x2="0.635" y2="11.51" layer="21"/>
+<rectangle x1="-0.635" y1="14.05" x2="0.635" y2="16.59" layer="21"/>
+<rectangle x1="3.429" y1="0" x2="4.064" y2="1.143" layer="21"/>
 <rectangle x1="3.429" y1="1.143" x2="4.064" y2="7.62" layer="21"/>
 <rectangle x1="-1.016" y1="0" x2="1.016" y2="3.81" layer="21"/>
-<rectangle x1="-1.27" y1="0" x2="-1.016" y2="3.81" layer="51"/>
-<rectangle x1="1.016" y1="0" x2="1.27" y2="3.81" layer="51"/>
-<rectangle x1="-4.064" y1="0" x2="-3.429" y2="1.143" layer="51"/>
+<rectangle x1="-1.27" y1="0" x2="-1.016" y2="3.81" layer="21"/>
+<rectangle x1="1.016" y1="0" x2="1.27" y2="3.81" layer="21"/>
+<rectangle x1="-4.064" y1="0" x2="-3.429" y2="1.143" layer="21"/>
 <rectangle x1="-4.064" y1="1.143" x2="-3.429" y2="7.62" layer="21"/>
-<pad name="1" x="0" y="10.16" drill="1.85" shape="long"/>
-<pad name="2" x="0" y="13.97" drill="1.85" shape="long"/>
-<pad name="3" x="0" y="17.78" drill="1.85" shape="long"/>
+<pad name="1" x="0" y="10.16" drill="1.85"/>
+<pad name="2" x="0" y="13.97" drill="1.85"/>
+<pad name="3" x="0" y="17.78" drill="1.85"/>
 <pad name="B" x="-2.225" y="0" drill="1.85"/>
 <pad name="B1" x="2.225" y="0" drill="1.85"/>
 <text x="3.429" y="9.097" size="1.778" layer="27" ratio="10" rot="R90">&gt;VALUE</text>
