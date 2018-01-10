@@ -1,0 +1,7 @@
+# Documentation
+!*.doc
+!*.docx
+!*.xls
+!*.xlsx
+!*.ppt
+!*.pptx
