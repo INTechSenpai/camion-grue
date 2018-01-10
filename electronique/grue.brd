@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="8.5.1">
+<eagle version="8.5.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -156,6 +156,43 @@
 <smd name="8" x="3.125" y="2.5" dx="1.7" dy="0.6" layer="1" rot="R90"/>
 <smd name="9" x="4.375" y="2.5" dx="1.7" dy="0.6" layer="1" rot="R90"/>
 <smd name="10" x="5.625" y="2.5" dx="1.7" dy="0.6" layer="1" rot="R90"/>
+</package>
+<package name="GH-05-V">
+<smd name="1" x="-2.5" y="2.5" dx="1.7" dy="0.6" layer="1" rot="R90"/>
+<smd name="2" x="-1.25" y="2.5" dx="1.7" dy="0.6" layer="1" rot="R90"/>
+<smd name="CASE0" x="4.35" y="-0.85" dx="2.8" dy="1" layer="1" rot="R90"/>
+<smd name="CASE1" x="-4.35" y="-0.85" dx="2.8" dy="1" layer="1" rot="R90"/>
+<wire x1="-5" y1="-1.95" x2="-3.75" y2="-1.95" width="0.127" layer="21"/>
+<wire x1="-3.75" y1="-1.95" x2="3.75" y2="-1.95" width="0.127" layer="21"/>
+<wire x1="3.75" y1="-1.95" x2="5" y2="-1.95" width="0.127" layer="21"/>
+<wire x1="5" y1="-1.95" x2="5" y2="2.5" width="0.127" layer="21"/>
+<wire x1="5" y1="2.5" x2="-5" y2="2.5" width="0.127" layer="21"/>
+<wire x1="-5" y1="2.5" x2="-5" y2="-1.95" width="0.127" layer="21"/>
+<wire x1="-3.75" y1="-1.95" x2="-3.75" y2="-1.25" width="0.127" layer="21"/>
+<wire x1="-3.75" y1="-1.25" x2="3.75" y2="-1.25" width="0.127" layer="21"/>
+<wire x1="3.75" y1="-1.25" x2="3.75" y2="-1.95" width="0.127" layer="21"/>
+<smd name="3" x="0" y="2.5" dx="1.7" dy="0.6" layer="1" rot="R90"/>
+<smd name="4" x="1.25" y="2.5" dx="1.7" dy="0.6" layer="1" rot="R90"/>
+<smd name="5" x="2.5" y="2.5" dx="1.7" dy="0.6" layer="1" rot="R90"/>
+</package>
+<package name="GH-06-V">
+<smd name="1" x="-3.125" y="2.5" dx="1.7" dy="0.6" layer="1" rot="R90"/>
+<smd name="2" x="-1.875" y="2.5" dx="1.7" dy="0.6" layer="1" rot="R90"/>
+<smd name="CASE0" x="4.975" y="-0.85" dx="2.8" dy="1" layer="1" rot="R90"/>
+<smd name="CASE1" x="-4.975" y="-0.85" dx="2.8" dy="1" layer="1" rot="R90"/>
+<wire x1="-5.625" y1="-1.95" x2="-4.375" y2="-1.95" width="0.127" layer="21"/>
+<wire x1="-4.375" y1="-1.95" x2="4.375" y2="-1.95" width="0.127" layer="21"/>
+<wire x1="4.375" y1="-1.95" x2="5.625" y2="-1.95" width="0.127" layer="21"/>
+<wire x1="5.625" y1="-1.95" x2="5.625" y2="2.5" width="0.127" layer="21"/>
+<wire x1="5.625" y1="2.5" x2="-5.625" y2="2.5" width="0.127" layer="21"/>
+<wire x1="-5.625" y1="2.5" x2="-5.625" y2="-1.95" width="0.127" layer="21"/>
+<wire x1="-4.375" y1="-1.95" x2="-4.375" y2="-1.25" width="0.127" layer="21"/>
+<wire x1="-4.375" y1="-1.25" x2="4.375" y2="-1.25" width="0.127" layer="21"/>
+<wire x1="4.375" y1="-1.25" x2="4.375" y2="-1.95" width="0.127" layer="21"/>
+<smd name="3" x="-0.625" y="2.5" dx="1.7" dy="0.6" layer="1" rot="R90"/>
+<smd name="4" x="0.625" y="2.5" dx="1.7" dy="0.6" layer="1" rot="R90"/>
+<smd name="5" x="1.875" y="2.5" dx="1.7" dy="0.6" layer="1" rot="R90"/>
+<smd name="6" x="3.125" y="2.5" dx="1.7" dy="0.6" layer="1" rot="R90"/>
 </package>
 </packages>
 </library>
@@ -1430,6 +1467,21 @@ Source:  Data sheet </description>
 </package3d>
 </packages3d>
 </library>
+<library name="dc-dc-converter">
+<packages>
+<package name="DC-DC-CONVERTER">
+<pad name="ON-OFF" x="-3.4" y="0" drill="1.07" diameter="1.47"/>
+<pad name="VIN" x="-1.7" y="0" drill="1.07" diameter="1.47"/>
+<pad name="GND" x="0" y="0" drill="1.07" diameter="1.47"/>
+<pad name="VOUT" x="1.7" y="0" drill="1.07" diameter="1.47"/>
+<pad name="TRIM+" x="3.4" y="0" drill="1.07" diameter="1.47"/>
+<wire x1="5.46" y1="-1.14" x2="-5.46" y2="-1.14" width="0.127" layer="21"/>
+<wire x1="-5.46" y1="-1.14" x2="-5.46" y2="7.62" width="0.127" layer="21"/>
+<wire x1="-5.46" y1="7.62" x2="5.46" y2="7.62" width="0.127" layer="21"/>
+<wire x1="5.46" y1="7.62" x2="5.46" y2="-1.14" width="0.127" layer="21"/>
+</package>
+</packages>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -1649,9 +1701,16 @@ design rules under a new name.</description>
 <attribute name="MPN" value="REG1117" x="-38.1" y="-152.4" size="1.778" layer="27" display="off"/>
 <attribute name="OC_FARNELL" value="1097566" x="-38.1" y="-152.4" size="1.778" layer="27" display="off"/>
 <attribute name="OC_NEWARK" value="14P6981" x="-38.1" y="-152.4" size="1.778" layer="27" display="off"/>
+<attribute name="RS" value="885-5432" x="-38.1" y="-152.4" size="1.778" layer="27" display="off"/>
 </element>
 <element name="C2" library="resistor" library_urn="urn:adsk.eagle:library:348" package="C0805" package3d_urn="urn:adsk.eagle:package:26137/1" value="10µF" x="-43.18" y="-162.56"/>
 <element name="C3" library="resistor" library_urn="urn:adsk.eagle:library:348" package="C0805" package3d_urn="urn:adsk.eagle:package:26137/1" value="22µF" x="-43.18" y="-168.91"/>
+<element name="TOF_LP_G" library="con-jst" package="GH-05-V" value="JST-05" x="-50.8" y="-166.37"/>
+<element name="TOF_LP_D" library="con-jst" package="GH-05-V" value="JST-05" x="-60.96" y="-166.37"/>
+<element name="TOF_PINCE" library="con-jst" package="GH-06-V" value="JST-06" x="-59.69" y="-177.8"/>
+<element name="XL320_G1" library="1NTech_pinhead" package="DYNAMIXEL_XL_1X03" value="DYNAMIXEL-1X03XL" x="-57.15" y="-190.5"/>
+<element name="C4" library="resistor" library_urn="urn:adsk.eagle:library:348" package="C0805" package3d_urn="urn:adsk.eagle:package:26137/1" value="1µF" x="-63.5" y="-200.66"/>
+<element name="12V-&gt;6V" library="dc-dc-converter" package="DC-DC-CONVERTER" value="DC-DC-CONVERTER" x="-53.34" y="-212.09"/>
 </elements>
 <signals>
 <signal name="GND">
@@ -1669,6 +1728,13 @@ design rules under a new name.</description>
 <contactref element="IC3" pad="1"/>
 <contactref element="C2" pad="2"/>
 <contactref element="C3" pad="2"/>
+<contactref element="U$1" pad="AGND"/>
+<contactref element="XL320_G1" pad="GND"/>
+<contactref element="C4" pad="2"/>
+<contactref element="12V-&gt;6V" pad="GND"/>
+<wire x1="-62.55" y1="-200.66" x2="-59.15" y2="-190.5" width="0" layer="19" extent="1-1"/>
+<wire x1="-53.34" y1="-212.09" x2="-62.55" y2="-200.66" width="0" layer="19" extent="1-1"/>
+<wire x1="-42.23" y1="-168.91" x2="-59.15" y2="-190.5" width="0" layer="19" extent="1-1"/>
 <wire x1="-42.23" y1="-162.56" x2="-42.23" y2="-168.91" width="0" layer="19" extent="1-1"/>
 <wire x1="-40.3606" y1="-155.5496" x2="-42.23" y2="-162.56" width="0" layer="19" extent="1-1"/>
 <wire x1="-34.61" y1="-115.57" x2="-40.3606" y2="-155.5496" width="0" layer="19" extent="1-1"/>
@@ -1681,13 +1747,8 @@ design rules under a new name.</description>
 <wire x1="-38.705" y1="-7.66" x2="-37.455" y2="-7.66" width="0" layer="19" extent="1-1"/>
 <wire x1="-39.955" y1="-7.66" x2="-38.705" y2="-7.66" width="0" layer="19" extent="1-1"/>
 <wire x1="-15.56" y1="-24.13" x2="-34.61" y2="-24.13" width="0" layer="19" extent="1-1"/>
-<wire x1="-38.1" y1="35.56" x2="-37.455" y2="-7.66" width="0" layer="19" extent="1-1"/>
-</signal>
-<signal name="AGND">
-<contactref element="U$1" pad="AGND"/>
-</signal>
-<signal name="3.3V">
-<contactref element="U$1" pad="3.3V"/>
+<wire x1="-22.86" y1="33.02" x2="-36.205" y2="-7.66" width="0" layer="19" extent="1-1"/>
+<wire x1="-38.1" y1="35.56" x2="-22.86" y2="33.02" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="AREF">
 <contactref element="U$1" pad="AREF"/>
@@ -1697,6 +1758,8 @@ design rules under a new name.</description>
 </signal>
 <signal name="VIN">
 <contactref element="U$1" pad="VIN"/>
+<contactref element="12V-&gt;6V" pad="VIN"/>
+<wire x1="-55.04" y1="-212.09" x2="-22.86" y2="35.56" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="+12V">
 <contactref element="GRUE" pad="8"/>
@@ -1742,16 +1805,22 @@ design rules under a new name.</description>
 <contactref element="DC1" pad="3"/>
 <contactref element="T3" pad="C"/>
 <contactref element="T1" pad="C"/>
+<contactref element="U$1" pad="3.3V"/>
 <wire x1="-36.83" y1="-72.56" x2="-31.75" y2="-99.06" width="0" layer="19" extent="1-1"/>
 <wire x1="-41.91" y1="-72.56" x2="-36.83" y2="-72.56" width="0" layer="19" extent="1-1"/>
 <wire x1="-39.05" y1="-66.04" x2="-36.83" y2="-72.56" width="0" layer="19" extent="1-1"/>
 <wire x1="-26.35" y1="-53.17" x2="-39.05" y2="-66.04" width="0" layer="19" extent="1-1"/>
 <wire x1="-18.73" y1="-53.17" x2="-26.35" y2="-53.17" width="0" layer="19" extent="1-1"/>
 <wire x1="-11.11" y1="-52.07" x2="-18.73" y2="-53.17" width="0" layer="19" extent="1-1"/>
+<wire x1="-22.86" y1="30.48" x2="-11.11" y2="-52.07" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="+6V">
 <contactref element="XL320_G" pad="VCC"/>
 <contactref element="C7" pad="1"/>
+<contactref element="XL320_G1" pad="VCC"/>
+<contactref element="C4" pad="1"/>
+<wire x1="-64.45" y1="-200.66" x2="-57.15" y2="-190.5" width="0" layer="19" extent="1-1"/>
+<wire x1="-36.83" y1="-55.88" x2="-57.15" y2="-190.5" width="0" layer="19" extent="1-1"/>
 <wire x1="-17.46" y1="-24.13" x2="-36.83" y2="-55.88" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="SERIAL_AX12">
@@ -1770,6 +1839,8 @@ design rules under a new name.</description>
 <contactref element="Q2" pad="3"/>
 <contactref element="R7" pad="2"/>
 <contactref element="XL320_G" pad="DATA"/>
+<contactref element="XL320_G1" pad="DATA"/>
+<wire x1="-32.07" y1="-66.04" x2="-55.15" y2="-190.5" width="0" layer="19" extent="1-1"/>
 <wire x1="-34.83" y1="-55.88" x2="-32.07" y2="-66.04" width="0" layer="19" extent="1-1"/>
 <wire x1="-17.78" y1="-50.97" x2="-34.83" y2="-55.88" width="0" layer="19" extent="1-1"/>
 </signal>
@@ -1809,6 +1880,15 @@ design rules under a new name.</description>
 <contactref element="T1" pad="B"/>
 <contactref element="R16" pad="2"/>
 <wire x1="-42.86" y1="-74.76" x2="-35.88" y2="-81.28" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="N$1">
+<contactref element="U$1" pad="0"/>
+</signal>
+<signal name="N$2">
+<contactref element="U$1" pad="1"/>
+</signal>
+<signal name="VOUT">
+<contactref element="12V-&gt;6V" pad="VOUT"/>
 </signal>
 </signals>
 </board>
