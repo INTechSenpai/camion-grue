@@ -21906,26 +21906,26 @@ BF959 corrected 2008.03.06&lt;br&gt;</description>
 </net>
 <net name="DEL_GYRO_3_PWM" class="0">
 <segment>
-<pinref part="U2" gate="G$1" pin="5/PWM"/>
-<wire x1="312.42" y1="101.6" x2="309.88" y2="101.6" width="0.1524" layer="91"/>
-<label x="309.88" y="101.6" size="1.27" layer="95" rot="R180" xref="yes"/>
-</segment>
-<segment>
 <pinref part="R18" gate="G$1" pin="1"/>
 <wire x1="203.2" y1="114.3" x2="205.74" y2="114.3" width="0.1524" layer="91"/>
 <label x="205.74" y="114.3" size="1.27" layer="95" xref="yes"/>
 </segment>
+<segment>
+<pinref part="U2" gate="G$1" pin="4/CAN-RX/PWM"/>
+<wire x1="312.42" y1="104.14" x2="309.88" y2="104.14" width="0.1524" layer="91"/>
+<label x="309.88" y="104.14" size="1.27" layer="95" rot="R180" xref="yes"/>
+</segment>
 </net>
 <net name="DEL_GYRO_4_PWM" class="0">
-<segment>
-<pinref part="U2" gate="G$1" pin="6/PWM"/>
-<wire x1="312.42" y1="99.06" x2="309.88" y2="99.06" width="0.1524" layer="91"/>
-<label x="309.88" y="99.06" size="1.27" layer="95" rot="R180" xref="yes"/>
-</segment>
 <segment>
 <pinref part="R21" gate="G$1" pin="1"/>
 <wire x1="203.2" y1="96.52" x2="205.74" y2="96.52" width="0.1524" layer="91"/>
 <label x="205.74" y="96.52" size="1.27" layer="95" xref="yes"/>
+</segment>
+<segment>
+<pinref part="U2" gate="G$1" pin="3/CAN-TX/PWM"/>
+<wire x1="312.42" y1="106.68" x2="309.88" y2="106.68" width="0.1524" layer="91"/>
+<label x="309.88" y="106.68" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="DEL_FEUX_NUIT_AV_PWM" class="0">
@@ -21966,26 +21966,26 @@ BF959 corrected 2008.03.06&lt;br&gt;</description>
 </net>
 <net name="DEL_GYRO_1_PWM" class="0">
 <segment>
-<pinref part="U2" gate="G$1" pin="3/CAN-TX/PWM"/>
-<wire x1="312.42" y1="106.68" x2="309.88" y2="106.68" width="0.1524" layer="91"/>
-<label x="309.88" y="106.68" size="1.27" layer="95" rot="R180" xref="yes"/>
-</segment>
-<segment>
 <pinref part="R19" gate="G$1" pin="1"/>
 <wire x1="203.2" y1="149.86" x2="205.74" y2="149.86" width="0.1524" layer="91"/>
 <label x="205.74" y="149.86" size="1.27" layer="95" xref="yes"/>
 </segment>
+<segment>
+<pinref part="U2" gate="G$1" pin="6/PWM"/>
+<wire x1="312.42" y1="99.06" x2="309.88" y2="99.06" width="0.1524" layer="91"/>
+<label x="309.88" y="99.06" size="1.27" layer="95" rot="R180" xref="yes"/>
+</segment>
 </net>
 <net name="DEL_GYRO_2_PWM" class="0">
-<segment>
-<pinref part="U2" gate="G$1" pin="4/CAN-RX/PWM"/>
-<wire x1="312.42" y1="104.14" x2="309.88" y2="104.14" width="0.1524" layer="91"/>
-<label x="309.88" y="104.14" size="1.27" layer="95" rot="R180" xref="yes"/>
-</segment>
 <segment>
 <pinref part="R16" gate="G$1" pin="1"/>
 <wire x1="203.2" y1="132.08" x2="205.74" y2="132.08" width="0.1524" layer="91"/>
 <label x="205.74" y="132.08" size="1.27" layer="95" xref="yes"/>
+</segment>
+<segment>
+<pinref part="U2" gate="G$1" pin="5/PWM"/>
+<wire x1="312.42" y1="101.6" x2="309.88" y2="101.6" width="0.1524" layer="91"/>
+<label x="309.88" y="101.6" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="DEL_FEUX_NUIT_AR_PWM" class="0">
@@ -22162,6 +22162,20 @@ BF959 corrected 2008.03.06&lt;br&gt;</description>
 <pinref part="T10" gate="G$1" pin="B"/>
 <pinref part="R33" gate="G$1" pin="2"/>
 <wire x1="241.3" y1="78.74" x2="243.84" y2="78.74" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="VIN1[NC]" class="0">
+<segment>
+<pinref part="U1" gate="G$1" pin="VIN"/>
+<wire x1="363.22" y1="228.6" x2="365.76" y2="228.6" width="0.1524" layer="91"/>
+<label x="365.76" y="228.6" size="1.27" layer="95" xref="yes"/>
+</segment>
+</net>
+<net name="VIN2[NC]" class="0">
+<segment>
+<pinref part="U2" gate="G$1" pin="VIN"/>
+<wire x1="358.14" y1="114.3" x2="360.68" y2="114.3" width="0.1524" layer="91"/>
+<label x="360.68" y="114.3" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
 </nets>
