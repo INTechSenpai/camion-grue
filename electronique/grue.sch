@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="8.5.1">
+<eagle version="8.5.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -10284,6 +10284,122 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 </sheet>
 </sheets>
 </module>
+<module name="MULTI-BUTTON-ON-ADC" prefix="" dx="30.48" dy="20.32">
+<ports>
+<port name="ADC" side="left" coord="5.08" direction="io"/>
+<port name="LOGIC_HIGH" side="right" coord="5.08" direction="io"/>
+<port name="LOGIC_LOW" side="right" coord="-5.08" direction="io"/>
+</ports>
+<variantdefs>
+</variantdefs>
+<parts>
+<part name="FRAME1" library="frames" library_urn="urn:adsk.eagle:library:229" deviceset="A5L-LOC" device=""/>
+<part name="U1" library="push-button" deviceset="PUSH-BUTTON" device="">
+<attribute name="H" value="4.3mm"/>
+</part>
+<part name="R3" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-EU_" device="R0805" package3d_urn="urn:adsk.eagle:package:26059/1" value="10k"/>
+<part name="C1" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="C-EU" device="C0805" package3d_urn="urn:adsk.eagle:package:26137/1" value="1µF"/>
+<part name="R1" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-EU_" device="R0805" package3d_urn="urn:adsk.eagle:package:26059/1" value="4k7"/>
+<part name="R2" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-EU_" device="R0805" package3d_urn="urn:adsk.eagle:package:26059/1" value="2k2"/>
+<part name="U2" library="push-button" deviceset="PUSH-BUTTON" device="">
+<attribute name="H" value="4.3mm"/>
+</part>
+<part name="U3" library="push-button" deviceset="PUSH-BUTTON" device="">
+<attribute name="H" value="4.3mm"/>
+</part>
+</parts>
+<sheets>
+<sheet>
+<plain>
+</plain>
+<instances>
+<instance part="FRAME1" gate="G$1" x="0" y="0"/>
+<instance part="U1" gate="G$1" x="96.52" y="83.82">
+<attribute name="H" x="96.52" y="83.82" size="1.27" layer="96" display="off"/>
+</instance>
+<instance part="R3" gate="G$1" x="114.3" y="76.2" rot="R270"/>
+<instance part="C1" gate="G$1" x="73.66" y="66.04" rot="R180"/>
+<instance part="R1" gate="G$1" x="73.66" y="83.82" rot="R270"/>
+<instance part="R2" gate="G$1" x="109.22" y="66.04" rot="R270"/>
+<instance part="U2" gate="G$1" x="96.52" y="76.2">
+<attribute name="H" x="96.52" y="76.2" size="1.27" layer="96" display="off"/>
+</instance>
+<instance part="U3" gate="G$1" x="96.52" y="68.58">
+<attribute name="H" x="96.52" y="68.58" size="1.27" layer="96" display="off"/>
+</instance>
+</instances>
+<busses>
+</busses>
+<nets>
+<net name="ADC" class="0">
+<segment>
+<pinref part="C1" gate="G$1" pin="2"/>
+<wire x1="73.66" y1="71.12" x2="73.66" y2="76.2" width="0.1524" layer="91"/>
+<wire x1="73.66" y1="76.2" x2="66.04" y2="76.2" width="0.1524" layer="91"/>
+<label x="66.04" y="76.2" size="1.27" layer="95" rot="R180" xref="yes"/>
+<pinref part="R1" gate="G$1" pin="2"/>
+<wire x1="73.66" y1="78.74" x2="73.66" y2="76.2" width="0.1524" layer="91"/>
+<junction x="73.66" y="76.2"/>
+<pinref part="U1" gate="G$1" pin="P$1"/>
+<wire x1="91.44" y1="83.82" x2="83.82" y2="83.82" width="0.1524" layer="91"/>
+<wire x1="83.82" y1="83.82" x2="83.82" y2="76.2" width="0.1524" layer="91"/>
+<wire x1="83.82" y1="76.2" x2="73.66" y2="76.2" width="0.1524" layer="91"/>
+<pinref part="U2" gate="G$1" pin="P$1"/>
+<wire x1="91.44" y1="76.2" x2="83.82" y2="76.2" width="0.1524" layer="91"/>
+<junction x="83.82" y="76.2"/>
+<pinref part="U3" gate="G$1" pin="P$1"/>
+<wire x1="91.44" y1="68.58" x2="83.82" y2="68.58" width="0.1524" layer="91"/>
+<wire x1="83.82" y1="68.58" x2="83.82" y2="76.2" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="LOGIC_HIGH" class="0">
+<segment>
+<pinref part="R1" gate="G$1" pin="1"/>
+<wire x1="73.66" y1="88.9" x2="73.66" y2="93.98" width="0.1524" layer="91"/>
+<label x="73.66" y="93.98" size="1.27" layer="95" rot="R180" xref="yes"/>
+</segment>
+</net>
+<net name="LOGIC_LOW" class="0">
+<segment>
+<pinref part="C1" gate="G$1" pin="1"/>
+<wire x1="73.66" y1="63.5" x2="73.66" y2="58.42" width="0.1524" layer="91"/>
+<label x="73.66" y="55.88" size="1.27" layer="95" rot="R180" xref="yes"/>
+<pinref part="U3" gate="G$1" pin="P$2"/>
+<wire x1="73.66" y1="58.42" x2="73.66" y2="55.88" width="0.1524" layer="91"/>
+<wire x1="101.6" y1="68.58" x2="104.14" y2="68.58" width="0.1524" layer="91"/>
+<wire x1="104.14" y1="68.58" x2="104.14" y2="58.42" width="0.1524" layer="91"/>
+<wire x1="104.14" y1="58.42" x2="73.66" y2="58.42" width="0.1524" layer="91"/>
+<junction x="73.66" y="58.42"/>
+<wire x1="104.14" y1="58.42" x2="109.22" y2="58.42" width="0.1524" layer="91"/>
+<junction x="104.14" y="58.42"/>
+<pinref part="R2" gate="G$1" pin="2"/>
+<wire x1="109.22" y1="58.42" x2="109.22" y2="60.96" width="0.1524" layer="91"/>
+<pinref part="R3" gate="G$1" pin="2"/>
+<wire x1="109.22" y1="58.42" x2="114.3" y2="58.42" width="0.1524" layer="91"/>
+<wire x1="114.3" y1="58.42" x2="114.3" y2="71.12" width="0.1524" layer="91"/>
+<junction x="109.22" y="58.42"/>
+</segment>
+</net>
+<net name="N$3" class="0">
+<segment>
+<pinref part="U2" gate="G$1" pin="P$2"/>
+<pinref part="R2" gate="G$1" pin="1"/>
+<wire x1="101.6" y1="76.2" x2="109.22" y2="76.2" width="0.1524" layer="91"/>
+<wire x1="109.22" y1="76.2" x2="109.22" y2="71.12" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$4" class="0">
+<segment>
+<pinref part="U1" gate="G$1" pin="P$2"/>
+<pinref part="R3" gate="G$1" pin="1"/>
+<wire x1="101.6" y1="83.82" x2="114.3" y2="83.82" width="0.1524" layer="91"/>
+<wire x1="114.3" y1="83.82" x2="114.3" y2="81.28" width="0.1524" layer="91"/>
+</segment>
+</net>
+</nets>
+</sheet>
+</sheets>
+</module>
 </modules>
 <parts>
 <part name="FRAME1" library="frames" library_urn="urn:adsk.eagle:library:229" deviceset="A4L-LOC" device=""/>
@@ -10357,19 +10473,8 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <part name="SUPPLY23" library="supply2" library_urn="urn:adsk.eagle:library:372" deviceset="GND" device=""/>
 <part name="SUPPLY27" library="supply2" library_urn="urn:adsk.eagle:library:372" deviceset="GND" device=""/>
 <part name="GYRO" library="con-jst" deviceset="JST-04" device="GH-V"/>
-<part name="U$2" library="push-button" deviceset="PUSH-BUTTON" device=""/>
-<part name="U$3" library="push-button" deviceset="PUSH-BUTTON" device=""/>
-<part name="U$4" library="push-button" deviceset="PUSH-BUTTON" device=""/>
-<part name="U$5" library="push-button" deviceset="PUSH-BUTTON" device=""/>
-<part name="U$6" library="push-button" deviceset="PUSH-BUTTON" device=""/>
 <part name="SUPPLY32" library="supply2" library_urn="urn:adsk.eagle:library:372" deviceset="GND" device=""/>
-<part name="R4" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-EU_" device="R0805" package3d_urn="urn:adsk.eagle:package:26059/1" value="10k"/>
 <part name="SUPPLY33" library="supply2" library_urn="urn:adsk.eagle:library:372" deviceset="GND" device=""/>
-<part name="C6" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="C-EU" device="C0805" package3d_urn="urn:adsk.eagle:package:26137/1" value="1µF"/>
-<part name="R5" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-EU_" device="R0805" package3d_urn="urn:adsk.eagle:package:26059/1" value="10k"/>
-<part name="R8" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-EU_" device="R0805" package3d_urn="urn:adsk.eagle:package:26059/1" value="10k"/>
-<part name="R9" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-EU_" device="R0805" package3d_urn="urn:adsk.eagle:package:26059/1" value="10k"/>
-<part name="R10" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="R-EU_" device="R0805" package3d_urn="urn:adsk.eagle:package:26059/1" value="10k"/>
 </parts>
 <sheets>
 <sheet>
@@ -10378,10 +10483,12 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <moduleinsts>
 <moduleinst name="H-BRIDGE_H" module="H-BRIDGE" x="193.04" y="78.74" rot="R90"/>
 <moduleinst name="H-BRIDGE_V" module="H-BRIDGE" x="193.04" y="43.18" rot="R90"/>
+<moduleinst name="MULTI-BUTTON-1" module="MULTI-BUTTON-ON-ADC" x="119.38" y="27.94"/>
+<moduleinst name="MULTI-BUTTON-2" module="MULTI-BUTTON-ON-ADC" x="119.38" y="50.8"/>
 </moduleinsts>
 <instances>
 <instance part="FRAME1" gate="G$1" x="0" y="0"/>
-<instance part="U$1" gate="G$1" x="124.46" y="53.34"/>
+<instance part="U$1" gate="G$1" x="55.88" y="45.72"/>
 <instance part="SUPPLY24" gate="+12V" x="142.24" y="147.32" rot="R90"/>
 <instance part="SUPPLY25" gate="GND" x="142.24" y="157.48" rot="R270"/>
 <instance part="GRUE" gate="G$1" x="154.94" y="162.56"/>
@@ -10426,19 +10533,19 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 </instance>
 <instance part="C2" gate="G$1" x="22.86" y="96.52"/>
 <instance part="C3" gate="G$1" x="53.34" y="96.52"/>
-<instance part="TOF_LP_G" gate="G$1" x="104.14" y="160.02"/>
-<instance part="TOF_LP_D_AND_DISPLAY" gate="G$1" x="104.14" y="139.7"/>
-<instance part="TOF_PINCE" gate="G$1" x="104.14" y="119.38"/>
-<instance part="SUPPLY4" gate="GND" x="152.4" y="73.66" rot="R90"/>
-<instance part="SUPPLY5" gate="GND" x="152.4" y="60.96" rot="R90"/>
+<instance part="TOF_LP_G" gate="G$1" x="104.14" y="162.56"/>
+<instance part="TOF_LP_D_AND_DISPLAY" gate="G$1" x="104.14" y="142.24"/>
+<instance part="TOF_PINCE" gate="G$1" x="104.14" y="121.92"/>
+<instance part="SUPPLY4" gate="GND" x="83.82" y="66.04" rot="R90"/>
+<instance part="SUPPLY5" gate="GND" x="83.82" y="53.34" rot="R90"/>
 <instance part="XL320_G1" gate="G$1" x="236.22" y="81.28"/>
 <instance part="C4" gate="G$1" x="238.76" y="91.44" rot="R90"/>
 <instance part="SUPPLY6" gate="GND" x="248.92" y="91.44" rot="R90"/>
-<instance part="DC-DC-6V" gate="G$1" x="30.48" y="66.04"/>
-<instance part="SUPPLY7" gate="+12V" x="25.4" y="55.88" rot="R180"/>
-<instance part="SUPPLY8" gate="GND" x="30.48" y="58.42"/>
-<instance part="R1" gate="G$1" x="40.64" y="55.88" rot="R90"/>
-<instance part="SUPPLY9" gate="GND" x="40.64" y="45.72"/>
+<instance part="DC-DC-6V" gate="G$1" x="101.6" y="91.44" rot="R270"/>
+<instance part="SUPPLY7" gate="+12V" x="91.44" y="96.52" rot="R90"/>
+<instance part="SUPPLY8" gate="GND" x="93.98" y="91.44" rot="R270"/>
+<instance part="R1" gate="G$1" x="91.44" y="81.28"/>
+<instance part="SUPPLY9" gate="GND" x="81.28" y="81.28" rot="R270"/>
 <instance part="MOT_H" gate="A" x="157.48" y="121.92"/>
 <instance part="MOT_V" gate="A" x="157.48" y="99.06"/>
 <instance part="SUPPLY10" gate="+5V" x="172.72" y="78.74" rot="R90"/>
@@ -10449,25 +10556,14 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <instance part="SUPPLY17" gate="+5V" x="147.32" y="121.92" rot="R90"/>
 <instance part="SUPPLY18" gate="GND" x="139.7" y="101.6" rot="R270"/>
 <instance part="SUPPLY19" gate="+5V" x="147.32" y="99.06" rot="R90"/>
-<instance part="SUPPLY20" gate="GND" x="88.9" y="160.02" rot="R270"/>
-<instance part="SUPPLY21" gate="GND" x="88.9" y="139.7" rot="R270"/>
-<instance part="SUPPLY22" gate="GND" x="88.9" y="119.38" rot="R270"/>
+<instance part="SUPPLY20" gate="GND" x="88.9" y="162.56" rot="R270"/>
+<instance part="SUPPLY21" gate="GND" x="88.9" y="142.24" rot="R270"/>
+<instance part="SUPPLY22" gate="GND" x="88.9" y="121.92" rot="R270"/>
 <instance part="SUPPLY23" gate="GND" x="55.88" y="152.4" rot="R270"/>
 <instance part="SUPPLY27" gate="GND" x="60.96" y="144.78"/>
 <instance part="GYRO" gate="G$1" x="73.66" y="154.94"/>
-<instance part="U$2" gate="G$1" x="58.42" y="55.88"/>
-<instance part="U$3" gate="G$1" x="58.42" y="48.26"/>
-<instance part="U$4" gate="G$1" x="58.42" y="40.64"/>
-<instance part="U$5" gate="G$1" x="58.42" y="33.02"/>
-<instance part="U$6" gate="G$1" x="154.94" y="45.72"/>
-<instance part="SUPPLY32" gate="GND" x="50.8" y="27.94"/>
-<instance part="R4" gate="G$1" x="149.86" y="30.48" rot="R270"/>
-<instance part="SUPPLY33" gate="GND" x="160.02" y="30.48"/>
-<instance part="C6" gate="G$1" x="154.94" y="40.64" rot="R270"/>
-<instance part="R5" gate="G$1" x="68.58" y="60.96" rot="R270"/>
-<instance part="R8" gate="G$1" x="73.66" y="53.34" rot="R270"/>
-<instance part="R9" gate="G$1" x="73.66" y="35.56" rot="R270"/>
-<instance part="R10" gate="G$1" x="68.58" y="27.94" rot="R270"/>
+<instance part="SUPPLY32" gate="GND" x="144.78" y="22.86" rot="R90"/>
+<instance part="SUPPLY33" gate="GND" x="144.78" y="45.72" rot="R90"/>
 </instances>
 <busses>
 </busses>
@@ -10519,7 +10615,7 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <segment>
 <pinref part="DC-DC-6V" gate="G$1" pin="VIN"/>
 <pinref part="SUPPLY7" gate="+12V" pin="+12V"/>
-<wire x1="25.4" y1="58.42" x2="25.4" y2="63.5" width="0.1524" layer="91"/>
+<wire x1="93.98" y1="96.52" x2="99.06" y2="96.52" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="GND" class="0">
@@ -10584,12 +10680,12 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <segment>
 <pinref part="U$1" gate="G$1" pin="GND"/>
 <pinref part="SUPPLY4" gate="GND" pin="GND"/>
-<wire x1="149.86" y1="73.66" x2="147.32" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="81.28" y1="66.04" x2="78.74" y2="66.04" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="AGND"/>
 <pinref part="SUPPLY5" gate="GND" pin="GND"/>
-<wire x1="149.86" y1="60.96" x2="147.32" y2="60.96" width="0.1524" layer="91"/>
+<wire x1="81.28" y1="53.34" x2="78.74" y2="53.34" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="C4" gate="G$1" pin="2"/>
@@ -10604,12 +10700,12 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <segment>
 <pinref part="DC-DC-6V" gate="G$1" pin="GND"/>
 <pinref part="SUPPLY8" gate="GND" pin="GND"/>
-<wire x1="30.48" y1="60.96" x2="30.48" y2="63.5" width="0.1524" layer="91"/>
+<wire x1="96.52" y1="91.44" x2="99.06" y2="91.44" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="R1" gate="G$1" pin="1"/>
 <pinref part="SUPPLY9" gate="GND" pin="GND"/>
-<wire x1="40.64" y1="48.26" x2="40.64" y2="50.8" width="0.1524" layer="91"/>
+<wire x1="83.82" y1="81.28" x2="86.36" y2="81.28" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <portref moduleinst="H-BRIDGE_H" port="GND"/>
@@ -10634,17 +10730,17 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <segment>
 <pinref part="TOF_LP_G" gate="G$1" pin="1"/>
 <pinref part="SUPPLY20" gate="GND" pin="GND"/>
-<wire x1="91.44" y1="160.02" x2="99.06" y2="160.02" width="0.1524" layer="91"/>
+<wire x1="91.44" y1="162.56" x2="99.06" y2="162.56" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="TOF_LP_D_AND_DISPLAY" gate="G$1" pin="1"/>
 <pinref part="SUPPLY21" gate="GND" pin="GND"/>
-<wire x1="91.44" y1="139.7" x2="99.06" y2="139.7" width="0.1524" layer="91"/>
+<wire x1="91.44" y1="142.24" x2="99.06" y2="142.24" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="TOF_PINCE" gate="G$1" pin="1"/>
 <pinref part="SUPPLY22" gate="GND" pin="GND"/>
-<wire x1="91.44" y1="119.38" x2="99.06" y2="119.38" width="0.1524" layer="91"/>
+<wire x1="91.44" y1="121.92" x2="99.06" y2="121.92" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="SUPPLY27" gate="GND" pin="GND"/>
@@ -10657,31 +10753,14 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <pinref part="GYRO" gate="G$1" pin="2"/>
 </segment>
 <segment>
-<pinref part="U$2" gate="G$1" pin="P$1"/>
-<wire x1="53.34" y1="55.88" x2="50.8" y2="55.88" width="0.1524" layer="91"/>
-<wire x1="50.8" y1="55.88" x2="50.8" y2="48.26" width="0.1524" layer="91"/>
-<pinref part="U$5" gate="G$1" pin="P$1"/>
-<wire x1="50.8" y1="48.26" x2="50.8" y2="40.64" width="0.1524" layer="91"/>
-<wire x1="50.8" y1="40.64" x2="50.8" y2="33.02" width="0.1524" layer="91"/>
-<wire x1="50.8" y1="33.02" x2="50.8" y2="30.48" width="0.1524" layer="91"/>
-<wire x1="53.34" y1="33.02" x2="50.8" y2="33.02" width="0.1524" layer="91"/>
-<junction x="50.8" y="33.02"/>
-<pinref part="U$4" gate="G$1" pin="P$1"/>
-<wire x1="53.34" y1="40.64" x2="50.8" y2="40.64" width="0.1524" layer="91"/>
-<junction x="50.8" y="40.64"/>
-<pinref part="U$3" gate="G$1" pin="P$1"/>
-<wire x1="53.34" y1="48.26" x2="50.8" y2="48.26" width="0.1524" layer="91"/>
-<junction x="50.8" y="48.26"/>
+<portref moduleinst="MULTI-BUTTON-1" port="LOGIC_LOW"/>
 <pinref part="SUPPLY32" gate="GND" pin="GND"/>
+<wire x1="142.24" y1="22.86" x2="139.7" y2="22.86" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="U$6" gate="G$1" pin="P$2"/>
+<portref moduleinst="MULTI-BUTTON-2" port="LOGIC_LOW"/>
 <pinref part="SUPPLY33" gate="GND" pin="GND"/>
-<wire x1="160.02" y1="33.02" x2="160.02" y2="40.64" width="0.1524" layer="91"/>
-<pinref part="C6" gate="G$1" pin="1"/>
-<wire x1="160.02" y1="40.64" x2="160.02" y2="45.72" width="0.1524" layer="91"/>
-<wire x1="157.48" y1="40.64" x2="160.02" y2="40.64" width="0.1524" layer="91"/>
-<junction x="160.02" y="40.64"/>
+<wire x1="142.24" y1="45.72" x2="139.7" y2="45.72" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="GRUE_SERIAL_MISO" class="0">
@@ -10692,8 +10771,8 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="1/TX1/T"/>
-<wire x1="101.6" y1="78.74" x2="99.06" y2="78.74" width="0.1524" layer="91"/>
-<label x="99.06" y="78.74" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="33.02" y1="71.12" x2="30.48" y2="71.12" width="0.1524" layer="91"/>
+<label x="30.48" y="71.12" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="GRUE_SERIAL_MOSI" class="0">
@@ -10704,8 +10783,8 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="0/RX1/T"/>
-<wire x1="101.6" y1="81.28" x2="99.06" y2="81.28" width="0.1524" layer="91"/>
-<label x="99.06" y="81.28" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="33.02" y1="73.66" x2="30.48" y2="73.66" width="0.1524" layer="91"/>
+<label x="30.48" y="73.66" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="+5V" class="0">
@@ -10784,48 +10863,33 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="3.3V"/>
-<wire x1="147.32" y1="78.74" x2="149.86" y2="78.74" width="0.1524" layer="91"/>
-<label x="149.86" y="78.74" size="1.27" layer="95" xref="yes"/>
+<wire x1="78.74" y1="71.12" x2="81.28" y2="71.12" width="0.1524" layer="91"/>
+<label x="81.28" y="71.12" size="1.27" layer="95" xref="yes"/>
 </segment>
 <segment>
 <pinref part="TOF_LP_G" gate="G$1" pin="2"/>
-<wire x1="99.06" y1="157.48" x2="96.52" y2="157.48" width="0.1524" layer="91"/>
-<label x="96.52" y="157.48" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="99.06" y1="160.02" x2="96.52" y2="160.02" width="0.1524" layer="91"/>
+<label x="96.52" y="160.02" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
 <pinref part="TOF_LP_D_AND_DISPLAY" gate="G$1" pin="2"/>
-<wire x1="99.06" y1="137.16" x2="96.52" y2="137.16" width="0.1524" layer="91"/>
-<label x="96.52" y="137.16" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="99.06" y1="139.7" x2="96.52" y2="139.7" width="0.1524" layer="91"/>
+<label x="96.52" y="139.7" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
 <pinref part="TOF_PINCE" gate="G$1" pin="2"/>
-<wire x1="99.06" y1="116.84" x2="96.52" y2="116.84" width="0.1524" layer="91"/>
-<label x="96.52" y="116.84" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="99.06" y1="119.38" x2="96.52" y2="119.38" width="0.1524" layer="91"/>
+<label x="96.52" y="119.38" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
-<pinref part="R4" gate="G$1" pin="2"/>
-<wire x1="149.86" y1="25.4" x2="149.86" y2="22.86" width="0.1524" layer="91"/>
-<label x="149.86" y="22.86" size="1.27" layer="95" xref="yes"/>
+<wire x1="139.7" y1="33.02" x2="142.24" y2="33.02" width="0.1524" layer="91"/>
+<label x="142.24" y="33.02" size="1.27" layer="95" xref="yes"/>
+<portref moduleinst="MULTI-BUTTON-1" port="LOGIC_HIGH"/>
 </segment>
 <segment>
-<pinref part="R9" gate="G$1" pin="2"/>
-<wire x1="73.66" y1="30.48" x2="73.66" y2="20.32" width="0.1524" layer="91"/>
-<wire x1="73.66" y1="20.32" x2="68.58" y2="20.32" width="0.1524" layer="91"/>
-<pinref part="R10" gate="G$1" pin="2"/>
-<wire x1="68.58" y1="20.32" x2="68.58" y2="22.86" width="0.1524" layer="91"/>
-<wire x1="68.58" y1="20.32" x2="68.58" y2="17.78" width="0.1524" layer="91"/>
-<junction x="68.58" y="20.32"/>
-<label x="68.58" y="17.78" size="1.27" layer="95" xref="yes"/>
-</segment>
-<segment>
-<pinref part="R8" gate="G$1" pin="1"/>
-<wire x1="73.66" y1="58.42" x2="73.66" y2="68.58" width="0.1524" layer="91"/>
-<wire x1="73.66" y1="68.58" x2="68.58" y2="68.58" width="0.1524" layer="91"/>
-<pinref part="R5" gate="G$1" pin="1"/>
-<wire x1="68.58" y1="68.58" x2="68.58" y2="66.04" width="0.1524" layer="91"/>
-<wire x1="68.58" y1="68.58" x2="68.58" y2="71.12" width="0.1524" layer="91"/>
-<junction x="68.58" y="68.58"/>
-<label x="68.58" y="71.12" size="1.27" layer="95" xref="yes"/>
+<portref moduleinst="MULTI-BUTTON-2" port="LOGIC_HIGH"/>
+<wire x1="139.7" y1="55.88" x2="142.24" y2="55.88" width="0.1524" layer="91"/>
+<label x="142.24" y="55.88" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="+6V" class="0">
@@ -10847,8 +10911,8 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 </segment>
 <segment>
 <pinref part="DC-DC-6V" gate="G$1" pin="VOUT"/>
-<wire x1="35.56" y1="63.5" x2="35.56" y2="60.96" width="0.1524" layer="91"/>
-<label x="35.56" y="60.96" size="1.27" layer="95" rot="R270" xref="yes"/>
+<wire x1="99.06" y1="86.36" x2="96.52" y2="86.36" width="0.1524" layer="91"/>
+<label x="96.52" y="86.36" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
 <portref moduleinst="H-BRIDGE_H" port="+12V"/>
@@ -10872,13 +10936,13 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="10/TX2/PWM"/>
-<wire x1="101.6" y1="55.88" x2="99.06" y2="55.88" width="0.1524" layer="91"/>
+<wire x1="33.02" y1="48.26" x2="30.48" y2="48.26" width="0.1524" layer="91"/>
 <pinref part="U$1" gate="G$1" pin="9/RX2/PWM"/>
-<wire x1="101.6" y1="58.42" x2="99.06" y2="58.42" width="0.1524" layer="91"/>
-<wire x1="99.06" y1="55.88" x2="99.06" y2="58.42" width="0.1524" layer="91"/>
-<wire x1="99.06" y1="58.42" x2="96.52" y2="58.42" width="0.1524" layer="91"/>
-<junction x="99.06" y="58.42"/>
-<label x="96.52" y="58.42" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="33.02" y1="50.8" x2="30.48" y2="50.8" width="0.1524" layer="91"/>
+<wire x1="30.48" y1="48.26" x2="30.48" y2="50.8" width="0.1524" layer="91"/>
+<wire x1="30.48" y1="50.8" x2="27.94" y2="50.8" width="0.1524" layer="91"/>
+<junction x="30.48" y="50.8"/>
+<label x="27.94" y="50.8" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="SERIAL_AX12_5V" class="0">
@@ -10927,13 +10991,13 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="8/TX3"/>
-<wire x1="101.6" y1="60.96" x2="99.06" y2="60.96" width="0.1524" layer="91"/>
+<wire x1="33.02" y1="53.34" x2="30.48" y2="53.34" width="0.1524" layer="91"/>
 <pinref part="U$1" gate="G$1" pin="7/RX3"/>
-<wire x1="101.6" y1="63.5" x2="99.06" y2="63.5" width="0.1524" layer="91"/>
-<wire x1="99.06" y1="60.96" x2="99.06" y2="63.5" width="0.1524" layer="91"/>
-<wire x1="99.06" y1="63.5" x2="96.52" y2="63.5" width="0.1524" layer="91"/>
-<junction x="99.06" y="63.5"/>
-<label x="96.52" y="63.5" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="33.02" y1="55.88" x2="30.48" y2="55.88" width="0.1524" layer="91"/>
+<wire x1="30.48" y1="53.34" x2="30.48" y2="55.88" width="0.1524" layer="91"/>
+<wire x1="30.48" y1="55.88" x2="27.94" y2="55.88" width="0.1524" layer="91"/>
+<junction x="30.48" y="55.88"/>
+<label x="27.94" y="55.88" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="DEL_GYRO_1" class="0">
@@ -10966,8 +11030,8 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="6/PWM"/>
-<wire x1="101.6" y1="66.04" x2="99.06" y2="66.04" width="0.1524" layer="91"/>
-<label x="99.06" y="66.04" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="33.02" y1="58.42" x2="30.48" y2="58.42" width="0.1524" layer="91"/>
+<label x="30.48" y="58.42" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="DEL_GYRO_2_PWM" class="0">
@@ -10978,8 +11042,8 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="20/A6/PWM"/>
-<wire x1="101.6" y1="30.48" x2="99.06" y2="30.48" width="0.1524" layer="91"/>
-<label x="99.06" y="30.48" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="33.02" y1="22.86" x2="30.48" y2="22.86" width="0.1524" layer="91"/>
+<label x="30.48" y="22.86" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="N$17" class="0">
@@ -11014,7 +11078,7 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <segment>
 <pinref part="DC-DC-6V" gate="G$1" pin="TRIM+"/>
 <pinref part="R1" gate="G$1" pin="2"/>
-<wire x1="40.64" y1="60.96" x2="40.64" y2="63.5" width="0.1524" layer="91"/>
+<wire x1="96.52" y1="81.28" x2="99.06" y2="81.28" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="MOT_H_EN" class="0">
@@ -11025,8 +11089,8 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="3/CAN-TX/PWM"/>
-<wire x1="101.6" y1="73.66" x2="99.06" y2="73.66" width="0.1524" layer="91"/>
-<label x="99.06" y="73.66" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="33.02" y1="66.04" x2="30.48" y2="66.04" width="0.1524" layer="91"/>
+<label x="30.48" y="66.04" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="MOT_H_IN1" class="0">
@@ -11037,8 +11101,8 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="4/CAN-RX-PWM"/>
-<wire x1="101.6" y1="71.12" x2="99.06" y2="71.12" width="0.1524" layer="91"/>
-<label x="99.06" y="71.12" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="33.02" y1="63.5" x2="30.48" y2="63.5" width="0.1524" layer="91"/>
+<label x="30.48" y="63.5" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="MOT_H_IN2" class="0">
@@ -11049,8 +11113,8 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="5/PWM"/>
-<wire x1="101.6" y1="68.58" x2="99.06" y2="68.58" width="0.1524" layer="91"/>
-<label x="99.06" y="68.58" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="33.02" y1="60.96" x2="30.48" y2="60.96" width="0.1524" layer="91"/>
+<label x="30.48" y="60.96" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="MOT_H_OUT+" class="0">
@@ -11085,8 +11149,8 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="21/A7/PWM"/>
-<wire x1="101.6" y1="27.94" x2="99.06" y2="27.94" width="0.1524" layer="91"/>
-<label x="99.06" y="27.94" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="33.02" y1="20.32" x2="30.48" y2="20.32" width="0.1524" layer="91"/>
+<label x="30.48" y="20.32" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="MOT_V_IN1" class="0">
@@ -11097,8 +11161,8 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="22/A8/T/PWM"/>
-<wire x1="101.6" y1="25.4" x2="99.06" y2="25.4" width="0.1524" layer="91"/>
-<label x="99.06" y="25.4" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="33.02" y1="17.78" x2="30.48" y2="17.78" width="0.1524" layer="91"/>
+<label x="30.48" y="17.78" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="MOT_V_IN2" class="0">
@@ -11109,8 +11173,8 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="23/A9/T/PWM"/>
-<wire x1="101.6" y1="22.86" x2="99.06" y2="22.86" width="0.1524" layer="91"/>
-<label x="99.06" y="22.86" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="33.02" y1="15.24" x2="30.48" y2="15.24" width="0.1524" layer="91"/>
+<label x="30.48" y="15.24" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="MOT_V_OUT+" class="0">
@@ -11143,12 +11207,22 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <wire x1="154.94" y1="119.38" x2="149.86" y2="119.38" width="0.1524" layer="91"/>
 <label x="149.86" y="119.38" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="11/MOSI"/>
+<wire x1="33.02" y1="45.72" x2="30.48" y2="45.72" width="0.1524" layer="91"/>
+<label x="30.48" y="45.72" size="1.27" layer="95" rot="R180" xref="yes"/>
+</segment>
 </net>
 <net name="MOT_H_ENC_B" class="0">
 <segment>
 <pinref part="MOT_H" gate="A" pin="6"/>
 <wire x1="154.94" y1="116.84" x2="149.86" y2="116.84" width="0.1524" layer="91"/>
 <label x="149.86" y="116.84" size="1.27" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="12/MISO"/>
+<wire x1="33.02" y1="43.18" x2="30.48" y2="43.18" width="0.1524" layer="91"/>
+<label x="30.48" y="43.18" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="MOT_V_ENC_A" class="0">
@@ -11157,6 +11231,11 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <wire x1="154.94" y1="96.52" x2="149.86" y2="96.52" width="0.1524" layer="91"/>
 <label x="149.86" y="96.52" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="15/A1/T"/>
+<wire x1="33.02" y1="35.56" x2="30.48" y2="35.56" width="0.1524" layer="91"/>
+<label x="30.48" y="35.56" size="1.27" layer="95" rot="R180" xref="yes"/>
+</segment>
 </net>
 <net name="MOT_V_ENC_B" class="0">
 <segment>
@@ -11164,158 +11243,120 @@ Source: http://www.onsemi.com/pub_link/Collateral/MBRA340T3-D.PDF</description>
 <wire x1="154.94" y1="93.98" x2="149.86" y2="93.98" width="0.1524" layer="91"/>
 <label x="149.86" y="93.98" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="16/A2/T"/>
+<wire x1="33.02" y1="33.02" x2="30.48" y2="33.02" width="0.1524" layer="91"/>
+<label x="30.48" y="33.02" size="1.27" layer="95" rot="R180" xref="yes"/>
+</segment>
 </net>
 <net name="SDA" class="0">
 <segment>
 <pinref part="TOF_LP_G" gate="G$1" pin="3"/>
-<wire x1="99.06" y1="154.94" x2="96.52" y2="154.94" width="0.1524" layer="91"/>
-<label x="96.52" y="154.94" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="99.06" y1="157.48" x2="96.52" y2="157.48" width="0.1524" layer="91"/>
+<label x="96.52" y="157.48" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
 <pinref part="TOF_LP_D_AND_DISPLAY" gate="G$1" pin="3"/>
-<wire x1="99.06" y1="134.62" x2="96.52" y2="134.62" width="0.1524" layer="91"/>
-<label x="96.52" y="134.62" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="99.06" y1="137.16" x2="96.52" y2="137.16" width="0.1524" layer="91"/>
+<label x="96.52" y="137.16" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
 <pinref part="TOF_PINCE" gate="G$1" pin="3"/>
-<wire x1="99.06" y1="114.3" x2="96.52" y2="114.3" width="0.1524" layer="91"/>
-<label x="96.52" y="114.3" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="99.06" y1="116.84" x2="96.52" y2="116.84" width="0.1524" layer="91"/>
+<label x="96.52" y="116.84" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="18/A4/T/SDA0"/>
-<wire x1="101.6" y1="35.56" x2="99.06" y2="35.56" width="0.1524" layer="91"/>
-<label x="99.06" y="35.56" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="33.02" y1="27.94" x2="30.48" y2="27.94" width="0.1524" layer="91"/>
+<label x="30.48" y="27.94" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="SCL" class="0">
 <segment>
 <pinref part="TOF_LP_G" gate="G$1" pin="4"/>
-<wire x1="99.06" y1="152.4" x2="96.52" y2="152.4" width="0.1524" layer="91"/>
-<label x="96.52" y="152.4" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="99.06" y1="154.94" x2="96.52" y2="154.94" width="0.1524" layer="91"/>
+<label x="96.52" y="154.94" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
 <pinref part="TOF_LP_D_AND_DISPLAY" gate="G$1" pin="4"/>
-<wire x1="99.06" y1="132.08" x2="96.52" y2="132.08" width="0.1524" layer="91"/>
-<label x="96.52" y="132.08" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="99.06" y1="134.62" x2="96.52" y2="134.62" width="0.1524" layer="91"/>
+<label x="96.52" y="134.62" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
 <pinref part="TOF_PINCE" gate="G$1" pin="4"/>
-<wire x1="99.06" y1="111.76" x2="96.52" y2="111.76" width="0.1524" layer="91"/>
-<label x="96.52" y="111.76" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="99.06" y1="114.3" x2="96.52" y2="114.3" width="0.1524" layer="91"/>
+<label x="96.52" y="114.3" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="19/A5/T/SCL0"/>
-<wire x1="101.6" y1="33.02" x2="99.06" y2="33.02" width="0.1524" layer="91"/>
-<label x="99.06" y="33.02" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="33.02" y1="25.4" x2="30.48" y2="25.4" width="0.1524" layer="91"/>
+<label x="30.48" y="25.4" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="TOF_LP_G" class="0">
 <segment>
 <pinref part="TOF_LP_G" gate="G$1" pin="5"/>
-<wire x1="99.06" y1="149.86" x2="96.52" y2="149.86" width="0.1524" layer="91"/>
-<label x="96.52" y="149.86" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="99.06" y1="152.4" x2="96.52" y2="152.4" width="0.1524" layer="91"/>
+<label x="96.52" y="152.4" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="2"/>
-<wire x1="101.6" y1="76.2" x2="99.06" y2="76.2" width="0.1524" layer="91"/>
-<label x="99.06" y="76.2" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="33.02" y1="68.58" x2="30.48" y2="68.58" width="0.1524" layer="91"/>
+<label x="30.48" y="68.58" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="TOF_LP_D" class="0">
 <segment>
 <pinref part="TOF_LP_D_AND_DISPLAY" gate="G$1" pin="5"/>
-<wire x1="99.06" y1="129.54" x2="96.52" y2="129.54" width="0.1524" layer="91"/>
-<label x="96.52" y="129.54" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="99.06" y1="132.08" x2="96.52" y2="132.08" width="0.1524" layer="91"/>
+<label x="96.52" y="132.08" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
-<pinref part="U$1" gate="G$1" pin="11/MOSI"/>
-<wire x1="101.6" y1="53.34" x2="99.06" y2="53.34" width="0.1524" layer="91"/>
-<label x="99.06" y="53.34" size="1.27" layer="95" rot="R180" xref="yes"/>
+<pinref part="U$1" gate="G$1" pin="13/SCK/LED"/>
+<wire x1="33.02" y1="40.64" x2="30.48" y2="40.64" width="0.1524" layer="91"/>
+<label x="30.48" y="40.64" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="TOF_PINCE_INT" class="0">
 <segment>
 <pinref part="TOF_PINCE" gate="G$1" pin="5"/>
-<wire x1="99.06" y1="109.22" x2="96.52" y2="109.22" width="0.1524" layer="91"/>
-<label x="96.52" y="109.22" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="99.06" y1="111.76" x2="96.52" y2="111.76" width="0.1524" layer="91"/>
+<label x="96.52" y="111.76" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
-<pinref part="U$1" gate="G$1" pin="12/MISO"/>
-<wire x1="101.6" y1="50.8" x2="99.06" y2="50.8" width="0.1524" layer="91"/>
-<label x="99.06" y="50.8" size="1.27" layer="95" rot="R180" xref="yes"/>
+<pinref part="U$1" gate="G$1" pin="14/A0"/>
+<wire x1="33.02" y1="38.1" x2="30.48" y2="38.1" width="0.1524" layer="91"/>
+<label x="30.48" y="38.1" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="TOF_PINCE_EXT" class="0">
 <segment>
 <pinref part="TOF_PINCE" gate="G$1" pin="6"/>
-<wire x1="99.06" y1="106.68" x2="96.52" y2="106.68" width="0.1524" layer="91"/>
-<label x="96.52" y="106.68" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="99.06" y1="109.22" x2="96.52" y2="109.22" width="0.1524" layer="91"/>
+<label x="96.52" y="109.22" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="17/A3/T"/>
-<wire x1="101.6" y1="38.1" x2="99.06" y2="38.1" width="0.1524" layer="91"/>
-<label x="99.06" y="38.1" size="1.27" layer="95" rot="R180" xref="yes"/>
-</segment>
-</net>
-<net name="N$13" class="0">
-<segment>
-<pinref part="U$1" gate="G$1" pin="13/SCK/LED"/>
-<wire x1="101.6" y1="48.26" x2="78.74" y2="48.26" width="0.1524" layer="91"/>
-<pinref part="U$2" gate="G$1" pin="P$2"/>
-<wire x1="78.74" y1="48.26" x2="78.74" y2="55.88" width="0.1524" layer="91"/>
-<wire x1="78.74" y1="55.88" x2="68.58" y2="55.88" width="0.1524" layer="91"/>
-<pinref part="R5" gate="G$1" pin="2"/>
-<wire x1="68.58" y1="55.88" x2="63.5" y2="55.88" width="0.1524" layer="91"/>
-<junction x="68.58" y="55.88"/>
-</segment>
-</net>
-<net name="N$14" class="0">
-<segment>
-<pinref part="U$1" gate="G$1" pin="14/A0"/>
-<wire x1="101.6" y1="45.72" x2="76.2" y2="45.72" width="0.1524" layer="91"/>
-<wire x1="76.2" y1="45.72" x2="76.2" y2="48.26" width="0.1524" layer="91"/>
-<pinref part="U$3" gate="G$1" pin="P$2"/>
-<wire x1="76.2" y1="48.26" x2="73.66" y2="48.26" width="0.1524" layer="91"/>
-<pinref part="R8" gate="G$1" pin="2"/>
-<wire x1="73.66" y1="48.26" x2="63.5" y2="48.26" width="0.1524" layer="91"/>
-<junction x="73.66" y="48.26"/>
-</segment>
-</net>
-<net name="N$15" class="0">
-<segment>
-<pinref part="U$1" gate="G$1" pin="15/A1/T"/>
-<wire x1="101.6" y1="43.18" x2="76.2" y2="43.18" width="0.1524" layer="91"/>
-<wire x1="76.2" y1="43.18" x2="76.2" y2="40.64" width="0.1524" layer="91"/>
-<pinref part="U$4" gate="G$1" pin="P$2"/>
-<wire x1="76.2" y1="40.64" x2="73.66" y2="40.64" width="0.1524" layer="91"/>
-<pinref part="R9" gate="G$1" pin="1"/>
-<wire x1="73.66" y1="40.64" x2="63.5" y2="40.64" width="0.1524" layer="91"/>
-<junction x="73.66" y="40.64"/>
-</segment>
-</net>
-<net name="N$16" class="0">
-<segment>
-<pinref part="U$1" gate="G$1" pin="16/A2/T"/>
-<wire x1="101.6" y1="40.64" x2="78.74" y2="40.64" width="0.1524" layer="91"/>
-<pinref part="U$5" gate="G$1" pin="P$2"/>
-<wire x1="78.74" y1="40.64" x2="78.74" y2="33.02" width="0.1524" layer="91"/>
-<wire x1="78.74" y1="33.02" x2="68.58" y2="33.02" width="0.1524" layer="91"/>
-<pinref part="R10" gate="G$1" pin="1"/>
-<wire x1="68.58" y1="33.02" x2="63.5" y2="33.02" width="0.1524" layer="91"/>
-<junction x="68.58" y="33.02"/>
+<wire x1="33.02" y1="30.48" x2="30.48" y2="30.48" width="0.1524" layer="91"/>
+<label x="30.48" y="30.48" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="N$1" class="0">
 <segment>
 <pinref part="U$1" gate="G$1" pin="A10"/>
-<pinref part="U$6" gate="G$1" pin="P$1"/>
-<wire x1="147.32" y1="45.72" x2="149.86" y2="45.72" width="0.1524" layer="91"/>
-<pinref part="R4" gate="G$1" pin="1"/>
-<wire x1="149.86" y1="45.72" x2="149.86" y2="40.64" width="0.1524" layer="91"/>
-<junction x="149.86" y="45.72"/>
-<pinref part="C6" gate="G$1" pin="2"/>
-<wire x1="149.86" y1="40.64" x2="149.86" y2="35.56" width="0.1524" layer="91"/>
-<junction x="149.86" y="40.64"/>
+<wire x1="78.74" y1="38.1" x2="88.9" y2="38.1" width="0.1524" layer="91"/>
+<wire x1="88.9" y1="38.1" x2="88.9" y2="33.02" width="0.1524" layer="91"/>
+<portref moduleinst="MULTI-BUTTON-1" port="ADC"/>
+<wire x1="88.9" y1="33.02" x2="99.06" y2="33.02" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$2" class="0">
+<segment>
+<pinref part="U$1" gate="G$1" pin="A11"/>
+<wire x1="78.74" y1="40.64" x2="93.98" y2="40.64" width="0.1524" layer="91"/>
+<wire x1="93.98" y1="40.64" x2="93.98" y2="55.88" width="0.1524" layer="91"/>
+<portref moduleinst="MULTI-BUTTON-2" port="ADC"/>
+<wire x1="93.98" y1="55.88" x2="99.06" y2="55.88" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
