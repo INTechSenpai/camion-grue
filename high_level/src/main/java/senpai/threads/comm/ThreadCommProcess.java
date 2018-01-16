@@ -85,14 +85,14 @@ public class ThreadCommProcess extends Thread
 				 */
 				if(paquet.origine == Id.ASK_COLOR)
 				{
-					if(data[0] == InOrder.COULEUR_BLEU.codeInt)
+					if(data[0] == InOrder.COULEUR_VERT.codeInt)
 					{
-						paquet.origine.ticket.set(InOrder.COULEUR_BLEU);
+						paquet.origine.ticket.set(InOrder.COULEUR_VERT);
 //						config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(true));
 					}
-					else if(data[0] == InOrder.COULEUR_JAUNE.codeInt)
+					else if(data[0] == InOrder.COULEUR_ORANGE.codeInt)
 					{
-						paquet.origine.ticket.set(InOrder.COULEUR_JAUNE);
+						paquet.origine.ticket.set(InOrder.COULEUR_ORANGE);
 //						config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(false));
 					}
 					else

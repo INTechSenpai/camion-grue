@@ -28,8 +28,8 @@ public enum RobotColor
 	 * Ces noms sont utilisés pour les tests uniquement. Sinon, on utilise le
 	 * boolean symmetry
 	 */
-	JAUNE(false), // côté droite de la table
-	BLEU(true); // côté gauche de la table
+	ORANGE(false), // côté droite de la table
+	VERT(true); // côté gauche de la table
 
 	public final boolean symmetry;
 
@@ -46,9 +46,9 @@ public enum RobotColor
 	 */
 	public static RobotColor parse(String chaine)
 	{
-		if(chaine.compareToIgnoreCase(JAUNE.name()) == 0)
-			return JAUNE;
-		return BLEU;
+		if(chaine.compareToIgnoreCase(ORANGE.name()) == 0)
+			return ORANGE;
+		return VERT;
 	}
 
 	/**

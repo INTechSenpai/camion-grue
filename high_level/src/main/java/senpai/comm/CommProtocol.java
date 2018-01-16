@@ -166,8 +166,8 @@ public class CommProtocol
 		TROP_LOIN(0x05, State.KO),
 
 		// Couleur
-		COULEUR_BLEU(0x00, State.OK),
-		COULEUR_JAUNE(0x01, State.OK),
+		COULEUR_VERT(0x00, State.OK),
+		COULEUR_ORANGE(0x01, State.OK),
 		COULEUR_ROBOT_INCONNU(0x02, State.KO),
 
 		// Réponse à "StartMatchChrono"
