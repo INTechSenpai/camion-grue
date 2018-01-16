@@ -76,9 +76,9 @@ public class CommProtocol
 		// Variables d'état
 		private boolean waitingForAnswer; // pour les canaux, permet de savoir s'ils sont ouverts ou non
 		private boolean sendIsPossible; // "true" si un ordre long est lancé, "false" sinon
-		private int supernumeraryAnswersAllowed; // pour les streams qui peuvent mettre un peu de temps à s'éteindre
+		private long dateLastClose; // pour les streams qui peuvent mettre un peu de temps à s'éteindre
 		
-		private static final int supernumeraryAnswersAllowedDefault = 5;
+		private static final int maxTimeAfterClose = 10;
 		
 		// Ticket (nul si pas de réponse attendu)
 		public final Ticket ticket;
@@ -95,8 +95,9 @@ public class CommProtocol
 		{
 			assert isStream : "changeStreamState sur "+this+" qui n'est pas un canal de données (code = "+code+")";
 			assert waitingForAnswer != newState.started : newState.started ? "Canal déjà ouvert !" : "Canal déjà fermé !";
-			supernumeraryAnswersAllowed = supernumeraryAnswersAllowedDefault;
 			waitingForAnswer = newState.started;
+			if(!waitingForAnswer) // on vient de fermer le canal
+				dateLastClose = System.currentTimeMillis();
 		}
 		
 		// constructeur des ordres longs et des streams
@@ -132,10 +133,8 @@ public class CommProtocol
 		{
 			// un stream peut mettre du temps à s'éteindre
 			if(isStream && !waitingForAnswer)
-			{
-				assert supernumeraryAnswersAllowed > 0 : "Le stream "+this+" continue d'envoyer des messages après un désabonnement !";
-				supernumeraryAnswersAllowed--;
-			}
+				assert System.currentTimeMillis() - dateLastClose < maxTimeAfterClose : "Le stream "+this+" continue d'envoyer des messages après un désabonnement !";
+
 			assert isStream || (waitingForAnswer && expectAnswer) : "Réponse inattendue reçue pour "+this+" ("+waitingForAnswer+", "+expectAnswer+")";
 			if(!isStream) // si ce n'est pas un stream, on n'attend plus de nouvelles réponses
 				waitingForAnswer = false;
