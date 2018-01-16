@@ -14,11 +14,12 @@
 
 package senpai.buffer;
 
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.naturalOrder;
 import java.nio.ByteBuffer;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 import pfg.graphic.log.Log;
 import senpai.Subject;
 import senpai.capteurs.SensorMode;
@@ -60,12 +61,9 @@ public class OutgoingOrderBuffer implements Plottable
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_COMM_CHART))
 			print.addPlottable(this);
 	}
-
-	private Queue<Order> bufferBassePriorite = new ConcurrentLinkedQueue<Order>();
-	private Queue<Order> bufferTrajectoireCourbe = new ConcurrentLinkedQueue<Order>();
-	private volatile boolean sendStop = false;
-	private volatile Ticket stop = null;
-
+	
+	private BlockingQueue<Order> buffer = new PriorityBlockingQueue<Order>(100, comparing(Order::getPriority, naturalOrder()));
+	
 	/**
 	 * Le buffer est-il vide?
 	 * 
@@ -73,15 +71,20 @@ public class OutgoingOrderBuffer implements Plottable
 	 */
 	public synchronized boolean isEmpty()
 	{
-		return bufferBassePriorite.isEmpty() && bufferTrajectoireCourbe.isEmpty() && !sendStop;
+		return buffer.isEmpty();
 	}
 
+	public Order take() throws InterruptedException
+	{
+		return buffer.take();
+	}
+	
 	/**
 	 * Retire un élément du buffer
 	 * 
 	 * @return
 	 */
-	public synchronized Order poll()
+/*	public synchronized Order poll()
 	{
 		if(bufferTrajectoireCourbe.size() + bufferBassePriorite.size() > 10)
 			log.write("On n'arrive pas à envoyer les ordres assez vites (ordres TC en attente : " + bufferTrajectoireCourbe.size() + ", autres en attente : " + bufferBassePriorite.size() + ")", Severity.WARNING, Subject.COMM);
@@ -97,7 +100,7 @@ public class OutgoingOrderBuffer implements Plottable
 			return bufferTrajectoireCourbe.poll();
 		else
 			return bufferBassePriorite.poll();
-	}
+	}*/
 
 	/**
 	 * Signale la vitesse max au bas niveau
@@ -116,24 +119,16 @@ public class OutgoingOrderBuffer implements Plottable
 			vitesseTr = (short) (-vitesseInitiale.translationalSpeed * 1000);
 		setMaxSpeed(vitesseTr);
 	}
-	
-	private synchronized void addBassePriorite(Order o)
-	{
-		o.ordre.orderSent();
-		bufferBassePriorite.add(o);
-		notify();
-	}
 
-	private synchronized void addHautePriorite(Order o)
+	private synchronized void addToBuffer(Order o)
 	{
 		o.ordre.orderSent();
-		bufferTrajectoireCourbe.add(o);
-		notify();
+		buffer.add(o);
 	}
 	
 	public synchronized Ticket run()
 	{
-		addBassePriorite(new Order(Id.RUN));
+		addToBuffer(new Order(Id.RUN));
 		return Id.RUN.ticket;
 	}
 
@@ -143,7 +138,7 @@ public class OutgoingOrderBuffer implements Plottable
 		short courbureShort = (short) (Math.round(courbure * 100));
 		data.putShort(courbureShort);
 
-		addBassePriorite(new Order(data, Id.SET_CURVATURE));
+		addToBuffer(new Order(data, Id.SET_CURVATURE));
 	}
 
 	public synchronized void setMaxSpeed(short vitesseTr)
@@ -151,7 +146,7 @@ public class OutgoingOrderBuffer implements Plottable
 		ByteBuffer data = ByteBuffer.allocate(2);
 		data.putShort(vitesseTr);
 
-		addBassePriorite(new Order(data, Id.SET_MAX_SPEED));
+		addToBuffer(new Order(data, Id.SET_MAX_SPEED));
 	}
 
 	/**
@@ -173,19 +168,18 @@ public class OutgoingOrderBuffer implements Plottable
 		ByteBuffer data = ByteBuffer.allocate(2);
 		data.putShort(vitesseTr);
 
-		addBassePriorite(new Order(data, Id.FOLLOW_TRAJECTORY));
+		addToBuffer(new Order(data, Id.FOLLOW_TRAJECTORY));
 		return Id.FOLLOW_TRAJECTORY.ticket;
 	}
 
 	/**
 	 * Ajout d'une demande d'ordre de s'arrêter
 	 */
-	public synchronized void immobilise()
+	public synchronized Ticket immobilise()
 	{
 		log.write("Stop !", Severity.WARNING, Subject.COMM);
-		sendStop = true;
-		stop = new Ticket();
-		notify();
+		addToBuffer(new Order(Id.STOP));
+		return Id.STOP.ticket;
 	}
 
 	XY_RW tmp = new XY_RW();
@@ -225,7 +219,7 @@ public class OutgoingOrderBuffer implements Plottable
 	{
 		ByteBuffer data = ByteBuffer.allocate(5);
 		addXYO(data, pos, orientation, true);
-		addBassePriorite(new Order(data, Id.SET_POSITION));
+		addToBuffer(new Order(data, Id.SET_POSITION));
 	}
 
 	/**
@@ -235,7 +229,7 @@ public class OutgoingOrderBuffer implements Plottable
 	{
 		ByteBuffer data = ByteBuffer.allocate(5);
 		addXYO(data, deltaPos, deltaOrientation, false);
-		addBassePriorite(new Order(data, Id.EDIT_POSITION));
+		addToBuffer(new Order(data, Id.EDIT_POSITION));
 	}
 
 	/**
@@ -243,7 +237,7 @@ public class OutgoingOrderBuffer implements Plottable
 	 */
 	public synchronized Ticket waitForJumper()
 	{
-		addBassePriorite(new Order(Id.WAIT_FOR_JUMPER));
+		addToBuffer(new Order(Id.WAIT_FOR_JUMPER));
 		return Id.WAIT_FOR_JUMPER.ticket;
 	}
 
@@ -252,7 +246,7 @@ public class OutgoingOrderBuffer implements Plottable
 	 */
 	public synchronized Ticket startMatchChrono()
 	{
-		addBassePriorite(new Order(Id.START_MATCH_CHRONO));
+		addToBuffer(new Order(Id.START_MATCH_CHRONO));
 		return Id.START_MATCH_CHRONO.ticket;
 	}
 
@@ -261,7 +255,7 @@ public class OutgoingOrderBuffer implements Plottable
 	 */
 	public synchronized Ticket demandeCouleur()
 	{
-		addBassePriorite(new Order(Id.ASK_COLOR));
+		addToBuffer(new Order(Id.ASK_COLOR));
 		return Id.ASK_COLOR.ticket;
 	}
 
@@ -270,7 +264,7 @@ public class OutgoingOrderBuffer implements Plottable
 	 */
 	public synchronized Ticket ping()
 	{
-		addBassePriorite(new Order(Id.PING));
+		addToBuffer(new Order(Id.PING));
 		return Id.PING.ticket;
 	}
 	
@@ -283,7 +277,7 @@ public class OutgoingOrderBuffer implements Plottable
 	{
 		ByteBuffer data = ByteBuffer.allocate(1);
 		data.put(mode.code);
-		addBassePriorite(new Order(data, Id.SET_SENSOR_MODE));
+		addToBuffer(new Order(data, Id.SET_SENSOR_MODE));
 	}
 
 	/**
@@ -308,7 +302,7 @@ public class OutgoingOrderBuffer implements Plottable
 		stream.changeStreamState(ch);
 		ByteBuffer data = ByteBuffer.allocate(1);
 		data.put(ch.code);
-		addBassePriorite(new Order(data, stream));
+		addToBuffer(new Order(data, stream));
 	}
 	
 	/**
@@ -335,7 +329,7 @@ public class OutgoingOrderBuffer implements Plottable
 
 		data.putShort(courbure);
 
-		addHautePriorite(new Order(data, Id.SEND_ARC));
+		addToBuffer(new Order(data, Id.SEND_ARC));
 	}
 
 	/**
@@ -389,7 +383,7 @@ public class OutgoingOrderBuffer implements Plottable
 
 				data.putShort(courbure);
 			}
-			addHautePriorite(new Order(data, Id.SEND_ARC));
+			addToBuffer(new Order(data, Id.SEND_ARC));
 			Id.SEND_ARC.ticket.attendStatus();
 			index += nbArc;
 		}
@@ -397,14 +391,12 @@ public class OutgoingOrderBuffer implements Plottable
 
 	public void waitStop() throws InterruptedException
 	{
+		// TODO : nécessaire ?
 		log.write("Attente de la réception de la réponse au stop", Subject.COMM);
-		if(stop != null)
-		{
-			stop.attendStatus(1500);
-			if(stop.isEmpty())
-				log.write("Timeout d'attente du stop dépassé !", Severity.WARNING, Subject.COMM);
-			stop = null;
-		}
+		Ticket stop = Id.STOP.ticket;
+		stop.attendStatus(1500);
+		if(stop.isEmpty())
+			log.write("Timeout d'attente du stop dépassé !", Severity.WARNING, Subject.COMM);
 	}
 
 	/**
@@ -425,7 +417,7 @@ public class OutgoingOrderBuffer implements Plottable
 	@Override
 	public void plot(Chart a)
 	{
-		a.addData("Buffer d'ordre sortants", (double) (bufferBassePriorite.size() + bufferTrajectoireCourbe.size()));
+		a.addData("Buffer d'ordre sortants", (double) buffer.size());
 	}
 	
 }

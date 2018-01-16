@@ -46,23 +46,23 @@ public class CommProtocol
 		 */
 		
 		// Canaux de données (0x00 à 0x1F)
-		SENSORS_CHANNEL(0x00, true),
+		SENSORS_CHANNEL(0x00, true, 0),
 		
 		// Ordres longs (0x20 à 0x7F)
-		FOLLOW_TRAJECTORY(0x38, true),
-		STOP(0x39, true),
-		WAIT_FOR_JUMPER(0x3A, true),
-		START_MATCH_CHRONO(0x3B, true),
-		SCAN(0x49, false),
-		RUN(0x4B, false),
-		ASK_COLOR(0x59, true),
-		PING(0x5A, true),
-		SEND_ARC(0x5B, false),
-		SET_MAX_SPEED(0x5C, false),
-		EDIT_POSITION(0x5D, false),
-		SET_SENSOR_MODE(0x5F, false),
-		SET_POSITION(0x60, false),
-		SET_CURVATURE(0x61, false);
+		FOLLOW_TRAJECTORY(0x38, true, 0),
+		STOP(0x39, true, -20),
+		WAIT_FOR_JUMPER(0x3A, true, 0),
+		START_MATCH_CHRONO(0x3B, true, 0),
+		SCAN(0x49, false, 0),
+		RUN(0x4B, false, 0),
+		ASK_COLOR(0x59, true, 0),
+		PING(0x5A, true, 0),
+		SEND_ARC(0x5B, false, -10),
+		SET_MAX_SPEED(0x5C, false, 0),
+		EDIT_POSITION(0x5D, false, 0),
+		SET_SENSOR_MODE(0x5F, false, 0),
+		SET_POSITION(0x60, false, 0),
+		SET_CURVATURE(0x61, false, 0);
 		
 		// Ordres immédiats (0x80 à 0xFF)
 		
@@ -73,6 +73,7 @@ public class CommProtocol
 		private boolean streamStarted;
 		private final boolean expectAnswer;
 		private boolean waitingForAnswer;
+		public final int priority; // basse priorité = urgent
 		
 		public void changeStreamState(Channel newState)
 		{
@@ -83,8 +84,9 @@ public class CommProtocol
 			waitingForAnswer = streamStarted;
 		}
 		
-		private Id(int code, boolean expectAnswer)
+		private Id(int code, boolean expectAnswer, int priority)
 		{
+			this.priority = priority;
 			this.expectAnswer = expectAnswer;
 			isStream = code < 23;
 			// les streams doivent toujours pouvoir attendre une réponse

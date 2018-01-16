@@ -18,7 +18,6 @@ import pfg.graphic.log.Log;
 import senpai.Subject;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.Communication;
-import senpai.comm.Order;
 
 /**
  * Thread qui vérifie s'il faut envoyer des ordres
@@ -45,7 +44,6 @@ public class ThreadCommEmitter extends Thread
 	{
 		Thread.currentThread().setName(getClass().getSimpleName());
 		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.DUMMY);
-		Order message;
 
 		// On envoie d'abord le ping long initial
 		try
@@ -54,20 +52,7 @@ public class ThreadCommEmitter extends Thread
 			
 			while(true)
 			{
-				synchronized(data)
-				{
-					/**
-					 * Pour désactiver le ping automatique, remplacer
-					 * "data.wait(500)" par "data.wait()"
-					 */
-
-					message = null;
-					if(data.isEmpty()) // pas de message ? On attend
-						data.wait();
-
-					message = data.poll();
-				}
-				serie.communiquer(message);
+				serie.communiquer(data.take());
 			}
 		}
 		catch(InterruptedException e)

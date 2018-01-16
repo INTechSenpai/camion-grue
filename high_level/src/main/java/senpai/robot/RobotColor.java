@@ -46,7 +46,7 @@ public enum RobotColor
 	 */
 	public static RobotColor parse(String chaine)
 	{
-		if(chaine.toLowerCase().contains(JAUNE.name().toLowerCase()) || chaine.toLowerCase().contains("nosym") || chaine.toLowerCase().contains("false"))
+		if(chaine.compareToIgnoreCase(JAUNE.name()) == 0)
 			return JAUNE;
 		return BLEU;
 	}

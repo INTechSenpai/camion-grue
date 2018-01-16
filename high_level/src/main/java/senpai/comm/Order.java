@@ -15,7 +15,6 @@
 package senpai.comm;
 
 import java.nio.ByteBuffer;
-
 import senpai.comm.CommProtocol.Id;
 
 /**
@@ -26,10 +25,15 @@ import senpai.comm.CommProtocol.Id;
  */
 
 public class Order
-{
+{	
 	public Id ordre;
 	public final byte[] trame = new byte[300]; // un peu de marge
 	public int tailleTrame;
+	
+	public final int getPriority()
+	{
+		return ordre.priority;
+	}
 	
 	public Order(ByteBuffer message, Id ordre)
 	{
