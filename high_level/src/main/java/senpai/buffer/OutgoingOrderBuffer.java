@@ -299,10 +299,10 @@ public class OutgoingOrderBuffer implements Plottable
 	private synchronized void changeStream(Id stream, Channel ch)
 	{
 		// on vérifie qu'on ne cherche pas à s'abonner alors qu'on est déjà abonné (idem avec désabonné)
-		stream.changeStreamState(ch);
 		ByteBuffer data = ByteBuffer.allocate(1);
 		data.put(ch.code);
 		addToBuffer(new Order(data, stream));
+		stream.changeStreamState(ch);
 	}
 	
 	/**

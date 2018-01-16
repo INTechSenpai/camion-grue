@@ -46,56 +46,81 @@ public class CommProtocol
 		 */
 		
 		// Canaux de données (0x00 à 0x1F)
-		SENSORS_CHANNEL(0x00, true, 0),
+		SENSORS_CHANNEL(0x00, 0),
 		
 		// Ordres longs (0x20 à 0x7F)
-		FOLLOW_TRAJECTORY(0x38, true, 0),
-		STOP(0x39, true, -20),
-		WAIT_FOR_JUMPER(0x3A, true, 0),
-		START_MATCH_CHRONO(0x3B, true, 0),
-		SCAN(0x49, false, 0),
-		RUN(0x4B, false, 0),
-		ASK_COLOR(0x59, true, 0),
-		PING(0x5A, true, 0),
-		SEND_ARC(0x5B, false, -10),
-		SET_MAX_SPEED(0x5C, false, 0),
-		EDIT_POSITION(0x5D, false, 0),
-		SET_SENSOR_MODE(0x5F, false, 0),
-		SET_POSITION(0x60, false, 0),
-		SET_CURVATURE(0x61, false, 0);
+		FOLLOW_TRAJECTORY(0x38, 0),
+		STOP(0x39, -20),
+		WAIT_FOR_JUMPER(0x3A, 0),
+		START_MATCH_CHRONO(0x3B, 0),
+		SCAN(0x49, 0),
+		RUN(0x4B, 0),
+		ASK_COLOR(0x59, 0),
+		PING(0x5A, 0),
+		SEND_ARC(0x5B, -10),
+		SET_MAX_SPEED(0x5C, 0),
+		EDIT_POSITION(0x5D, 0),
+		SET_SENSOR_MODE(0x5F, 0),
+		SET_POSITION(0x60, 0),
+		SET_CURVATURE(0x61, 0);
 		
 		// Ordres immédiats (0x80 à 0xFF)
-		
+
+		// Paramètres constants
 		public final byte code;
-		private boolean sendIsPossible; // "true" si un ordre est lancé, "false" sinon
-		public final Ticket ticket;
-		private final boolean isStream;
-		private boolean streamStarted;
+		private final boolean isLong; // ordre long ?
+		private final boolean isStream; // stream ?
 		private final boolean expectAnswer;
-		private boolean waitingForAnswer;
 		public final int priority; // basse priorité = urgent
+
+		// Variables d'état
+		private boolean waitingForAnswer; // pour les canaux, permet de savoir s'ils sont ouverts ou non
+		private boolean sendIsPossible; // "true" si un ordre long est lancé, "false" sinon
+		private int supernumeraryAnswersAllowed; // pour les streams qui peuvent mettre un peu de temps à s'éteindre
+		
+		private static final int supernumeraryAnswersAllowedDefault = 5;
+		
+		// Ticket (nul si pas de réponse attendu)
+		public final Ticket ticket;
+		
+		public final static Id[] LUT; // look-up table pour retrouver un ordre à partir de son code
+		
+		static {
+			LUT = new Id[256];
+			for(Id id : values())
+				LUT[id.code] = id;
+		}
 		
 		public void changeStreamState(Channel newState)
 		{
 			assert isStream : "changeStreamState sur "+this+" qui n'est pas un canal de données (code = "+code+")";
-			assert streamStarted != newState.started : "Canal déjà ouvert ou fermé !";
-			assert waitingForAnswer == streamStarted : "Invariant rompu : waitingForAnswer = "+waitingForAnswer+" et streamStarted = "+streamStarted; // invariant pour les streams
-			streamStarted = newState.started;
-			waitingForAnswer = streamStarted;
+			assert waitingForAnswer != newState.started : newState.started ? "Canal déjà ouvert !" : "Canal déjà fermé !";
+			supernumeraryAnswersAllowed = supernumeraryAnswersAllowedDefault;
+			waitingForAnswer = newState.started;
+		}
+		
+		// constructeur des ordres longs et des streams
+		private Id(int code, int priority)
+		{
+			// un ordre long (ou un stream) doit obligatoirement attendre une réponse
+			this(code, true, priority);
+			assert isLong || isStream;
 		}
 		
 		private Id(int code, boolean expectAnswer, int priority)
 		{
+			assert code >= 0x00 &&code <= 0xFF : "ID interdit : "+code;;
+			isStream = code <= 0x1F;
+			isLong = code >= 0x20 && code < 0x80;
 			this.priority = priority;
 			this.expectAnswer = expectAnswer;
-			isStream = code < 23;
 			// les streams doivent toujours pouvoir attendre une réponse
-			assert !isStream || expectAnswer : "Les canaux de données doivent pouvoir attendre une réponse";
+			assert (!isStream && !isLong) || expectAnswer : "Les canaux de données et les ordres longs doivent pouvoir attendre une réponse ! " + this;
+			this.code = (byte) code;
+
 			sendIsPossible = true;
 			waitingForAnswer = false;
-			streamStarted = false;
 			
-			this.code = (byte) code;
 			// Les canaux de données n'ont pas de tickets
 			if(expectAnswer)
 				ticket = new Ticket();
@@ -105,29 +130,25 @@ public class CommProtocol
 		
 		public void answerReceived()
 		{
-			assert waitingForAnswer && expectAnswer : "Réponse inattendue reçue pour "+this;
-			if(!isStream)
-				waitingForAnswer = true;
-			sendIsPossible = true;
+			// un stream peut mettre du temps à s'éteindre
+			if(isStream && !waitingForAnswer)
+			{
+				assert supernumeraryAnswersAllowed > 0 : "Le stream "+this+" continue d'envoyer des messages après un désabonnement !";
+				supernumeraryAnswersAllowed--;
+			}
+			assert isStream || (waitingForAnswer && expectAnswer) : "Réponse inattendue reçue pour "+this+" ("+waitingForAnswer+", "+expectAnswer+")";
+			if(!isStream) // si ce n'est pas un stream, on n'attend plus de nouvelles réponses
+				waitingForAnswer = false;
+			sendIsPossible = true; // ordres longs de nouveau envoyables
 		}
 		
 		public void orderSent()
 		{
 			assert sendIsPossible : "Envoi impossible pour "+this+" : on attend encore une réponse";
-			if(expectAnswer && !isStream)
-			{
-				sendIsPossible = false;
+			if(expectAnswer)
 				waitingForAnswer = true;
-			}
-		}
-		
-		public static Id parseId(int code)
-		{
-			for(Id id : values())
-				if(id.code == code)
-					return id;
-			assert false : "Code d'ordre inconnu : "+code;
-			return null;
+			if(isLong) // si c'est un ordre long, on doit interdire l'envoi tant qu'on n'a pas reçu de réponse
+				sendIsPossible = false;
 		}
 	}
 

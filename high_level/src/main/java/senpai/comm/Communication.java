@@ -219,7 +219,8 @@ public class Communication
 			assert k == 0xFF : "Mauvais entête de paquet : "+k;
 			
 			int origineInt = input.read();
-			Id origine = Id.parseId(origineInt);
+			Id origine = Id.LUT[origineInt];
+			assert origine != null : "ID inconnu ! "+origineInt;
 			origine.answerReceived();
 			
 			int taille = input.read();
