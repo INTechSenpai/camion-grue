@@ -14,6 +14,9 @@
 
 package senpai.comm;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import senpai.comm.CommProtocol.InOrder;
 
 /**
@@ -26,24 +29,17 @@ import senpai.comm.CommProtocol.InOrder;
 
 public class Ticket
 {
-	private volatile InOrder order;
-
-	private synchronized InOrder getAndClear()
-	{
-		InOrder out = order;
-		order = null;
-		return out;
-	}
+	private final BlockingQueue<InOrder> ordre = new ArrayBlockingQueue<InOrder>(1); // seulement un élément !
 
 	public synchronized boolean isEmpty()
 	{
-		return order == null;
+		return ordre.isEmpty();
 	}
 
 	public synchronized void set(InOrder order)
 	{
-		this.order = order;
-		notify();
+		assert ordre.isEmpty();
+		ordre.offer(order);
 	}
 
 	/**
@@ -54,10 +50,7 @@ public class Ticket
 	 */
 	public synchronized InOrder attendStatus() throws InterruptedException
 	{
-		if(isEmpty())
-			wait();
-
-		return getAndClear();
+		return ordre.take();
 	}
 	
 	/**
@@ -67,8 +60,7 @@ public class Ticket
 	 */
 	public synchronized void attendStatus(long timeout) throws InterruptedException
 	{
-		if(isEmpty())
-			wait(Math.max(0, timeout));
+		ordre.poll(Math.max(0,timeout), TimeUnit.MILLISECONDS);
 	}
 
 }

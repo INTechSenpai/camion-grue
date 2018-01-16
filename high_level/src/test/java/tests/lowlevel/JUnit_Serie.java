@@ -120,11 +120,7 @@ public class JUnit_Serie extends JUnit_Test
 	public void test_jumper() throws Exception
 	{
 		Ticket t = data.waitForJumper();
-		synchronized(t)
-		{
-			if(t.isEmpty())
-				t.wait();
-		}
+		t.attendStatus();
 	}
 
 	/**
