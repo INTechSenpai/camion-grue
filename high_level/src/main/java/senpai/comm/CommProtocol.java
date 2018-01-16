@@ -46,23 +46,36 @@ public class CommProtocol
 		 */
 		
 		// Canaux de données (0x00 à 0x1F)
-		SENSORS_CHANNEL(0x00, 0),
+		SENSORS_CHANNEL(0x00),
+		
+		// Canaux de debug humain
+		INFO(0x01),
+		ERROR(0x02),
+		TRACE(0x03),
+		SPY_ORDER(0x04),
+		DIRECTION(0x05),
+		AIM_TRAJECTORY(0x06),
+		PID_SPEED(0x07),
+		PID_TRANS(0x08),
+		PID_TRAJECTORY(0x09),
+		BLOCKING_MGR(0x0A),
+		STOPPING_MGR(0x0B),
 		
 		// Ordres longs (0x20 à 0x7F)
-		FOLLOW_TRAJECTORY(0x38, 0),
+		FOLLOW_TRAJECTORY(0x38),
 		STOP(0x39, -20),
-		WAIT_FOR_JUMPER(0x3A, 0),
-		START_MATCH_CHRONO(0x3B, 0),
-		SCAN(0x49, 0),
-		RUN(0x4B, 0),
-		ASK_COLOR(0x59, 0),
-		PING(0x5A, 0),
+		WAIT_FOR_JUMPER(0x3A),
+		START_MATCH_CHRONO(0x3B),
+		SCAN(0x49),
+		RUN(0x4B),
+		ASK_COLOR(0x59),
+		PING(0x5A),
 		SEND_ARC(0x5B, -10),
-		SET_MAX_SPEED(0x5C, 0),
-		EDIT_POSITION(0x5D, 0),
-		SET_SENSOR_MODE(0x5F, 0),
-		SET_POSITION(0x60, 0),
-		SET_CURVATURE(0x61, 0);
+		SET_MAX_SPEED(0x5C),
+		EDIT_POSITION(0x5D),
+		SET_SENSOR_MODE(0x5F),
+		SET_POSITION(0x60),
+		SET_CURVATURE(0x61);
 		
 		// Ordres immédiats (0x80 à 0xFF)
 
@@ -100,12 +113,24 @@ public class CommProtocol
 				dateLastClose = System.currentTimeMillis();
 		}
 		
+		// priorité par défaut : 0
+		private Id(int code)
+		{
+			this(code, 0);
+		}
+	
 		// constructeur des ordres longs et des streams
 		private Id(int code, int priority)
 		{
 			// un ordre long (ou un stream) doit obligatoirement attendre une réponse
 			this(code, true, priority);
 			assert isLong || isStream;
+		}
+		
+		// priorité par défaut : 0
+		private Id(int code, boolean expectAnswer)
+		{
+			this(code, expectAnswer, 0);
 		}
 		
 		private Id(int code, boolean expectAnswer, int priority)
