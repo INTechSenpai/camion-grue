@@ -347,7 +347,7 @@ public class Senpai
 	/**
 	 * Démarrage de tous les threads
 	 */
-	private void startAllThreads() throws InterruptedException
+	private void startAllThreads()
 	{
 		for(ThreadName n : ThreadName.values())
 		{

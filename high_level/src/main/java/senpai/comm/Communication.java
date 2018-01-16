@@ -57,10 +57,10 @@ public class Communication
 	public Communication(Log log, Config config)
 	{
 		this.log = log;
-
+		String hostname = config.getString(ConfigInfoSenpai.LL_HOSTNAME_SERVER);
 		try
 		{
-			String[] s = config.getString(ConfigInfoSenpai.LL_HOSTNAME_SERVER).split("\\.");
+			String[] s = hostname.split("\\.");
 			// on découpe avec les points
 			if(s.length == 4) // une adresse ip, probablement
 			{
@@ -70,14 +70,15 @@ public class Communication
 				adresse = InetAddress.getByAddress(addr);
 			}
 			else // le nom du serveur, probablement
-				adresse = InetAddress.getByName(config.getString(ConfigInfoSenpai.LL_HOSTNAME_SERVER));
+				adresse = InetAddress.getByName(hostname);
 		}
 		catch(UnknownHostException e)
 		{
-			assert false;
+			assert false : e+" "+hostname;
 			e.printStackTrace();
 		}
 		port = config.getInt(ConfigInfoSenpai.LL_PORT_NUMBER);
+		assert port >= 0 && port < 655356 : "Port invalide";
 	}
 
 	private boolean isClosed()
@@ -89,9 +90,8 @@ public class Communication
 	 * Ouverture du port
 	 * 
 	 * @throws InterruptedException
-	 * @throws UnexpectedClosedCommException 
 	 */
-	protected synchronized void openSocket(int delay) throws InterruptedException, UnexpectedClosedCommException
+	private synchronized void openSocket(int delayBetweenTries) throws InterruptedException
 	{
 		if(isClosed())
 		{
@@ -101,25 +101,27 @@ public class Communication
 				{
 					socket = new Socket(adresse, port);
 					socket.setTcpNoDelay(true);
+					// on essaye de garder la connexion
+					socket.setKeepAlive(true);
+					// faible latence > temps de connexion court > haut débit
+					socket.setPerformancePreferences(1, 2, 0);
+					// reconnexion rapide
+					socket.setReuseAddress(true);
 				}
 				catch(IOException e)
 				{
-					log.write("Erreur lors de la connexion au LL", Severity.WARNING, Subject.COMM);
-					Thread.sleep(delay);
+					log.write("Erreur lors de la connexion au LL : "+e, Severity.WARNING, Subject.COMM);
+					Thread.sleep(delayBetweenTries);
 				}
 			} while(socket == null);
 		}
 	}
 
 	/**
-	 * Il donne à la série tout ce qu'il faut pour fonctionner
-	 * 
-	 * @param port_name
-	 * Le port où est connecté la carte
-	 * @param baudrate
-	 * Le baudrate que la carte utilise
+	 * Il donne à la communication tout ce qu'il faut pour fonctionner
+	 * @throws InterruptedException 
 	 */
-	public synchronized void initialize()
+	public synchronized void initialize() throws InterruptedException
 	{
 		try {
 			openSocket(500);
@@ -127,9 +129,8 @@ public class Communication
 			// open the streams
 			input = socket.getInputStream();
 			output = socket.getOutputStream();
-	
 		}
-		catch(IOException | InterruptedException | UnexpectedClosedCommException e)
+		catch(IOException e)
 		{
 			e.printStackTrace();
 			assert false : e;
@@ -142,6 +143,7 @@ public class Communication
 	{
 		if(!initialized)
 			wait();
+		assert initialized;
 	}
 	
 	/**
@@ -153,7 +155,7 @@ public class Communication
 		{
 			try
 			{
-				log.write("Fermeture de la carte", Subject.COMM);
+				log.write("Fermeture de la communication", Subject.COMM);
 				socket.close();
 				output.close();
 			}
@@ -174,12 +176,12 @@ public class Communication
 	 * ThreadSerialOutput et ThreadSerialOutputTimeout
 	 * 
 	 * @param message
-	 * @throws InterruptedException
+	 * @throws UnexpectedClosedCommException
 	 */
-	public void communiquer(Order o) throws InterruptedException, UnexpectedClosedCommException
+	public void communiquer(Order o) throws UnexpectedClosedCommException
 	{
 		if(isClosed())
-			throw new InterruptedException("La communication a été arrêtée");
+			throw new UnexpectedClosedCommException("La communication a été arrêtée");
 		
 		try
 		{
@@ -208,7 +210,7 @@ public class Communication
 	public Paquet readPaquet() throws InterruptedException, UnexpectedClosedCommException
 	{
 		if(isClosed())
-			throw new InterruptedException("La communication a été arrêtée");
+			throw new UnexpectedClosedCommException("La communication a été arrêtée");
 
 		try {
 			int k = input.read();
@@ -232,7 +234,7 @@ public class Communication
 			return new Paquet(message, origine);
 		} catch (IOException e) {
 			if(isClosed()) // arrêt volontaire
-				throw new InterruptedException("La communication a été arrêtée");
+				throw new UnexpectedClosedCommException("La communication a été arrêtée");
 			throw new UnexpectedClosedCommException(e.getMessage());
 		}
 	}
