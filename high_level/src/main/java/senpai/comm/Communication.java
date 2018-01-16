@@ -14,6 +14,7 @@
 
 package senpai.comm;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -27,7 +28,6 @@ import senpai.ConfigInfoSenpai;
 import senpai.Severity;
 import senpai.Subject;
 import senpai.comm.CommProtocol.Id;
-import senpai.exceptions.UnexpectedClosedCommException;
 
 /**
  * La connexion série
@@ -36,7 +36,7 @@ import senpai.exceptions.UnexpectedClosedCommException;
  *
  */
 
-public class Communication
+public class Communication implements Closeable
 {
 	protected Log log;
 	
@@ -48,6 +48,7 @@ public class Communication
 	private InputStream input;
 
 	private volatile boolean initialized = false;
+	private volatile boolean closed = false; // fermeture normale
 	
 	/**
 	 * Constructeur pour la série de test
@@ -81,6 +82,12 @@ public class Communication
 		assert port >= 0 && port < 655356 : "Port invalide";
 	}
 
+	private void openIfClosed() throws InterruptedException
+	{
+		if(isClosed())
+			openSocket(10);
+	}
+	
 	private boolean isClosed()
 	{
 		return socket == null || !socket.isConnected() || socket.isClosed();
@@ -93,6 +100,7 @@ public class Communication
 	 */
 	private synchronized void openSocket(int delayBetweenTries) throws InterruptedException
 	{
+		assert !closed;
 		if(isClosed())
 		{
 			socket = null;
@@ -107,6 +115,10 @@ public class Communication
 					socket.setPerformancePreferences(1, 2, 0);
 					// reconnexion rapide
 					socket.setReuseAddress(true);
+
+					// open the streams
+					input = socket.getInputStream();
+					output = socket.getOutputStream();
 				}
 				catch(IOException e)
 				{
@@ -123,18 +135,7 @@ public class Communication
 	 */
 	public synchronized void initialize() throws InterruptedException
 	{
-		try {
-			openSocket(500);
-			
-			// open the streams
-			input = socket.getInputStream();
-			output = socket.getOutputStream();
-		}
-		catch(IOException e)
-		{
-			e.printStackTrace();
-			assert false : e;
-		}
+		openSocket(500);
 		initialized = true;
 		notifyAll();
 	}
@@ -147,10 +148,14 @@ public class Communication
 	}
 	
 	/**
-	 * Doit être appelé quand on arrête de se servir de la série
+	 * Doit être appelé quand on arrête de se servir de la communication
 	 */
 	public synchronized void close()
 	{
+		assert !closed : "Seconde demande de fermeture !";
+		closed = true;
+		assert socket.isConnected() && !socket.isClosed() : "État du socket : "+socket.isConnected()+" "+socket.isClosed();
+		
 		if(socket.isConnected() && !socket.isClosed())
 		{
 			try
@@ -177,65 +182,74 @@ public class Communication
 	 * 
 	 * @param message
 	 * @throws UnexpectedClosedCommException
+	 * @throws InterruptedException 
 	 */
-	public void communiquer(Order o) throws UnexpectedClosedCommException
+	public void communiquer(Order o) throws InterruptedException
 	{
-		if(isClosed())
-			throw new UnexpectedClosedCommException("La communication a été arrêtée");
+		// série fermée normalement
+		if(closed)
+			return;
 		
-		try
-		{
-			output.write(o.trame, 0, o.tailleTrame);
-			output.flush();
-		}
-		catch(IOException e)
-		{
-			throw new UnexpectedClosedCommException("Connexion perdue ! "+e);
-			/*
-			 * Le code ci-dessous a été retiré car, de toute façon, il ne gère pas la récupération de la lecture
-			 */
-			
-			/*
-			 * Si la carte ne répond vraiment pas, on recommence de manière
-			 * infinie.
-			 * De toute façon, on n'a pas d'autre choix...
-			 */
-/*			log.write("Ne peut pas parler à la carte. Tentative de reconnexion.", Severity.WARNING, Subject.COMM);
-			openSocket(50);
-			// On a retrouvé la série, on renvoie le message
-			communiquer(o);*/
-		}
+		boolean error;
+		do {
+			error = false;
+			openIfClosed();
+			try
+			{
+				output.write(o.trame, 0, o.tailleTrame);
+				output.flush();
+			}
+			catch(IOException e)
+			{
+				e.printStackTrace();
+				error = true;
+			}
+		} while(error);
 	}
 
-	public Paquet readPaquet() throws InterruptedException, UnexpectedClosedCommException
+	public Paquet readPaquet() throws InterruptedException
 	{
-		if(isClosed())
-			throw new UnexpectedClosedCommException("La communication a été arrêtée");
+		// série fermée définitivement
+		if(closed)
+			while (true)
+			    Thread.sleep(Long.MAX_VALUE);
+			
+		while(true)
+		{
+			openIfClosed();
+	
+			try {
+				int k = input.read();
+				if(k == -1)
+					throw new IOException("EOF de l'input de communication");
+				
+				assert k == 0xFF : "Mauvais entête de paquet : "+k;
+				
+				int origineInt = input.read();
+				if(origineInt == -1)
+					throw new IOException("EOF de l'input de communication");
 
-		try {
-			int k = input.read();
-
-			if(k == -1)
-				throw new UnexpectedClosedCommException("EOF de l'input de communication");
-			
-			assert k == 0xFF : "Mauvais entête de paquet : "+k;
-			
-			int origineInt = input.read();
-			Id origine = Id.LUT[origineInt];
-			assert origine != null : "ID inconnu ! "+origineInt;
-			origine.answerReceived();
-			
-			int taille = input.read();
-			assert taille >= 0 && taille <= 254 : "Le message reçu a un mauvais champ \"length\" : "+taille;
-			int[] message = new int[taille];
-			for(int i = 0; i < taille; i++)
-				message[i] = input.read();
-			
-			return new Paquet(message, origine);
-		} catch (IOException e) {
-			if(isClosed()) // arrêt volontaire
-				throw new UnexpectedClosedCommException("La communication a été arrêtée");
-			throw new UnexpectedClosedCommException(e.getMessage());
+				Id origine = Id.LUT[origineInt];
+				assert origine != null : "ID inconnu ! "+origineInt;
+				origine.answerReceived();
+				
+				int taille = input.read();
+				if(taille == -1)
+					throw new IOException("EOF de l'input de communication");
+				
+				assert taille >= 0 && taille <= 254 : "Le message reçu a un mauvais champ \"length\" : "+taille;
+				int[] message = new int[taille];
+				for(int i = 0; i < taille; i++)
+				{
+					message[i] = input.read();
+					if(message[i] == -1)
+						throw new IOException("EOF de l'input de communication");
+				}
+				
+				return new Paquet(message, origine);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }
