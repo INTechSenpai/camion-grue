@@ -15,8 +15,8 @@
 
 package senpai.buffer;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import pfg.graphic.log.Log;
 import senpai.Severity;
@@ -37,48 +37,43 @@ public class IncomingBuffer<T> implements Plottable
 		this.nom = nom;
 	}
 
-	/**
-	 * Le buffer est-il vide?
-	 * 
-	 * @return
-	 */
-	public synchronized boolean isEmpty()
-	{
-		return buffer.isEmpty();
-	}
-
-	private Queue<T> buffer = new ConcurrentLinkedQueue<T>();
+	private BlockingQueue<T> buffer = new ArrayBlockingQueue<T>(200);
 
 	/**
-	 * Ajout d'un élément dans le buffer et provoque un "notify"
+	 * Ajout d'un élément dans le buffer
 	 * 
 	 * @param elem
 	 */
 	public synchronized void add(T elem)
 	{
-		buffer.add(elem);
-		if(buffer.size() > 20)
-		{
-			log.write("Buffer de "+elem.getClass().getSimpleName()+" traités trop lentement ! Taille buffer : " + buffer.size(), Severity.CRITICAL, Subject.COMM);
-			warning = true;
-		}
-		else if(buffer.size() > 5)
-		{
-			log.write("Buffer de "+elem.getClass().getSimpleName()+" traités trop lentement ! Taille buffer : " + buffer.size(), Severity.WARNING, Subject.COMM);
-			warning = true;
-		}
+		try {
+			buffer.add(elem);
+			if(buffer.size() > 20)
+			{
+				log.write("Buffer de "+elem.getClass().getSimpleName()+" traités trop lentement ! Taille buffer : " + buffer.size(), Severity.CRITICAL, Subject.COMM);
+				warning = true;
+			}
+			else if(buffer.size() > 5)
+			{
+				log.write("Buffer de "+elem.getClass().getSimpleName()+" traités trop lentement ! Taille buffer : " + buffer.size(), Severity.WARNING, Subject.COMM);
+				warning = true;
+			}
 
-		notify();
+		} catch(IllegalStateException e)
+		{
+			e.printStackTrace();
+		}
 	}
-
+	
 	/**
 	 * Retire un élément du buffer
 	 * 
 	 * @return
+	 * @throws InterruptedException 
 	 */
-	public synchronized T poll()
+	public synchronized T take() throws InterruptedException
 	{
-		T out = buffer.poll();
+		T out = buffer.take();
 		if(buffer.isEmpty() && warning)
 		{
 			log.write("Retard du buffer de "+out.getClass().getSimpleName()+" récupéré", Subject.COMM);

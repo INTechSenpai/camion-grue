@@ -18,7 +18,6 @@ import pfg.graphic.log.Log;
 import senpai.Subject;
 import senpai.buffer.SensorsDataBuffer;
 import senpai.capteurs.CapteursProcess;
-import senpai.capteurs.SensorsData;
 
 /**
  * Thread qui gère les entrées des capteurs
@@ -49,17 +48,7 @@ public class ThreadCapteurs extends Thread
 		try
 		{
 			while(true)
-			{
-				SensorsData e;
-				synchronized(buffer)
-				{
-					if(buffer.isEmpty())
-						buffer.wait();
-					e = buffer.poll();
-				}
-				capteurs.updateObstaclesMobiles(e);
-
-			}
+				capteurs.updateObstaclesMobiles(buffer.take());
 		}
 		catch(InterruptedException e)
 		{

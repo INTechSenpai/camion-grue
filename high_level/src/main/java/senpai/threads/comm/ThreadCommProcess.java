@@ -73,14 +73,7 @@ public class ThreadCommProcess extends Thread
 			{
 				long avant = System.currentTimeMillis();
 
-				Paquet paquet;
-				synchronized(serie)
-				{
-					if(serie.isEmpty())
-						serie.wait();
-
-					paquet = serie.poll();
-				}
+				Paquet paquet = serie.take();
 
 //				log.write("Durée avant obtention du paquet : " + (System.currentTimeMillis() - avant) + ". Traitement de " + paquet, Subject.COMM);
 
