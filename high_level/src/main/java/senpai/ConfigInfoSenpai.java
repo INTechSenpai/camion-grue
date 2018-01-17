@@ -102,7 +102,9 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	 * Paramètres de la comm
 	 */
 	SIMULE_COMM(false), // la comm doit-elle être simulée (utile pour debug du HL)
-
+	BAUDRATE(115200), // le baudrate de la liaison série
+	SERIAL_PORT("/dev/ttyS0"), // le port de la liaison série
+	
 	/**
 	 * Paramètres bas niveau des capteurs
 	 */
