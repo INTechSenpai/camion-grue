@@ -5,7 +5,7 @@ install :
     - ./install_dependencies.sh
     - cd core
     - sed s/GRAPHIC_ENABLE\ =\ true// src/test/resources/kraken.conf -i
-    - mvn install
+    - mvn install -DskipTests
     - cd ../..
 script :
     - cd high_level
