@@ -1,14 +1,22 @@
-cd config/core
+#!/bin/sh
+dir=$(pwd)
+
+cd ~/config/core
+git pull
 mvn install -DskipTests
-cd ../..
-cd dependency-injector
+
+cd ~/dependency-injector
+git pull
 mvn install -DskipTests
-cd ..
-cd graphic-toolbox/core
+
+cd ~/graphic-toolbox/core
+git pull
 mvn install -DskipTests
-cd ../..
-cd The-Kraken-Pathfinding/core
+
+cd ~/The-Kraken-Pathfinding/core
+git pull
 mvn install -DskipTests
-cd ../..
-cd eurobotruck/high_level
+
+cd $dir
+git pull
 ./update.sh
