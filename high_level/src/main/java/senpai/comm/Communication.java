@@ -51,12 +51,11 @@ public class Communication implements Closeable
 	public Communication(Log log, Config config)
 	{
 		this.log = log;
-		String connexion = config.getString(ConfigInfoSenpai.LL_CONNEXION);
+		String connexion = config.getString(ConfigInfoSenpai.COMM_MEDIUM);
 		if(connexion.compareToIgnoreCase("ethernet") == 0)
-		{
 			medium = new Ethernet(log);
-		}
-		// TODO série
+		else if(connexion.compareToIgnoreCase("serie") == 0)
+			medium = new Serie(log);
 		else
 			assert false;
 		

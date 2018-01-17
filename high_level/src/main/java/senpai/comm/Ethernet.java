@@ -55,7 +55,7 @@ public class Ethernet implements CommMedium
 	@Override
 	public void initialize(Config config)
 	{
-		String hostname = config.getString(ConfigInfoSenpai.LL_HOSTNAME_SERVER);
+		String hostname = config.getString(ConfigInfoSenpai.ETH_LL_HOSTNAME_SERVER);
 		try
 		{
 			String[] s = hostname.split("\\.");
@@ -75,7 +75,7 @@ public class Ethernet implements CommMedium
 			assert false : e+" "+hostname;
 			e.printStackTrace();
 		}
-		port = config.getInt(ConfigInfoSenpai.LL_PORT_NUMBER);
+		port = config.getInt(ConfigInfoSenpai.ETH_LL_PORT_NUMBER);
 		assert port >= 0 && port < 655356 : "Port invalide";
 	}
 

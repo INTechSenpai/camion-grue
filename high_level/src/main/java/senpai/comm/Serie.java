@@ -57,8 +57,8 @@ public class Serie implements CommMedium, SerialPortEventListener
 	 */
 	public void initialize(Config config)
 	{
-		portName = config.getString(ConfigInfoSenpai.SERIAL_PORT);
-		baudrate = config.getInt(ConfigInfoSenpai.BAUDRATE);
+		portName = config.getString(ConfigInfoSenpai.SERIAL_LOCAL_PORT);
+		baudrate = config.getInt(ConfigInfoSenpai.SERIAL_BAUDRATE);
 
 //		if(simuleSerie)
 //			log.critical("SÉRIE SIMULÉE !");

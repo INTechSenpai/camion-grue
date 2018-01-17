@@ -29,10 +29,8 @@ public enum ConfigInfoSenpai implements ConfigInfo
 {
 	AFFICHAGE_TIMEOUT(5000), // timeout sur l'affichage (0 pour infini)
 	REMOTE_CONTROL_PORT_NUMBER(13371), // port de la télécommande
-	LL_PORT_NUMBER(22222), // TODO
-	LL_HOSTNAME_SERVER("127.0.0.1"), // TODO // soit un hostname, soit l'adresse ip
 	REMOTE_CONTROL(false), // active ou non le contrôle à distance
-	LL_CONNEXION("Ethernet"),
+
 	/**
 	 * Infos sur le robot
 	 */
@@ -102,9 +100,14 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	 * Paramètres de la comm
 	 */
 	SIMULE_COMM(false), // la comm doit-elle être simulée (utile pour debug du HL)
-	BAUDRATE(115200), // le baudrate de la liaison série
-	SERIAL_PORT("/dev/ttyS0"), // le port de la liaison série
+	COMM_MEDIUM("Ethernet"),
+
+	SERIAL_BAUDRATE(115200), // le baudrate de la liaison série
+	SERIAL_LOCAL_PORT("/dev/ttyS0"), // le port de la liaison série
 	
+	ETH_LL_PORT_NUMBER(80), // port socket LL
+	ETH_LL_HOSTNAME_SERVER("172.16.0.2"), // adresse ip du LL. Un hostname fonctionne aussi
+
 	/**
 	 * Paramètres bas niveau des capteurs
 	 */
