@@ -60,7 +60,7 @@ public class ThreadCommListener extends Thread
 		{
 			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, Subject.DUMMY);
 			e.printStackTrace();
-			e.printStackTrace(log.getPrintWriter());
+//			e.printStackTrace(log.getPrintWriter());
 			Thread.currentThread().interrupt();
 		}
 	}

@@ -64,7 +64,7 @@ public class Ethernet implements CommMedium
 			{
 				byte[] addr = new byte[4];
 				for(int j = 0; j < 4; j++)
-				addr[j] = Byte.parseByte(s[j]);
+					addr[j] = (byte) Integer.parseInt(s[j]);
 				adresse = InetAddress.getByAddress(addr);
 			}
 			else // le nom du serveur, probablement

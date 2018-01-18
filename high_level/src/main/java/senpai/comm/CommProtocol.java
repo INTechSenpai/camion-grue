@@ -113,6 +113,12 @@ public class CommProtocol
 				dateLastClose = System.currentTimeMillis();
 		}
 		
+		@Override
+		public String toString()
+		{
+			return name()+" "+(isLong ? "LONG" : (isStream ? "STREAM" : "COURT"))+", état : waitingForAnswer="+waitingForAnswer+", sendIsPossible="+sendIsPossible;
+		}
+		
 		// priorité par défaut : 0
 		private Id(int code)
 		{

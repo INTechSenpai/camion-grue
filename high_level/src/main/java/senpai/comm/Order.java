@@ -65,4 +65,9 @@ public class Order
 			trame[i + 3] = message.get();
 	}
 	
+	@Override
+	public String toString()
+	{
+		return ordre+", taille de la trame: "+tailleTrame;
+	}
 }

@@ -37,8 +37,8 @@ public class Communication implements Closeable
 	
 	private CommMedium medium;
 	
-	private OutputStream output;
-	private InputStream input;
+	private volatile OutputStream output;
+	private volatile InputStream input;
 
 	private volatile boolean initialized = false;
 	private volatile boolean closed = false; // fermeture normale
@@ -69,7 +69,10 @@ public class Communication implements Closeable
 	 */
 	public synchronized void initialize() throws InterruptedException
 	{
+		System.out.println("Initialisation communication");
 		medium.open(500);
+		input = medium.getInput();
+		output = medium.getOutput();
 		initialized = true;
 		notifyAll();
 	}
@@ -100,7 +103,7 @@ public class Communication implements Closeable
 	 * @throws UnexpectedClosedCommException
 	 * @throws InterruptedException 
 	 */
-	public void communiquer(Order o) throws InterruptedException
+	public synchronized void communiquer(Order o) throws InterruptedException
 	{
 		// série fermée normalement
 		if(closed)
@@ -127,7 +130,7 @@ public class Communication implements Closeable
 		} while(error);
 	}
 
-	public Paquet readPaquet() throws InterruptedException
+	public synchronized Paquet readPaquet() throws InterruptedException
 	{
 		// série fermée définitivement
 		if(closed)
