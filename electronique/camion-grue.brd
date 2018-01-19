@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="8.5.1">
+<eagle version="8.5.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -30,12 +30,12 @@
 <layer number="20" name="Dimension" color="14" fill="1" visible="yes" active="yes"/>
 <layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="yes"/>
-<layer number="23" name="tOrigins" color="15" fill="1" visible="no" active="yes"/>
-<layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="yes"/>
+<layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="yes"/>
+<layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="yes"/>
 <layer number="25" name="tNames" color="7" fill="1" visible="no" active="yes"/>
 <layer number="26" name="bNames" color="7" fill="1" visible="no" active="yes"/>
-<layer number="27" name="tValues" color="7" fill="1" visible="no" active="yes"/>
-<layer number="28" name="bValues" color="7" fill="1" visible="no" active="yes"/>
+<layer number="27" name="tValues" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="28" name="bValues" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="29" name="tStop" color="7" fill="3" visible="no" active="yes"/>
 <layer number="30" name="bStop" color="7" fill="6" visible="no" active="yes"/>
 <layer number="31" name="tCream" color="7" fill="4" visible="no" active="yes"/>
@@ -46,13 +46,13 @@
 <layer number="36" name="bGlue" color="7" fill="5" visible="no" active="yes"/>
 <layer number="37" name="tTest" color="7" fill="1" visible="no" active="yes"/>
 <layer number="38" name="bTest" color="7" fill="1" visible="no" active="yes"/>
-<layer number="39" name="tKeepout" color="4" fill="11" visible="no" active="yes"/>
-<layer number="40" name="bKeepout" color="1" fill="11" visible="no" active="yes"/>
-<layer number="41" name="tRestrict" color="4" fill="10" visible="no" active="yes"/>
-<layer number="42" name="bRestrict" color="1" fill="10" visible="no" active="yes"/>
+<layer number="39" name="tKeepout" color="4" fill="11" visible="yes" active="yes"/>
+<layer number="40" name="bKeepout" color="1" fill="11" visible="yes" active="yes"/>
+<layer number="41" name="tRestrict" color="4" fill="10" visible="yes" active="yes"/>
+<layer number="42" name="bRestrict" color="1" fill="10" visible="yes" active="yes"/>
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="yes"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="yes"/>
-<layer number="45" name="Holes" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="45" name="Holes" color="7" fill="1" visible="no" active="yes"/>
 <layer number="46" name="Milling" color="3" fill="1" visible="no" active="yes"/>
 <layer number="47" name="Measures" color="7" fill="1" visible="no" active="yes"/>
 <layer number="48" name="Document" color="7" fill="1" visible="no" active="yes"/>
@@ -94,6 +94,42 @@
 <wire x1="72.5" y1="67" x2="72.5" y2="37" width="0.2" layer="21"/>
 <wire x1="72.5" y1="37" x2="56.5" y2="37" width="0.2" layer="21"/>
 <wire x1="56.5" y1="37" x2="56.5" y2="67" width="0.2" layer="21"/>
+<text x="54" y="78.4" size="1.778" layer="52" rot="MR0" align="bottom-center">LIPO</text>
+<text x="75" y="78.4" size="1.778" layer="52" rot="MR0" align="bottom-center">ARRET URGENCE</text>
+<text x="50" y="86.4" size="1.778" layer="52" rot="MR0" align="bottom-center">COD D</text>
+<text x="79" y="86.4" size="1.778" layer="52" rot="MR0" align="bottom-center">COD G</text>
+<text x="64.5" y="86.4" size="1.778" layer="52" rot="MR0" align="bottom-center">GRUE</text>
+<text x="64.5" y="94.4" size="1.778" layer="52" rot="MR0" align="bottom-center">ToF &amp; DELs</text>
+<text x="60" y="98.8" size="1.778" layer="52" rot="MR0">J</text>
+<polygon width="0.2" layer="52">
+<vertex x="43.4" y="100.8"/>
+<vertex x="43.4" y="102.4"/>
+<vertex x="37.8" y="102.4"/>
+<vertex x="37" y="102.4"/>
+<vertex x="35.6" y="101"/>
+<vertex x="35.1" y="100.5"/>
+<vertex x="35.1" y="99.7"/>
+<vertex x="35.1" y="93.8"/>
+<vertex x="43.2" y="93.8"/>
+<vertex x="43.4" y="93.8"/>
+</polygon>
+<text x="38.5" y="90.6" size="2.54" layer="52" rot="MR0" align="bottom-center">M</text>
+<wire x1="35.4" y1="93.8" x2="35.4" y2="89.8" width="0.6096" layer="52"/>
+<wire x1="35.4" y1="89.8" x2="40.6" y2="89.8" width="0.6096" layer="52"/>
+<wire x1="40.6" y1="89.8" x2="41.6" y2="89.8" width="0.6096" layer="52"/>
+<wire x1="41.6" y1="89.8" x2="41.6" y2="93.6" width="0.6096" layer="52"/>
+<polygon width="0.2" layer="52">
+<vertex x="80.4" y="102.4"/>
+<vertex x="80.4" y="93.6"/>
+<vertex x="76.4" y="93.6"/>
+<vertex x="73.4" y="96.6"/>
+<vertex x="73.4" y="102.4"/>
+</polygon>
+<text x="71.3" y="98.4" size="2.54" layer="52" rot="MR0" align="bottom-center">M</text>
+<wire x1="73.6" y1="102.2" x2="69" y2="102.2" width="0.6096" layer="52"/>
+<wire x1="69" y1="102.2" x2="69" y2="98.2" width="0.6096" layer="52"/>
+<wire x1="69" y1="98.2" x2="69" y2="97" width="0.6096" layer="52"/>
+<wire x1="69" y1="97" x2="73.4" y2="97" width="0.6096" layer="52"/>
 </plain>
 <libraries>
 <library name="st-microelectronics" urn="urn:adsk.eagle:library:368">
