@@ -388,7 +388,7 @@ public class OutgoingOrderBuffer implements Plottable
 	 */
 	public void checkLatence() throws InterruptedException
 	{
-		int nbEssais = 10000;
+		int nbEssais = 1000;
 		long avant = System.currentTimeMillis();
 		for(int i = 0; i < nbEssais; i++)
 			ping().attendStatus();

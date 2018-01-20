@@ -18,7 +18,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
+import java.net.SocketException;
 import pfg.config.Config;
 import pfg.graphic.log.Log;
 import senpai.ConfigInfoSenpai;
@@ -166,6 +166,12 @@ public class Communication implements Closeable
 				}
 				
 				return new Paquet(message, origine);
+			} catch(SocketException e)
+			{
+				// communication fermé
+				if(closed)
+					throw new InterruptedException("Série fermée normalement");
+				e.printStackTrace(); // problème ?
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
