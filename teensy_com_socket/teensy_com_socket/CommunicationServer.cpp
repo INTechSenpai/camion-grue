@@ -6,13 +6,14 @@ CommunicationServer Server = CommunicationServer();
 CommunicationServer::CommunicationServer() :
 	ethernetServer(TCP_PORT)
 {
+  pinMode(WIZ820_PWDN_PIN, OUTPUT);
+  digitalWrite(WIZ820_PWDN_PIN, LOW);
 	pinMode(WIZ820_RESET_PIN, OUTPUT);
 	digitalWrite(WIZ820_RESET_PIN, LOW);    // begin reset the WIZ820io
 	pinMode(WIZ820_SS_PIN, OUTPUT);
 	digitalWrite(WIZ820_SS_PIN, HIGH);		// de-select WIZ820io
 	digitalWrite(WIZ820_RESET_PIN, HIGH);   // end reset pulse
-
-	uint8_t mac[] = { MAC_ADDR };
+  uint8_t mac[] = { MAC_ADDR };
 	IPAddress ip(IP_ADDR);
 	IPAddress dns(DNS_IP);
 	IPAddress gateway(GATEWAY_IP);
@@ -60,7 +61,7 @@ void CommunicationServer::communicate()
 	}
 #endif
 
-	/* Réception des messages */
+	/* RÃ©ception des messages */
 	bool receivedAtLeastOneByte = true;
 	uint32_t startReceptionTime = micros();
 	while (micros() - startReceptionTime < MAX_RECEPTION_DURATION && receivedAtLeastOneByte)
@@ -114,7 +115,7 @@ void CommunicationServer::communicate()
 		}
 	}
 
-	/* Envoi des messages à envoi différé (issus des interruptions) */
+	/* Envoi des messages Ã  envoi diffÃ©rÃ© (issus des interruptions) */
 	noInterrupts();
 	bisTraceVectUsed = !bisTraceVectUsed;
 	interrupts();
@@ -135,7 +136,7 @@ void CommunicationServer::communicate()
 		asyncTraceVectBis.clear();
 	}
 
-	/* Gestion des déconnexions */
+	/* Gestion des dÃ©connexions */
 	for (uint8_t i = 0; i < MAX_SOCK_NUM; i++)
 	{
 		if (ethernetClients[i].getSocketNumber() < MAX_SOCK_NUM)
@@ -525,7 +526,7 @@ size_t CommunicationServer::sendCString(const char * str, uint8_t dest)
 
 void CommunicationServer::processOrAddCommandToBuffer(Command command)
 {
-	if (command.getId() < CHANNEL_MAX_NB) // Ordre d'inscription/désinscription à traiter
+	if (command.getId() < CHANNEL_MAX_NB) // Ordre d'inscription/dÃ©sinscription Ã  traiter
 	{
 		if (command.getLength() != 1 || command.getSource() > MAX_SOCK_NUM)
 		{
@@ -537,13 +538,13 @@ void CommunicationServer::processOrAddCommandToBuffer(Command command)
 			{
 				subscriptionList[command.getSource()] |= (1 << command.getId());
 			}
-			else // désinscription
+			else // dÃ©sinscription
 			{
 				subscriptionList[command.getSource()] &= ~(1 << command.getId());
 			}
 		}
 	}
-	else // Autre ordre, à stocker pour le transmettre
+	else // Autre ordre, Ã  stocker pour le transmettre
 	{
 		if (available() < COMMAND_BUFFER_SIZE - 1)
 		{

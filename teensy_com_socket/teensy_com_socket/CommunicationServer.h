@@ -9,7 +9,7 @@
 #include <vector>
 
 
-/* Configuration réseau */
+/* Configuration rÃ©seau */
 #define MAC_ADDR	0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
 #define IP_ADDR		172, 16, 0, 2
 #define DNS_IP		172, 16, 0, 1
@@ -17,11 +17,11 @@
 #define SUBNET_MASK	255, 255, 255, 0
 #define TCP_PORT	80
 
-/* Activation de la liaison série de secours */
+/* Activation de la liaison sÃ©rie de secours */
 #define SERIAL_ENABLE 1
 
 /* Pin mapping */
-//Todo: à déplacer dans le fichier approprié
+//Todo: Ã  dÃ©placer dans le fichier appropriÃ©
 #define WIZ820_SS_PIN		10
 #define WIZ820_MOSI_PIN		11
 #define WIZ820_MISO_PIN		12
@@ -34,7 +34,7 @@
 #define OUTPUT_BUFFER_SIZE		255
 #define HEADER_BYTE				0xFF
 #define DEFAULT_SUSCRIPTION		0x06
-#define MAX_RECEPTION_DURATION	500		// µs
+#define MAX_RECEPTION_DURATION	500		// Âµs
 #define ASYNC_TRACE_FILENAME	"ISR"
 #define CHANNEL_MAX_NB			32
 
@@ -65,25 +65,25 @@ public:
 	/* Envoie les messages de la file d'attente et lit les messages entrants */
 	void communicate();
 
-	/* Renvoie le nombre d'ordres présents dans le buffer de réception */
+	/* Renvoie le nombre d'ordres prÃ©sents dans le buffer de rÃ©ception */
 	uint8_t available();
 
-	/* Indique si le client donné est connecté ou non au serveur */
+	/* Indique si le client donnÃ© est connectÃ© ou non au serveur */
 	bool isConnected(uint8_t client);
 
 	/* 
-		Revoie la commande la plus ancienne du buffer de réception, et la retire du buffer
-		Si le buffer est vide, la commande retournée aura l'attribut "non valide"
+		Revoie la commande la plus ancienne du buffer de rÃ©ception, et la retire du buffer
+		Si le buffer est vide, la commande retournÃ©e aura l'attribut "non valide"
 	*/
 	Command getLastCommand();
 
-	/* Envoie la commande passée en argument, avec une trame standard */
+	/* Envoie la commande passÃ©e en argument, avec une trame standard */
 	void sendAnswer(Command answer);
 
-	/* Envoi de données spontanées avec une trame standard */
+	/* Envoi de donnÃ©es spontanÃ©es avec une trame standard */
 	void sendData(Channel channel, std::vector<uint8_t> const & data);
 
-	/* Méthodes permettant l'envoi de données spontanées avec des trames d'information */
+	/* MÃ©thodes permettant l'envoi de donnÃ©es spontanÃ©es avec des trames d'information */
 	void print(uint32_t n) { print(INFO, n); }
 	void print(int32_t n) { print(INFO, n); }
 	void print(double d) { print(INFO, d); }
@@ -115,7 +115,7 @@ private:
 	void print(Channel channel, const char* str, bool newLine = false);
 	void println(Channel channel);
 
-	/* Envoie les 3 octets d'entête d'une trame d'information */
+	/* Envoie les 3 octets d'entÃªte d'une trame d'information */
 	void printHeader(Stream & stream, uint8_t id)
 	{
 		stream.write(0xFF);
@@ -124,38 +124,38 @@ private:
 	}
 
 public:
-	/* Envoie une trame d'information sur la canal TRACE permettant de retrouver la ligne de code et le fichier ayant appelé la méthode */
+	/* Envoie une trame d'information sur la canal TRACE permettant de retrouver la ligne de code et le fichier ayant appelÃ© la mÃ©thode */
 	void trace(uint32_t line, const char* filename, uint32_t timestamp = 0);
 
-	/* Même utilisation que trace() mais utilisable depuis une interruption (le message sera envoyé plus tard, depuis la boucle principale) */
+	/* MÃªme utilisation que trace() mais utilisable depuis une interruption (le message sera envoyÃ© plus tard, depuis la boucle principale) */
 	void asynchronous_trace(uint32_t line);
 
 private:
-	/* Envoie la chaine de caractères contenue dans outputBuffer sous forme de trame d'information */
+	/* Envoie la chaine de caractÃ¨res contenue dans outputBuffer sous forme de trame d'information */
 	void sendOutputBuffer(Channel channel);
 
-	/* Envoi d'un octet à un destinataire */
+	/* Envoi d'un octet Ã  un destinataire */
 	size_t sendByte(uint8_t byte, uint8_t dest);
 
-	/* Envoi d'un vecteur d'octets à un destinataire */
+	/* Envoi d'un vecteur d'octets Ã  un destinataire */
 	size_t sendVector(std::vector<uint8_t> const & vect, uint8_t dest);
 
-	/* Envoi d'une chaine de caractères C à un destinataire (avec le caractère de fin de chaine) */
+	/* Envoi d'une chaine de caractÃ¨res C Ã  un destinataire (avec le caractÃ¨re de fin de chaine) */
 	size_t sendCString(const char* str, uint8_t dest);
 
 	/*
-		Si la commande concerne une inscription/désinscription, mets à jour la subscriptionList
-		Sinon, ajoute la commande au buffer des "commandes en attente d'exécution" 
+		Si la commande concerne une inscription/dÃ©sinscription, mets Ã  jour la subscriptionList
+		Sinon, ajoute la commande au buffer des "commandes en attente d'exÃ©cution" 
 	*/
 	void processOrAddCommandToBuffer(Command command);
 
-	/* Indique si le client est abonné à cette chaine */
+	/* Indique si le client est abonnÃ© Ã  cette chaine */
 	bool subscribed(uint8_t client, Channel channel)
 	{
 		return subscriptionList[client] & ((uint32_t)1 << (uint8_t)channel);
 	}
 
-	/* Indique si l'un des clients est abonné à cette chaine */
+	/* Indique si l'un des clients est abonnÃ© Ã  cette chaine */
 	bool isThereListener(Channel channel)
 	{
 		for (uint8_t i = 0; i < MAX_SOCK_NUM + 1; i++)
@@ -178,7 +178,7 @@ private:
 			receptionStarted = false;
 		}
 
-		/* Renvoie 0 si l'octet a été ajouté, 1 sinon. Revoie -1 en cas de réception d'une trame d'information */
+		/* Renvoie 0 si l'octet a Ã©tÃ© ajoutÃ©, 1 sinon. Revoie -1 en cas de rÃ©ception d'une trame d'information */
 		int8_t addByte(uint8_t newByte, uint8_t source)
 		{
 			if (!commandAvailable)
