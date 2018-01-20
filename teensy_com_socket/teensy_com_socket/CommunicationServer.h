@@ -30,7 +30,7 @@
 #define WIZ820_PWDN_PIN		15
 
 /* Configurations diverses */
-#define COMMAND_BUFFER_SIZE		16
+#define COMMAND_BUFFER_SIZE		5
 #define OUTPUT_BUFFER_SIZE		255
 #define HEADER_BYTE				0xFF
 #define DEFAULT_SUSCRIPTION		0x06
@@ -95,6 +95,7 @@ public:
 	void print_err(uint32_t n) { print(ERROR, n); }
 	void print_err(int32_t n) { print(ERROR, n); }
 	void print_err(double d) { print(ERROR, d); }
+	void print_err(const Printable & obj) { print(ERROR, obj); }
 	void println_err(uint32_t n) { print(ERROR, n, true); }
 	void println_err(int32_t n) { print(ERROR, n, true); }
 	void println_err(double d) { print(ERROR, d, true); }

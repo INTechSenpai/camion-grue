@@ -67,7 +67,7 @@ void CommunicationServer::communicate()
 	while (micros() - startReceptionTime < MAX_RECEPTION_DURATION && receivedAtLeastOneByte)
 	{
 		receivedAtLeastOneByte = false;
-		if (available() < COMMAND_BUFFER_SIZE - 5)
+		if (available() < COMMAND_BUFFER_SIZE - MAX_SOCK_NUM)
 		{
 			for (uint8_t i = 0; i < MAX_SOCK_NUM; i++)
 			{
