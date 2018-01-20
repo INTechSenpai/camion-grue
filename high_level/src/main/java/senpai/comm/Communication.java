@@ -69,7 +69,6 @@ public class Communication implements Closeable
 	 */
 	public synchronized void initialize() throws InterruptedException
 	{
-		System.out.println("Initialisation communication");
 		medium.open(500);
 		input = medium.getInput();
 		output = medium.getOutput();
@@ -103,7 +102,7 @@ public class Communication implements Closeable
 	 * @throws UnexpectedClosedCommException
 	 * @throws InterruptedException 
 	 */
-	public synchronized void communiquer(Order o) throws InterruptedException
+	public void communiquer(Order o) throws InterruptedException
 	{
 		// série fermée normalement
 		if(closed)
@@ -112,11 +111,7 @@ public class Communication implements Closeable
 		boolean error;
 		do {
 			error = false;
-			if(medium.openIfClosed())
-			{
-				input = medium.getInput();
-				output = medium.getOutput();
-			}
+			checkDisconnection();
 			try
 			{
 				output.write(o.trame, 0, o.tailleTrame);
@@ -130,21 +125,17 @@ public class Communication implements Closeable
 		} while(error);
 	}
 
-	public synchronized Paquet readPaquet() throws InterruptedException
+	public Paquet readPaquet() throws InterruptedException
 	{
 		// série fermée définitivement
 		if(closed)
-			while (true)
-			    Thread.sleep(Long.MAX_VALUE);
+			throw new InterruptedException("Série fermée normalement");
 			
 		while(true)
 		{
-			if(medium.openIfClosed())
-			{
-				input = medium.getInput();
-				output = medium.getOutput();
-			}
-	
+			checkDisconnection();
+			assert input != null && output != null;
+
 			try {
 				int k = input.read();
 				if(k == -1)
@@ -158,6 +149,7 @@ public class Communication implements Closeable
 
 				Id origine = Id.LUT[origineInt];
 				assert origine != null : "ID inconnu ! "+origineInt;
+				
 				origine.answerReceived();
 				
 				int taille = input.read();
@@ -178,5 +170,15 @@ public class Communication implements Closeable
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private synchronized void checkDisconnection() throws InterruptedException
+	{
+		if(medium.openIfClosed())
+		{
+			input = medium.getInput();
+			output = medium.getOutput();
+		}
+		assert input != null && output != null;		
 	}
 }

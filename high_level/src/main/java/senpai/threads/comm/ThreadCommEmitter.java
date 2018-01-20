@@ -45,7 +45,6 @@ public class ThreadCommEmitter extends Thread
 		Thread.currentThread().setName(getClass().getSimpleName());
 		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.DUMMY);
 
-		// On envoie d'abord le ping long initial
 		try
 		{
 			serie.waitForInitialization();

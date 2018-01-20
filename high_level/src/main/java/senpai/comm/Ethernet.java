@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import pfg.config.Config;
@@ -109,7 +110,7 @@ public class Ethernet implements CommMedium
 			do {
 				try
 				{
-					socket = new Socket(adresse, port);
+					socket = new Socket();
 					socket.setTcpNoDelay(true);
 					// on essaye de garder la connexion
 					socket.setKeepAlive(true);
@@ -117,15 +118,18 @@ public class Ethernet implements CommMedium
 					socket.setPerformancePreferences(1, 2, 0);
 					// reconnexion rapide
 					socket.setReuseAddress(true);
+					socket.connect(new InetSocketAddress(adresse, port), delayBetweenTries/2);
 
 					// open the streams
 					input = socket.getInputStream();
 					output = socket.getOutputStream();
+					assert input != null && output != null;
 				}
 				catch(IOException e)
 				{
+					socket = null;
 					log.write("Erreur lors de la connexion au LL : "+e, Severity.WARNING, Subject.COMM);
-					Thread.sleep(delayBetweenTries);
+					Thread.sleep(delayBetweenTries/2);
 				}
 			} while(socket == null);
 		}

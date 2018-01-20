@@ -87,9 +87,9 @@ public class CommProtocol
 		public final int priority; // basse priorité = urgent
 
 		// Variables d'état
-		private boolean waitingForAnswer; // pour les canaux, permet de savoir s'ils sont ouverts ou non
-		private boolean sendIsPossible; // "true" si un ordre long est lancé, "false" sinon
-		private long dateLastClose; // pour les streams qui peuvent mettre un peu de temps à s'éteindre
+		private volatile boolean waitingForAnswer; // pour les canaux, permet de savoir s'ils sont ouverts ou non
+		private volatile boolean sendIsPossible; // "true" si un ordre long est lancé, "false" sinon
+		private volatile long dateLastClose; // pour les streams qui peuvent mettre un peu de temps à s'éteindre
 		
 		private static final int maxTimeAfterClose = 10;
 		
@@ -102,6 +102,11 @@ public class CommProtocol
 			LUT = new Id[256];
 			for(Id id : values())
 				LUT[id.code] = id;
+		}
+		
+		public boolean isSendPossible()
+		{
+			return sendIsPossible;
 		}
 		
 		public void changeStreamState(Channel newState)

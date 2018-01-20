@@ -44,7 +44,7 @@ public class IncomingBuffer<T> implements Plottable
 	 * 
 	 * @param elem
 	 */
-	public synchronized void add(T elem)
+	public void add(T elem)
 	{
 		try {
 			buffer.add(elem);
@@ -71,7 +71,7 @@ public class IncomingBuffer<T> implements Plottable
 	 * @return
 	 * @throws InterruptedException 
 	 */
-	public synchronized T take() throws InterruptedException
+	public T take() throws InterruptedException
 	{
 		T out = buffer.take();
 		if(buffer.isEmpty() && warning)
