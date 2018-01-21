@@ -29,16 +29,16 @@ public:
 		}
 
 		/*	################################################## *
-		*	# Ici est définie la correspondance ID <-> Ordre # *
-		*	# (il faut ajouter le START_ID à l'index du		 # *
-		*	# tableau pour avoir l'ID utilisé dans la trame) # *
+		*	# Ici est dï¿½finie la correspondance ID <-> Ordre # *
+		*	# (il faut ajouter le START_ID ï¿½ l'index du		 # *
+		*	# tableau pour avoir l'ID utilisï¿½ dans la trame) # *
 		*	################################################## */
 
-		// Ordres à réponse immédiate
-		immediateOrderList[0x00] = &Ping::Instance();
+		// Ordres ï¿½ rï¿½ponse immï¿½diate
+		immediateOrderList[0x80] = &Ping::Instance();
 
 		// Ordres longs
-		longOrderList[0x00] = &RienL::Instance();
+//		longOrderList[0x00] = &RienL::Instance();
 	}
 
 	void execute()
@@ -188,8 +188,8 @@ private:
 				orderStack[i].saveOrder(index, command);
 				return 0;
 			}
-			return -1;
 		}
+    return -1;
 	}
 
 	OrderMemory orderStack[EXEC_STACK_SIZE];

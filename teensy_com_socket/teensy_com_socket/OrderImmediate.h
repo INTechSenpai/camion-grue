@@ -43,6 +43,8 @@ public:
 	virtual void execute(std::vector<uint8_t> & io)
 	{
 		io.clear();
+    // le ping doit rÃ©pondre, donc on met une donnÃ©e qui ne sert Ã  rien
+    io.push_back(0);
 	}
 };
 

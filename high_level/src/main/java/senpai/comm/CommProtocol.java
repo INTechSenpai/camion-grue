@@ -46,10 +46,10 @@ public class CommProtocol
 		 */
 		
 		// Canaux de données (0x00 à 0x1F)
-		SENSORS_CHANNEL(0x00),
+		ODO_AND_SENSORS(0x00),
 		
 		// Canaux de debug humain
-		INFO(0x01),
+/*		INFO(0x01),
 		ERROR(0x02),
 		TRACE(0x03),
 		SPY_ORDER(0x04),
@@ -59,28 +59,31 @@ public class CommProtocol
 		PID_TRANS(0x08),
 		PID_TRAJECTORY(0x09),
 		BLOCKING_MGR(0x0A),
-		STOPPING_MGR(0x0B),
+		STOPPING_MGR(0x0B),*/
 		
 		// Ordres longs (0x20 à 0x7F)
-		FOLLOW_TRAJECTORY(0x38),
-		STOP(0x39, -20),
-		WAIT_FOR_JUMPER(0x3A),
-		START_MATCH_CHRONO(0x3B),
-		SCAN(0x49),
-		RUN(0x4B),
-		ASK_COLOR(0x59),
-		PING(0x5A),
-		SEND_ARC(0x5B, -10),
-		SET_MAX_SPEED(0x5C),
-		EDIT_POSITION(0x5D),
-		SET_SENSOR_MODE(0x5F),
-		SET_POSITION(0x60),
-		SET_CURVATURE(0x61);
+		FOLLOW_TRAJECTORY(0x20),
+		STOP(0x21, -20),
+		WAIT_FOR_JUMPER(0x22),
+		START_MATCH_CHRONO(0x23),
+//		SCAN(0x49),
+		RUN(0x24),
+//		SET_MAX_SPEED(0x5C),
+//		SET_SENSOR_MODE(0x5F),
 		
 		// Ordres immédiats (0x80 à 0xFF)
+		PING(0x80, true),
+		ASK_COLOR(0x81, true),
+		EDIT_POSITION(0x82, false),
+		SET_POSITION(0x83, false),
+		SEND_ARC(0x84, false, -10),
+		SET_CURVATURE(0x85, false),
+		SET_MAX_SPEED(0x86, false);
+
 
 		// Paramètres constants
 		public final byte code;
+		public final int codeInt;
 		private final boolean isLong; // ordre long ?
 		private final boolean isStream; // stream ?
 		private final boolean expectAnswer;
@@ -101,7 +104,7 @@ public class CommProtocol
 		static {
 			LUT = new Id[256];
 			for(Id id : values())
-				LUT[id.code] = id;
+				LUT[id.codeInt] = id;
 		}
 		
 		public boolean isSendPossible()
@@ -154,7 +157,7 @@ public class CommProtocol
 			// les streams doivent toujours pouvoir attendre une réponse
 			assert (!isStream && !isLong) || expectAnswer : "Les canaux de données et les ordres longs doivent pouvoir attendre une réponse ! " + this;
 			this.code = (byte) code;
-
+			codeInt = code;
 			sendIsPossible = true;
 			waitingForAnswer = false;
 			

@@ -256,12 +256,12 @@ public class OutgoingOrderBuffer implements Plottable
 	 * 
 	 * @param mode
 	 */
-	public void setSensorMode(SensorMode mode)
+/*	public void setSensorMode(SensorMode mode)
 	{
 		ByteBuffer data = ByteBuffer.allocate(1);
 		data.put(mode.code);
 		addToBuffer(new Order(data, Id.SET_SENSOR_MODE));
-	}
+	}*/
 
 	/**
 	 * Démarre un stream

@@ -68,7 +68,7 @@ public class JUnit_Serie extends JUnit_Test
 	@Test
 	public void test_stream() throws Exception
 	{
-		data.startStream(Id.SENSORS_CHANNEL);
+		data.startStream(Id.ODO_AND_SENSORS);
 		Thread.sleep(10000);
 	}
 
@@ -105,7 +105,7 @@ public class JUnit_Serie extends JUnit_Test
 	@Test
 	public void test_edit_position() throws Exception
 	{
-		data.startStream(Id.SENSORS_CHANNEL);
+		data.startStream(Id.ODO_AND_SENSORS);
 		Thread.sleep(1000);
 		data.correctPosition(new XY(42, 24), 1);
 		Thread.sleep(1000);

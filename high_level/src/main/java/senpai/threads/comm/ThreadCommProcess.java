@@ -105,7 +105,7 @@ public class ThreadCommProcess extends Thread
 				/**
 				 * Capteurs
 				 */
-				else if(paquet.origine == Id.SENSORS_CHANNEL)
+				else if(paquet.origine == Id.ODO_AND_SENSORS)
 				{
 					/**
 					 * Récupération de la position et de l'orientation
@@ -196,6 +196,7 @@ public class ThreadCommProcess extends Thread
 				
 				else if(paquet.origine == Id.PING)
 				{
+					assert paquet.message.length == 1 : paquet;
 					paquet.origine.ticket.set(InOrder.ACK_SUCCESS);
 				}
 
