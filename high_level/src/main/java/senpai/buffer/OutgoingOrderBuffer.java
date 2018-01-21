@@ -92,7 +92,7 @@ public class OutgoingOrderBuffer implements Plottable
 	 * @param vitesse signée
 	 * @return
 	 */
-	public synchronized void setMaxSpeed(Speed vitesseInitiale, boolean marcheAvant)
+	public void setMaxSpeed(Speed vitesseInitiale, boolean marcheAvant)
 	{
 		log.write("Envoi d'un ordre de vitesse max : " + vitesseInitiale+". Marche avant : "+marcheAvant, Subject.COMM);
 

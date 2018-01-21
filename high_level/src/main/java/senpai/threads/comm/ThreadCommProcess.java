@@ -180,13 +180,10 @@ public class ThreadCommProcess extends Thread
 				else if(paquet.origine == Id.WAIT_FOR_JUMPER)
 				{
 					capteursOn = true;
-					synchronized(config)
-					{
-						// TODO
+					// TODO
 //						config.set(ConfigInfo.DATE_DEBUT_MATCH, System.currentTimeMillis());
 //						config.set(ConfigInfo.MATCH_DEMARRE, true);
-						paquet.origine.ticket.set(InOrder.ACK_SUCCESS);
-					}
+					paquet.origine.ticket.set(InOrder.ACK_SUCCESS);
 				}
 
 				else if(paquet.origine == Id.SEND_ARC)

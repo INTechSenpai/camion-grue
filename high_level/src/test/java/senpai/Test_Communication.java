@@ -12,7 +12,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package tests.lowlevel;
+package senpai;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +23,6 @@ import senpai.comm.CommProtocol.Id;
 import senpai.comm.CommProtocol.State;
 import pfg.kraken.utils.XY;
 import senpai.ConfigInfoSenpai;
-import tests.JUnit_Test;
 
 /**
  * Tests unitaires de la série.
@@ -32,20 +31,19 @@ import tests.JUnit_Test;
  *
  */
 
-public class JUnit_Serie extends JUnit_Test
+public class Test_Communication extends JUnit_Test
 {
 
 	private OutgoingOrderBuffer data;
 
-	@Override
 	@Before
 	public void setUp() throws Exception
 	{
-		super.setUp();
+		setUp("default");
 		data = container.getService(OutgoingOrderBuffer.class);
 		
 		// il est nécessaire que les communications ne soient pas simulées
-		assert !config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
+//		assert !config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 	}
 	
 	/**
@@ -55,7 +53,7 @@ public class JUnit_Serie extends JUnit_Test
 	 * @throws Exception
 	 */
 	@Test
-	public void test_ping() throws Exception
+	public void test_ping2() throws Exception
 	{
 		Thread.sleep(3000);
 	}

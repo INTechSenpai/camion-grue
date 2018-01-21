@@ -17,7 +17,9 @@ package senpai;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -284,7 +286,7 @@ public class Senpai
 		startAllThreads();
 		
 		/**
-		 * L'initialisation est bloquante (on attend le LL), donc on le f ait le plus tardivement possible
+		 * L'initialisation est bloquante (on attend le LL), donc on le fait le plus tardivement possible
 		 */
 		try {
 			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ENABLE))
@@ -389,12 +391,16 @@ public class Senpai
 		BufferedReader reader;
 		try
 		{
-			reader = new BufferedReader(new FileReader(filename));
-			String line;
-
-			while((line = reader.readLine()) != null)
-				System.out.println(line);
-			reader.close();
+			InputStream is = getClass().getClassLoader().getResourceAsStream(filename);
+			if(is != null)
+			{
+				reader = new BufferedReader(new InputStreamReader(is));
+				String line;
+	
+				while((line = reader.readLine()) != null)
+					System.out.println(line);
+				reader.close();
+			}
 		}
 		catch(IOException e)
 		{
