@@ -151,7 +151,7 @@ public class Communication implements Closeable
 				int taille = read();
 				if(taille == 0xFF) // trame d'information !
 				{
-					log.write("On ignore une trame d'information", Subject.COMM);
+//					log.write("On ignore une trame d'information", Subject.COMM);
 					while(read() != 0x00); // on lit jusqu'à tomber sur un caractère de fin de chaîne 
 				}
 				
