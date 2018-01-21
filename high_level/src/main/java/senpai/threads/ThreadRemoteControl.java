@@ -115,7 +115,7 @@ public class ThreadRemoteControl extends Thread
 		public void run()
 		{
 			Thread.currentThread().setName(getClass().getSimpleName());
-			log.write("Démarrage de " + Thread.currentThread().getName(), Subject.DUMMY);
+			log.write("Démarrage de " + Thread.currentThread().getName(), Subject.STATUS);
 			try
 			{
 				while(true)
@@ -135,7 +135,7 @@ public class ThreadRemoteControl extends Thread
 			}
 			catch(IOException | InterruptedException e)
 			{
-				log.write("Arrêt de " + Thread.currentThread().getName(), Subject.DUMMY);
+				log.write("Arrêt de " + Thread.currentThread().getName(), Subject.STATUS);
 				Thread.currentThread().interrupt();
 			}
 		}
@@ -155,7 +155,7 @@ public class ThreadRemoteControl extends Thread
 	public void run()
 	{
 		Thread.currentThread().setName(getClass().getSimpleName());
-		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.DUMMY);
+		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.STATUS);
 		try
 		{
 			ssocket = new ServerSocket(port);
@@ -177,7 +177,7 @@ public class ThreadRemoteControl extends Thread
 			/*
 			 * On arrête tous les threads de socket en cours
 			 */
-			log.write("Arrêt de " + Thread.currentThread().getName(), Subject.DUMMY);
+			log.write("Arrêt de " + Thread.currentThread().getName(), Subject.STATUS);
 			Thread.currentThread().interrupt();
 		}
 	}

@@ -394,8 +394,7 @@ public class OutgoingOrderBuffer implements Plottable
 			ping().attendStatus();
 		double latency = 1000. * (System.currentTimeMillis() - avant) / (2*nbEssais);
 		// on divise par 2 car il s'agit d'un aller-retour
-		System.out.println("Latence estimée : "+latency+" μs");		
-		log.write("Latence estimée : "+latency+" μs", latency >= 200 ? Severity.CRITICAL : (latency >= 50 ? Severity.WARNING : Severity.INFO), Subject.COMM);
+		log.write("Latence estimée : "+latency+" μs", latency >= 500 ? Severity.CRITICAL : (latency >= 300 ? Severity.WARNING : Severity.INFO), Subject.COMM);
 	}
 
 	@Override

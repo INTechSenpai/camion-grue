@@ -53,7 +53,7 @@ public class ThreadUpdatePathfinding extends Thread
 	public void run()
 	{
 		Thread.currentThread().setName(getClass().getSimpleName());
-		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.DUMMY);
+		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.STATUS);
 		List<Obstacle> newObs = new ArrayList<Obstacle>();
 		List<Obstacle> oldObs = new ArrayList<Obstacle>();
 		
@@ -106,12 +106,12 @@ public class ThreadUpdatePathfinding extends Thread
 		}
 		catch(InterruptedException e)
 		{
-			log.write("Arrêt de " + Thread.currentThread().getName(), Subject.DUMMY);
+			log.write("Arrêt de " + Thread.currentThread().getName(), Subject.STATUS);
 			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)
 		{
-			log.write("Exception inattendue dans " + Thread.currentThread().getName() + " : " + e, Severity.CRITICAL, Subject.DUMMY);
+			log.write("Exception inattendue dans " + Thread.currentThread().getName() + " : " + e, Severity.CRITICAL, Subject.STATUS);
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
 /*			try

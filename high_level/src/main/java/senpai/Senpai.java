@@ -129,7 +129,7 @@ public class Senpai
 			for(ThreadName n : ThreadName.values())
 			{
 				try {
-					log.write("Attente de "+n, Severity.INFO, Subject.DUMMY);
+					log.write("Attente de "+n, Severity.INFO, Subject.STATUS);
 					injector.getService(n.c).join(1000); // on attend un peu que le thread
 														// s'arrête
 				}
@@ -142,7 +142,7 @@ public class Senpai
 			Thread.sleep(100);
 			for(ThreadName n : ThreadName.values())
 				if(injector.getService(n.c).isAlive())
-					log.write(n.c.getSimpleName() + " encore vivant !", Severity.CRITICAL, Subject.DUMMY);
+					log.write(n.c.getSimpleName() + " encore vivant !", Severity.CRITICAL, Subject.STATUS);
 	
 			if(config.getBoolean(ConfigInfoSenpai.REMOTE_CONTROL))
 				injector.getService(ThreadRemoteControl.class).interrupt();
@@ -226,7 +226,7 @@ public class Senpai
 				s2 = in2.readLine();
 
 			int index2 = s2.indexOf(" ");
-			log.write("Version : " + s.substring(0, index) + " on " + s2.substring(index2 + 1) + " - [" + s.substring(index + 1) + "]", Subject.DUMMY);
+			log.write("Version : " + s.substring(0, index) + " on " + s2.substring(index2 + 1) + " - [" + s.substring(index + 1) + "]", Subject.STATUS);
 			in2.close();
 		}
 		catch(IOException e1)
@@ -237,9 +237,9 @@ public class Senpai
 		/**
 		 * Infos diverses
 		 */
-		log.write("Système : " + System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty("os.arch"), Subject.DUMMY);
-		log.write("Java : " + System.getProperty("java.vendor") + " " + System.getProperty("java.version") + ", mémoire max : " + Math.round(100. * Runtime.getRuntime().maxMemory() / (1024. * 1024. * 1024.)) / 100. + "G, coeurs : " + Runtime.getRuntime().availableProcessors(), Subject.DUMMY);
-		log.write("Date : " + new SimpleDateFormat("E dd/MM à HH:mm").format(new Date()), Subject.DUMMY);
+		log.write("Système : " + System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty("os.arch"), Subject.STATUS);
+		log.write("Java : " + System.getProperty("java.vendor") + " " + System.getProperty("java.version") + ", mémoire max : " + Math.round(100. * Runtime.getRuntime().maxMemory() / (1024. * 1024. * 1024.)) / 100. + "G, coeurs : " + Runtime.getRuntime().availableProcessors(), Subject.STATUS);
+		log.write("Date : " + new SimpleDateFormat("E dd/MM à HH:mm").format(new Date()), Subject.STATUS);
 
 		assert checkAssert();
 		
@@ -312,7 +312,7 @@ public class Senpai
 				injector.getService(OutgoingOrderBuffer.class).checkLatence();
 			}
 			else
-				log.write("COMMUNICATION SIMULÉE !", Severity.CRITICAL, Subject.DUMMY);						
+				log.write("COMMUNICATION SIMULÉE !", Severity.CRITICAL, Subject.STATUS);						
 		} catch (InjectorException e) {
 			assert false;
 			e.printStackTrace();
@@ -321,7 +321,7 @@ public class Senpai
 
 	private boolean checkAssert()
 	{
-		log.write("Assertions vérifiées -- à ne pas utiliser en match !", Severity.CRITICAL, Subject.DUMMY);
+		log.write("Assertions vérifiées -- à ne pas utiliser en match !", Severity.CRITICAL, Subject.STATUS);
 		return true;
 	}
 
@@ -359,7 +359,7 @@ public class Senpai
 			}
 			catch(InjectorException | IllegalThreadStateException e)
 			{
-				log.write("Erreur lors de la création de thread " + n + " : " + e, Severity.CRITICAL, Subject.DUMMY);
+				log.write("Erreur lors de la création de thread " + n + " : " + e, Severity.CRITICAL, Subject.STATUS);
 				e.printStackTrace();
 				e.printStackTrace(log.getPrintWriter());
 			}

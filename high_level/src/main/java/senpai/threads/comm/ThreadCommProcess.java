@@ -64,7 +64,7 @@ public class ThreadCommProcess extends Thread
 	public void run()
 	{
 		Thread.currentThread().setName(getClass().getSimpleName());
-		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.DUMMY);
+		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.STATUS);
 
 		nbCapteurs = CapteursRobot.values().length;
 		try
@@ -257,12 +257,12 @@ public class ThreadCommProcess extends Thread
 		}
 		catch(InterruptedException e)
 		{
-			log.write("Arrêt de " + Thread.currentThread().getName(), Subject.DUMMY);
+			log.write("Arrêt de " + Thread.currentThread().getName(), Subject.STATUS);
 			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)
 		{
-			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, Subject.DUMMY);
+			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, Subject.STATUS);
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
 			Thread.currentThread().interrupt();

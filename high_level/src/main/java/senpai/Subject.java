@@ -24,6 +24,7 @@ import pfg.graphic.log.LogCategory;
 
 public enum Subject implements LogCategory
 {
+	STATUS,
 	DUMMY,
 	CAPTEURS,
 	CORRECTION,

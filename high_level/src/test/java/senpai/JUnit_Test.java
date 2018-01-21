@@ -58,7 +58,7 @@ public abstract class JUnit_Test
 		config = container.getService(Config.class);
 		timeoutAffichage = config.getLong(ConfigInfoSenpai.AFFICHAGE_TIMEOUT);
 		log = container.getService(Log.class);		
-		log.write("Test unitaire : " + testName.getMethodName(), Subject.DUMMY);
+		log.write("Test unitaire : " + testName.getMethodName(), Subject.STATUS);
 /*		synchronized(config)
 		{
 			config.set(ConfigInfo.MATCH_DEMARRE, true);

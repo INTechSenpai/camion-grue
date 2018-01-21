@@ -22,6 +22,8 @@ import java.net.SocketException;
 import pfg.config.Config;
 import pfg.graphic.log.Log;
 import senpai.ConfigInfoSenpai;
+import senpai.Severity;
+import senpai.Subject;
 import senpai.comm.CommProtocol.Id;
 
 /**
@@ -60,6 +62,7 @@ public class Communication implements Closeable
 			assert false;
 		
 		medium.initialize(config);
+		log.write("Communication avec le LL établie !", Subject.COMM);
 	}
 
 
@@ -107,7 +110,7 @@ public class Communication implements Closeable
 		// série fermée normalement
 		if(closed)
 			return;
-		
+
 		boolean error;
 		do {
 			error = false;
@@ -140,25 +143,36 @@ public class Communication implements Closeable
 				int k = read();
 				
 				assert k == 0xFF : "Mauvais entête de paquet : "+k;
+				if(k != 0xFF) // probablement pas un début de trame
+					continue;
 				
 				int origineInt = read();
 
 				int taille = read();
 				if(taille == 0xFF) // trame d'information !
+				{
+					log.write("On ignore une trame d'information", Subject.COMM);
 					while(read() != 0x00); // on lit jusqu'à tomber sur un caractère de fin de chaîne 
+				}
 				
 				else
-				{
-					Id origine = Id.LUT[origineInt];
-					assert origine != null : "ID inconnu ! "+origineInt;
-					
-					origine.answerReceived();
-					
+				{	
 					assert taille >= 0 && taille <= 254 : "Le message reçu a un mauvais champ \"length\" : "+taille;
 					int[] message = new int[taille];
 					for(int i = 0; i < taille; i++)
 						message[i] = read();
-					
+
+					Id origine = Id.LUT[origineInt];
+					assert origine != null : "ID inconnu : "+origineInt+", data : "+message;
+
+					if(origine == null)
+					{
+						log.write("Un ordre d'ID inconnu a été ignoré : "+origineInt+", data = "+message, Severity.WARNING, Subject.COMM);
+						continue;
+					}
+
+					origine.answerReceived();
+
 					return new Paquet(message, origine);
 				}
 			} catch(SocketException e)
