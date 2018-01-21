@@ -35,7 +35,7 @@ public:
 		*	################################################## */
 
 		// Ordres � r�ponse imm�diate
-		immediateOrderList[0x80] = &Ping::Instance();
+		immediateOrderList[0x00] = &Ping::Instance();
 
 		// Ordres longs
 //		longOrderList[0x00] = &RienL::Instance();
