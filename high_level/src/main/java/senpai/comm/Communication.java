@@ -137,35 +137,30 @@ public class Communication implements Closeable
 			assert input != null && output != null;
 
 			try {
-				int k = input.read();
-				if(k == -1)
-					throw new IOException("EOF de l'input de communication");
+				int k = read();
 				
 				assert k == 0xFF : "Mauvais entête de paquet : "+k;
 				
-				int origineInt = input.read();
-				if(origineInt == -1)
-					throw new IOException("EOF de l'input de communication");
+				int origineInt = read();
 
-				Id origine = Id.LUT[origineInt];
-				assert origine != null : "ID inconnu ! "+origineInt;
+				int taille = read();
+				if(taille == 0xFF) // trame d'information !
+					while(read() != 0x00); // on lit jusqu'à tomber sur un caractère de fin de chaîne 
 				
-				origine.answerReceived();
-				
-				int taille = input.read();
-				if(taille == -1)
-					throw new IOException("EOF de l'input de communication");
-				
-				assert taille >= 0 && taille <= 254 : "Le message reçu a un mauvais champ \"length\" : "+taille;
-				int[] message = new int[taille];
-				for(int i = 0; i < taille; i++)
+				else
 				{
-					message[i] = input.read();
-					if(message[i] == -1)
-						throw new IOException("EOF de l'input de communication");
+					Id origine = Id.LUT[origineInt];
+					assert origine != null : "ID inconnu ! "+origineInt;
+					
+					origine.answerReceived();
+					
+					assert taille >= 0 && taille <= 254 : "Le message reçu a un mauvais champ \"length\" : "+taille;
+					int[] message = new int[taille];
+					for(int i = 0; i < taille; i++)
+						message[i] = read();
+					
+					return new Paquet(message, origine);
 				}
-				
-				return new Paquet(message, origine);
 			} catch(SocketException e)
 			{
 				// communication fermé
@@ -176,6 +171,14 @@ public class Communication implements Closeable
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	private int read() throws IOException
+	{
+		int out = input.read();
+		if(out == -1)
+			throw new IOException("EOF de l'input de communication");
+		return out;
 	}
 
 	private synchronized void checkDisconnection() throws InterruptedException
