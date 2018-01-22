@@ -1639,6 +1639,36 @@ Source: http://www2.produktinfo.conrad.com/datenblaetter/700000-724999/705152-da
 </package3d>
 </packages3d>
 </library>
+<library name="led" urn="urn:adsk.eagle:library:259">
+<description>&lt;b&gt;LEDs&lt;/b&gt;&lt;p&gt;
+&lt;author&gt;Created by librarian@cadsoft.de&lt;/author&gt;&lt;br&gt;
+Extended by Federico Battaglin &lt;author&gt;&amp;lt;federico.rd@fdpinternational.com&amp;gt;&lt;/author&gt; with DUOLED</description>
+<packages>
+<package name="LED5MM" urn="urn:adsk.eagle:footprint:15655/1" library_version="2">
+<description>&lt;B&gt;LED&lt;/B&gt;&lt;p&gt;
+5 mm, round</description>
+<wire x1="2.54" y1="-1.905" x2="2.54" y2="1.905" width="0.2032" layer="21"/>
+<wire x1="2.54" y1="-1.905" x2="2.54" y2="1.905" width="0.254" layer="21" curve="-286.260205"/>
+<wire x1="-1.143" y1="0" x2="0" y2="1.143" width="0.1524" layer="51" curve="-90"/>
+<wire x1="0" y1="-1.143" x2="1.143" y2="0" width="0.1524" layer="51" curve="90"/>
+<wire x1="-1.651" y1="0" x2="0" y2="1.651" width="0.1524" layer="51" curve="-90"/>
+<wire x1="0" y1="-1.651" x2="1.651" y2="0" width="0.1524" layer="51" curve="90"/>
+<wire x1="-2.159" y1="0" x2="0" y2="2.159" width="0.1524" layer="51" curve="-90"/>
+<wire x1="0" y1="-2.159" x2="2.159" y2="0" width="0.1524" layer="51" curve="90"/>
+<circle x="0" y="0" radius="2.54" width="0.1524" layer="21"/>
+<pad name="A" x="-1.27" y="0" drill="0.8128" shape="octagon"/>
+<pad name="K" x="1.27" y="0" drill="0.8128" shape="octagon"/>
+<text x="3.175" y="0.5334" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="3.2004" y="-1.8034" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
+</package>
+</packages>
+<packages3d>
+<package3d name="LED5MM" urn="urn:adsk.eagle:package:15799/2" type="model" library_version="2">
+<description>LED
+5 mm, round</description>
+</package3d>
+</packages3d>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -1903,6 +1933,25 @@ design rules under a new name.</description>
 </element>
 <element name="R23" library="resistor" library_urn="urn:adsk.eagle:library:348" package="R0805" package3d_urn="urn:adsk.eagle:package:26059/1" value="270" x="-78" y="-182"/>
 <element name="R24" library="resistor" library_urn="urn:adsk.eagle:library:348" package="R0805" package3d_urn="urn:adsk.eagle:package:26059/1" value="0" x="-96" y="-189"/>
+<element name="LED1" library="led" library_urn="urn:adsk.eagle:library:259" package="LED5MM" package3d_urn="urn:adsk.eagle:package:15799/2" value="orange" x="-90" y="-199"/>
+<element name="LED2" library="led" library_urn="urn:adsk.eagle:library:259" package="LED5MM" package3d_urn="urn:adsk.eagle:package:15799/2" value="orange" x="-90" y="-213"/>
+<element name="LED3" library="led" library_urn="urn:adsk.eagle:library:259" package="LED5MM" package3d_urn="urn:adsk.eagle:package:15799/2" value="orange" x="-90" y="-227"/>
+<element name="LED4" library="led" library_urn="urn:adsk.eagle:library:259" package="LED5MM" package3d_urn="urn:adsk.eagle:package:15799/2" value="jaune" x="-90" y="-241"/>
+<element name="LED5" library="led" library_urn="urn:adsk.eagle:library:259" package="LED5MM" package3d_urn="urn:adsk.eagle:package:15799/2" value="jaune" x="-90" y="-255"/>
+<element name="LED6" library="led" library_urn="urn:adsk.eagle:library:259" package="LED5MM" package3d_urn="urn:adsk.eagle:package:15799/2" value="jaune" x="-90" y="-269"/>
+<element name="LED7" library="led" library_urn="urn:adsk.eagle:library:259" package="LED5MM" package3d_urn="urn:adsk.eagle:package:15799/2" value="vert" x="-90" y="-283"/>
+<element name="LED8" library="led" library_urn="urn:adsk.eagle:library:259" package="LED5MM" package3d_urn="urn:adsk.eagle:package:15799/2" value="vert" x="-90" y="-297"/>
+<element name="LED9" library="led" library_urn="urn:adsk.eagle:library:259" package="LED5MM" package3d_urn="urn:adsk.eagle:package:15799/2" value="vert" x="-90" y="-311"/>
+<element name="LED10" library="led" library_urn="urn:adsk.eagle:library:259" package="LED5MM" package3d_urn="urn:adsk.eagle:package:15799/2" value="bleu" x="-90" y="-325"/>
+<element name="LED11" library="led" library_urn="urn:adsk.eagle:library:259" package="LED5MM" package3d_urn="urn:adsk.eagle:package:15799/2" value="bleu" x="-90" y="-339"/>
+<element name="LED12" library="led" library_urn="urn:adsk.eagle:library:259" package="LED5MM" package3d_urn="urn:adsk.eagle:package:15799/2" value="bleu" x="-90" y="-353"/>
+<element name="LED13" library="led" library_urn="urn:adsk.eagle:library:259" package="LED5MM" package3d_urn="urn:adsk.eagle:package:15799/2" value="orange" x="-90" y="-367"/>
+<element name="LED14" library="led" library_urn="urn:adsk.eagle:library:259" package="LED5MM" package3d_urn="urn:adsk.eagle:package:15799/2" value="orange" x="-90" y="-381"/>
+<element name="LED15" library="led" library_urn="urn:adsk.eagle:library:259" package="LED5MM" package3d_urn="urn:adsk.eagle:package:15799/2" value="orange" x="-90" y="-395"/>
+<element name="LED16" library="led" library_urn="urn:adsk.eagle:library:259" package="LED5MM" package3d_urn="urn:adsk.eagle:package:15799/2" value="orange" x="-90" y="-409"/>
+<element name="LED17" library="led" library_urn="urn:adsk.eagle:library:259" package="LED5MM" package3d_urn="urn:adsk.eagle:package:15799/2" value="orange" x="-90" y="-423"/>
+<element name="LED18" library="led" library_urn="urn:adsk.eagle:library:259" package="LED5MM" package3d_urn="urn:adsk.eagle:package:15799/2" value="orange" x="-90" y="-437"/>
+<element name="LED19" library="led" library_urn="urn:adsk.eagle:library:259" package="LED5MM" package3d_urn="urn:adsk.eagle:package:15799/2" value="orange" x="-90" y="-451"/>
 </elements>
 <signals>
 <signal name="GND">
@@ -1921,6 +1970,18 @@ design rules under a new name.</description>
 <contactref element="LIPO" pad="1"/>
 <contactref element="DC2" pad="2"/>
 <contactref element="C2" pad="1"/>
+<contactref element="LED1" pad="K"/>
+<contactref element="LED2" pad="K"/>
+<contactref element="LED3" pad="K"/>
+<contactref element="LED4" pad="K"/>
+<contactref element="LED5" pad="K"/>
+<contactref element="LED6" pad="K"/>
+<contactref element="LED7" pad="K"/>
+<contactref element="LED8" pad="K"/>
+<contactref element="LED9" pad="K"/>
+<contactref element="LED10" pad="K"/>
+<contactref element="LED11" pad="K"/>
+<contactref element="LED12" pad="K"/>
 <wire x1="-87" y1="-92" x2="-96.95" y2="-104" width="0" layer="19" extent="1-1"/>
 <wire x1="-90.35" y1="-40" x2="-87" y2="-92" width="0" layer="19" extent="1-1"/>
 <wire x1="-86.965" y1="-22.9" x2="-90.35" y2="-40" width="0" layer="19" extent="1-1"/>
@@ -1935,6 +1996,18 @@ design rules under a new name.</description>
 <wire x1="-34.81" y1="29.04" x2="-39.89" y2="26.5" width="0" layer="19" extent="1-1"/>
 <wire x1="-29.73" y1="29.04" x2="-34.81" y2="29.04" width="0" layer="19" extent="1-1"/>
 <wire x1="-22.11" y1="26.5" x2="-29.73" y2="29.04" width="0" layer="19" extent="1-1"/>
+<wire x1="-88.73" y1="-199" x2="-96.95" y2="-104" width="0" layer="19" extent="1-1"/>
+<wire x1="-88.73" y1="-213" x2="-88.73" y2="-199" width="0" layer="19" extent="1-1"/>
+<wire x1="-88.73" y1="-227" x2="-88.73" y2="-213" width="0" layer="19" extent="1-1"/>
+<wire x1="-88.73" y1="-241" x2="-88.73" y2="-227" width="0" layer="19" extent="1-1"/>
+<wire x1="-88.73" y1="-255" x2="-88.73" y2="-241" width="0" layer="19" extent="1-1"/>
+<wire x1="-88.73" y1="-269" x2="-88.73" y2="-255" width="0" layer="19" extent="1-1"/>
+<wire x1="-88.73" y1="-283" x2="-88.73" y2="-269" width="0" layer="19" extent="1-1"/>
+<wire x1="-88.73" y1="-297" x2="-88.73" y2="-283" width="0" layer="19" extent="1-1"/>
+<wire x1="-88.73" y1="-311" x2="-88.73" y2="-297" width="0" layer="19" extent="1-1"/>
+<wire x1="-88.73" y1="-325" x2="-88.73" y2="-311" width="0" layer="19" extent="1-1"/>
+<wire x1="-88.73" y1="-339" x2="-88.73" y2="-325" width="0" layer="19" extent="1-1"/>
+<wire x1="-88.73" y1="-353" x2="-88.73" y2="-339" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="+12V">
 <contactref element="DC1" pad="1"/>
@@ -2018,49 +2091,15 @@ design rules under a new name.</description>
 <contactref element="R2" pad="1"/>
 <wire x1="-94.05" y1="-69.1" x2="-96.95" y2="-81" width="0" layer="19" extent="1-1"/>
 </signal>
-<signal name="DEL_CTRL_1">
-<contactref element="R1" pad="2"/>
-<contactref element="R7" pad="2"/>
-<contactref element="R9" pad="2"/>
-<contactref element="R11" pad="2"/>
-<contactref element="R13" pad="2"/>
-<contactref element="R15" pad="2"/>
-<contactref element="R17" pad="2"/>
-<contactref element="R19" pad="2"/>
-<contactref element="R21" pad="2"/>
+<signal name="DEL_BLEU_3_PWM">
 <contactref element="R23" pad="2"/>
-<wire x1="-77.05" y1="-182" x2="-77.05" y2="-175" width="0" layer="19" extent="1-1"/>
-<wire x1="-78.05" y1="-167" x2="-77.05" y2="-175" width="0" layer="19" extent="1-1"/>
-<wire x1="-89.05" y1="-182" x2="-77.05" y2="-182" width="0" layer="19" extent="1-1"/>
-<wire x1="-89.05" y1="-175" x2="-89.05" y2="-182" width="0" layer="19" extent="1-1"/>
-<wire x1="-90.05" y1="-167" x2="-89.05" y2="-175" width="0" layer="19" extent="1-1"/>
-<wire x1="-90.05" y1="-153" x2="-90.05" y2="-167" width="0" layer="19" extent="1-1"/>
-<wire x1="-95.05" y1="-153" x2="-90.05" y2="-153" width="0" layer="19" extent="1-1"/>
-<wire x1="-89.05" y1="-146" x2="-90.05" y2="-153" width="0" layer="19" extent="1-1"/>
-<wire x1="-95.05" y1="-75" x2="-89.05" y2="-146" width="0" layer="19" extent="1-1"/>
+<contactref element="RPI" pad="40"/>
+<wire x1="-77.05" y1="-182" x2="-22.11" y2="29.04" width="0" layer="19" extent="1-1"/>
 </signal>
-<signal name="DEL_CH_1">
-<contactref element="R2" pad="2"/>
-<contactref element="R6" pad="2"/>
-<contactref element="R8" pad="2"/>
-<contactref element="R10" pad="2"/>
-<contactref element="R12" pad="2"/>
-<contactref element="R14" pad="2"/>
-<contactref element="R16" pad="2"/>
-<contactref element="R18" pad="2"/>
-<contactref element="R20" pad="2"/>
-<contactref element="R22" pad="2"/>
+<signal name="DEL_BLEU_3">
 <contactref element="R24" pad="2"/>
-<wire x1="-83.05" y1="-175" x2="-84.05" y2="-167" width="0" layer="19" extent="1-1"/>
-<wire x1="-83.05" y1="-182" x2="-83.05" y2="-175" width="0" layer="19" extent="1-1"/>
-<wire x1="-95.05" y1="-182" x2="-83.05" y2="-182" width="0" layer="19" extent="1-1"/>
-<wire x1="-95.05" y1="-189" x2="-95.05" y2="-182" width="0" layer="19" extent="1-1"/>
-<wire x1="-95.05" y1="-175" x2="-95.05" y2="-182" width="0" layer="19" extent="1-1"/>
-<wire x1="-85.05" y1="-153" x2="-84.05" y2="-167" width="0" layer="19" extent="1-1"/>
-<wire x1="-83.05" y1="-146" x2="-85.05" y2="-153" width="0" layer="19" extent="1-1"/>
-<wire x1="-95.05" y1="-146" x2="-83.05" y2="-146" width="0" layer="19" extent="1-1"/>
-<wire x1="-95.05" y1="-132" x2="-95.05" y2="-146" width="0" layer="19" extent="1-1"/>
-<wire x1="-95.05" y1="-81" x2="-95.05" y2="-132" width="0" layer="19" extent="1-1"/>
+<contactref element="LED12" pad="A"/>
+<wire x1="-95.05" y1="-189" x2="-91.27" y2="-353" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$6">
 <contactref element="T2" pad="B"/>
@@ -2172,47 +2211,115 @@ design rules under a new name.</description>
 <contactref element="R24" pad="1"/>
 <wire x1="-96.95" y1="-189" x2="-84.05" y2="-161.1" width="0" layer="19" extent="1-1"/>
 </signal>
-<signal name="DEL_CTRL_2">
+<signal name="DEL_ORANGE_2_PWM">
 <contactref element="R3" pad="2"/>
-</signal>
-<signal name="DEL_CH_2">
-<contactref element="R4" pad="2"/>
-</signal>
-<signal name="DEL_CTRL_3">
-<contactref element="R5" pad="2"/>
-</signal>
-<signal name="N$28">
-<contactref element="RPI" pad="11"/>
-</signal>
-<signal name="N$29">
 <contactref element="RPI" pad="13"/>
+<wire x1="-55.13" y1="26.5" x2="-90.05" y2="-111" width="0" layer="19" extent="1-1"/>
 </signal>
-<signal name="N$30">
+<signal name="DEL_ORANGE_2">
+<contactref element="R4" pad="2"/>
+<contactref element="LED2" pad="A"/>
+<wire x1="-91.27" y1="-213" x2="-95.05" y2="-118" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="DEL_ORANGE_3_PWM">
+<contactref element="R5" pad="2"/>
 <contactref element="RPI" pad="15"/>
+<wire x1="-52.59" y1="26.5" x2="-90.05" y2="-125" width="0" layer="19" extent="1-1"/>
 </signal>
-<signal name="N$31">
-<contactref element="RPI" pad="29"/>
+<signal name="DEL_ORANGE_1_PWM">
+<contactref element="R1" pad="2"/>
+<contactref element="RPI" pad="11"/>
+<wire x1="-57.67" y1="26.5" x2="-95.05" y2="-75" width="0" layer="19" extent="1-1"/>
 </signal>
-<signal name="N$32">
-<contactref element="RPI" pad="31"/>
+<signal name="DEL_ORANGE_1">
+<contactref element="R2" pad="2"/>
+<contactref element="LED1" pad="A"/>
+<wire x1="-91.27" y1="-199" x2="-95.05" y2="-81" width="0" layer="19" extent="1-1"/>
 </signal>
-<signal name="N$33">
-<contactref element="RPI" pad="33"/>
-</signal>
-<signal name="N$34">
-<contactref element="RPI" pad="35"/>
-</signal>
-<signal name="N$35">
-<contactref element="RPI" pad="37"/>
-</signal>
-<signal name="N$36">
+<signal name="DEL_JAUNE_1_PWM">
+<contactref element="R13" pad="2"/>
 <contactref element="RPI" pad="19"/>
+<wire x1="-90.05" y1="-167" x2="-47.51" y2="26.5" width="0" layer="19" extent="1-1"/>
 </signal>
-<signal name="N$37">
+<signal name="DEL_JAUNE_1">
+<contactref element="R14" pad="2"/>
+<contactref element="LED4" pad="A"/>
+<contactref element="LED5" pad="A"/>
+<contactref element="LED6" pad="A"/>
+<wire x1="-91.27" y1="-241" x2="-84.05" y2="-167" width="0" layer="19" extent="1-1"/>
+<wire x1="-91.27" y1="-255" x2="-91.27" y2="-241" width="0" layer="19" extent="1-1"/>
+<wire x1="-91.27" y1="-269" x2="-91.27" y2="-255" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="DEL_JAUNE_2_PWM">
+<contactref element="R15" pad="2"/>
 <contactref element="RPI" pad="21"/>
+<wire x1="-44.97" y1="26.5" x2="-78.05" y2="-167" width="0" layer="19" extent="1-1"/>
 </signal>
-<signal name="N$38">
+<signal name="DEL_JAUNE_2">
+<contactref element="R16" pad="2"/>
+</signal>
+<signal name="DEL_JAUNE_3_PWM">
+<contactref element="R17" pad="2"/>
 <contactref element="RPI" pad="23"/>
+<wire x1="-89.05" y1="-175" x2="-42.43" y2="26.5" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="DEL_JAUNE_3">
+<contactref element="R18" pad="2"/>
+</signal>
+<signal name="DEL_VERT_1_PWM">
+<contactref element="R7" pad="2"/>
+<contactref element="RPI" pad="29"/>
+<wire x1="-34.81" y1="26.5" x2="-95.05" y2="-153" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="DEL_VERT_1">
+<contactref element="R8" pad="2"/>
+<contactref element="LED7" pad="A"/>
+<wire x1="-91.27" y1="-283" x2="-85.05" y2="-153" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="DEL_VERT_2_PWM">
+<contactref element="R9" pad="2"/>
+<contactref element="RPI" pad="31"/>
+<wire x1="-32.27" y1="26.5" x2="-90.05" y2="-153" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="DEL_VERT_2">
+<contactref element="R10" pad="2"/>
+<contactref element="LED8" pad="A"/>
+<wire x1="-91.27" y1="-297" x2="-95.05" y2="-146" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="DEL_VERT_3_PWM">
+<contactref element="R11" pad="2"/>
+<contactref element="RPI" pad="33"/>
+<wire x1="-29.73" y1="26.5" x2="-89.05" y2="-146" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="DEL_VERT_3">
+<contactref element="R12" pad="2"/>
+<contactref element="LED9" pad="A"/>
+<wire x1="-91.27" y1="-311" x2="-83.05" y2="-146" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="DEL_BLEU_1_PWM">
+<contactref element="R19" pad="2"/>
+<contactref element="RPI" pad="35"/>
+<wire x1="-27.19" y1="26.5" x2="-77.05" y2="-175" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="DEL_BLEU_1">
+<contactref element="R20" pad="2"/>
+<contactref element="LED10" pad="A"/>
+<wire x1="-95.05" y1="-182" x2="-91.27" y2="-325" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="DEL_BLEU_2_PWM">
+<contactref element="R21" pad="2"/>
+<contactref element="RPI" pad="37"/>
+<wire x1="-24.65" y1="26.5" x2="-89.05" y2="-182" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="DEL_BLEU_2">
+<contactref element="R22" pad="2"/>
+<contactref element="LED11" pad="A"/>
+<wire x1="-83.05" y1="-182" x2="-91.27" y2="-339" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="DEL_ORANGE_3">
+<contactref element="LED3" pad="A"/>
+<contactref element="R6" pad="2"/>
+<wire x1="-91.27" y1="-227" x2="-95.05" y2="-132" width="0" layer="19" extent="1-1"/>
 </signal>
 </signals>
 </board>
