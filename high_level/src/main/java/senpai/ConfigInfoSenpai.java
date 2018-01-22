@@ -30,7 +30,8 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	AFFICHAGE_TIMEOUT(5000), // timeout sur l'affichage (0 pour infini)
 	REMOTE_CONTROL_PORT_NUMBER(13371), // port de la télécommande
 	REMOTE_CONTROL(false), // active ou non le contrôle à distance
-
+	CHECK_LATENCY(false), // estime la latence de la communication
+	
 	/**
 	 * Infos sur le robot
 	 */

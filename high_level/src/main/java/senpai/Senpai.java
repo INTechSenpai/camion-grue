@@ -309,7 +309,8 @@ public class Senpai
 			if(!simuleComm)
 			{
 				injector.getService(Communication.class).initialize();
-				injector.getService(OutgoingOrderBuffer.class).checkLatence();
+				if(config.getBoolean(ConfigInfoSenpai.CHECK_LATENCY))
+					injector.getService(OutgoingOrderBuffer.class).checkLatence();
 			}
 			else
 				log.write("COMMUNICATION SIMULÉE !", Severity.CRITICAL, Subject.STATUS);						
