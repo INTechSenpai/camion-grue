@@ -31,12 +31,12 @@ public class Ticket
 {
 	private final BlockingQueue<InOrder> ordre = new ArrayBlockingQueue<InOrder>(1); // seulement un élément !
 
-	public synchronized boolean isEmpty()
+	public boolean isEmpty()
 	{
 		return ordre.isEmpty();
 	}
 
-	public synchronized void set(InOrder order)
+	public void set(InOrder order)
 	{
 		assert ordre.isEmpty();
 		ordre.offer(order);
@@ -48,7 +48,7 @@ public class Ticket
 	 * @return
 	 * @throws InterruptedException
 	 */
-	public synchronized InOrder attendStatus() throws InterruptedException
+	public InOrder attendStatus() throws InterruptedException
 	{
 		return ordre.take();
 	}
@@ -58,7 +58,7 @@ public class Ticket
 	 * @param timeout
 	 * @throws InterruptedException
 	 */
-	public synchronized void attendStatus(long timeout) throws InterruptedException
+	public void attendStatus(long timeout) throws InterruptedException
 	{
 		ordre.poll(Math.max(0,timeout), TimeUnit.MILLISECONDS);
 	}

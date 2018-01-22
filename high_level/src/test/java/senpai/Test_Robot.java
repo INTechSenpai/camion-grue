@@ -12,7 +12,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package tests.lowlevel;
+package senpai;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -27,7 +27,6 @@ import senpai.robot.Robot;
 import senpai.robot.Speed;
 import senpai.ConfigInfoSenpai;
 import senpai.Subject;
-import tests.JUnit_Test;
 
 /**
  * Tests unitaires des trajectoires et des actionneurs
@@ -36,7 +35,7 @@ import tests.JUnit_Test;
  *
  */
 
-public class JUnit_Robot extends JUnit_Test
+public class Test_Robot extends JUnit_Test
 {
 
 	private Robot robot;
@@ -61,7 +60,7 @@ public class JUnit_Robot extends JUnit_Test
 		try
 		{
 			writer = new BufferedWriter(new FileWriter("liste-tests.txt"));
-			Method[] methodes = JUnit_Robot.class.getDeclaredMethods();
+			Method[] methodes = Test_Robot.class.getDeclaredMethods();
 			for(Method m : methodes)
 				if(m.isAnnotationPresent(Test.class))
 					writer.write("./run_junit.sh tests.lowlevel.JUnit_Robot#" + m.getName() + "\n");
@@ -88,11 +87,10 @@ public class JUnit_Robot extends JUnit_Test
 	/**
 	 * Pas un test
 	 */
-	@Override
 	@Before
 	public void setUp() throws Exception
 	{
-		super.setUp();
+		setUp("default");
 		
 		// il est nécessaire que les communications ne soient pas simulées
 		assert !config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
@@ -104,7 +102,7 @@ public class JUnit_Robot extends JUnit_Test
 //		pathcache = container.getService(PathCache.class);
 		data = container.getService(OutgoingOrderBuffer.class);
 		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
-		data.startStream(Id.SENSORS_CHANNEL);
+		data.startStream(Id.ODO_AND_SENSORS);
 		v = Speed.TEST;
 		log.write("Vitesse du robot : " + v.translationalSpeed * 1000, Subject.DUMMY);
 	}

@@ -12,9 +12,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package tests;
+package senpai;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 import org.junit.runner.JUnitCore;
@@ -25,7 +24,6 @@ import pfg.config.Config;
 import pfg.graphic.WindowFrame;
 import pfg.kraken.robot.Cinematique;
 import pfg.graphic.log.Log;
-import java.util.Arrays;
 import org.junit.After;
 
 import senpai.robot.Robot;
@@ -52,16 +50,15 @@ public abstract class JUnit_Test
 	@Rule
 	public TestName testName = new TestName();
 
-	@Before
-	public void setUp() throws Exception
+	public void setUp(String... profiles) throws Exception
 	{
 		System.out.println("----- DÉBUT DU TEST " + testName.getMethodName() + " -----");
 
-		container = new Senpai("default", "test");
+		container = new Senpai(profiles);
 		config = container.getService(Config.class);
 		timeoutAffichage = config.getLong(ConfigInfoSenpai.AFFICHAGE_TIMEOUT);
 		log = container.getService(Log.class);		
-		log.write("Test unitaire : " + testName.getMethodName(), Subject.DUMMY);
+		log.write("Test unitaire : " + testName.getMethodName(), Subject.STATUS);
 /*		synchronized(config)
 		{
 			config.set(ConfigInfo.MATCH_DEMARRE, true);
@@ -78,10 +75,14 @@ public abstract class JUnit_Test
 	@After
 	public void tearDown() throws Exception
 	{
-		WindowFrame f = container.getExistingService(WindowFrame.class);
-		if(f != null)
-			f.waitUntilExit(timeoutAffichage);
-		container.destructor();
+		// s'il y a eu un problème lors de la création de Senpai, par exemple si la connexion avec le LL a échoué
+		if(container != null)
+		{
+			WindowFrame f = container.getExistingService(WindowFrame.class);
+			if(f != null)
+				f.waitUntilExit(timeoutAffichage);
+			container.destructor();
+		}
 	}
 
 	/**

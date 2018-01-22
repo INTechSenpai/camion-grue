@@ -18,10 +18,12 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
+import java.net.SocketException;
 import pfg.config.Config;
 import pfg.graphic.log.Log;
 import senpai.ConfigInfoSenpai;
+import senpai.Severity;
+import senpai.Subject;
 import senpai.comm.CommProtocol.Id;
 
 /**
@@ -60,6 +62,7 @@ public class Communication implements Closeable
 			assert false;
 		
 		medium.initialize(config);
+		log.write("Communication avec le LL établie !", Subject.COMM);
 	}
 
 
@@ -69,7 +72,6 @@ public class Communication implements Closeable
 	 */
 	public synchronized void initialize() throws InterruptedException
 	{
-		System.out.println("Initialisation communication");
 		medium.open(500);
 		input = medium.getInput();
 		output = medium.getOutput();
@@ -103,20 +105,16 @@ public class Communication implements Closeable
 	 * @throws UnexpectedClosedCommException
 	 * @throws InterruptedException 
 	 */
-	public synchronized void communiquer(Order o) throws InterruptedException
+	public void communiquer(Order o) throws InterruptedException
 	{
 		// série fermée normalement
 		if(closed)
 			return;
-		
+
 		boolean error;
 		do {
 			error = false;
-			if(medium.openIfClosed())
-			{
-				input = medium.getInput();
-				output = medium.getOutput();
-			}
+			checkDisconnection();
 			try
 			{
 				output.write(o.trame, 0, o.tailleTrame);
@@ -130,53 +128,80 @@ public class Communication implements Closeable
 		} while(error);
 	}
 
-	public synchronized Paquet readPaquet() throws InterruptedException
+	public Paquet readPaquet() throws InterruptedException
 	{
 		// série fermée définitivement
 		if(closed)
-			while (true)
-			    Thread.sleep(Long.MAX_VALUE);
+			throw new InterruptedException("Série fermée normalement");
 			
 		while(true)
 		{
-			if(medium.openIfClosed())
-			{
-				input = medium.getInput();
-				output = medium.getOutput();
-			}
-	
+			checkDisconnection();
+			assert input != null && output != null;
+
 			try {
-				int k = input.read();
-				if(k == -1)
-					throw new IOException("EOF de l'input de communication");
+				int k = read();
 				
 				assert k == 0xFF : "Mauvais entête de paquet : "+k;
+				if(k != 0xFF) // probablement pas un début de trame
+					continue;
 				
-				int origineInt = input.read();
-				if(origineInt == -1)
-					throw new IOException("EOF de l'input de communication");
+				int origineInt = read();
 
-				Id origine = Id.LUT[origineInt];
-				assert origine != null : "ID inconnu ! "+origineInt;
-				origine.answerReceived();
-				
-				int taille = input.read();
-				if(taille == -1)
-					throw new IOException("EOF de l'input de communication");
-				
-				assert taille >= 0 && taille <= 254 : "Le message reçu a un mauvais champ \"length\" : "+taille;
-				int[] message = new int[taille];
-				for(int i = 0; i < taille; i++)
+				int taille = read();
+				if(taille == 0xFF) // trame d'information !
 				{
-					message[i] = input.read();
-					if(message[i] == -1)
-						throw new IOException("EOF de l'input de communication");
+//					log.write("On ignore une trame d'information", Subject.COMM);
+					while(read() != 0x00); // on lit jusqu'à tomber sur un caractère de fin de chaîne 
 				}
 				
-				return new Paquet(message, origine);
+				else
+				{	
+					assert taille >= 0 && taille <= 254 : "Le message reçu a un mauvais champ \"length\" : "+taille;
+					int[] message = new int[taille];
+					for(int i = 0; i < taille; i++)
+						message[i] = read();
+
+					Id origine = Id.LUT[origineInt];
+					assert origine != null : "ID inconnu : "+origineInt+", data : "+message;
+
+					if(origine == null)
+					{
+						log.write("Un ordre d'ID inconnu a été ignoré : "+origineInt+", data = "+message, Severity.WARNING, Subject.COMM);
+						continue;
+					}
+
+					origine.answerReceived();
+
+					return new Paquet(message, origine);
+				}
+			} catch(SocketException e)
+			{
+				// communication fermé
+				if(closed)
+					throw new InterruptedException("Série fermée normalement");
+				e.printStackTrace(); // problème ?
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	private int read() throws IOException
+	{
+		int out = input.read();
+		if(out == -1)
+			throw new IOException("EOF de l'input de communication");
+		return out;
+	}
+
+	private synchronized void checkDisconnection() throws InterruptedException
+	{
+		if(medium.openIfClosed())
+		{
+			input = medium.getInput();
+			output = medium.getOutput();
+		}
+		assert input != null && output != null;		
 	}
 }

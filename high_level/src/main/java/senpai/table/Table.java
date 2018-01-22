@@ -47,7 +47,7 @@ public class Table
 	 * 
 	 * @param id
 	 */
-	public synchronized boolean setDone(GameElementNames id, EtatElement done)
+	public boolean setDone(GameElementNames id, EtatElement done)
 	{
 		long old_hash = etatTable;
 		etatTable |= (done.hash << (2 * id.ordinal()));

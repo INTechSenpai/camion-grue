@@ -12,7 +12,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package tests;
+package senpai;
 
 import java.lang.reflect.Field;
 import org.junit.Assert;
@@ -29,16 +29,15 @@ import senpai.table.EtatElement;
  *
  */
 
-public class JUnit_Table extends JUnit_Test
+public class Test_Table extends JUnit_Test
 {
 
 	private Table table;
 
-	@Override
 	@Before
 	public void setUp() throws Exception
 	{
-		super.setUp();
+		setUp("default");
 		table = container.getService(Table.class);
 	}
 

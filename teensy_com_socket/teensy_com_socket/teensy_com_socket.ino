@@ -6,6 +6,7 @@
 
 #include "Command.h"
 #include "CommunicationServer.h"
+#include "OrderMgr.h"
 
 #define START_ON_SERIAL 1
 
@@ -17,24 +18,11 @@ void setup()
 #endif
 }
 
+OrderMgr orderManager = OrderMgr();
 
 void loop() 
 {
-	Server.communicate();
-
-	if (Server.available())
-	{
-		Command command = Server.getLastCommand();
-		if (command.isValid())
-		{
-			Server.print(command);
-		}
-		else
-		{
-			Server.printf_err("Invalid command\n");
-		}
-	}
-
+  orderManager.execute();
 }
 
 

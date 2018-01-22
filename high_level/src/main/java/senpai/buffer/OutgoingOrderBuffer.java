@@ -63,52 +63,36 @@ public class OutgoingOrderBuffer implements Plottable
 	}
 	
 	private BlockingQueue<Order> buffer = new PriorityBlockingQueue<Order>(100, comparing(Order::getPriority, naturalOrder()));
-	
-	/**
-	 * Le buffer est-il vide?
-	 * 
-	 * @return
-	 */
-	public synchronized boolean isEmpty()
-	{
-		return buffer.isEmpty();
-	}
 
 	public Order take() throws InterruptedException
 	{
-		return buffer.take();
+		boolean restart;
+		Order o = null;
+		do {
+			if(o == null)
+				o = buffer.take();
+			
+			// si on attend encore la réponse, on ignore cet ordre
+			restart = !o.ordre.isSendPossible();
+			if(restart)
+			{
+				// on récupère le prochain TOUT DE SUITE. Pas de prochain ? Tant pis.
+				Order nextO = buffer.poll();
+				addToBuffer(o); // on remet l'ordre fautif plus loin
+				o = nextO;
+			}
+		} while(restart);
+		o.ordre.orderSent();
+		return o;
 	}
 	
-	/**
-	 * Retire un élément du buffer
-	 * 
-	 * @return
-	 */
-/*	public synchronized Order poll()
-	{
-		if(bufferTrajectoireCourbe.size() + bufferBassePriorite.size() > 10)
-			log.write("On n'arrive pas à envoyer les ordres assez vites (ordres TC en attente : " + bufferTrajectoireCourbe.size() + ", autres en attente : " + bufferBassePriorite.size() + ")", Severity.WARNING, Subject.COMM);
-
-		if(sendStop)
-		{
-			bufferTrajectoireCourbe.clear(); // on annule tout mouvement
-			Order out = new Order(Id.STOP);
-			sendStop = false;
-			return out;
-		}
-		else if(!bufferTrajectoireCourbe.isEmpty())
-			return bufferTrajectoireCourbe.poll();
-		else
-			return bufferBassePriorite.poll();
-	}*/
-
 	/**
 	 * Signale la vitesse max au bas niveau
 	 * 
 	 * @param vitesse signée
 	 * @return
 	 */
-	public synchronized void setMaxSpeed(Speed vitesseInitiale, boolean marcheAvant)
+	public void setMaxSpeed(Speed vitesseInitiale, boolean marcheAvant)
 	{
 		log.write("Envoi d'un ordre de vitesse max : " + vitesseInitiale+". Marche avant : "+marcheAvant, Subject.COMM);
 
@@ -120,19 +104,18 @@ public class OutgoingOrderBuffer implements Plottable
 		setMaxSpeed(vitesseTr);
 	}
 
-	private synchronized void addToBuffer(Order o)
+	private void addToBuffer(Order o)
 	{
-		o.ordre.orderSent();
 		buffer.add(o);
 	}
 	
-	public synchronized Ticket run()
+	public Ticket run()
 	{
 		addToBuffer(new Order(Id.RUN));
 		return Id.RUN.ticket;
 	}
 
-	public synchronized void setCurvature(double courbure)
+	public void setCurvature(double courbure)
 	{
 		ByteBuffer data = ByteBuffer.allocate(2);
 		short courbureShort = (short) (Math.round(courbure * 100));
@@ -141,7 +124,7 @@ public class OutgoingOrderBuffer implements Plottable
 		addToBuffer(new Order(data, Id.SET_CURVATURE));
 	}
 
-	public synchronized void setMaxSpeed(short vitesseTr)
+	public void setMaxSpeed(short vitesseTr)
 	{
 		ByteBuffer data = ByteBuffer.allocate(2);
 		data.putShort(vitesseTr);
@@ -156,7 +139,7 @@ public class OutgoingOrderBuffer implements Plottable
 	 * @param marcheAvant
 	 * @return
 	 */
-	public synchronized Ticket followTrajectory(Speed vitesseInitiale, boolean marcheAvant)
+	public Ticket followTrajectory(Speed vitesseInitiale, boolean marcheAvant)
 	{
 		short vitesseTr; // vitesse signée
 		if(marcheAvant)
@@ -175,7 +158,7 @@ public class OutgoingOrderBuffer implements Plottable
 	/**
 	 * Ajout d'une demande d'ordre de s'arrêter
 	 */
-	public synchronized Ticket immobilise()
+	public Ticket immobilise()
 	{
 		log.write("Stop !", Severity.WARNING, Subject.COMM);
 		addToBuffer(new Order(Id.STOP));
@@ -215,7 +198,7 @@ public class OutgoingOrderBuffer implements Plottable
 	/**
 	 * Corrige la position du bas niveau
 	 */
-	public synchronized void setPosition(XY pos, double orientation)
+	public void setPosition(XY pos, double orientation)
 	{
 		ByteBuffer data = ByteBuffer.allocate(5);
 		addXYO(data, pos, orientation, true);
@@ -225,7 +208,7 @@ public class OutgoingOrderBuffer implements Plottable
 	/**
 	 * Corrige la position du bas niveau
 	 */
-	public synchronized void correctPosition(XY deltaPos, double deltaOrientation)
+	public void correctPosition(XY deltaPos, double deltaOrientation)
 	{
 		ByteBuffer data = ByteBuffer.allocate(5);
 		addXYO(data, deltaPos, deltaOrientation, false);
@@ -235,7 +218,7 @@ public class OutgoingOrderBuffer implements Plottable
 	/**
 	 * Demande à être notifié du début du match
 	 */
-	public synchronized Ticket waitForJumper()
+	public Ticket waitForJumper()
 	{
 		addToBuffer(new Order(Id.WAIT_FOR_JUMPER));
 		return Id.WAIT_FOR_JUMPER.ticket;
@@ -244,7 +227,7 @@ public class OutgoingOrderBuffer implements Plottable
 	/**
 	 * Demande à être notifié de la fin du match
 	 */
-	public synchronized Ticket startMatchChrono()
+	public Ticket startMatchChrono()
 	{
 		addToBuffer(new Order(Id.START_MATCH_CHRONO));
 		return Id.START_MATCH_CHRONO.ticket;
@@ -253,7 +236,7 @@ public class OutgoingOrderBuffer implements Plottable
 	/**
 	 * Demande la couleur au bas niveau
 	 */
-	public synchronized Ticket demandeCouleur()
+	public Ticket demandeCouleur()
 	{
 		addToBuffer(new Order(Id.ASK_COLOR));
 		return Id.ASK_COLOR.ticket;
@@ -262,7 +245,7 @@ public class OutgoingOrderBuffer implements Plottable
 	/**
 	 * Demande la couleur au bas niveau
 	 */
-	public synchronized Ticket ping()
+	public Ticket ping()
 	{
 		addToBuffer(new Order(Id.PING));
 		return Id.PING.ticket;
@@ -273,17 +256,17 @@ public class OutgoingOrderBuffer implements Plottable
 	 * 
 	 * @param mode
 	 */
-	public synchronized void setSensorMode(SensorMode mode)
+/*	public void setSensorMode(SensorMode mode)
 	{
 		ByteBuffer data = ByteBuffer.allocate(1);
 		data.put(mode.code);
 		addToBuffer(new Order(data, Id.SET_SENSOR_MODE));
-	}
+	}*/
 
 	/**
 	 * Démarre un stream
 	 */
-	public synchronized void startStream(Id stream)
+	public void startStream(Id stream)
 	{
 		changeStream(stream, Channel.INSCRIPTION);
 	}
@@ -291,12 +274,12 @@ public class OutgoingOrderBuffer implements Plottable
 	/**
 	 * Arrête un stream
 	 */
-	public synchronized void stopStream(Id stream)
+	public void stopStream(Id stream)
 	{
 		changeStream(stream, Channel.DESINSCRIPTION);
 	}
 	
-	private synchronized void changeStream(Id stream, Channel ch)
+	private void changeStream(Id stream, Channel ch)
 	{
 		// on vérifie qu'on ne cherche pas à s'abonner alors qu'on est déjà abonné (idem avec désabonné)
 		ByteBuffer data = ByteBuffer.allocate(1);
@@ -313,7 +296,7 @@ public class OutgoingOrderBuffer implements Plottable
 	 * @param indexTrajectory
 	 * @return
 	 */
-	public synchronized void makeNextObsolete(Cinematique c, int indexTrajectory)
+	public void makeNextObsolete(Cinematique c, int indexTrajectory)
 	{
 		log.write("Envoi d'un arc d'obsolescence", Subject.COMM);
 
@@ -337,7 +320,7 @@ public class OutgoingOrderBuffer implements Plottable
 	 * @0 arc
 	 * @throws InterruptedException 
 	 */
-	public synchronized void envoieArcCourbe(List<CinematiqueObs> points, int indexTrajectory) throws InterruptedException
+	public void envoieArcCourbe(List<CinematiqueObs> points, int indexTrajectory) throws InterruptedException
 	{
 		log.write("Envoi de " + points.size() + " points à partir de l'index " + indexTrajectory, Subject.COMM);
 
@@ -405,13 +388,13 @@ public class OutgoingOrderBuffer implements Plottable
 	 */
 	public void checkLatence() throws InterruptedException
 	{
-		int nbEssais = 10000;
+		int nbEssais = 1000;
 		long avant = System.currentTimeMillis();
 		for(int i = 0; i < nbEssais; i++)
 			ping().attendStatus();
 		double latency = 1000. * (System.currentTimeMillis() - avant) / (2*nbEssais);
 		// on divise par 2 car il s'agit d'un aller-retour
-		log.write("Latence estimée : "+latency+" μs", latency >= 200 ? Severity.CRITICAL : (latency >= 50 ? Severity.WARNING : Severity.INFO), Subject.COMM);
+		log.write("Latence estimée : "+latency+" μs", latency >= 500 ? Severity.CRITICAL : (latency >= 300 ? Severity.WARNING : Severity.INFO), Subject.COMM);
 	}
 
 	@Override

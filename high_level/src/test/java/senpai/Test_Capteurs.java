@@ -12,7 +12,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package tests;
+package senpai;
 
 import java.lang.reflect.Field;
 import org.junit.Assert;
@@ -29,16 +29,15 @@ import pfg.kraken.robot.Cinematique;
  *
  */
 
-public class JUnit_Capteurs extends JUnit_Test
+public class Test_Capteurs extends JUnit_Test
 {
 
 	private CapteursProcess capteurs;
 
-	@Override
 	@Before
 	public void setUp() throws Exception
 	{
-		super.setUp();
+		setUp("default");
 		capteurs = container.getService(CapteursProcess.class);
 	}
 

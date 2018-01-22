@@ -12,7 +12,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package tests;
+package senpai;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -30,17 +30,16 @@ import pfg.kraken.utils.XY;
  *
  */
 
-public class JUnit_OMMemory extends JUnit_Test
+public class Test_OMMemory extends JUnit_Test
 {
 
 	private ObstaclesMemory memory;
 	private ObstaclesIteratorPresent iterator;
 
-	@Override
 	@Before
 	public void setUp() throws Exception
 	{
-		super.setUp();
+		setUp("default");
 		memory = container.getService(ObstaclesMemory.class);
 		iterator = new ObstaclesIteratorPresent(log, memory);
 	}

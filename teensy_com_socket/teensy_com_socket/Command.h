@@ -18,6 +18,7 @@ public:
 	Command(uint8_t source, std::vector<uint8_t> const & command)
 	{
 		this->source = source;
+    // on vérifie la longueur de la trame
 		if (command.size() < 2 || command.size() > COMMAND_MAX_DATA_SIZE + 2)
 		{
 			commandValid = false;
@@ -26,6 +27,7 @@ public:
 		else
 		{
 			id = command.at(0);
+      // vérification de la longueur de la trame
 			if (command.at(1) != command.size() - 2)
 			{
 				commandValid = false;
@@ -131,8 +133,8 @@ public:
 
 private:
 	bool commandValid;
-	uint8_t source;
-	uint8_t id;
+	uint8_t source; // le numéro du client d'où provient cette commande
+	uint8_t id; // l'ID de l'ordre de la commande
 	std::vector<uint8_t> data;
 };
 

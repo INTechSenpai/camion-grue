@@ -64,7 +64,7 @@ public class ThreadCommProcess extends Thread
 	public void run()
 	{
 		Thread.currentThread().setName(getClass().getSimpleName());
-		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.DUMMY);
+		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.STATUS);
 
 		nbCapteurs = CapteursRobot.values().length;
 		try
@@ -105,7 +105,7 @@ public class ThreadCommProcess extends Thread
 				/**
 				 * Capteurs
 				 */
-				else if(paquet.origine == Id.SENSORS_CHANNEL)
+				else if(paquet.origine == Id.ODO_AND_SENSORS)
 				{
 					/**
 					 * Récupération de la position et de l'orientation
@@ -180,13 +180,10 @@ public class ThreadCommProcess extends Thread
 				else if(paquet.origine == Id.WAIT_FOR_JUMPER)
 				{
 					capteursOn = true;
-					synchronized(config)
-					{
-						// TODO
+					// TODO
 //						config.set(ConfigInfo.DATE_DEBUT_MATCH, System.currentTimeMillis());
 //						config.set(ConfigInfo.MATCH_DEMARRE, true);
-						paquet.origine.ticket.set(InOrder.ACK_SUCCESS);
-					}
+					paquet.origine.ticket.set(InOrder.ACK_SUCCESS);
 				}
 
 				else if(paquet.origine == Id.SEND_ARC)
@@ -196,6 +193,7 @@ public class ThreadCommProcess extends Thread
 				
 				else if(paquet.origine == Id.PING)
 				{
+					assert paquet.message.length == 1 : paquet;
 					paquet.origine.ticket.set(InOrder.ACK_SUCCESS);
 				}
 
@@ -259,12 +257,12 @@ public class ThreadCommProcess extends Thread
 		}
 		catch(InterruptedException e)
 		{
-			log.write("Arrêt de " + Thread.currentThread().getName(), Subject.DUMMY);
+			log.write("Arrêt de " + Thread.currentThread().getName(), Subject.STATUS);
 			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)
 		{
-			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, Subject.DUMMY);
+			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, Subject.STATUS);
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
 			Thread.currentThread().interrupt();

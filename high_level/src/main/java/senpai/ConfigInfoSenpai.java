@@ -61,10 +61,10 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	/**
 	 * Paramètres du log
 	 */
-	FAST_LOG(false), // affichage plus rapide des logs
-	SAUVEGARDE_LOG(false), // sauvegarde les logs dans un fichier externe
-	AFFICHE_CONFIG(false), // affiche la configuration complète au lancement
-	COLORED_LOG(false), // de la couleur dans les sauvegardes de logs !
+//	FAST_LOG(false), // affichage plus rapide des logs
+//	SAUVEGARDE_LOG(false), // sauvegarde les logs dans un fichier externe
+//	AFFICHE_CONFIG(false), // affiche la configuration complète au lancement
+//	COLORED_LOG(false), // de la couleur dans les sauvegardes de logs !
 
 	/**
 	 * Infos sur l'ennemi
@@ -75,23 +75,23 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	/**
 	 * Paramètres du pathfinding
 	 */
-	COURBURE_MAX(3), // quelle courbure maximale la trajectoire du robot
+//	COURBURE_MAX(3), // quelle courbure maximale la trajectoire du robot
 						// peut-elle avoir
-	TEMPS_ARRET(800), // temps qu'il faut au robot pour s'arrêter et repartir
+//	TEMPS_ARRET(800), // temps qu'il faut au robot pour s'arrêter et repartir
 						// (par exemple à cause d'un rebroussement)
-	PF_MARGE_AVANT_COLLISION(100), // combien de mm laisse-t-on au plus % avant
+//	PF_MARGE_AVANT_COLLISION(100), // combien de mm laisse-t-on au plus % avant
 									// la collision
-	PF_MARGE_NECESSAIRE(40), // combien de mm le bas niveau DOIT-il toujours
+//	PF_MARGE_NECESSAIRE(40), // combien de mm le bas niveau DOIT-il toujours
 								// avoir
-	PF_MARGE_PREFERABLE(60), // combien de mm le bas niveau devrait-il toujours
+//	PF_MARGE_PREFERABLE(60), // combien de mm le bas niveau devrait-il toujours
 								// avoir
-	PF_MARGE_INITIALE(100), // combien de mm garde-t-on obligatoirement au début
+//	PF_MARGE_INITIALE(100), // combien de mm garde-t-on obligatoirement au début
 							// de la replanification
-	DUREE_MAX_RECHERCHE_PF(10000), // durée maximale que peut prendre le
+//	DUREE_MAX_RECHERCHE_PF(10000), // durée maximale que peut prendre le
 									// pathfinding
-	TAILLE_FAISCEAU_PF(20), // combien de voisins sont ajoutés à l'openset à
+//	TAILLE_FAISCEAU_PF(20), // combien de voisins sont ajoutés à l'openset à
 							// chaque itération. CONFIG IGNORÉE !
-	NB_ESSAIS_PF(100), // nombre d'essais du pathfinding
+//	NB_ESSAIS_PF(100), // nombre d'essais du pathfinding
 	ALLOW_PRECOMPUTED_PATH(true), // autorise-t-on l'utilisation de chemins
 									// précalculés
 	SAVE_FOUND_PATH(true), // sauvegarde tous les trajets calculés en match
@@ -111,8 +111,8 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	/**
 	 * Paramètres bas niveau des capteurs
 	 */
-	SENSORS_SEND_PERIOD(40), // période d'envoi des infos des capteurs (ms)
-	SENSORS_PRESCALER(1), // sur combien de trames a-t-on les infos des capteurs
+//	SENSORS_SEND_PERIOD(40), // période d'envoi des infos des capteurs (ms)
+//	SENSORS_PRESCALER(1), // sur combien de trames a-t-on les infos des capteurs
 
 	/**
 	 * Paramètres du traitement des capteurs
@@ -143,32 +143,25 @@ public enum ConfigInfoSenpai implements ConfigInfo
 													// dedans
 	SUPPRESSION_AUTO_OBSTACLES_FIXES(true), // si on démarre dans un obstacle
 											// fixe, est-ce qu'on le vire ?
-	ENABLE_SCAN(true), // scan-t-on autour du robot s'il est coincé ?
-
-	/**
-	 * Paramètres sur la gestion de la mémoire
-	 */
-	NB_INSTANCES_NODE(20000),
-	NB_INSTANCES_OBSTACLES(50000), // nombre d'instances pour les obstacles
-									// rectangulaires
+//	ENABLE_SCAN(true), // scan-t-on autour du robot s'il est coincé ?
 
 	/**
 	 * Interface graphique
 	 */
-	GRAPHIC_HEURISTIQUE(false), // affichage des orientations heuristiques
+//	GRAPHIC_HEURISTIQUE(false), // affichage des orientations heuristiques
 								// données par le D* Lite
 	GRAPHIC_ENABLE(false), // désactive tout affichage si faux (empêche le
 							// thread d'affichage de se lancer)
-	GRAPHIC_D_STAR_LITE(false), // affiche les calculs du D* Lite
-	GRAPHIC_D_STAR_LITE_FINAL(false), // affiche l'itinéraire final du D* Lite
-	GRAPHIC_PROXIMITY_OBSTACLES(true), // affiche les obstacles de proximité
-	GRAPHIC_TRAJECTORY(false), // affiche les trajectoires temporaires
-	GRAPHIC_TRAJECTORY_ALL(false), // affiche TOUTES les trajectoires
+//	GRAPHIC_D_STAR_LITE(false), // affiche les calculs du D* Lite
+//	GRAPHIC_D_STAR_LITE_FINAL(false), // affiche l'itinéraire final du D* Lite
+//	GRAPHIC_PROXIMITY_OBSTACLES(true), // affiche les obstacles de proximité
+//	GRAPHIC_TRAJECTORY(false), // affiche les trajectoires temporaires
+//	GRAPHIC_TRAJECTORY_ALL(false), // affiche TOUTES les trajectoires
 									// temporaires
-	GRAPHIC_TRAJECTORY_FINAL(true), // affiche les trajectoires
-	GRAPHIC_FIXED_OBSTACLES(true), // affiche les obstacles fixes
-	GRAPHIC_GAME_ELEMENTS(true), // affiche les éléments de jeux
-	GRAPHIC_ROBOT_COLLISION(false), // affiche les obstacles du robot lors de la
+//	GRAPHIC_TRAJECTORY_FINAL(true), // affiche les trajectoires
+//	GRAPHIC_FIXED_OBSTACLES(true), // affiche les obstacles fixes
+//	GRAPHIC_GAME_ELEMENTS(true), // affiche les éléments de jeux
+//	GRAPHIC_ROBOT_COLLISION(false), // affiche les obstacles du robot lors de la
 									// vérification des collisions
 	GRAPHIC_BACKGROUND_PATH("img/background-2017-color.png"), // affiche d'image
 																// de la table
@@ -180,20 +173,20 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	GRAPHIC_ROBOT_ROUE_DROITE_PATH("img/robot_roue_droite.png"), // image de la
 																	// roue
 																	// droite
-	GRAPHIC_PRODUCE_GIF(false), // produit un gif ?
-	GIF_FILENAME("output.gif"), // le nom du fichier du gif généré
-	GRAPHIC_BACKGROUND(true), // affiche d'image de la table
-	GRAPHIC_SIZE_X(1000), // taille par défaut (sans image) de la fenêtre
-	GRAPHIC_ALL_OBSTACLES(false), // affiche absolument tous les obstacles créés
+//	GRAPHIC_PRODUCE_GIF(false), // produit un gif ?
+//	GIF_FILENAME("output.gif"), // le nom du fichier du gif généré
+//	GRAPHIC_BACKGROUND(true), // affiche d'image de la table
+//	GRAPHIC_SIZE_X(1000), // taille par défaut (sans image) de la fenêtre
+//	GRAPHIC_ALL_OBSTACLES(false), // affiche absolument tous les obstacles créés
 	GRAPHIC_ROBOT_AND_SENSORS(true), // affiche le robot et ses capteurs
-	GRAPHIC_CERCLE_ARRIVEE(false), // affiche le cercle d'arrivée
-	GRAPHIC_TIME(false), // affiche le temps écoulé
+//	GRAPHIC_CERCLE_ARRIVEE(false), // affiche le cercle d'arrivée
+//	GRAPHIC_TIME(false), // affiche le temps écoulé
 	GRAPHIC_TRACE_ROBOT(true), // affiche la trace du robot
 	GRAPHIC_EXTERNAL(true), // l'affichage doit-il être déporté par le serveur
 							// d'affichage ?
 	GRAPHIC_DIFFERENTIAL(true), // sauvegarde d'une "vidéo" pour visionner les
 								// images plus tard
-	GRAPHIC_ZOOM(0), // zoom de la fenêtre. Si 0, aucun zoom. Sinon, zoom + focus sur le robot
+//	GRAPHIC_ZOOM(0), // zoom de la fenêtre. Si 0, aucun zoom. Sinon, zoom + focus sur le robot
 	GRAPHIC_COMM_CHART(false), // active les graphes de debug de la communication
 	GRAPHIC_CAPTEURS_CHART(false); // active les graphes de debug des capteurs
 

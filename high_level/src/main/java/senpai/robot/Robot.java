@@ -264,14 +264,14 @@ public class Robot extends RobotState implements Printable
 		*/
 	}
 
-	public void setSensorMode(SensorMode mode)
+/*	public void setSensorMode(SensorMode mode)
 	{
 		if(lastMode != mode)
 		{
 			out.setSensorMode(mode);
 			lastMode = mode;
 		}
-	}
+	}*/
 
 	public void avance(double distance, Speed speed)
 			throws UnableToMoveException, InterruptedException {
