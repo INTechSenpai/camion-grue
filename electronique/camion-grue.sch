@@ -11200,7 +11200,10 @@ Source: http://www2.produktinfo.conrad.com/datenblaetter/700000-724999/705152-da
 <connect gate="G$1" pin="GND" pad="GND"/>
 </connects>
 <technologies>
-<technology name=""/>
+<technology name="">
+<attribute name="RS_AX" value="687-8124"/>
+<attribute name="RS_XL" value="688-3283"/>
+</technology>
 </technologies>
 </device>
 <device name="XL" package="DYNAMIXEL_XL_1X03">
