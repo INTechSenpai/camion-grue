@@ -109,10 +109,6 @@ void CommunicationServer::communicate()
 			}
 #endif
 		}
-		else
-		{
-			printf_err("Command buffer is almost full\n");
-		}
 	}
 
 	/* Envoi des messages à envoi différé (issus des interruptions) */
