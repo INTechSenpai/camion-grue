@@ -1,12 +1,4 @@
 language : java
-install :
-    - git clone https://github.com/PFGimenez/The-Kraken-Pathfinding.git --depth 1
-    - cd The-Kraken-Pathfinding
-    - ./install_dependencies.sh
-    - cd core
-    - sed s/GRAPHIC_ENABLE\ =\ true// src/test/resources/kraken.conf -i
-    - mvn install -DskipTests
-    - cd ../..
 script :
     - cd high_level
     - ./update.sh
