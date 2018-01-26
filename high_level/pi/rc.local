@@ -18,7 +18,7 @@ if [ "$_IP" ]; then
 fi
 
 iptables-restore < /etc/iptables.ipv4.nat
-cd ~/moon-rover/pc
+cd ~/eurobotruck/high_level/target
 # en cas d'erreur du HL : reboot
-./run.sh Match || reboot
+java -jar eurobotruck-match.jar || reboot
 exit 0

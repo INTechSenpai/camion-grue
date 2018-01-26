@@ -18,6 +18,41 @@
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
+    <repositories>
+        <repository>
+            <id>config-pfg-mvn-repo</id>
+            <url>https://raw.githubusercontent.com/PFGimenez/config/mvn-repo/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>injector-pfg-mvn-repo</id>
+            <url>https://raw.githubusercontent.com/PFGimenez/dependency-injector/mvn-repo/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>graphic-pfg-mvn-repo</id>
+            <url>https://raw.githubusercontent.com/PFGimenez/graphic-toolbox/mvn-repo/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>kraken-pfg-mvn-repo</id>
+            <url>https://raw.githubusercontent.com/PFGimenez/The-Kraken-Pathfinding/mvn-repo/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
   <dependencies>
 
     <dependency>
