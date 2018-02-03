@@ -11754,11 +11754,11 @@ Source: www.kingbright.com</description>
 <instance part="C2" gate="G$1" x="83.82" y="144.78" rot="R180"/>
 <instance part="SUPPLY17" gate="GND" x="99.06" y="139.7"/>
 <instance part="LED97" gate="G$1" x="60.96" y="134.62"/>
-<instance part="LED98" gate="G$1" x="241.3" y="58.42"/>
+<instance part="LED98" gate="G$1" x="78.74" y="55.88"/>
 <instance part="R37" gate="G$1" x="60.96" y="144.78" rot="R270"/>
 <instance part="SUPPLY42" gate="GND" x="60.96" y="124.46"/>
-<instance part="R38" gate="G$1" x="233.68" y="63.5"/>
-<instance part="SUPPLY43" gate="GND" x="241.3" y="48.26"/>
+<instance part="R38" gate="G$1" x="71.12" y="60.96"/>
+<instance part="SUPPLY43" gate="GND" x="78.74" y="45.72"/>
 <instance part="LED131" gate="G$1" x="93.98" y="297.18"/>
 <instance part="SUPPLY52" gate="GND" x="119.38" y="287.02" rot="R90"/>
 <instance part="LED132" gate="G$1" x="93.98" y="274.32"/>
@@ -12066,7 +12066,7 @@ Source: www.kingbright.com</description>
 <segment>
 <pinref part="LED98" gate="G$1" pin="C"/>
 <pinref part="SUPPLY43" gate="GND" pin="GND"/>
-<wire x1="241.3" y1="50.8" x2="241.3" y2="53.34" width="0.1524" layer="91"/>
+<wire x1="78.74" y1="48.26" x2="78.74" y2="50.8" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="R51" gate="G$1" pin="2"/>
@@ -12295,50 +12295,50 @@ Source: www.kingbright.com</description>
 </net>
 <net name="DEL_BLEU_3_PWM" class="0">
 <segment>
-<pinref part="RPI" gate="G$1" pin="GPIO21"/>
-<wire x1="205.74" y1="60.96" x2="208.28" y2="60.96" width="0.1524" layer="91"/>
-<label x="208.28" y="60.96" size="1.27" layer="95" xref="yes"/>
-</segment>
-<segment>
 <pinref part="R50" gate="G$1" pin="2"/>
 <wire x1="421.64" y1="226.06" x2="424.18" y2="226.06" width="0.1524" layer="91"/>
 <label x="424.18" y="226.06" size="1.27" layer="95" xref="yes"/>
 </segment>
-</net>
-<net name="DEL_ORANGE_2_PWM" class="0">
 <segment>
 <pinref part="RPI" gate="G$1" pin="GPIO27/GEN2"/>
 <wire x1="157.48" y1="93.98" x2="154.94" y2="93.98" width="0.1524" layer="91"/>
 <label x="154.94" y="93.98" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
+</net>
+<net name="DEL_ORANGE_2_PWM" class="0">
 <segment>
 <pinref part="R21" gate="G$1" pin="2"/>
 <wire x1="231.14" y1="294.64" x2="233.68" y2="294.64" width="0.1524" layer="91"/>
 <label x="233.68" y="294.64" size="1.27" layer="95" xref="yes"/>
 </segment>
+<segment>
+<pinref part="RPI" gate="G$1" pin="GPIO6"/>
+<wire x1="157.48" y1="71.12" x2="154.94" y2="71.12" width="0.1524" layer="91"/>
+<label x="154.94" y="71.12" size="1.27" layer="95" rot="R180" xref="yes"/>
+</segment>
 </net>
 <net name="DEL_ORANGE_3_PWM" class="0">
-<segment>
-<pinref part="RPI" gate="G$1" pin="GPIO22/GEN3"/>
-<wire x1="157.48" y1="91.44" x2="154.94" y2="91.44" width="0.1524" layer="91"/>
-<label x="154.94" y="91.44" size="1.27" layer="95" rot="R180" xref="yes"/>
-</segment>
 <segment>
 <pinref part="R47" gate="G$1" pin="2"/>
 <wire x1="421.64" y1="294.64" x2="424.18" y2="294.64" width="0.1524" layer="91"/>
 <label x="424.18" y="294.64" size="1.27" layer="95" xref="yes"/>
 </segment>
+<segment>
+<pinref part="RPI" gate="G$1" pin="GPIO10/MOSI"/>
+<wire x1="157.48" y1="86.36" x2="154.94" y2="86.36" width="0.1524" layer="91"/>
+<label x="154.94" y="86.36" size="1.27" layer="95" rot="R180" xref="yes"/>
+</segment>
 </net>
 <net name="DEL_ORANGE_1_PWM" class="0">
-<segment>
-<pinref part="RPI" gate="G$1" pin="GPIO17/GEN0"/>
-<wire x1="157.48" y1="96.52" x2="154.94" y2="96.52" width="0.1524" layer="91"/>
-<label x="154.94" y="96.52" size="1.27" layer="95" rot="R180" xref="yes"/>
-</segment>
 <segment>
 <pinref part="R59" gate="G$1" pin="2"/>
 <wire x1="40.64" y1="294.64" x2="43.18" y2="294.64" width="0.1524" layer="91"/>
 <label x="43.18" y="294.64" size="1.27" layer="95" xref="yes"/>
+</segment>
+<segment>
+<pinref part="RPI" gate="G$1" pin="GPIO20"/>
+<wire x1="205.74" y1="63.5" x2="208.28" y2="63.5" width="0.1524" layer="91"/>
+<label x="208.28" y="63.5" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="DEL_ORANGE_1" class="0">
@@ -12376,14 +12376,14 @@ Source: www.kingbright.com</description>
 </net>
 <net name="DEL_JAUNE_1_PWM" class="0">
 <segment>
-<pinref part="RPI" gate="G$1" pin="GPIO10/MOSI"/>
-<wire x1="157.48" y1="86.36" x2="154.94" y2="86.36" width="0.1524" layer="91"/>
-<label x="154.94" y="86.36" size="1.27" layer="95" rot="R180" xref="yes"/>
-</segment>
-<segment>
 <pinref part="R61" gate="G$1" pin="2"/>
 <wire x1="40.64" y1="271.78" x2="43.18" y2="271.78" width="0.1524" layer="91"/>
 <label x="43.18" y="271.78" size="1.27" layer="95" xref="yes"/>
+</segment>
+<segment>
+<pinref part="RPI" gate="G$1" pin="GPIO26"/>
+<wire x1="157.48" y1="63.5" x2="154.94" y2="63.5" width="0.1524" layer="91"/>
+<label x="154.94" y="63.5" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="DEL_JAUNE_1" class="0">
@@ -12421,38 +12421,38 @@ Source: www.kingbright.com</description>
 </net>
 <net name="DEL_JAUNE_2_PWM" class="0">
 <segment>
-<pinref part="RPI" gate="G$1" pin="GPIO9/MISO"/>
-<wire x1="157.48" y1="83.82" x2="154.94" y2="83.82" width="0.1524" layer="91"/>
-<label x="154.94" y="83.82" size="1.27" layer="95" rot="R180" xref="yes"/>
-</segment>
-<segment>
 <pinref part="R23" gate="G$1" pin="2"/>
 <wire x1="231.14" y1="271.78" x2="233.68" y2="271.78" width="0.1524" layer="91"/>
 <label x="233.68" y="271.78" size="1.27" layer="95" xref="yes"/>
 </segment>
-</net>
-<net name="DEL_JAUNE_3_PWM" class="0">
-<segment>
-<pinref part="RPI" gate="G$1" pin="GPIO11/SCLK"/>
-<wire x1="157.48" y1="81.28" x2="154.94" y2="81.28" width="0.1524" layer="91"/>
-<label x="154.94" y="81.28" size="1.27" layer="95" rot="R180" xref="yes"/>
-</segment>
-<segment>
-<pinref part="R49" gate="G$1" pin="2"/>
-<wire x1="421.64" y1="271.78" x2="424.18" y2="271.78" width="0.1524" layer="91"/>
-<label x="424.18" y="271.78" size="1.27" layer="95" xref="yes"/>
-</segment>
-</net>
-<net name="DEL_VERT_1_PWM" class="0">
 <segment>
 <pinref part="RPI" gate="G$1" pin="GPIO5"/>
 <wire x1="157.48" y1="73.66" x2="154.94" y2="73.66" width="0.1524" layer="91"/>
 <label x="154.94" y="73.66" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
+</net>
+<net name="DEL_JAUNE_3_PWM" class="0">
+<segment>
+<pinref part="R49" gate="G$1" pin="2"/>
+<wire x1="421.64" y1="271.78" x2="424.18" y2="271.78" width="0.1524" layer="91"/>
+<label x="424.18" y="271.78" size="1.27" layer="95" xref="yes"/>
+</segment>
+<segment>
+<pinref part="RPI" gate="G$1" pin="GPIO22/GEN3"/>
+<wire x1="157.48" y1="91.44" x2="154.94" y2="91.44" width="0.1524" layer="91"/>
+<label x="154.94" y="91.44" size="1.27" layer="95" rot="R180" xref="yes"/>
+</segment>
+</net>
+<net name="DEL_VERT_1_PWM" class="0">
 <segment>
 <pinref part="R60" gate="G$1" pin="2"/>
 <wire x1="40.64" y1="248.92" x2="43.18" y2="248.92" width="0.1524" layer="91"/>
 <label x="43.18" y="248.92" size="1.27" layer="95" xref="yes"/>
+</segment>
+<segment>
+<pinref part="RPI" gate="G$1" pin="GPIO21"/>
+<wire x1="205.74" y1="60.96" x2="208.28" y2="60.96" width="0.1524" layer="91"/>
+<label x="208.28" y="60.96" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="DEL_VERT_1" class="0">
@@ -12490,38 +12490,38 @@ Source: www.kingbright.com</description>
 </net>
 <net name="DEL_VERT_2_PWM" class="0">
 <segment>
-<pinref part="RPI" gate="G$1" pin="GPIO6"/>
-<wire x1="157.48" y1="71.12" x2="154.94" y2="71.12" width="0.1524" layer="91"/>
-<label x="154.94" y="71.12" size="1.27" layer="95" rot="R180" xref="yes"/>
-</segment>
-<segment>
 <pinref part="R22" gate="G$1" pin="2"/>
 <wire x1="231.14" y1="248.92" x2="233.68" y2="248.92" width="0.1524" layer="91"/>
 <label x="233.68" y="248.92" size="1.27" layer="95" xref="yes"/>
 </segment>
-</net>
-<net name="DEL_VERT_3_PWM" class="0">
 <segment>
 <pinref part="RPI" gate="G$1" pin="GPIO13"/>
 <wire x1="157.48" y1="68.58" x2="154.94" y2="68.58" width="0.1524" layer="91"/>
 <label x="154.94" y="68.58" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
+</net>
+<net name="DEL_VERT_3_PWM" class="0">
 <segment>
 <pinref part="R48" gate="G$1" pin="2"/>
 <wire x1="421.64" y1="248.92" x2="424.18" y2="248.92" width="0.1524" layer="91"/>
 <label x="424.18" y="248.92" size="1.27" layer="95" xref="yes"/>
 </segment>
+<segment>
+<pinref part="RPI" gate="G$1" pin="GPIO9/MISO"/>
+<wire x1="157.48" y1="83.82" x2="154.94" y2="83.82" width="0.1524" layer="91"/>
+<label x="154.94" y="83.82" size="1.27" layer="95" rot="R180" xref="yes"/>
+</segment>
 </net>
 <net name="DEL_BLEU_1_PWM" class="0">
-<segment>
-<pinref part="RPI" gate="G$1" pin="GPIO19"/>
-<wire x1="157.48" y1="66.04" x2="154.94" y2="66.04" width="0.1524" layer="91"/>
-<label x="154.94" y="66.04" size="1.27" layer="95" rot="R180" xref="yes"/>
-</segment>
 <segment>
 <pinref part="R62" gate="G$1" pin="2"/>
 <wire x1="40.64" y1="226.06" x2="43.18" y2="226.06" width="0.1524" layer="91"/>
 <label x="43.18" y="226.06" size="1.27" layer="95" xref="yes"/>
+</segment>
+<segment>
+<pinref part="RPI" gate="G$1" pin="GPIO16"/>
+<wire x1="205.74" y1="66.04" x2="208.28" y2="66.04" width="0.1524" layer="91"/>
+<label x="208.28" y="66.04" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="DEL_BLEU_1" class="0">
@@ -12559,14 +12559,14 @@ Source: www.kingbright.com</description>
 </net>
 <net name="DEL_BLEU_2_PWM" class="0">
 <segment>
-<pinref part="RPI" gate="G$1" pin="GPIO26"/>
-<wire x1="157.48" y1="63.5" x2="154.94" y2="63.5" width="0.1524" layer="91"/>
-<label x="154.94" y="63.5" size="1.27" layer="95" rot="R180" xref="yes"/>
-</segment>
-<segment>
 <pinref part="R24" gate="G$1" pin="2"/>
 <wire x1="231.14" y1="226.06" x2="233.68" y2="226.06" width="0.1524" layer="91"/>
 <label x="233.68" y="226.06" size="1.27" layer="95" xref="yes"/>
+</segment>
+<segment>
+<pinref part="RPI" gate="G$1" pin="GPIO11/SCLK"/>
+<wire x1="157.48" y1="81.28" x2="154.94" y2="81.28" width="0.1524" layer="91"/>
+<label x="154.94" y="81.28" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="N$40" class="0">
@@ -12576,19 +12576,12 @@ Source: www.kingbright.com</description>
 <wire x1="60.96" y1="139.7" x2="60.96" y2="137.16" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$41" class="0">
-<segment>
-<pinref part="RPI" gate="G$1" pin="GPIO20"/>
-<pinref part="R38" gate="G$1" pin="1"/>
-<wire x1="205.74" y1="63.5" x2="228.6" y2="63.5" width="0.1524" layer="91"/>
-</segment>
-</net>
 <net name="N$42" class="0">
 <segment>
 <pinref part="R38" gate="G$1" pin="2"/>
 <pinref part="LED98" gate="G$1" pin="A"/>
-<wire x1="238.76" y1="63.5" x2="241.3" y2="63.5" width="0.1524" layer="91"/>
-<wire x1="241.3" y1="63.5" x2="241.3" y2="60.96" width="0.1524" layer="91"/>
+<wire x1="76.2" y1="60.96" x2="78.74" y2="60.96" width="0.1524" layer="91"/>
+<wire x1="78.74" y1="60.96" x2="78.74" y2="58.42" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$55" class="0">
@@ -13379,9 +13372,9 @@ Source: www.kingbright.com</description>
 <label x="60.96" y="88.9" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
-<pinref part="RPI" gate="G$1" pin="GPIO16"/>
-<wire x1="205.74" y1="66.04" x2="215.9" y2="66.04" width="0.1524" layer="91"/>
-<label x="215.9" y="66.04" size="1.27" layer="95" xref="yes"/>
+<pinref part="RPI" gate="G$1" pin="GPIO17/GEN0"/>
+<wire x1="157.48" y1="96.52" x2="154.94" y2="96.52" width="0.1524" layer="91"/>
+<label x="154.94" y="96.52" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="3V3@1" class="0">
@@ -13394,6 +13387,18 @@ Source: www.kingbright.com</description>
 <pinref part="R1" gate="G$1" pin="1"/>
 <wire x1="68.58" y1="101.6" x2="68.58" y2="104.14" width="0.1524" layer="91"/>
 <label x="68.58" y="104.14" size="1.27" layer="95" xref="yes"/>
+</segment>
+</net>
+<net name="STATUS_LED" class="0">
+<segment>
+<pinref part="R38" gate="G$1" pin="1"/>
+<wire x1="66.04" y1="60.96" x2="60.96" y2="60.96" width="0.1524" layer="91"/>
+<label x="60.96" y="60.96" size="1.27" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="RPI" gate="G$1" pin="GPIO19"/>
+<wire x1="157.48" y1="66.04" x2="154.94" y2="66.04" width="0.1524" layer="91"/>
+<label x="154.94" y="66.04" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 </nets>
