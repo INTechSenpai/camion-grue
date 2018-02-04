@@ -11504,7 +11504,9 @@ Source: www.kingbright.com</description>
 <part name="DEBUG_UART" library="pinhead" library_urn="urn:adsk.eagle:library:325" deviceset="PINHD-1X6" device="" package3d_urn="urn:adsk.eagle:package:22472/2"/>
 <part name="SUPPLY13" library="supply2" library_urn="urn:adsk.eagle:library:372" deviceset="GND" device=""/>
 <part name="SUPPLY14" library="supply2" library_urn="urn:adsk.eagle:library:372" deviceset="GND" device=""/>
-<part name="S1" library="switch" library_urn="urn:adsk.eagle:library:380" deviceset="TL36PO" device="" package3d_urn="urn:adsk.eagle:package:27745/1"/>
+<part name="S1" library="switch" library_urn="urn:adsk.eagle:library:380" deviceset="TL36PO" device="" package3d_urn="urn:adsk.eagle:package:27745/1">
+<attribute name="RS" value="913-9069"/>
+</part>
 <part name="SUPPLY15" library="supply2" library_urn="urn:adsk.eagle:library:372" deviceset="+12V" device=""/>
 <part name="DC2" library="dc-dc-converter" library_urn="urn:adsk.eagle:library:208" deviceset="R-78C*-1.0" device="" package3d_urn="urn:adsk.eagle:package:12318/1" technology="3.3"/>
 <part name="SUPPLY16" library="supply2" library_urn="urn:adsk.eagle:library:372" deviceset="+12V" device=""/>
@@ -11747,7 +11749,9 @@ Source: www.kingbright.com</description>
 <instance part="DEBUG_UART" gate="A" x="160.02" y="147.32"/>
 <instance part="SUPPLY13" gate="GND" x="149.86" y="154.94" rot="R270"/>
 <instance part="SUPPLY14" gate="GND" x="200.66" y="144.78"/>
-<instance part="S1" gate="BEF1" x="233.68" y="154.94" rot="R270"/>
+<instance part="S1" gate="BEF1" x="233.68" y="154.94" rot="R270">
+<attribute name="RS" x="233.68" y="154.94" size="1.778" layer="96" rot="R270" display="off"/>
+</instance>
 <instance part="SUPPLY15" gate="+12V" x="243.84" y="160.02"/>
 <instance part="DC2" gate="G$1" x="99.06" y="152.4"/>
 <instance part="SUPPLY16" gate="+12V" x="78.74" y="154.94"/>
