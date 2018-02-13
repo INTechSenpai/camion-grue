@@ -22,7 +22,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import pfg.graphic.log.Log;
 import senpai.Subject;
-import senpai.capteurs.SensorMode;
 import senpai.comm.Order;
 import senpai.comm.Ticket;
 import senpai.comm.CommProtocol.Channel;
@@ -377,8 +376,7 @@ public class OutgoingOrderBuffer implements Plottable
 		// TODO : nécessaire ?
 		log.write("Attente de la réception de la réponse au stop", Subject.COMM);
 		Ticket stop = Id.STOP.ticket;
-		stop.attendStatus(1500);
-		if(stop.isEmpty())
+		if(stop.attendStatus(1500) == null)
 			log.write("Timeout d'attente du stop dépassé !", Severity.WARNING, Subject.COMM);
 	}
 

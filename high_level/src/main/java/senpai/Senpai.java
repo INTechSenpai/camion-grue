@@ -309,6 +309,11 @@ public class Senpai
 			if(!simuleComm)
 			{
 				injector.getService(Communication.class).initialize();
+				
+				OutgoingOrderBuffer outBuffer = injector.getService(OutgoingOrderBuffer.class);
+				if(outBuffer.ping().attendStatus(500) == null) // on vérifie que le LL répond
+					log.write("Le LL n'a pas répondu au ping !", Severity.CRITICAL, Subject.COMM);
+				
 				if(config.getBoolean(ConfigInfoSenpai.CHECK_LATENCY))
 					injector.getService(OutgoingOrderBuffer.class).checkLatence();
 			}

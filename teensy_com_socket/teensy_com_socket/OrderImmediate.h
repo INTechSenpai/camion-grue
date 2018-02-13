@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "Singleton.h"
+#include "BinaryComm.h"
 
 
 class OrderImmediate
@@ -12,8 +13,8 @@ public:
 	{}
 
 	/*
-	Méthode exécutant l'ordre immédiat.
-	L'argument correspond à la fois à l'input et à l'output de l'odre, il sera modifié par la méthode.
+	Mï¿½thode exï¿½cutant l'ordre immï¿½diat.
+	L'argument correspond ï¿½ la fois ï¿½ l'input et ï¿½ l'output de l'odre, il sera modifiï¿½ par la mï¿½thode.
 	*/
 	virtual void execute(std::vector<uint8_t> &) = 0;
 
@@ -22,7 +23,7 @@ protected:
 };
 
 
-// ### Définition des ordres à réponse immédiate ###
+// ### Dï¿½finition des ordres ï¿½ rï¿½ponse immï¿½diate ###
 
 class Rien : public OrderImmediate, public Singleton<Rien>
 {
@@ -43,7 +44,7 @@ public:
 	virtual void execute(std::vector<uint8_t> & io)
 	{
 		io.clear();
-    // le ping doit rÃƒÂ©pondre, donc on met une donnÃƒÂ©e qui ne sert ÃƒÂ  rien
+    // le ping doit rÃ©pondre, donc on met une donnÃ©e qui ne sert Ã  rien
     io.push_back(0);
 	}
 };

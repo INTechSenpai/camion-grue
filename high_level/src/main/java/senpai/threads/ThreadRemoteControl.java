@@ -215,6 +215,8 @@ public class ThreadRemoteControl extends Thread
 		ThreadListen t = new ThreadListen(log, in);
 		t.start();
 
+		// TODO refaire proprement
+
 		while(true)
 		{
 			CommandesParam cp = null;
@@ -244,7 +246,7 @@ public class ThreadRemoteControl extends Thread
 				c = cp.com;
 			}
 			
-			if(run != null && !run.isEmpty()) // le robot s'est arrêté
+			if(run != null/* && !run.isEmpty()*/) // le robot s'est arrêté
 			{
 				vitesse = 0;
 				run = null;

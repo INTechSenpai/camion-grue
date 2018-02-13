@@ -30,12 +30,12 @@ import senpai.comm.CommProtocol.InOrder;
 public class Ticket
 {
 	private final BlockingQueue<InOrder> ordre = new ArrayBlockingQueue<InOrder>(1); // seulement un élément !
-
+	/*
 	public boolean isEmpty()
 	{
 		return ordre.isEmpty();
 	}
-
+*/
 	public void set(InOrder order)
 	{
 		assert ordre.isEmpty();
@@ -58,9 +58,9 @@ public class Ticket
 	 * @param timeout
 	 * @throws InterruptedException
 	 */
-	public void attendStatus(long timeout) throws InterruptedException
+	public InOrder attendStatus(long timeout) throws InterruptedException
 	{
-		ordre.poll(Math.max(0,timeout), TimeUnit.MILLISECONDS);
+		return ordre.poll(Math.max(0,timeout), TimeUnit.MILLISECONDS);
 	}
 
 }
