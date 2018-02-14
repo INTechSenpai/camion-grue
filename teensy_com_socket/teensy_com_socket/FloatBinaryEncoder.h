@@ -1,5 +1,5 @@
-#ifndef _BINARY_COMM_h
-#define _BINARY_COMM_h
+#ifndef _FLOAT_BINARY_ENCODER_h
+#define _FLOAT_BINARY_ENCODER_h
 
 
 /**

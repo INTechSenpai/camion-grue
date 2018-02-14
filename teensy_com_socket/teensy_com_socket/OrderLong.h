@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "Singleton.h"
-#include "BinaryComm.h"
+#include "FloatBinaryEncoder.h"
 
 class OrderLong
 {
