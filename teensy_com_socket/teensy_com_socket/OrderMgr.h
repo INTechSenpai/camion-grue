@@ -29,12 +29,12 @@ public:
 		}
 
 		/*	################################################## *
-		*	# Ici est d�finie la correspondance ID <-> Ordre # *
-		*	# (il faut ajouter le START_ID � l'index du		 # *
-		*	# tableau pour avoir l'ID utilis� dans la trame) # *
+		*	# Ici est définie la correspondance ID <-> Ordre # *
+		*	# (il faut ajouter le START_ID à l'index du		 # *
+		*	# tableau pour avoir l'ID utilisé dans la trame) # *
 		*	################################################## */
 
-		// Ordres � r�ponse imm�diate
+		// Ordres à réponse immédiate
 		immediateOrderList[0x00] = &Ping::Instance();
 
 		// Ordres longs
@@ -199,3 +199,4 @@ private:
 
 
 #endif
+

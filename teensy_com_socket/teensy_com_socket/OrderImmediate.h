@@ -13,8 +13,8 @@ public:
 	{}
 
 	/*
-	M�thode ex�cutant l'ordre imm�diat.
-	L'argument correspond � la fois � l'input et � l'output de l'odre, il sera modifi� par la m�thode.
+	Méthode exécutant l'ordre immédiat.
+	L'argument correspond à la fois à l'input et à l'output de l'ordre, il sera modifié par la méthode.
 	*/
 	virtual void execute(std::vector<uint8_t> &) = 0;
 
@@ -23,7 +23,7 @@ protected:
 };
 
 
-// ### D�finition des ordres � r�ponse imm�diate ###
+// ### Définition des ordres à réponse immédiate ###
 
 class Rien : public OrderImmediate, public Singleton<Rien>
 {
@@ -51,3 +51,4 @@ public:
 
 
 #endif
+
