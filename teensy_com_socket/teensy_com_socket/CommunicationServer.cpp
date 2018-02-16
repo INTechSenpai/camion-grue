@@ -6,7 +6,7 @@ CommunicationServer Server = CommunicationServer();
 CommunicationServer::CommunicationServer() :
     ethernetServer(TCP_PORT)
 {
-    pinMode(WIZ820_PWDN_PIN, OUTPUT);
+  pinMode(WIZ820_PWDN_PIN, OUTPUT);
   digitalWrite(WIZ820_PWDN_PIN, LOW);
     pinMode(WIZ820_RESET_PIN, OUTPUT);
     digitalWrite(WIZ820_RESET_PIN, LOW);    // begin reset the WIZ820io
@@ -45,7 +45,7 @@ void CommunicationServer::communicate()
     if (client)
     {
         uint8_t socketNb = client.getSocketNumber();
-        if (!isConnected(socketNb))
+        if (!ethernetClients[socketNb])
         {
             ethernetClients[socketNb] = client;
             subscriptionList[socketNb] = DEFAULT_SUSCRIPTION;
@@ -71,12 +71,10 @@ void CommunicationServer::communicate()
         {
             for (uint8_t i = 0; i < MAX_SOCK_NUM; i++)
             {
-                if (isConnected(i) && ethernetClients[i].available() > 0)
+                if (ethernetClients[i] && ethernetClients[i].available() > 0)
                 {
                     receivedAtLeastOneByte = true;
-                    uint8_t newByte = ethernetClients[i].read();
-                    int8_t ret = receptionHandlers[i].addByte(newByte, i);
-                    printf("Message de %u: %u\n", i, newByte);
+                    int8_t ret = receptionHandlers[i].addByte(ethernetClients[i].read(), i);
                     if (ret == 1)
                     {
                         printf_err("Drop the byte\n");
@@ -137,14 +135,14 @@ void CommunicationServer::communicate()
     /* Gestion des déconnexions */
     for (uint8_t i = 0; i < MAX_SOCK_NUM; i++)
     {
-            printf("Client %u status : %u %u\n", i, ethernetClients[i].status(), ethernetClients[i].connected());
-/*        if (ethernetClients[i].status()) 
+    if (ethernetClients[i].status() && !ethernetClients[i].connected())
         {
             ethernetClients[i].stop();
             subscriptionList[i] = 0;
             printf("Client %u disconnected\n", i);
+            delay(100);
         }
-*/    }
+    }
 }
 
 uint8_t CommunicationServer::available()
@@ -171,7 +169,7 @@ bool CommunicationServer::isConnected(uint8_t client)
     }
     else
     {
-        return /*!ethernetClients[client].status() &&*/ ethernetClients[client].connected();
+        return (bool)ethernetClients[client];
     }
 }
 
