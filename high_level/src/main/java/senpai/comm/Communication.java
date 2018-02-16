@@ -62,7 +62,6 @@ public class Communication implements Closeable
 			assert false;
 		
 		medium.initialize(config);
-		log.write("Communication avec le LL établie !", Subject.COMM);
 	}
 
 
@@ -122,7 +121,7 @@ public class Communication implements Closeable
 			}
 			catch(IOException e)
 			{
-				e.printStackTrace();
+				log.write("Erreur d'envoi de données : "+e, Subject.COMM);
 				error = true;
 			}
 		} while(error);
@@ -175,14 +174,12 @@ public class Communication implements Closeable
 
 					return new Paquet(message, origine);
 				}
-			} catch(SocketException e)
+			} catch(IOException e)
 			{
 				// communication fermé
 				if(closed)
 					throw new InterruptedException("Série fermée normalement");
-				e.printStackTrace(); // problème ?
-			} catch (IOException e) {
-				e.printStackTrace();
+				log.write("Erreur de lecture de données : "+e, Subject.COMM);
 			}
 		}
 	}

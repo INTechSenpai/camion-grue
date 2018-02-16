@@ -62,10 +62,11 @@ public class Test_Communication extends JUnit_Test
 	public void test_deco() throws Exception
 	{
 		while(true)
+//		for(int i = 0; i < 2; i++)
 		{
 			data.ping().attendStatus();
 			System.out.println("Ping !");
-			Thread.sleep(300);
+			Thread.sleep(3000);
 		}
 	}
 
@@ -77,8 +78,11 @@ public class Test_Communication extends JUnit_Test
 	@Test
 	public void test_stream() throws Exception
 	{
+		data.ping();
 		data.startStream(Id.ODO_AND_SENSORS);
-		Thread.sleep(10000);
+		Thread.sleep(5000);
+		data.stopStream(Id.ODO_AND_SENSORS);
+		data.ping();
 	}
 
 	@Test

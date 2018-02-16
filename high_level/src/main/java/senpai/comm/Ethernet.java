@@ -106,6 +106,18 @@ public class Ethernet implements CommMedium
 	{
 		if(isClosed())
 		{
+			try
+			{
+				if(input != null)
+					input.close();
+				if(output != null)
+					output.close();
+			}
+			catch(IOException e1)
+			{
+				assert false;
+			}			
+			
 			socket = null;
 			do {
 				try

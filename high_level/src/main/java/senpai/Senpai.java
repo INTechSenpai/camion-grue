@@ -197,7 +197,7 @@ public class Senpai
 
 		DebugTool debug = DebugTool.getDebugTool(new Vec2RO(0,1000), Severity.INFO);
 		log = debug.getLog();
-		config = new Config(ConfigInfoSenpai.values(), false, "senpai.conf", profiles);
+		config = new Config(ConfigInfoSenpai.values(), true, "senpai.conf", profiles);
 
 		injector.addService(this);
 		injector.addService(log);
@@ -311,9 +311,12 @@ public class Senpai
 				injector.getService(Communication.class).initialize();
 				
 				OutgoingOrderBuffer outBuffer = injector.getService(OutgoingOrderBuffer.class);
-				if(outBuffer.ping().attendStatus(500) == null) // on vérifie que le LL répond
-					log.write("Le LL n'a pas répondu au ping !", Severity.CRITICAL, Subject.COMM);
-				
+				log.write("On attend la réponse du LL…", Subject.COMM);
+				boolean response;
+				do {
+					response = outBuffer.ping().attendStatus(500) != null;
+				} while(!response);
+
 				if(config.getBoolean(ConfigInfoSenpai.CHECK_LATENCY))
 					injector.getService(OutgoingOrderBuffer.class).checkLatence();
 			}
