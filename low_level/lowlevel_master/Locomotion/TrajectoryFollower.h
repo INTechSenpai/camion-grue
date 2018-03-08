@@ -155,12 +155,13 @@ public:
 		{
 			if (movePhase == BREAKING)
 			{
-				// todo : motor.break();
+                motor.breakAll();
 			}
 			else
 			{ 
-				motor.runLeft(leftPWM);
-				motor.runRight(rightPWM);
+				motor.runFrontLeft(leftPWM);
+				motor.runFrontRight(rightPWM);
+                // todo: les autres moteurs LOL !
 			}
 		}
 	}
@@ -337,9 +338,7 @@ private:
 		rightPWM = 0;
 		movingSpeedSetPoint = 0;
 		previousMovingSpeedSetpoint = 0;
-		motor.runLeft(0);
-		motor.runRight(0);
-		// motor.break();
+        motor.breakAll();
 		translationPID.resetIntegralError();
 		translationPID.resetDerivativeError();
 		leftSpeedPID.resetIntegralError();

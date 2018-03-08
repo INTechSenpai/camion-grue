@@ -6,7 +6,7 @@
 #include "Position.h"
 #include "TrajectoryPoint.h"
 #include "MotionControlTunings.h"
-#include "Singleton.h"
+#include "../Tools/Singleton.h"
 #include <vector>
 
 

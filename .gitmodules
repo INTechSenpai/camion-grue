@@ -1,0 +1,6 @@
+[submodule "low_level/lowlevel_master/CommunicationServer/Ethernet"]
+	path = low_level/lowlevel_master/CommunicationServer/Ethernet
+	url = git@github.com:INTechSenpai/Ethernet.git
+[submodule "low_level/lowlevel_master/Servos/dynamixel_teensy"]
+	path = low_level/lowlevel_master/Servos/dynamixel_teensy
+	url = git@github.com:sylvaing19/dynamixel_teensy.git
