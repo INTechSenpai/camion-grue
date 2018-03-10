@@ -14,5 +14,8 @@
 #define SERIAL_AX12_BAUDRATE        1000000
 #define SERIAL_XL320_BAUDRATE       1000000
 
+/* Timeout */
+#define SERIAL_AX12_TIMEOUT         50  // ms
+
 
 #endif

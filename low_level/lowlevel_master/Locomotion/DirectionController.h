@@ -44,6 +44,13 @@
 #define SCANN_TIMEOUT		3000	// ms
 
 
+enum DirectionControllerStatus
+{
+    DIRECTION_CONTROLLER_OK,
+    DIRECTION_CONTROLLER_MOTOR_BLOCKED
+};
+
+
 class DirectionController : public Singleton<DirectionController>, public Printable
 {
 public:
@@ -54,7 +61,7 @@ public:
         backLeftMotor(serialAX, ID_AX12_BACK_LEFT),
         backRightMotor(serialAX, ID_AX12_BACK_RIGHT)
 	{
-        serialAX.begin(SERIAL_AX12_BAUDRATE, 50);
+        serialAX.begin(SERIAL_AX12_BAUDRATE, SERIAL_AX12_TIMEOUT);
 		aimCurvature = 0;
 		updateAimAngles();
 		realLeftAngle = ANGLE_ORIGIN;
@@ -75,39 +82,43 @@ public:
 		scanning = false;
 	}
 
-	void control()
+    DirectionControllerStatus control()
 	{
 		static uint32_t lastUpdateTime = 0;
 		static uint8_t counter = 0;
+        DirectionControllerStatus ret = DIRECTION_CONTROLLER_OK;
 		
 		if (micros() - lastUpdateTime >= CONTROL_PERIOD)
 		{
+            DynamixelStatus dynamixelStatus = DYN_STATUS_OK;
 			lastUpdateTime = micros();
 			updateAimAngles();
 			if (counter == 0)
 			{
-				frontLeftMotor.goalPositionDegree(aimLeftAngle + 1);
+                dynamixelStatus = frontLeftMotor.goalPositionDegree(aimLeftAngle + 1) != DYN_STATUS_OK;
 				counter++;
 			}
 			else if (counter == 1)
 			{
-				frontRightMotor.goalPositionDegree(aimRightAngle + 1);
+                dynamixelStatus = frontRightMotor.goalPositionDegree(aimRightAngle + 1);
 				counter++;
 			}
             else if (counter == 2)
             {
-                backLeftMotor.goalPositionDegree(2 * ANGLE_ORIGIN - aimLeftAngle + 1);
+                dynamixelStatus = backLeftMotor.goalPositionDegree(2 * ANGLE_ORIGIN - aimLeftAngle + 1);
                 counter++;
             }
             else if (counter == 3)
             {
-                backRightMotor.goalPositionDegree(2 * ANGLE_ORIGIN - aimRightAngle + 1);
+                dynamixelStatus = backRightMotor.goalPositionDegree(2 * ANGLE_ORIGIN - aimRightAngle + 1);
                 counter++;
             }
 			else if (counter == 4)
 			{
-				uint16_t frontAngle = frontLeftMotor.currentPositionDegree();
-                uint16_t backAngle = backLeftMotor.currentPositionDegree();
+                uint16_t frontAngle;
+                uint16_t backAngle;
+                dynamixelStatus = frontLeftMotor.currentPositionDegree(frontAngle);
+                dynamixelStatus |= backLeftMotor.currentPositionDegree(backAngle);
 				if (frontAngle <= 300 && backAngle <= 300)
 				{
 					realLeftAngle = (frontAngle + 2 * ANGLE_ORIGIN - backAngle) / 2;
@@ -124,8 +135,10 @@ public:
 			}
 			else
 			{
-                uint16_t frontAngle = frontRightMotor.currentPositionDegree();
-                uint16_t backAngle = backRightMotor.currentPositionDegree();
+                uint16_t frontAngle;
+                uint16_t backAngle;
+                dynamixelStatus = frontRightMotor.currentPositionDegree(frontAngle);
+                dynamixelStatus |= backRightMotor.currentPositionDegree(backAngle);
                 if (frontAngle <= 300 && backAngle <= 300)
                 {
                     realRightAngle = (frontAngle + 2 * ANGLE_ORIGIN - backAngle) / 2;
@@ -142,9 +155,28 @@ public:
 			}
 			updateRealCurvature();
 
+            if (dynamixelStatus != DYN_STATUS_OK)
+            {
+                Server.printf_err("DirectionController: errno %u on operation #%u\n", dynamixelStatus, counter);
+            }
+            if (dynamixelStatus & (DYN_STATUS_OVERLOAD_ERROR | DYN_STATUS_OVERHEATING_ERROR))
+            {
+                ret = DIRECTION_CONTROLLER_MOTOR_BLOCKED;
+            }
+
             //Server.sendData(DIRECTION, ?);
 		}
+
+        return ret;
 	}
+
+    void recover()
+    {
+        frontLeftMotor.recoverTorque();
+        frontRightMotor.recoverTorque();
+        backLeftMotor.recoverTorque();
+        backRightMotor.recoverTorque();
+    }
 	
 	void setAimCurvature(float curvature)
 	{

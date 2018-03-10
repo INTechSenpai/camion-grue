@@ -74,7 +74,7 @@ public:
                         else
                         {
                             moveStatus |= EMPTY_TRAJ;
-                            stop_and_clear_trajectory();
+                            stop_and_clear_trajectory_from_interrupt();
                         }
                     }
                 }
@@ -82,7 +82,7 @@ public:
                 {
                     if (currentTrajectory.at(trajectoryIndex).isEndOfTrajectory() || moveStatus != MOVE_OK)
                     {
-                        stop_and_clear_trajectory();
+                        stop_and_clear_trajectory_from_interrupt();
                         travellingToDestination = false;
                         wasTravellingToDestination = false;
                     }
@@ -98,7 +98,7 @@ public:
                         else
                         {
                             moveStatus |= EMPTY_TRAJ;
-                            stop_and_clear_trajectory();
+                            stop_and_clear_trajectory_from_interrupt();
                             travellingToDestination = false;
                             wasTravellingToDestination = false;
                         }
@@ -108,7 +108,7 @@ public:
             else if (movePhase != BREAKING)
             {
                 moveStatus |= EMPTY_TRAJ;
-                stop_and_clear_trajectory();
+                stop_and_clear_trajectory_from_interrupt();
                 if (movePhase == MOVE_ENDED)
                 {
                     travellingToDestination = false;
@@ -117,6 +117,18 @@ public:
             }
 		}
 	}
+
+    void stop_and_clear_trajectory_from_interrupt()
+    {
+        // todo (vérifier que j'ai pensé  tout)
+        MovePhase movePhase = trajectoryFollower.getMovePhase();
+        if (movePhase != MOVE_ENDED)
+        {
+            trajectoryFollower.emergency_stop();
+        }
+        trajectoryIndex = 0;
+        currentTrajectory.clear();
+    }
 
 
 	/*
@@ -135,15 +147,9 @@ public:
 
 	void stop_and_clear_trajectory()
 	{
-        // todo (vérifier que j'ai pensé  tout)
-        // tofix: interrupt/nointerrupt ?
-        MovePhase movePhase = trajectoryFollower.getMovePhase();
-        if (movePhase != MOVE_ENDED)
-        {
-            trajectoryFollower.emergency_stop();
-        }
-        trajectoryIndex = 0;
-        currentTrajectory.clear();
+        noInterrupts();
+        stop_and_clear_trajectory_from_interrupt();
+        interrupts();
 	}
 
 	bool isMovingToDestination() const

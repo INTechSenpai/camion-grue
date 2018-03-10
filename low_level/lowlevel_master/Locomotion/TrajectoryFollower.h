@@ -44,6 +44,8 @@ public:
 	{
 		this->freqAsserv = freqAsserv;
 		movePhase = MOVE_ENDED;
+        finalise_stop();
+        moveInitTimer = 0;
 	}
 
 
@@ -61,8 +63,14 @@ public:
 		checkPosition();
 
 		if (movePhase == MOVE_INIT)
-		{ // todo: add timeout
-			if (trajectoryControlled)
+		{
+            if (millis() - moveInitTimer > TIMEOUT_MOVE_INIT)
+            {
+                movePhase = MOVE_ENDED;
+                moveStatus |= EXT_BLOCKED;
+                finalise_stop();
+            }
+			else if (trajectoryControlled)
 			{
 				directionController.setAimCurvature(trajectoryPoint.getCurvature());
 				if (ABS(directionController.getRealCurvature() - trajectoryPoint.getCurvature()) < CURVATURE_TOLERANCE)
@@ -244,6 +252,7 @@ public:
 		if (movePhase == MOVE_ENDED)
 		{
 			movePhase = MOVE_INIT;
+            moveInitTimer = millis();
 		}
 		else
 		{
@@ -261,6 +270,19 @@ public:
         return maxMovingSpeed >= 0;
     }
 
+    void emergency_stop_from_interrupt()
+    {
+        if (movePhase != MOVE_ENDED)
+        {
+            movePhase = BREAKING;
+            moveStatus |= EMERGENCY_BREAK;
+        }
+        else
+        {
+            // todo: throw error
+        }
+    }
+
 
 	/*
 		###################################################
@@ -271,15 +293,7 @@ public:
 	void emergency_stop()
 	{
 		noInterrupts();
-		if (movePhase != MOVE_ENDED)
-		{
-			movePhase = BREAKING;
-			moveStatus |= EMERGENCY_BREAK;
-		}
-		else
-		{
-			// todo: throw error
-		}
+        emergency_stop_from_interrupt();
 		interrupts();
 	}
 
@@ -476,6 +490,9 @@ private:
 	/* Accélérations maximale (variation maximale de movingSpeedSetpoint) */
 	float maxAcceleration;	// (mm*s^-2)
 	float maxDeceleration;	// (mm*s^-2)
+
+    /* Pour le timeout de la phase MOVE_INIT */
+    uint32_t moveInitTimer;
 
 };
 
