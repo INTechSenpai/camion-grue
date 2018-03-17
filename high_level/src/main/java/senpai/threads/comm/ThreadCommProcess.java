@@ -25,6 +25,7 @@ import senpai.buffer.SensorsDataBuffer;
 import senpai.capteurs.CapteursRobot;
 import senpai.capteurs.SensorsData;
 import senpai.comm.Paquet;
+import senpai.comm.CommProtocol;
 import senpai.comm.CommProtocol.Id;
 import senpai.comm.CommProtocol.InOrder;
 import senpai.robot.Robot;
@@ -114,6 +115,7 @@ public class ThreadCommProcess extends Thread
 					int xRobot = data.getInt();
 					int yRobot = data.getInt();
 					double orientationRobot = data.getFloat();
+					double courbure = data.getFloat();
 					int indexTrajectory = data.getInt();
 					int[] mesures = new int[nbCapteurs];
 					for(CapteursRobot c : CapteursRobot.values())
@@ -124,18 +126,8 @@ public class ThreadCommProcess extends Thread
 					double angleTourelleGauche = data.getFloat();
 					double angleTourelleDroite = data.getFloat();
 						
-					Cinematique theorique = null;// TODO = chemin.setCurrentIndex(indexTrajectory);
-
-					if(theorique == null)
-					{
-//						log.debug("Cinématique théorique inconnue !", Verbose.PF.masque);
-						current = new Cinematique(xRobot, yRobot, orientationRobot, true, 0, false);
-					}
-					else
-					{
-						theorique.copy(current);
-						current.updateReel(xRobot, yRobot, orientationRobot, current.enMarcheAvant, current.courbureReelle);
-					}
+					// TODO : marche avant ?
+					current.updateReel(xRobot, yRobot, orientationRobot, current.enMarcheAvant, courbure);
 
 					robot.setCinematique(current);
 
@@ -151,9 +143,11 @@ public class ThreadCommProcess extends Thread
 				else if(paquet.origine == Id.WAIT_FOR_JUMPER)
 				{
 					capteursOn = true;
-					// TODO
-//						config.set(ConfigInfo.DATE_DEBUT_MATCH, System.currentTimeMillis());
-//						config.set(ConfigInfo.MATCH_DEMARRE, true);
+					paquet.origine.ticket.set(InOrder.ACK_SUCCESS);
+				}
+				
+				else if(paquet.origine == Id.STOP)
+				{
 					paquet.origine.ticket.set(InOrder.ACK_SUCCESS);
 				}
 
@@ -164,7 +158,7 @@ public class ThreadCommProcess extends Thread
 				
 				else if(paquet.origine == Id.PING)
 				{
-					assert paquet.message.capacity() == 1 : paquet;
+					assert data.capacity() == 1 && data.get() == 0x00 : paquet;
 					paquet.origine.ticket.set(InOrder.ACK_SUCCESS);
 				}
 
@@ -175,19 +169,6 @@ public class ThreadCommProcess extends Thread
 				{
 					log.write("Fin du Match !", Subject.DUMMY);
 					container.interruptWithCodeError(ErrorCode.END_OF_MATCH);
-/*					if(data[0] == InOrder.ARRET_URGENCE.codeInt)
-					{
-						log.write("Arrêt d'urgence provenant du bas niveau !", Severity.CRITICAL, Subject.DUMMY);
-						paquet.origine.ticket.set(InOrder.ARRET_URGENCE);
-						// On arrête le thread principal
-						container.interruptWithCodeError(ErrorCode.EMERGENCY_STOP);
-					}
-					else
-					{
-						paquet.origine.ticket.set(InOrder.MATCH_FINI);
-						// On arrête le thread principal
-						container.interruptWithCodeError(ErrorCode.END_OF_MATCH);
-					}*/
 
 					// On attend d'être arrêté
 					while(true)
@@ -199,26 +180,21 @@ public class ThreadCommProcess extends Thread
 				 */
 				else if(paquet.origine == Id.FOLLOW_TRAJECTORY)
 				{
-					// TODO
 					byte code = data.get();
-					if(code == InOrder.ROBOT_ARRIVE.codeInt)
-						paquet.origine.ticket.set(InOrder.ROBOT_ARRIVE);
-					else if(code == InOrder.ROBOT_BLOCAGE_INTERIEUR.codeInt)
-						paquet.origine.ticket.set(InOrder.ROBOT_BLOCAGE_INTERIEUR);
-					else if(code == InOrder.ROBOT_BLOCAGE_EXTERIEUR.codeInt)
-						paquet.origine.ticket.set(InOrder.ROBOT_BLOCAGE_EXTERIEUR);
-					else if(code == InOrder.PLUS_DE_POINTS.codeInt)
-						paquet.origine.ticket.set(InOrder.PLUS_DE_POINTS);
-					else if(code == InOrder.STOP_REQUIRED.codeInt)
-						paquet.origine.ticket.set(InOrder.STOP_REQUIRED);
-					else if(code == InOrder.TROP_LOIN.codeInt)
-						paquet.origine.ticket.set(InOrder.TROP_LOIN);
+					if(code == 0)
+						paquet.origine.ticket.set(InOrder.ROBOT_OK);
+					else
+					{
+						log.write(CommProtocol.TrajEndMask.describe(code), Subject.CAPTEURS);
+						paquet.origine.ticket.set(InOrder.ROBOT_KO);
+					}
 				}
 
 				/*
 				 * ACTIONNEURS
 				 */
-
+				// TODO
+				
 				else
 					assert false : "On a ignoré une réponse " + paquet.origine + " (taille : " + data.capacity() + ")";
 				

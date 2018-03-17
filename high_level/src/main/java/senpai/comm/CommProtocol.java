@@ -186,19 +186,43 @@ public class CommProtocol
 		}
 	}
 
+	public enum TrajEndMask
+	{
+		STOP_REQUIRED,
+		ROBOT_BLOCAGE_EXTERIEUR,
+		ROBOT_BLOCAGE_INTERIEUR,
+		PLUS_DE_POINTS,
+		TROP_LOIN;
+		
+		private final byte masque = (byte) (1 << ordinal());
+		
+		public static String describe(byte valeur)
+		{
+			if(valeur == 0)
+				return "";
+			StringBuilder out = new StringBuilder();
+			out.append("Codes erreurs : ");
+			for(TrajEndMask m : values())
+			{
+				if((valeur & m.masque) != 0)
+				{
+					out.append(m.toString());
+					out.append(" ");
+				}
+			}
+			return out.toString();
+		}
+
+	}
+	
 	public enum InOrder
 	{
 		/**
 		 * Protocole bas niveau vers Java
 		 */
-
-		// Réponse à "FollowTrajectory"
-		ROBOT_ARRIVE(0x00, State.OK),
-		STOP_REQUIRED(0x01, State.KO),
-		ROBOT_BLOCAGE_EXTERIEUR(0x02, State.KO),
-		ROBOT_BLOCAGE_INTERIEUR(0x04, State.KO),
-		PLUS_DE_POINTS(0x08, State.KO),
-		TROP_LOIN(0x10, State.KO),
+		
+		ROBOT_OK(0x00, State.OK),
+		ROBOT_KO(0x01, State.KO),
 
 		// Couleur
 		COULEUR_ORANGE(0x00, State.OK),
