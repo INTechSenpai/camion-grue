@@ -66,10 +66,7 @@ public class CommProtocol
 		STOP(0x21, -20),
 		WAIT_FOR_JUMPER(0x22),
 		START_MATCH_CHRONO(0x23),
-//		SCAN(0x49),
-		RUN(0x24),
-//		SET_MAX_SPEED(0x5C),
-//		SET_SENSOR_MODE(0x5F),
+		RUN(0x30),
 		
 		// Ordres immédiats (0x80 à 0xFF)
 		PING(0x80, true),
@@ -77,9 +74,8 @@ public class CommProtocol
 		EDIT_POSITION(0x82, false),
 		SET_POSITION(0x83, false),
 		SEND_ARC(0x84, false, -10),
-		SET_CURVATURE(0x85, false),
-		SET_MAX_SPEED(0x86, false);
-
+		SET_CURVATURE(0x90, false),
+		SET_MAX_SPEED(0x91, false);
 
 		// Paramètres constants
 		public final byte code;
@@ -198,20 +194,16 @@ public class CommProtocol
 
 		// Réponse à "FollowTrajectory"
 		ROBOT_ARRIVE(0x00, State.OK),
-		ROBOT_BLOCAGE_EXTERIEUR(0x01, State.KO),
-		ROBOT_BLOCAGE_INTERIEUR(0x02, State.KO),
-		PLUS_DE_POINTS(0x03, State.KO),
-		STOP_REQUIRED(0x04, State.KO),
-		TROP_LOIN(0x05, State.KO),
+		STOP_REQUIRED(0x01, State.KO),
+		ROBOT_BLOCAGE_EXTERIEUR(0x02, State.KO),
+		ROBOT_BLOCAGE_INTERIEUR(0x04, State.KO),
+		PLUS_DE_POINTS(0x08, State.KO),
+		TROP_LOIN(0x10, State.KO),
 
 		// Couleur
-		COULEUR_VERT(0x00, State.OK),
-		COULEUR_ORANGE(0x01, State.OK),
+		COULEUR_ORANGE(0x00, State.OK),
+		COULEUR_VERT(0x01, State.OK),
 		COULEUR_ROBOT_INCONNU(0x02, State.KO),
-
-		// Réponse à "StartMatchChrono"
-		MATCH_FINI(0x00, State.OK),
-		ARRET_URGENCE(0x01, State.KO),
 
 		ACK_SUCCESS(0x00, State.OK),
 		ACK_FAILURE(0x01, State.KO);
