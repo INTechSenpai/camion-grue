@@ -18,7 +18,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.SocketException;
+import java.nio.ByteBuffer;
 import pfg.config.Config;
 import pfg.graphic.log.Log;
 import senpai.ConfigInfoSenpai;
@@ -157,10 +157,12 @@ public class Communication implements Closeable
 				else
 				{	
 					assert taille >= 0 && taille <= 254 : "Le message reçu a un mauvais champ \"length\" : "+taille;
-					int[] message = new int[taille];
-					for(int i = 0; i < taille; i++)
-						message[i] = read();
+					ByteBuffer message = ByteBuffer.allocate(taille);
 
+					for(int i = 0; i < taille; i++)
+						message.put((byte) read());
+					message.flip();
+					
 					Id origine = Id.LUT[origineInt];
 					assert origine != null : "ID inconnu : "+origineInt+", data : "+message;
 

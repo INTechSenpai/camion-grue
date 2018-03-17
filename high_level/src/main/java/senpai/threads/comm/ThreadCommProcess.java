@@ -14,6 +14,7 @@
 
 package senpai.threads.comm;
 
+import java.nio.ByteBuffer;
 import pfg.config.Config;
 import pfg.graphic.log.Log;
 import pfg.kraken.robot.Cinematique;
@@ -27,7 +28,6 @@ import senpai.comm.Paquet;
 import senpai.comm.CommProtocol.Id;
 import senpai.comm.CommProtocol.InOrder;
 import senpai.robot.Robot;
-import senpai.Severity;
 import senpai.Subject;
 
 /**
@@ -71,26 +71,27 @@ public class ThreadCommProcess extends Thread
 		{
 			while(true)
 			{
-				long avant = System.currentTimeMillis();
+//				long avant = System.currentTimeMillis();
 
 				Paquet paquet = serie.take();
 
 //				log.write("Durée avant obtention du paquet : " + (System.currentTimeMillis() - avant) + ". Traitement de " + paquet, Subject.COMM);
 
-				avant = System.currentTimeMillis();
-				int[] data = paquet.message;
+//				avant = System.currentTimeMillis();
+				ByteBuffer data = paquet.message;
 
 				/**
 				 * Couleur du robot
 				 */
 				if(paquet.origine == Id.ASK_COLOR)
 				{
-					if(data[0] == InOrder.COULEUR_VERT.codeInt)
+					byte code = data.get();
+					if(code == InOrder.COULEUR_VERT.codeInt)
 					{
 						paquet.origine.ticket.set(InOrder.COULEUR_VERT);
 //						config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(true));
 					}
-					else if(data[0] == InOrder.COULEUR_ORANGE.codeInt)
+					else if(code == InOrder.COULEUR_ORANGE.codeInt)
 					{
 						paquet.origine.ticket.set(InOrder.COULEUR_ORANGE);
 //						config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(false));
@@ -98,7 +99,7 @@ public class ThreadCommProcess extends Thread
 					else
 					{
 						paquet.origine.ticket.set(InOrder.COULEUR_ROBOT_INCONNU);
-						assert data[0] == InOrder.COULEUR_ROBOT_INCONNU.codeInt : "Code couleur inconnu : " + data[0];
+						assert code == InOrder.COULEUR_ROBOT_INCONNU.codeInt : "Code couleur inconnu : " + code;
 					}
 				}
 
@@ -110,20 +111,19 @@ public class ThreadCommProcess extends Thread
 					/**
 					 * Récupération de la position et de l'orientation
 					 */
-					int xRobot = data[0] << 4;
-					xRobot += data[1] >> 4;
-					xRobot -= 1500;
-					int yRobot = (data[1] & 0x0F) << 8;
-					yRobot = yRobot + data[2] - 1000;
-
-					// On ne récupère pas toutes les infos mécaniques (la
-					// courbure manque, marche avant, …)
-					// Du coup, on récupère les infos théoriques (à partir du
-					// chemin) qu'on complète
-					double orientationRobot = ((data[3] << 8) + data[4]) / 1000.;
-					int indexTrajectory = data[5];
-					// log.debug("Index trajectory : "+indexTrajectory);
-
+					int xRobot = data.getInt();
+					int yRobot = data.getInt();
+					double orientationRobot = data.getFloat();
+					int indexTrajectory = data.getInt();
+					int[] mesures = new int[nbCapteurs];
+					for(CapteursRobot c : CapteursRobot.values())
+					{
+						mesures[c.ordinal()] = data.getInt();
+						log.write("Capteur " + c.name() + " : " + mesures[c.ordinal()], Subject.CAPTEURS);
+					}
+					double angleTourelleGauche = data.getFloat();
+					double angleTourelleDroite = data.getFloat();
+						
 					Cinematique theorique = null;// TODO = chemin.setCurrentIndex(indexTrajectory);
 
 					if(theorique == null)
@@ -141,37 +141,8 @@ public class ThreadCommProcess extends Thread
 
 					log.write("Le robot est en " + current.getPosition() + ", orientation : " + orientationRobot + ", index : " + indexTrajectory, Subject.CAPTEURS);
 
-					boolean envoi = false;
-
-					if(data.length > 6) // la présence de ces infos n'est pas
-										// systématique
-					{
-						// changement de repère (cf la doc)
-						double angleRoueGauche = -(data[6] - 150.) * Math.PI / 180.;
-						double angleRoueDroite = -(data[7] - 150.) * Math.PI / 180.;
-
-//						robot.setAngleRoues(angleRoueGauche, angleRoueDroite);
-//						log.debug("Angle roues : à gauche " + data[6] + ", à droite " + data[7], Verbose.ASSER.masque);
-
-						/**
-						 * Acquiert ce que voit les capteurs
-						 */
-						int[] mesures = new int[nbCapteurs];
-						for(int i = 0; i < nbCapteurs; i++)
-						{
-							mesures[i] = data[8 + i] * CapteursRobot.values[i].type.conversion;
-							log.write("Capteur " + CapteursRobot.values[i].name() + " : " + mesures[i], Subject.CAPTEURS);
-						}
-
-						if(capteursOn)
-						{
-							buffer.add(new SensorsData(angleRoueGauche, angleRoueDroite, mesures, current));
-							envoi = true;
-						}
-					}
-					// il faut toujours envoyer la position
-					if(!envoi)
-						buffer.add(new SensorsData(current));
+					if(capteursOn)
+						buffer.add(new SensorsData(angleTourelleGauche, angleTourelleDroite, mesures, current));
 				}
 
 				/**
@@ -193,7 +164,7 @@ public class ThreadCommProcess extends Thread
 				
 				else if(paquet.origine == Id.PING)
 				{
-					assert paquet.message.length == 1 : paquet;
+					assert paquet.message.capacity() == 1 : paquet;
 					paquet.origine.ticket.set(InOrder.ACK_SUCCESS);
 				}
 
@@ -203,8 +174,8 @@ public class ThreadCommProcess extends Thread
 				else if(paquet.origine == Id.START_MATCH_CHRONO)
 				{
 					log.write("Fin du Match !", Subject.DUMMY);
-
-					if(data[0] == InOrder.ARRET_URGENCE.codeInt)
+					container.interruptWithCodeError(ErrorCode.END_OF_MATCH);
+/*					if(data[0] == InOrder.ARRET_URGENCE.codeInt)
 					{
 						log.write("Arrêt d'urgence provenant du bas niveau !", Severity.CRITICAL, Subject.DUMMY);
 						paquet.origine.ticket.set(InOrder.ARRET_URGENCE);
@@ -216,7 +187,7 @@ public class ThreadCommProcess extends Thread
 						paquet.origine.ticket.set(InOrder.MATCH_FINI);
 						// On arrête le thread principal
 						container.interruptWithCodeError(ErrorCode.END_OF_MATCH);
-					}
+					}*/
 
 					// On attend d'être arrêté
 					while(true)
@@ -229,19 +200,18 @@ public class ThreadCommProcess extends Thread
 				else if(paquet.origine == Id.FOLLOW_TRAJECTORY)
 				{
 					// TODO
-//					chemin.setCurrentIndex(data[1]); // on a l'index courant
-
-					if(data[0] == InOrder.ROBOT_ARRIVE.codeInt)
+					byte code = data.get();
+					if(code == InOrder.ROBOT_ARRIVE.codeInt)
 						paquet.origine.ticket.set(InOrder.ROBOT_ARRIVE);
-					else if(data[0] == InOrder.ROBOT_BLOCAGE_INTERIEUR.codeInt)
+					else if(code == InOrder.ROBOT_BLOCAGE_INTERIEUR.codeInt)
 						paquet.origine.ticket.set(InOrder.ROBOT_BLOCAGE_INTERIEUR);
-					else if(data[0] == InOrder.ROBOT_BLOCAGE_EXTERIEUR.codeInt)
+					else if(code == InOrder.ROBOT_BLOCAGE_EXTERIEUR.codeInt)
 						paquet.origine.ticket.set(InOrder.ROBOT_BLOCAGE_EXTERIEUR);
-					else if(data[0] == InOrder.PLUS_DE_POINTS.codeInt)
+					else if(code == InOrder.PLUS_DE_POINTS.codeInt)
 						paquet.origine.ticket.set(InOrder.PLUS_DE_POINTS);
-					else if(data[0] == InOrder.STOP_REQUIRED.codeInt)
+					else if(code == InOrder.STOP_REQUIRED.codeInt)
 						paquet.origine.ticket.set(InOrder.STOP_REQUIRED);
-					else if(data[0] == InOrder.TROP_LOIN.codeInt)
+					else if(code == InOrder.TROP_LOIN.codeInt)
 						paquet.origine.ticket.set(InOrder.TROP_LOIN);
 				}
 
@@ -250,7 +220,7 @@ public class ThreadCommProcess extends Thread
 				 */
 
 				else
-					assert false : "On a ignoré une réponse " + paquet.origine + " (taille : " + data.length + ")";
+					assert false : "On a ignoré une réponse " + paquet.origine + " (taille : " + data.capacity() + ")";
 				
 //				log.write("Durée de traitement de " + paquet.origine + " : " + (System.currentTimeMillis() - avant), Subject.COMM);
 			}

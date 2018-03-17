@@ -14,6 +14,7 @@
 
 package senpai.comm;
 
+import java.nio.ByteBuffer;
 import senpai.comm.CommProtocol.Id;
 
 /**
@@ -26,9 +27,9 @@ import senpai.comm.CommProtocol.Id;
 public class Paquet
 {
 	public Id origine;
-	public int[] message;
+	public ByteBuffer message;
 
-	public Paquet(int[] message, Id origine)
+	public Paquet(ByteBuffer message, Id origine)
 	{
 		this.origine = origine;
 		this.message = message;
@@ -38,9 +39,9 @@ public class Paquet
 	public String toString()
 	{
 		String aff = "";
-		for(int i = 0; i < message.length; i++)
+		for(int i = 0; i < message.capacity(); i++)
 		{
-			int out = message[i];
+			int out = message.get(i);
 			String s = Integer.toHexString(out).toUpperCase();
 			if(s.length() == 1)
 				aff += "0" + s + " ";
