@@ -38,7 +38,7 @@ public class Ticket
 */
 	public void set(InOrder order)
 	{
-		assert ordre.isEmpty();
+//		assert ordre.isEmpty();
 		ordre.offer(order);
 	}
 

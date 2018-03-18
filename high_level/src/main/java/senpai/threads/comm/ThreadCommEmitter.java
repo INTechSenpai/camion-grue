@@ -14,7 +14,7 @@
 
 package senpai.threads.comm;
 
-import pfg.graphic.log.Log;
+import pfg.log.Log;
 import senpai.Subject;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.Communication;

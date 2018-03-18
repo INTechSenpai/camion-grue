@@ -38,7 +38,7 @@ import pfg.kraken.Kraken;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.utils.XY;
-import pfg.graphic.log.Log;
+import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.Communication;
 import senpai.obstacles.ObstaclesFixes;

@@ -14,7 +14,7 @@
 
 package senpai.table;
 
-import pfg.graphic.log.Log;
+import pfg.log.Log;
 
 /**
  * Gère les éléments de jeux

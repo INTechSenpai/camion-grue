@@ -14,7 +14,7 @@
 
 package senpai.threads;
 
-import pfg.graphic.log.Log;
+import pfg.log.Log;
 import senpai.Subject;
 import senpai.buffer.SensorsDataBuffer;
 import senpai.capteurs.CapteursProcess;

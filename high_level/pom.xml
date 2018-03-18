@@ -44,6 +44,14 @@
             </snapshots>
         </repository>
         <repository>
+            <id>log-pfg-mvn-repo</id>
+            <url>https://raw.githubusercontent.com/PFGimenez/log/mvn-repo/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
             <id>kraken-pfg-mvn-repo</id>
             <url>https://raw.githubusercontent.com/PFGimenez/The-Kraken-Pathfinding/mvn-repo/</url>
             <snapshots>
@@ -65,6 +73,12 @@
       <groupId>pfg.config</groupId>
       <artifactId>config</artifactId>
       <version>[1.4,)</version>
+    </dependency>
+
+    <dependency>
+      <groupId>pfg.log</groupId>
+      <artifactId>log</artifactId>
+      <version>[1.0,)</version>
     </dependency>
 
     <dependency>

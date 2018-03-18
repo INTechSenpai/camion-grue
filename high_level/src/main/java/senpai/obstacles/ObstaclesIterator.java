@@ -17,7 +17,7 @@ package senpai.obstacles;
 import java.util.Iterator;
 
 import pfg.kraken.obstacles.Obstacle;
-import pfg.graphic.log.Log;
+import pfg.log.Log;
 /**
  * Itérator permettant de manipuler facilement les obstacles mobiles
  * 

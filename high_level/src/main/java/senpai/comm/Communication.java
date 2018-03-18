@@ -20,7 +20,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import pfg.config.Config;
-import pfg.graphic.log.Log;
+import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
 import senpai.Severity;
 import senpai.Subject;

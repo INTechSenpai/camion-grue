@@ -20,7 +20,7 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
-import pfg.graphic.log.Log;
+import pfg.log.Log;
 import senpai.Subject;
 import senpai.comm.Order;
 import senpai.comm.Ticket;

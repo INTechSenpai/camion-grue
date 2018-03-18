@@ -22,7 +22,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import pfg.config.Config;
-import pfg.graphic.log.Log;
+import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
 import senpai.Severity;
 import senpai.Subject;

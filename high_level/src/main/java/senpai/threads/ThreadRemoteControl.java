@@ -23,7 +23,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import pfg.config.Config;
-import pfg.graphic.log.Log;
+import pfg.log.Log;
 import senpai.Subject;
 import senpai.ConfigInfoSenpai;
 import senpai.Senpai;

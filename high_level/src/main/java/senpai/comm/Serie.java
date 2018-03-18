@@ -13,7 +13,7 @@ import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
 import gnu.io.UnsupportedCommOperationException;
 import pfg.config.Config;
-import pfg.graphic.log.Log;
+import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
 import senpai.Severity;
 import senpai.Subject;

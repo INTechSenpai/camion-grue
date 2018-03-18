@@ -16,7 +16,7 @@ package senpai.buffer;
 
 import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
-import pfg.graphic.log.Log;
+import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
 import senpai.capteurs.SensorsData;
 

@@ -14,7 +14,7 @@
 
 package senpai.obstacles;
 
-import pfg.graphic.log.Log;
+import pfg.log.Log;
 
 /**
  * Itérator permettant de manipuler facilement les obstacles mobiles du présent

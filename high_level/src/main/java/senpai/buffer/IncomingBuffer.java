@@ -18,7 +18,7 @@ package senpai.buffer;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import pfg.graphic.log.Log;
+import pfg.log.Log;
 import senpai.Severity;
 import senpai.Subject;
 import pfg.graphic.Chart;
@@ -61,7 +61,7 @@ public class IncomingBuffer<T> implements Plottable
 
 		} catch(IllegalStateException e)
 		{
-			e.printStackTrace();
+//			log.write("Buffer plein !"+e, Subject.COMM);
 		}
 	}
 	

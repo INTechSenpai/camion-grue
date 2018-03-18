@@ -19,7 +19,7 @@ import java.util.List;
 import pfg.config.Config;
 import pfg.kraken.dstarlite.DStarLite;
 import pfg.kraken.obstacles.Obstacle;
-import pfg.graphic.log.Log;
+import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
 import senpai.Subject;
 import senpai.buffer.ObstaclesBuffer;

@@ -19,7 +19,7 @@ import java.util.List;
 
 import pfg.kraken.astar.TentacularAStar;
 import pfg.kraken.obstacles.Obstacle;
-import pfg.graphic.log.Log;
+import pfg.log.Log;
 import senpai.Severity;
 import senpai.Subject;
 import senpai.buffer.ObstaclesBuffer;

@@ -14,15 +14,13 @@
 
 package senpai;
 
-import pfg.graphic.log.SeverityCategory;
-
 /**
  * Les différents niveaux de sévérité
  * @author pf
  *
  */
 
-public enum Severity implements SeverityCategory
+public enum Severity implements pfg.log.Severity
 {
 	INFO, WARNING, CRITICAL;
 }

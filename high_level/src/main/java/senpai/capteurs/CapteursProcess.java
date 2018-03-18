@@ -35,7 +35,7 @@ import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XY_RW;
-import pfg.graphic.log.Log;
+import pfg.log.Log;
 
 /**
  * Cette classe contient les informations sur la situation

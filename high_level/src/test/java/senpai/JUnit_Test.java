@@ -23,7 +23,7 @@ import org.junit.runner.Result;
 import pfg.config.Config;
 import pfg.graphic.WindowFrame;
 import pfg.kraken.robot.Cinematique;
-import pfg.graphic.log.Log;
+import pfg.log.Log;
 import org.junit.After;
 
 import senpai.robot.Robot;

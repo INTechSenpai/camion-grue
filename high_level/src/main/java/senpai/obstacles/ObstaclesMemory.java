@@ -24,7 +24,7 @@ import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.container.DynamicObstacles;
-import pfg.graphic.log.Log;
+import pfg.log.Log;
 import senpai.CouleurSenpai;
 
 /**
