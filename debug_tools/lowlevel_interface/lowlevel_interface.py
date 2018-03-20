@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import (QWidget, QGridLayout, QSplitter, QApplication, QFra
 from PyQt5.QtGui import (QIcon, QPixmap, QFont)
 from PyQt5.QtCore import Qt
 import sys, random
+import struct
 import pyqtgraph
 from CommandList import *
 from backend import Backend
@@ -366,7 +367,7 @@ class CommandBox(QFrame):
         self.command = command
         self.sendCallback = sendCallback
         grid = QGridLayout()
-        self.id = QLabel('0x%02x' % command.id, self)
+        self.id = QLabel('0x%02x' % command.id, self) # todo ajouter code couleur en fonction du type d'ordre (long, court, débug)
         if len(command.inputFormat) > 0:
             self.nameButton = QPushButton(command.name, self)
             self.nameButton.setCheckable(True)
@@ -377,6 +378,8 @@ class CommandBox(QFrame):
         self.sendButton = QPushButton(self)
         self.sendButton.setIcon(QIcon('img/send.png'))
         self.sendButton.clicked.connect(self.send)
+        self.sendButtonEnabledByMaster = True
+        self.allFieldsValid = True
 
         grid.addWidget(self.id, 0, 0)
         grid.addWidget(self.nameButton, 0, 1)
@@ -392,13 +395,15 @@ class CommandBox(QFrame):
             label = QLabel(field.name, self)
             label.setHidden(True)
             grid.addWidget(label, row, 0)
-            if len(field.legend) == 0:
+            if field.type == bool:
+                widget = QCheckBox(self)
+            elif field.type == Enum:
+                widget = QComboBox(self)
+                for entry in field.legend:
+                    widget.addItem(entry)
+            else:
                 widget = QLineEdit(self)
                 widget.textChanged.connect(self.checkTextFields)
-            else:
-                widget = QComboBox(self)
-                for value, name in field.legend.items():
-                    widget.addItem(name)
             widget.setHidden(True)
             grid.addWidget(widget, row, 1)
             self.label_widget_field.append((label, widget, field))
@@ -434,62 +439,49 @@ class CommandBox(QFrame):
             if isinstance(widget, QLineEdit):
                 widget.setText(str(field.default))
             elif isinstance(widget, QComboBox):
-                i = 0
-                for value, name in field.legend.items():
-                    if value == field.default:
-                        widget.setCurrentIndex(i)
-                        break
-                    i += 1
+                widget.setCurrentIndex(field.default)
+            elif isinstance(widget, QCheckBox):
+                widget.setChecked(bool(field.default))
             else:
                 raise Exception("Unknown widget type")
 
     def send(self):
+        self.checkTextFields()
+        if not self.allFieldsValid:
+            return
         args = []
         for label, widget, field in self.label_widget_field:
-            value = None
             if isinstance(widget, QLineEdit):
-                if self.checkTextFields():
-                    value = int(widget.text())
+                value = float(widget.text())
             elif isinstance(widget, QComboBox):
-                for v, name in field.legend.items():
-                    if name == widget.currentText():
-                        value = v
+                value = widget.currentText()
+            elif isinstance(widget, QCheckBox):
+                value = bool(widget.isChecked())
             else:
                 raise Exception("Unknown widget type")
-            if value is None:
-                return
-            else:
-                args.append(value)
+            args.append(value)
         self.sendCallback(self.command, args)
 
     def checkTextFields(self):
-        allOk = True
+        self.allFieldsValid = True
         for label, widget, field in self.label_widget_field:
             if isinstance(widget, QLineEdit):
                 try:
-                    value = int(widget.text())
-                    if field.type == NumberType.UINT8 and (value < 0 or value > 255):
-                        raise ValueError
-                    elif field.type == NumberType.INT8 and (value < -128 or value > 127):
-                        raise ValueError
-                    elif field.type == NumberType.UINT16 and (value < 0 or value > 65535):
-                        raise ValueError
-                    elif field.type == NumberType.INT16 and (value < -32768 or value > 32767):
-                        raise ValueError
-                    elif field.type == NumberType.UINT32 and (value < 0 or value > 4294967295):
-                        raise ValueError
-                    elif field.type == NumberType.INT32 and (value < -2147483648 or value > 2147483647):
+                    if field.type == float:
+                        struct.pack("f", float(widget.text()))
+                    elif field.type == int:
+                        struct.pack("i", int(widget.text()))
+                    else:
                         raise ValueError
                     widget.setStyleSheet("")
-                    self.sendButton.setEnabled(True)
-                except ValueError:
+                except (ValueError, struct.error):
                     widget.setStyleSheet("background-color: rgb(249, 83, 83)")
-                    self.sendButton.setEnabled(False)
-                    allOk = False
-        return allOk
+                    self.allFieldsValid = False
+        self.sendButton.setEnabled(self.allFieldsValid and self.sendButtonEnabledByMaster)
 
     def enableSendButton(self, enable):
-        self.sendButton.setEnabled(enable)
+        self.sendButtonEnabledByMaster = enable
+        self.sendButton.setEnabled(enable and self.allFieldsValid)
 
 
 class ConsolePanel(QFrame):
@@ -586,14 +578,14 @@ class ConsolePanel(QFrame):
                     columnCount += 1
             self.cbArea.addLayout(line)
 
-    def formatTextToConsole(self, text): # todo add support for spyOrder channel
+    def formatTextToConsole(self, text): # todo add support for spyOrder channel and optimize it !
         textLines = text.splitlines(keepends=True)
         lineNb = 0
         for line in textLines:
             lineNb += 1
             sLine = line.split('_', maxsplit=2)
             if len(sLine) != 3:
-                print("Incorrect line nb", lineNb, ":", line)
+                # print("Incorrect line nb", lineNb, ":", line)
                 continue
             try:
                 int(sLine[0])

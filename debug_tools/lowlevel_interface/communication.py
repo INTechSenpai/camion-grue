@@ -89,8 +89,11 @@ class Communication:
                         elif self.currentMsgLength != 0xFF and len(self.currentMgsData) == self.currentMsgLength:
                             endReached = True
                     if endReached:
-                        message = Message(self.currentMsgId, bytes(self.currentMgsData), self.currentMsgLength != 0xFF)
-                        self.messageBuffer.append(message)
+                        try:
+                            message = Message(self.currentMsgId, bytes(self.currentMgsData), self.currentMsgLength != 0xFF)
+                            self.messageBuffer.append(message)
+                        except ValueError:
+                            print("Incoherent frame received")
                         self.readingMsg = False
                         self.currentMsgId = None
                         self.currentMsgLength = None

@@ -1,5 +1,7 @@
 from communication import Communication, Message
 from CommandList import *
+from enum import Enum
+import struct
 import time
 from PyQt5.QtCore import QTimer
 
@@ -142,43 +144,23 @@ class Backend:
         i = 0
         for field in fieldList:
             try:
-                val = byteList[i]
-                if field.type == NumberType.UINT8:
-                    i += 1
-                elif field.type == NumberType.INT8 :
-                    if val > 127:
-                        val -= 256
-                    i+= 1
-                elif field.type == NumberType.UINT16:
-                    i += 1
-                    val += byteList[i] * 256
-                    i += 1
-                elif field.type == NumberType.INT16:
-                    i += 1
-                    val += byteList[i] * 256
-                    if val > 32767:
-                        val -= 65536
-                    i += 1
-                elif field.type == NumberType.UINT32:
-                    i += 1
-                    val += byteList[i] * 256
-                    i += 1
-                    val += byteList[i] * 256 * 256
-                    i += 1
-                    val += byteList[i] * 256 * 256 * 256
-                    i += 1
-                elif field.type == NumberType.INT32:
-                    i += 1
-                    val += byteList[i] * 256
-                    i += 1
-                    val += byteList[i] * 256 * 256
-                    i += 1
-                    val += byteList[i] * 256 * 256 * 256
-                    if val > 2147483647:
-                        val -= 4294967296
-                    i += 1
+                if field.type == int:
+                    val, = struct.unpack_from("i", byteList, i)
+                    i += struct.calcsize("i")
+                elif field.type == float:
+                    val, = struct.unpack_from("f", byteList, i)
+                    i += struct.calcsize("f")
+                elif field.type == bool:
+                    val, = struct.unpack_from("?", byteList, i)
+                    i += struct.calcsize("?")
+                elif field.type == Enum:
+                    index, = struct.unpack_from("B", byteList, i)
+                    i += struct.calcsize("B")
+                    val = field.legend[index]
+                else:
+                    raise ValueError
                 output.append(val)
-            except IndexError:
+            except (IndexError, struct.error, ValueError):
                 print("Byte list:", byteList, "Field name:", field.name)
                 raise
         return output
@@ -195,6 +177,7 @@ class Backend:
         self.console.setText("".join([x[1] for x in self.consoleEntries if self.tMin <= x[0] <= self.currentTime]))
 
     def updateCurveGraph(self):
+        #todo : optimize this
         subData = {}
         for entry in self.curveGraphEntries:
             if self.tMin <= entry[0] <= self.currentTime:
@@ -213,7 +196,7 @@ class Backend:
         pass
 
     def updateTimeBounds(self):
-        print("Set bounds")
+        # print("Set bounds")
         self.toolbar.setTimeBounds(self.tMax - self.tMin)
 
     # Methods called in the Qt thread
@@ -225,7 +208,7 @@ class Backend:
         self.communication.disconnect()
 
     def setCurrentTime(self, timestamp):
-        print("Set current time")
+        # print("Set current time")
         self.currentTime = timestamp + self.tMax
         self.needUpdateConsole = True
         self.needUpdateCurveGraph = True
@@ -271,51 +254,29 @@ class Backend:
         self.needUpdateScatterGraph = True
 
     def sendOrder(self, command, args):
-        messageData = bytearray()
-        if len(command.inputFormat) != len(args):
-            print("Invalid order to send")
-        else:
+        try:
+            if len(command.inputFormat) != len(args):
+                raise ValueError("Invalid order to send")
+            messageData = bytearray()
             i = 0
             for field in command.inputFormat:
-                v = args[i]
-                if field.type == NumberType.UINT8:
-                    messageData.append(v)
-                elif field.type == NumberType.INT8 :
-                    if v < 0:
-                        v += 256
-                    messageData.append(v)
-                elif field.type == NumberType.UINT16:
-                    messageData.append(int(v % 256))
-                    messageData.append(int(v / 256))
-                elif field.type == NumberType.INT16:
-                    if v < 0:
-                        v += (256*256)
-                    messageData.append(int(v % 256))
-                    messageData.append(int(v / 256))
-                elif field.type == NumberType.UINT32:
-                    o4 = int(v / (256*256*256))
-                    r4 = int(v % (256*256*256))
-                    o3 = int(r4 / (256*256))
-                    r3 = int(r4 % (256*256))
-                    o2 = int(r3 / 256)
-                    o1 = int(r3 % 256)
-                    messageData.append(o1)
-                    messageData.append(o2)
-                    messageData.append(o3)
-                    messageData.append(o4)
-                elif field.type == NumberType.INT32:
-                    if v < 0:
-                        v += (256*256*256*256)
-                    o4 = int(v / (256*256*256))
-                    r4 = int(v % (256*256*256))
-                    o3 = int(r4 / (256*256))
-                    r3 = int(r4 % (256*256))
-                    o2 = int(r3 / 256)
-                    o1 = int(r3 % 256)
-                    messageData.append(o1)
-                    messageData.append(o2)
-                    messageData.append(o3)
-                    messageData.append(o4)
+                if field.type == int:
+                    fmt = "i"
+                    val = int(args[i])
+                elif field.type == float:
+                    fmt = "f"
+                    val = float(args[i])
+                elif field.type == bool:
+                    fmt = "?"
+                    val = bool(args[i])
+                elif field.type == Enum:
+                    fmt = "B"
+                    val = field.legend.index(args[i])
+                else:
+                    raise ValueError("Invalid type in order to send")
+                messageData += struct.pack(fmt, val)
                 i += 1
             message = Message(command.id, bytes(messageData))
             self.communication.sendMessage(message)
+        except (ValueError, struct.error) as e:
+            print(e)
