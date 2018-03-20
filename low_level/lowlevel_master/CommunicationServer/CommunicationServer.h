@@ -2,6 +2,7 @@
 #define _COMMUNICATIONSERVER_h
 
 #include "Ethernet/Ethernet.h"
+#include "../Config/pin_mapping.h"
 #include "Command.h"
 #include <Printable.h>
 #include <vector>
@@ -9,46 +10,37 @@
 
 /* Configuration réseau */
 #define MAC_ADDR    0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
-#define IP_ADDR        172, 16, 0, 2
-#define DNS_IP        172, 16, 0, 1
-#define GATEWAY_IP    172, 16, 0, 1
-#define SUBNET_MASK    255, 255, 255, 0
+#define IP_ADDR     172, 16, 0, 2
+#define DNS_IP      172, 16, 0, 3
+#define GATEWAY_IP  172, 16, 0, 3
+#define SUBNET_MASK 255, 255, 255, 0
 #define TCP_PORT    80
 
 /* Activation de la liaison série de secours */
 #define SERIAL_ENABLE 1
 
-/* Pin mapping */
-//Todo: à déplacer dans le fichier approprié
-#define WIZ820_SS_PIN        10
-#define WIZ820_MOSI_PIN        11
-#define WIZ820_MISO_PIN        12
-#define WIZ820_SCLK_PIN        13
-#define WIZ820_RESET_PIN    14
-#define WIZ820_PWDN_PIN        15
-
 /* Configurations diverses */
-#define COMMAND_BUFFER_SIZE        5
-#define OUTPUT_BUFFER_SIZE        255
-#define HEADER_BYTE                0xFF
-#define DEFAULT_SUSCRIPTION        0x06
-#define MAX_RECEPTION_DURATION    500        // µs
+#define COMMAND_BUFFER_SIZE     5
+#define OUTPUT_BUFFER_SIZE      255
+#define HEADER_BYTE             0xFF
+#define DEFAULT_SUSCRIPTION     0x06
+#define MAX_RECEPTION_DURATION  500        // µs
 #define ASYNC_TRACE_FILENAME    "ISR"
-#define CHANNEL_MAX_NB            32
+#define CHANNEL_MAX_NB          32
 
 
 enum Channel
 {
     ODOMETRY_AND_SENSORS    = 0x00,
     INFO                    = 0x01,
-    ERROR                    = 0x02,
-    TRACE                    = 0x03,
-    SPY_ORDER                = 0x04,
-    DIRECTION                = 0x05,
-    AIM_TRAJECTORY            = 0x06,
-    PID_SPEED                = 0x07,
-    PID_TRANS                = 0x08,
-    PID_TRAJECTORY            = 0x09,
+    ERROR                   = 0x02,
+    TRACE                   = 0x03,
+    SPY_ORDER               = 0x04,
+    DIRECTION               = 0x05,
+    AIM_TRAJECTORY          = 0x06,
+    PID_SPEED               = 0x07,
+    PID_TRANS               = 0x08,
+    PID_TRAJECTORY          = 0x09,
     BLOCKING_MGR            = 0x0A,
     STOPPING_MGR            = 0x0B
 };

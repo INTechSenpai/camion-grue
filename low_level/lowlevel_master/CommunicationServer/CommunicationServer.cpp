@@ -6,14 +6,12 @@ CommunicationServer Server = CommunicationServer();
 CommunicationServer::CommunicationServer() :
     ethernetServer(TCP_PORT)
 {
-  pinMode(WIZ820_PWDN_PIN, OUTPUT);
-  digitalWrite(WIZ820_PWDN_PIN, LOW);
-    pinMode(WIZ820_RESET_PIN, OUTPUT);
-    digitalWrite(WIZ820_RESET_PIN, LOW);    // begin reset the WIZ820io
-    pinMode(WIZ820_SS_PIN, OUTPUT);
-    digitalWrite(WIZ820_SS_PIN, HIGH);        // de-select WIZ820io
-    digitalWrite(WIZ820_RESET_PIN, HIGH);   // end reset pulse
-  uint8_t mac[] = { MAC_ADDR };
+    pinMode(PIN_WIZ820_RESET, OUTPUT);
+    digitalWrite(PIN_WIZ820_RESET, LOW);    // begin reset the WIZ820io
+    pinMode(PIN_WIZ820_SS, OUTPUT);
+    digitalWrite(PIN_WIZ820_SS, HIGH);        // de-select WIZ820io
+    digitalWrite(PIN_WIZ820_RESET, HIGH);   // end reset pulse
+    uint8_t mac[] = { MAC_ADDR };
     IPAddress ip(IP_ADDR);
     IPAddress dns(DNS_IP);
     IPAddress gateway(GATEWAY_IP);

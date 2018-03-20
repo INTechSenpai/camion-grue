@@ -2,6 +2,8 @@
 #define _ORDERLONG_h
 
 #include <vector>
+#include "../Locomotion/MotionControlSystem.h"
+#include "../CommunicationServer/CommunicationServer.h"
 #include "../Tools/Singleton.h"
 #include "../Tools/FloatBinaryEncoder.h"
 

@@ -23,7 +23,7 @@ public:
 		setOrientation(_o);
 	}
 
-	Position(const std::vector<uint8_t> & data)
+	Position(const std::vector<uint8_t> & data) // todo
 	{
 		if (data.size() == 5)
 		{
@@ -55,7 +55,7 @@ public:
 		this->orientation = newPosition.orientation;
 	}
 
-	std::vector<uint8_t> getVector()
+	std::vector<uint8_t> getVector() // todo 
 	{
 		std::vector<uint8_t> data;
 

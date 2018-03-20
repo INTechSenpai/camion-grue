@@ -10,6 +10,7 @@
 #include "Position.h"
 #include "MoveState.h"
 #include "MotionControlTunings.h"
+#include "../CommunicationServer/CommunicationServer.h"
 
 
 #define CURVATURE_TOLERANCE		0.3			// Ecart maximal entre la consigne en courbure et la courbure réelle admissible au démarrage. Unité : m^-1
@@ -23,29 +24,45 @@ class TrajectoryFollower
 {
 public:
 	TrajectoryFollower(float freqAsserv, volatile Position & position, volatile MoveStatus & moveStatus) :
+        freqAsserv(freqAsserv),
 		directionController(DirectionController::Instance()),
 		moveStatus(moveStatus),
 		position(position),
 		odometry(
 			freqAsserv,
 			position,
-			currentLeftSpeed,
-			currentRightSpeed,
+			currentFrontLeftSpeed,
+			currentFrontRightSpeed,
+            currentBackLeftSpeed,
+            currentBackRightSpeed,
 			currentTranslation,
 			currentMovingSpeed
 		),
-		leftSpeedPID(currentLeftSpeed, leftPWM, leftSpeedSetPoint),
-		leftMotorBlockingMgr(leftSpeedSetPoint, currentLeftSpeed),
-		rightSpeedPID(currentRightSpeed, rightPWM, rightSpeedSetPoint),
-		rightMotorBlockingMgr(rightSpeedSetPoint, currentRightSpeed),
+		frontLeftSpeedPID(currentFrontLeftSpeed, frontLeftPWM, leftSpeedSetPoint),
+		backLeftSpeedPID(currentBackLeftSpeed, backLeftPWM, leftSpeedSetPoint),
+        frontLeftMotorBlockingMgr(leftSpeedSetPoint, currentFrontLeftSpeed),
+        backLeftMotorBlockingMgr(leftSpeedSetPoint, currentBackLeftSpeed),
+		frontRightSpeedPID(currentFrontRightSpeed, frontRightPWM, rightSpeedSetPoint),
+		backRightSpeedPID(currentBackRightSpeed, backRightPWM, rightSpeedSetPoint),
+		frontRightMotorBlockingMgr(rightSpeedSetPoint, currentFrontRightSpeed),
+		backRightMotorBlockingMgr(rightSpeedSetPoint, currentBackRightSpeed),
 		translationPID(currentTranslation, movingSpeedSetPoint, translationSetPoint),
 		endOfMoveMgr(currentMovingSpeed),
 		curvaturePID(position, curvatureOrder, trajectoryPoint)
 	{
-		this->freqAsserv = freqAsserv;
 		movePhase = MOVE_ENDED;
         finalise_stop();
         moveInitTimer = 0;
+        currentFrontLeftSpeed = 0;
+        currentFrontRightSpeed = 0;
+        currentBackLeftSpeed = 0;
+        currentBackRightSpeed = 0;
+        leftSideDistanceFactor = 1;
+        rightSideDistanceFactor = 1;
+        setMotionControlLevel(4);
+        curvatureOrder = 0;
+        currentMovingSpeed = 0;
+        updateTunings();
 	}
 
 
@@ -148,15 +165,19 @@ public:
 		{
 			if (leftSpeedSetPoint == 0)
 			{
-				leftSpeedPID.resetIntegralError();
+				frontLeftSpeedPID.resetIntegralError();
+				backLeftSpeedPID.resetIntegralError();
 			}
 			if (rightSpeedSetPoint == 0)
 			{
-				rightSpeedPID.resetIntegralError();
+				frontRightSpeedPID.resetIntegralError();
+				backRightSpeedPID.resetIntegralError();
 			}
 
-			leftSpeedPID.compute();
-			rightSpeedPID.compute();
+			frontLeftSpeedPID.compute();
+			frontRightSpeedPID.compute();
+            backLeftSpeedPID.compute();
+            backRightSpeedPID.compute();
 		}
 
 		if (pwmControlled)
@@ -166,10 +187,11 @@ public:
                 motor.breakAll();
 			}
 			else
-			{ 
-				motor.runFrontLeft(leftPWM);
-				motor.runFrontRight(rightPWM);
-                // todo: les autres moteurs LOL !
+			{
+				motor.runFrontLeft((int16_t)frontLeftPWM);
+				motor.runFrontRight((int16_t)frontRightPWM);
+                motor.runBackLeft((int16_t)backLeftPWM);
+                motor.runBackRight((int16_t)backRightPWM);
 			}
 		}
 	}
@@ -183,7 +205,7 @@ public:
 		}
 		else
 		{
-			// todo: throw warning
+            Server.printf_err("TrajectoryFollower::setTrajectoryPoint : trajectory not controlled\n");
 		}
 	}
 
@@ -195,7 +217,7 @@ public:
 		}
 		else
 		{
-			// todo: throw warning
+            Server.printf_err("TrajectoryFollower::setMaxSpeed : trajectory is controlled\n");
 		}
 	}
 
@@ -207,9 +229,24 @@ public:
 		}
 		else
 		{
-			// todo: throw warning
+            Server.printf_err("TrajectoryFollower::setCurvature : trajectory is controlled\n");
 		}
 	}
+
+    void setPWM(int16_t frontLeft, int16_t frontRight, int16_t backLeft, int16_t backRight)
+    {
+        if (!speedControlled)
+        {
+            frontLeftPWM = (float)frontLeft;
+            frontRightPWM = (float)frontRight;
+            backLeftPWM = (float)backLeft;
+            backRightPWM = (float)backRight;
+        }
+        else
+        {
+            Server.printf_err("TrajectoryFollower::setPWM : speed is controlled\n");
+        }
+    }
 
 	void setDistanceToDrive(float distance)
 	{
@@ -225,7 +262,7 @@ public:
 		}
 		else
 		{
-			// todo: throw warning
+            Server.printf_err("TrajectoryFollower::setDistanceToDrive : translation not controlled\n");
 		}
 	}
 
@@ -243,7 +280,7 @@ public:
 		}
 		else
 		{
-			// todo: throw warning
+            Server.printf_err("TrajectoryFollower::setInfiniteDistanceToDrive : translation not controlled\n");
 		}
 	}
 
@@ -256,7 +293,7 @@ public:
 		}
 		else
 		{
-			// todo: throw error
+            Server.printf_err("TrajectoryFollower::startMove : move already started\n");
 		}
 	}
 
@@ -275,11 +312,10 @@ public:
         if (movePhase != MOVE_ENDED)
         {
             movePhase = BREAKING;
-            moveStatus |= EMERGENCY_BREAK;
-        }
-        else
-        {
-            // todo: throw error
+            if (translationControlled)
+            {
+                moveStatus |= EMERGENCY_BREAK;
+            }
         }
     }
 
@@ -301,7 +337,7 @@ public:
 	{
 		if (level > 4)
 		{
-			// todo: throw warning
+            Server.printf_err("TrajectoryFollower::setMotionControlLevel : level > 4\n");
 			return;
 		}
 		noInterrupts();
@@ -324,20 +360,24 @@ public:
 		return level;
 	}
 
+    bool isTrajectoryControlled() const
+    {
+        bool ret;
+        noInterrupts();
+        ret = trajectoryControlled;
+        interrupts();
+        return ret;
+    }
+
 	void setTunings(MotionControlTunings const & tunings)
 	{
-		noInterrupts();
-		// todo
-		interrupts();
+        motionControlTunings = tunings;
+        updateTunings();
 	}
 
 	MotionControlTunings getTunings() const
 	{
-		static MotionControlTunings tunings;
-		noInterrupts();
-		// todo
-		interrupts();
-		return tunings;
+		return motionControlTunings;
 	}
 
 
@@ -348,46 +388,61 @@ private:
 		translationSetPoint = 0;
 		leftSpeedSetPoint = 0;
 		rightSpeedSetPoint = 0;
-		leftPWM = 0;
-		rightPWM = 0;
+		frontLeftPWM = 0;
+		frontRightPWM = 0;
+        backLeftPWM = 0;
+        backRightPWM = 0;
 		movingSpeedSetPoint = 0;
 		previousMovingSpeedSetpoint = 0;
+        maxMovingSpeed = 0;
         motor.breakAll();
 		translationPID.resetIntegralError();
 		translationPID.resetDerivativeError();
-		leftSpeedPID.resetIntegralError();
-		leftSpeedPID.resetDerivativeError();
-		rightSpeedPID.resetIntegralError();
-		rightSpeedPID.resetDerivativeError();
+		frontLeftSpeedPID.resetIntegralError();
+		frontLeftSpeedPID.resetDerivativeError();
+		frontRightSpeedPID.resetIntegralError();
+		frontRightSpeedPID.resetDerivativeError();
+        backLeftSpeedPID.resetIntegralError();
+        backLeftSpeedPID.resetDerivativeError();
+        backRightSpeedPID.resetIntegralError();
+        backRightSpeedPID.resetDerivativeError();
 	}
 
 	void manageStop()
 	{
 		endOfMoveMgr.compute();
-		if (endOfMoveMgr.isStopped())
-		{
-			if (movePhase == MOVING)
-			{
-				movePhase = MOVE_ENDED;
-				if (!trajectoryPoint.isStopPoint())
-				{
-					moveStatus |= EXT_BLOCKED;
-				}
-				finalise_stop();
-			}
-			else if (movePhase == BREAKING)
-			{
-				movePhase = MOVE_ENDED;
-				finalise_stop();
-			}
-		}
+        if (translationControlled)
+        {
+            if (endOfMoveMgr.isStopped())
+            {
+                if (movePhase == MOVING)
+                {
+                    movePhase = MOVE_ENDED;
+                    if (trajectoryControlled && !trajectoryPoint.isStopPoint())
+                    {
+                        moveStatus |= EXT_BLOCKED;
+                    }
+                    finalise_stop();
+                }
+                else if (movePhase == BREAKING)
+                {
+                    movePhase = MOVE_ENDED;
+                    finalise_stop();
+                }
+            }
+        }
 	}
 
 	void manageBlocking()
 	{
-		leftMotorBlockingMgr.compute();
-		rightMotorBlockingMgr.compute();
-		if (leftMotorBlockingMgr.isBlocked() || rightMotorBlockingMgr.isBlocked())
+		frontLeftMotorBlockingMgr.compute();
+		frontRightMotorBlockingMgr.compute();
+        backLeftMotorBlockingMgr.compute();
+        backRightMotorBlockingMgr.compute();
+		if (( frontLeftMotorBlockingMgr.isBlocked()    || 
+              frontRightMotorBlockingMgr.isBlocked() ) ||
+            ( backLeftMotorBlockingMgr.isBlocked()     ||
+              backRightMotorBlockingMgr.isBlocked() ))
 		{
 			movePhase = MOVE_ENDED;
 			moveStatus |= INT_BLOCKED;
@@ -431,8 +486,38 @@ private:
 		}
 	}
 
+    void updateTunings()
+    {
+        noInterrupts();
+        maxAcceleration = motionControlTunings.maxAcceleration;
+        maxDeceleration = motionControlTunings.maxDeceleration;
 
-	float freqAsserv;	// Fréquence d'asservissement (Hz)
+        frontLeftSpeedPID.setOutputLimits(-MAX_PWM, MAX_PWM);
+        frontRightSpeedPID.setOutputLimits(-MAX_PWM, MAX_PWM);
+        backLeftSpeedPID.setOutputLimits(-MAX_PWM, MAX_PWM);
+        backRightSpeedPID.setOutputLimits(-MAX_PWM, MAX_PWM);
+
+        frontLeftSpeedPID.setTunings(motionControlTunings.speedKp, motionControlTunings.speedKi, motionControlTunings.speedKd);
+        frontRightSpeedPID.setTunings(motionControlTunings.speedKp, motionControlTunings.speedKi, motionControlTunings.speedKd);
+        backLeftSpeedPID.setTunings(motionControlTunings.speedKp, motionControlTunings.speedKi, motionControlTunings.speedKd);
+        backRightSpeedPID.setTunings(motionControlTunings.speedKp, motionControlTunings.speedKi, motionControlTunings.speedKd);
+
+        frontLeftMotorBlockingMgr.setTunings(motionControlTunings.blockingSensibility, motionControlTunings.blockingResponseTime);
+        frontRightMotorBlockingMgr.setTunings(motionControlTunings.blockingSensibility, motionControlTunings.blockingResponseTime);
+        backLeftMotorBlockingMgr.setTunings(motionControlTunings.blockingSensibility, motionControlTunings.blockingResponseTime);
+        backRightMotorBlockingMgr.setTunings(motionControlTunings.blockingSensibility, motionControlTunings.blockingResponseTime);
+
+        translationPID.setTunings(motionControlTunings.translationKp, 0, motionControlTunings.translationKd);
+
+        endOfMoveMgr.setTunings(motionControlTunings.stoppedSpeed, motionControlTunings.stoppingResponseTime);
+
+        curvaturePID.setCurvatureLimits(-motionControlTunings.maxCurvature, motionControlTunings.maxCurvature);
+        curvaturePID.setTunings(motionControlTunings.curvatureK1, motionControlTunings.curvatureK2);
+        interrupts();
+    }
+
+
+	const float freqAsserv;     // Fréquence d'asservissement (Hz)
 
 	DirectionController & directionController;
 	Motor motor;
@@ -445,19 +530,27 @@ private:
 	/* Calcul de la position et des vitesses */
 	Odometry odometry;
 
-	/* Asservissement en vitesse du moteur gauche */
-	PID leftSpeedPID;
-	BlockingMgr leftMotorBlockingMgr;
-	volatile float leftSpeedSetPoint;	// consigne (mm/s)
-	volatile float currentLeftSpeed;	// vitesse réelle (mm/s)
-	volatile float leftPWM;				// sortie (pwm)
+	/* Asservissement en vitesse des moteurs gauche */
+	PID frontLeftSpeedPID;
+	PID backLeftSpeedPID;
+	BlockingMgr frontLeftMotorBlockingMgr;
+	BlockingMgr backLeftMotorBlockingMgr;
+	volatile float leftSpeedSetPoint;	    // consigne (mm/s)
+	volatile float currentFrontLeftSpeed;	// vitesse réelle (mm/s)
+	volatile float currentBackLeftSpeed;	// vitesse réelle (mm/s)
+	volatile float frontLeftPWM;            // sortie (pwm)
+    volatile float backLeftPWM;             // sortie (pwm)
 
-	/* Asservissement en vitesse du moteur droit */
-	PID rightSpeedPID;
-	BlockingMgr rightMotorBlockingMgr;
-	volatile float rightSpeedSetPoint;	// consigne (mm/s)
-	volatile float currentRightSpeed;	// vitesse réelle (mm/s)
-	volatile float rightPWM;			// sortie (pwm)
+	/* Asservissement en vitesse des moteurs droit */
+	PID frontRightSpeedPID;
+	PID backRightSpeedPID;
+	BlockingMgr frontRightMotorBlockingMgr;
+	BlockingMgr backRightMotorBlockingMgr;
+	volatile float rightSpeedSetPoint;      // consigne (mm/s)
+	volatile float currentFrontRightSpeed;	// vitesse réelle (mm/s)
+	volatile float currentBackRightSpeed;	// vitesse réelle (mm/s)
+	volatile float frontRightPWM;			// sortie (pwm)
+	volatile float backRightPWM;			// sortie (pwm)
 
 	/* Asservissement en translation */
 	PID translationPID;
@@ -484,15 +577,18 @@ private:
 	/* Vitesse (algébrique) de translation maximale : une vitesse négative correspond à une marche arrière */
 	float maxMovingSpeed;				// (mm/s)
 
+    /* Accélérations maximale (variation maximale de movingSpeedSetpoint) */
+    float maxAcceleration;              // (mm*s^-2)
+    float maxDeceleration;              // (mm*s^-2)
+
 	/* Pour le calcul de l'accélération */
 	float previousMovingSpeedSetpoint;	// (mm/s)
 
-	/* Accélérations maximale (variation maximale de movingSpeedSetpoint) */
-	float maxAcceleration;	// (mm*s^-2)
-	float maxDeceleration;	// (mm*s^-2)
-
     /* Pour le timeout de la phase MOVE_INIT */
     uint32_t moveInitTimer;
+
+    /* Pour le réglage des paramètres des PID, BlockingMgr et StoppingMgr */
+    MotionControlTunings motionControlTunings;
 
 };
 

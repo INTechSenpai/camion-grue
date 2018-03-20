@@ -15,7 +15,7 @@
 #define SERIAL_XL320_BAUDRATE       1000000
 
 /* Timeout */
-#define SERIAL_AX12_TIMEOUT         50  // ms
+#define SERIAL_AX12_TIMEOUT         50  // ms  (standard is 50ms, minimum is 2ms)
 
 
 #endif

@@ -48,7 +48,9 @@
 
 /* Module Ethernet */
 #define PIN_WIZ820_RESET	15
-// SPI1 : 10 11 12 13
-
+#define PIN_WIZ820_SS       10
+#define PIN_WIZ820_MOSI     11
+#define PIN_WIZ820_MISO     12
+#define PIN_WIZ820_SCLK     13
 
 #endif

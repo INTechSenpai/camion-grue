@@ -8,14 +8,10 @@
 
 #include <Encoder.h>
 #include "Position.h"
+#include "MotorSpeedSensor.h"
 #include "../Tools/Average.h"
 #include "../Config/pin_mapping.h"
-
-
-#define TICK_TO_MM				0.09721		// Conversion ticks-mm pour les roues codeuses arrières. Unité : mm/tick
-#define TICK_TO_RADIANS			0.001058	// Conversion ticks-radians. Unité : radian/tick
-#define FRONT_TICK_TO_TICK		2.4			// Conversion ticks_des_roues_avant --> ticks. Unité : tick/ticks_des_roues_avant
-#define AVERAGE_SPEED_SIZE		50			// Nombre de valeurs à utiliser dans le calcul de la moyenne glissante permettant de lisser la mesure de vitesse
+#include "../Config/odometry_config.h"
 
 
 class Odometry
@@ -24,32 +20,28 @@ public:
 	Odometry(
 		float freqAsserv,
 		volatile Position & p, 
-		volatile float & leftMotorSpeed, 
-		volatile float & rightMotorSpeed, 
-		volatile float & currentTranslation, 
+		volatile float & frontLeftMotorSpeed,
+        volatile float & frontRightMotorSpeed,
+        volatile float & backLeftMotorSpeed,
+		volatile float & backRightMotorSpeed,
+		volatile float & currentTranslation,
 		volatile float & translationSpeed
 	) :
-		leftMotorEncoder(-1, -1),
-		rightMotorEncoder(-1, -1),
-		leftOdometryEncoder(-1, -1),
-		rightOdometryEncoder(-1, -1),
+        freqAsserv(freqAsserv),
+        frontLeftMotor(freqAsserv, PIN_A_FRONT_LEFT_MOTOR_ENCODER, PIN_B_FRONT_LEFT_MOTOR_ENCODER, frontLeftMotorSpeed),
+        frontRightMotor(freqAsserv, PIN_B_FRONT_RIGHT_MOTOR_ENCODER, PIN_A_FRONT_RIGHT_MOTOR_ENCODER, frontRightMotorSpeed),
+        backLeftMotor(freqAsserv, PIN_A_BACK_LEFT_MOTOR_ENCODER, PIN_B_BACK_LEFT_MOTOR_ENCODER, backLeftMotorSpeed),
+        backRightMotor(freqAsserv, PIN_B_BACK_RIGHT_MOTOR_ENCODER, PIN_A_BACK_RIGHT_MOTOR_ENCODER, backRightMotorSpeed),
+		leftOdometryEncoder(PIN_A_LEFT_ENCODER, PIN_B_LEFT_ENCODER),
+		rightOdometryEncoder(PIN_B_RIGHT_ENCODER, PIN_A_RIGHT_ENCODER),
 		position(p),
-		leftMotorSpeed(leftMotorSpeed),
-		rightMotorSpeed(rightMotorSpeed),
 		currentTranslation(currentTranslation),
 		translationSpeed(translationSpeed)
 	{
-		this->freqAsserv = freqAsserv;
-		leftMotorTicks = 0;
-		rightMotorTicks = 0;
 		leftOdometryTicks = 0;
 		rightOdometryTicks = 0;
-		previousLeftMotorTicks = 0;
-		previousRightMotorTicks = 0;
 		previousLeftOdometryTicks = 0;
 		previousRightOdometryTicks = 0;
-		deltaLeftMotorTicks = 0;
-		deltaRightMotorTicks = 0;
 		deltaLeftOdometryTicks = 0;
 		deltaRightOdometryTicks = 0;
 		half_deltaRotation_rad = 0;
@@ -64,30 +56,22 @@ public:
 	*/
 	inline void compute(bool movingForward)
 	{
+        // Mise à jour de la vitesse des moteurs de propulsion
+        frontLeftMotor.compute();
+        frontRightMotor.compute();
+        backLeftMotor.compute();
+        backRightMotor.compute();
+
 		// Récupération des données des encodeurs
-		leftMotorTicks = leftMotorEncoder.read();
-		rightMotorTicks = rightMotorEncoder.read();
 		leftOdometryTicks = leftOdometryEncoder.read();
 		rightOdometryTicks = rightOdometryEncoder.read();
 
 		// Calcul du mouvement de chaque roue depuis le dernier asservissement
-		deltaLeftMotorTicks = leftMotorTicks - previousLeftMotorTicks;
-		deltaRightMotorTicks = rightMotorTicks - previousRightMotorTicks;
 		deltaLeftOdometryTicks = leftOdometryTicks - previousLeftOdometryTicks;
 		deltaRightOdometryTicks = rightOdometryTicks - previousRightOdometryTicks;
 
-		previousLeftMotorTicks = leftMotorTicks;
-		previousRightMotorTicks = rightMotorTicks;
 		previousLeftOdometryTicks = leftOdometryTicks;
 		previousRightOdometryTicks = rightOdometryTicks;
-
-		// Mise à jour de la vitesse des moteurs
-		leftMotorSpeed = (float)deltaLeftMotorTicks * freqAsserv * TICK_TO_MM * FRONT_TICK_TO_TICK;
-		rightMotorSpeed = (float)deltaRightMotorTicks * freqAsserv * TICK_TO_MM * FRONT_TICK_TO_TICK;
-		averageLeftSpeed.add(leftMotorSpeed);
-		averageRightSpeed.add(rightMotorSpeed);
-		leftMotorSpeed = averageLeftSpeed.value();
-		rightMotorSpeed = averageRightSpeed.value();
 
 		// Mise à jour de la position et de l'orientattion
 		deltaTranslation = (((float)deltaLeftOdometryTicks + (float)deltaRightOdometryTicks) / 2) * TICK_TO_MM;
@@ -115,32 +99,27 @@ public:
 	}
 
 private:
-	float freqAsserv;	// Fréquence d'appel de la méthode 'compute'. Utilisée pour le calcul des vitesses.
+	const float freqAsserv;	// Fréquence d'appel de la méthode 'compute'. Utilisée pour le calcul des vitesses.
 
-	Encoder leftMotorEncoder;
-	Encoder rightMotorEncoder;
+    MotorSpeedSensor frontLeftMotor;
+    MotorSpeedSensor frontRightMotor;
+    MotorSpeedSensor backLeftMotor;
+    MotorSpeedSensor backRightMotor;
+
 	Encoder leftOdometryEncoder;
 	Encoder rightOdometryEncoder;
 
 	volatile Position & position;			// Position courante dans le référentiel de la table. Unités mm;mm;radians
-	volatile float & leftMotorSpeed;		// Vitesse instantanée moyennée du moteur gauche. Unité : mm/s
-	volatile float & rightMotorSpeed;		// Vitesse instantanée moyennée du moteur droit. Unité : mm/s
 	volatile float & currentTranslation;	// Distance parcourue par le robot en translation (avant-arrière). Unité : mm
 	volatile float & translationSpeed;		// Vitesse moyennée du robot selon son axe avant-arrière. Unité : mm/s
 
 	int32_t
-		leftMotorTicks,
-		rightMotorTicks,
 		leftOdometryTicks,
 		rightOdometryTicks;
 	int32_t
-		previousLeftMotorTicks,
-		previousRightMotorTicks,
 		previousLeftOdometryTicks,
 		previousRightOdometryTicks;
 	int32_t
-		deltaLeftMotorTicks,
-		deltaRightMotorTicks,
 		deltaLeftOdometryTicks,
 		deltaRightOdometryTicks;
 	float
@@ -149,8 +128,6 @@ private:
 		corrector,
 		deltaTranslation;
 
-	Average<float, AVERAGE_SPEED_SIZE> averageLeftSpeed;
-	Average<float, AVERAGE_SPEED_SIZE> averageRightSpeed;
 	Average<float, AVERAGE_SPEED_SIZE> averageTranslationSpeed;
 };
 

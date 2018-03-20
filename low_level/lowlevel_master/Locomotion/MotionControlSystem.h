@@ -7,6 +7,7 @@
 #include "TrajectoryPoint.h"
 #include "MotionControlTunings.h"
 #include "../Tools/Singleton.h"
+#include "../CommunicationServer/CommunicationServer.h"
 #include <vector>
 
 
@@ -118,16 +119,32 @@ public:
 		}
 	}
 
+private:
     void stop_and_clear_trajectory_from_interrupt()
     {
         // todo (vérifier que j'ai pensé  tout)
         MovePhase movePhase = trajectoryFollower.getMovePhase();
         if (movePhase != MOVE_ENDED)
         {
-            trajectoryFollower.emergency_stop();
+            trajectoryFollower.emergency_stop_from_interrupt();
         }
         trajectoryIndex = 0;
         currentTrajectory.clear();
+    }
+
+    void updateDistanceToTravel()
+    {
+        size_t i;
+        for (i = trajectoryIndex; i < currentTrajectory.size(); i++)
+        {
+            if (currentTrajectory.at(i).isStopPoint())
+            {
+                float distanceToDrive = ((float)i - (float)trajectoryIndex + 1) * TRAJECTORY_STEP;
+                trajectoryFollower.setDistanceToDrive(distanceToDrive);
+                return;
+            }
+        }
+        trajectoryFollower.setInfiniteDistanceToDrive();
     }
 
 
@@ -137,13 +154,33 @@ public:
 		###################################################
 	*/
 
+ public:
 	void followTrajectory()
 	{
-		noInterrupts();
-		moveStatus = MOVE_OK;
-		travellingToDestination = true;
-		interrupts();
+        if (trajectoryFollower.isTrajectoryControlled())
+        {
+            noInterrupts();
+            moveStatus = MOVE_OK;
+            travellingToDestination = true;
+            interrupts();
+        }
+        else
+        {
+            // todo: throw error
+        }
 	}
+
+    void startManualMove()
+    {
+        if (!trajectoryFollower.isTrajectoryControlled())
+        {
+            trajectoryFollower.startMove();
+        }
+        else
+        {
+            Server.printf_err("MotionControlSystem::startManualMove : trajectory is controlled\n");
+        }
+    }
 
 	void stop_and_clear_trajectory()
 	{
@@ -244,23 +281,36 @@ public:
 		return trajectoryFollower.getTunings();
 	}
 
-
-private:
-    void updateDistanceToTravel()
+    void setPWM(int16_t frontLeft, int16_t frontRight, int16_t backLeft, int16_t backRight)
     {
-        size_t i;
-        for (i = trajectoryIndex; i < currentTrajectory.size(); i++)
-        {
-            if (currentTrajectory.at(i).isStopPoint())
-            {
-                float distanceToDrive = ((float)i - (float)trajectoryIndex + 1) * TRAJECTORY_STEP;
-                trajectoryFollower.setDistanceToDrive(distanceToDrive);
-                return;
-            }
-        }
-        trajectoryFollower.setInfiniteDistanceToDrive();
+        noInterrupts();
+        trajectoryFollower.setPWM(frontLeft, frontRight, backLeft, backRight);
+        interrupts();
     }
 
+    void setMaxSpeed(float speed)
+    {
+        noInterrupts();
+        trajectoryFollower.setMaxSpeed(speed);
+        interrupts();
+    }
+
+    void setDistanceToDrive(float distance)
+    {
+        noInterrupts();
+        trajectoryFollower.setDistanceToDrive(distance);
+        interrupts();
+    }
+
+    void setCurvature(float curvature)
+    {
+        noInterrupts();
+        trajectoryFollower.setCurvature(curvature);
+        interrupts();
+    }
+
+
+private:
 	TrajectoryFollower trajectoryFollower;
 	volatile Position position;
 	volatile MoveStatus moveStatus;

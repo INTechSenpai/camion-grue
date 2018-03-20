@@ -19,7 +19,7 @@ public:
 		curvatureOrder(curvatureOrder),
 		trajectoryPoint(trajectoryPoint)
 	{
-		setCurvatureLimits(-10, 10);
+		setCurvatureLimits(-20, 20);
 		setTunings(0, 0);
 		posError = 0;
 		orientationError = 0;

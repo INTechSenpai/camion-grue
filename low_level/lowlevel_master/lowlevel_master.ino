@@ -5,9 +5,9 @@
 */
 
 #include "CommunicationServer/OrderMgr.h"
-#include "Locomotion\MotionControlSystem.h"
+#include "Locomotion/MotionControlSystem.h"
 
-#define START_ON_SERIAL 1
+#define START_ON_SERIAL 0
 
 
 void setup()
@@ -17,14 +17,29 @@ void setup()
 #endif
 }
 
-OrderMgr orderManager = OrderMgr();
-MotionControlSystem &mcs = MotionControlSystem::Instance();
 
 void loop()
 {
-    orderManager.execute();
-    mcs.control();
-    Server.printf("loli%d", 5);
+    OrderMgr orderManager = OrderMgr();
+    MotionControlSystem &motionControlSystem = MotionControlSystem::Instance();
+    DirectionController &directionController = DirectionController::Instance();
+
+    IntervalTimer motionControlTimer;
+    motionControlTimer.priority(253);
+    motionControlTimer.begin(motionControlInterrupt, PERIOD_ASSERV);
+
+    while (true)
+    {
+        orderManager.execute();
+        directionController.control();
+    }
+}
+
+
+void motionControlInterrupt()
+{
+    static MotionControlSystem &motionControlSystem = MotionControlSystem::Instance();
+    motionControlSystem.control();
 }
 
 
@@ -34,7 +49,7 @@ namespace std {
     {
         while (true)
         {
-            Serial.println("Unable to allocate memory");
+            Server.printf_err("Unable to allocate memory\n");
             delay(500);
         }
     }
@@ -43,7 +58,8 @@ namespace std {
     {
         while (true)
         {
-            Serial.println(e);
+            Server.printf_err(e);
+            Server.println_err();
             delay(500);
         }
     }
@@ -52,7 +68,8 @@ namespace std {
     {
         while (true)
         {
-            Serial.println(e);
+            Server.printf_err(e);
+            Server.println_err();
             delay(500);
         }
     }
@@ -61,7 +78,8 @@ namespace std {
     {
         while (true)
         {
-            Serial.println(e);
+            Server.printf_err(e);
+            Server.println_err();
             delay(500);
         }
     }

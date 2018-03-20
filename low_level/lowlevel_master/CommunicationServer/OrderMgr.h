@@ -6,9 +6,9 @@
 #include "OrderLong.h"
 #include "Command.h"
 
-#define EXEC_STACK_SIZE                16
+#define EXEC_STACK_SIZE             16
 #define NB_ORDER                    256
-#define LONG_ORDER_START_ID            32
+#define LONG_ORDER_START_ID         32
 #define IMMEDIATE_ORDER_START_ID    128
 #define NB_LONG_ORDER (IMMEDIATE_ORDER_START_ID - LONG_ORDER_START_ID)
 #define NB_IMMEDIATE_ORDER (NB_ORDER - IMMEDIATE_ORDER_START_ID)
@@ -35,10 +35,10 @@ public:
         *    ################################################## */
 
         // Ordres à réponse immédiate
-        immediateOrderList[0x00] = &Ping::Instance();
+        immediateOrderList[0x0] = &Ping::Instance();
+        immediateOrderList[0x1] = &SetPWM::Instance();
 
         // Ordres longs
-//        longOrderList[0x00] = &RienL::Instance();
     }
 
     void execute()
@@ -189,7 +189,7 @@ private:
                 return 0;
             }
         }
-    return -1;
+        return -1;
     }
 
     OrderMemory orderStack[EXEC_STACK_SIZE];
