@@ -5,6 +5,10 @@ cd ~/config/core
 git pull
 mvn install -DskipTests
 
+cd ~/log
+git pull
+mvn install -DskipTests
+
 cd ~/dependency-injector
 git pull
 mvn install -DskipTests
