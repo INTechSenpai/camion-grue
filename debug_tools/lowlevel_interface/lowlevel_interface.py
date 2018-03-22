@@ -5,10 +5,13 @@ from PyQt5.QtCore import Qt
 import sys, random
 import struct
 import pyqtgraph
+from numpy.f2py.cb_rules import cb_arg_rules
+
 from CommandList import *
 from backend import Backend
 from communication import DEFAULT_ROBOT_IP
 
+import time
 
 def my_except_hook(t, value, traceback):
     sys.__excepthook__(t, value, traceback)
@@ -17,7 +20,8 @@ sys.excepthook = my_except_hook
 
 
 class MainWindow(QWidget):
-    def __init__(self, toolbarConnect, toolbarDisconnect, toolbarSetTime, toolbarSetZoom, toolbarErase, toolbarCancelCut, toolbarCut, panelSend):
+    def __init__(self, toolbarConnect, toolbarDisconnect, toolbarSetTime, toolbarSetZoom, toolbarErase,
+                 toolbarCancelCut, toolbarCut, panelSend, updateSubscriptions):
         super().__init__()
         grid = QGridLayout()
 
@@ -30,7 +34,7 @@ class MainWindow(QWidget):
         self.commandPanelScrollArea.setWidget(self.commandPanel)
         self.consolePanel = ConsolePanel(self)
         self.consolePanel.setFrameShape(QFrame.StyledPanel)
-        self.graphPanel = GraphPanel(self)
+        self.graphPanel = GraphPanel(self, updateSubscriptions)
 
         self.splitter = QSplitter(Qt.Horizontal)
         self.splitter.addWidget(self.commandPanelScrollArea)
@@ -578,7 +582,7 @@ class ConsolePanel(QFrame):
                     columnCount += 1
             self.cbArea.addLayout(line)
 
-    def formatTextToConsole(self, text): # todo add support for spyOrder channel and optimize it !
+    def formatTextToConsole(self, text):
         textLines = text.splitlines(keepends=True)
         lineNb = 0
         for line in textLines:
@@ -600,7 +604,11 @@ class ConsolePanel(QFrame):
                 if not self.cbErrors.isChecked():
                     continue
                 color = self.errorColor
-            elif sLine[1] == ORDER_DESCRIPTOR:
+            elif sLine[1] == TRACE_CHANNEL_NAME:
+                if not self.cbInfo.isChecked():
+                    continue
+                color = self.textColor
+            elif sLine[1] == SPY_ORDER_CHANNEL_NAME:
                 if not self.cbOrders.isChecked():
                     continue
                 color = self.orderColor
@@ -638,11 +646,12 @@ class ConsolePanel(QFrame):
 
 
 class GraphPanel(QWidget):
-    def __init__(self, master):
+    def __init__(self, master, cb_update_subscriptions):
         super().__init__(master)
         grid = QGridLayout()
         grid.setContentsMargins(0, 0, 0, 0)
 
+        self.cbUpdateSubscriptions = cb_update_subscriptions
         self.curveCommandList = []
         self.scatterCommandList = []
         for command in COMMAND_LIST:
@@ -680,6 +689,7 @@ class GraphPanel(QWidget):
 
     def update_displayed_data(self):
         checkboxes = self.graphSettings.getCheckboxes()
+        self.cbUpdateSubscriptions(self.graphSettings.getSubscriptions())
         atLeastOneCurve = False
         for command in self.curveCommandList:
             for checkbox in checkboxes[command.name]:
@@ -731,6 +741,7 @@ class GraphSettings(QWidget):
         grid = QGridLayout()
         grid.setContentsMargins(5,5,5,5)
         self.checkboxes = {}
+
         column = 0
         for command in commandList_curves:
             checkboxList = []
@@ -743,12 +754,28 @@ class GraphSettings(QWidget):
         grid.addWidget(cbGroup, 0, column)
         for checkbox in checkboxList:
             self.checkboxes[checkbox.text()] = [checkbox]
+
+        self.nameToId = {}
+        for command in commandList_curves + commandList_scatter:
+            self.nameToId[command.name] = command.id
+
         grid.setRowStretch(1, 1)
         grid.setColumnStretch(column + 1, 1)
         self.setLayout(grid)
 
     def getCheckboxes(self):
         return self.checkboxes
+
+    def getSubscriptions(self):
+        sub = []
+        for name, index in self.nameToId.items():
+            enabled = False
+            for checkbox in self.checkboxes[name]:
+                if checkbox.isChecked():
+                    enabled = True
+                    break
+            sub.append((index, enabled))
+        return sub
 
 
 class GraphSettingGroup(QFrame):
@@ -851,7 +878,8 @@ class GraphCurveArea(QFrame):
                     data = self.data[name]["data"][checkbox.text()]
                     if checkbox.isChecked():
                         atLeastOneCbChecked = True
-                        data["plot"].setData(x=[x - self.origin for x in data["x"]], y=data["y"])
+                        xArray = [x - self.origin for x in data["x"]]
+                        data["plot"].setData(x=xArray, y=data["y"])
                     else:
                         data["plot"].setData(x=[], y=[])
                 self.data[name]["axis"].setVisible(atLeastOneCbChecked)
@@ -921,7 +949,9 @@ def randomColor(size):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     backend = Backend()
-    main = MainWindow(backend.connect, backend.disconnect, backend.setCurrentTime, backend.setZoom, backend.eraseBeforeCut, backend.cancelLastCut, backend.addCut, backend.sendOrder)
+    main = MainWindow(
+        backend.connect, backend.disconnect, backend.setCurrentTime, backend.setZoom, backend.eraseBeforeCut,
+        backend.cancelLastCut, backend.addCut, backend.sendOrder, backend.updateSubscriptions)
     backend.setGraphicalInterface(main.toolBar, main.consolePanel, main.graphPanel)
     backend.startBackgroundTask()
 #     main.consolePanel.setText(

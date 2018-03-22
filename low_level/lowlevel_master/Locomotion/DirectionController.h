@@ -164,7 +164,7 @@ public:
                 ret = DIRECTION_CONTROLLER_MOTOR_BLOCKED;
             }
 
-            //Server.sendData(DIRECTION, ?);
+            Server.print(DIRECTION, *this);
 		}
 
         return ret;
@@ -206,7 +206,7 @@ public:
 
 	size_t printTo(Print& p) const
 	{
-		return p.printf("%g_%g_%u_%u_%u_%u", aimCurvature, realCurvature, realLeftAngle, realRightAngle, aimLeftAngle, aimRightAngle);
+		return p.printf("%g_%g", aimCurvature, realCurvature);
 	}
 
 	/* Fait tourner les roues doucement vers la gauche, puis vers la droite. Renvoie vrai si la procédure est terminée, faux sinon */

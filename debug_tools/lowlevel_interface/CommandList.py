@@ -10,8 +10,9 @@ INFO_CHANNEL_NAME       = "info"
 ERROR_CHANNEL_NAME      = "error"
 TRACE_CHANNEL_NAME      = "trace"
 SPY_ORDER_CHANNEL_NAME  = "spyOrder"
-ORDER_DESCRIPTOR        = "order"
 ANSWER_DESCRIPTOR       = "answer"
+
+CONSOLE_HISTORY_SIZE = 4000
 
 
 class Command:
@@ -106,7 +107,7 @@ Command(0x04, "Spy orders", CommandType.SUBSCRIPTION_TEXT, [Field("Subscribe", E
 
 Command(0x05, "Direction", CommandType.SUBSCRIPTION_CURVE_DATA, [Field("Subscribe", Enum, ["No", "Yes"])],
         [InfoField("Aim direction", QColor(255,0,0), description="m^-1"),
-         InfoField("Real direction", QColor(0, 0, 0), description="m^-1")], outputInfoFrame=True),
+         InfoField("Real direction", QColor(255, 255, 255), description="m^-1")], outputInfoFrame=True),
 Command(0x06, "Aim trajectory", CommandType.SUBSCRIPTION_SCATTER_DATA, [Field("Subscribe", Enum, ["No", "Yes"])],
         [InfoField("Aim trajectory X", QColor(0, 0, 0), description="mm"),
          InfoField("Aim trajectory Y", QColor(0, 0, 0), description="mm")], outputInfoFrame=True),
