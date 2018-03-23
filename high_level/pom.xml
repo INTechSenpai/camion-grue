@@ -120,13 +120,15 @@
             <artifactId>maven-assembly-plugin</artifactId>
             <version>3.1.0</version>
             <configuration>
-                <finalName>eurobotruck-match</finalName>
                 <appendAssemblyId>false</appendAssemblyId>
+                <finalName>eurobotruck</finalName>
+                <!--
                 <archive>
                     <manifest>
                         <mainClass>senpai.Match</mainClass>
                     </manifest>
                 </archive>
+                -->
                 <descriptorRefs>
                     <descriptorRef>jar-with-dependencies</descriptorRef>
                 </descriptorRefs>
