@@ -33,7 +33,6 @@ import pfg.graphic.WindowFrame;
 import pfg.injector.Injector;
 import pfg.injector.InjectorException;
 import pfg.kraken.Kraken;
-import pfg.kraken.SeverityCategoryKraken;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.utils.XY;

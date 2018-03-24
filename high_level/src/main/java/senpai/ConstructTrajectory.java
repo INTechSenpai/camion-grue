@@ -92,7 +92,7 @@ public class ConstructTrajectory
 			}
 			display.refresh();
 			if(output != null)
-				KnownPathManager.savePath(output, path);
+				KnownPathManager.savePath(output, new SavedPath(path, depart));
 			else
 				log.write("Chemin non sauvegardé", Subject.STATUS);
 		}

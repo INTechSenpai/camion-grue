@@ -1,8 +1,6 @@
 package senpai;
 
-import java.util.List;
 import pfg.injector.InjectorException;
-import pfg.kraken.robot.ItineraryPoint;
 import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol.InOrder;
@@ -47,10 +45,12 @@ public class FollowTrajectory
 			senpai = new Senpai(configfile, "default");
 			Log log = new Log(Severity.INFO, configfile, "log");
 			
-			List<ItineraryPoint> path = KnownPathManager.loadPath(filename);
+			SavedPath s = KnownPathManager.loadPath(filename);
 			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
 
-			data.ajoutePointsTrajectoire(path);
+			data.setPosition(s.depart.position, s.depart.orientation);
+			
+			data.ajoutePointsTrajectoire(s.path);
 			Ticket t = data.followTrajectory();
 			InOrder state = t.attendStatus();
 			log.write("Code de retour reçu : "+state, Subject.TRAJECTORY);

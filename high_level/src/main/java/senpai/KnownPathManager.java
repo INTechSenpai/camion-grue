@@ -20,10 +20,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.LinkedList;
-import java.util.List;
-
-import pfg.kraken.robot.ItineraryPoint;
 
 /**
  * Gestionnaire de trajectoires déjà calculées
@@ -42,7 +38,7 @@ public class KnownPathManager {
 	*/
 	
 	
-	public static void savePath(String filename, List<ItineraryPoint> path)
+	public static void savePath(String filename, SavedPath path)
 	{
 //		log.write("Sauvegarde d'une trajectoire : "+filename, Subject.DUMMY);
 		FileOutputStream fichier = null;
@@ -93,8 +89,7 @@ public class KnownPathManager {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static List<ItineraryPoint> loadPath(String filename)
+	public static SavedPath loadPath(String filename)
 	{
 //		log.debug("Chargement d'une trajectoire : "+nom);
 		ObjectInputStream ois = null;
@@ -102,7 +97,7 @@ public class KnownPathManager {
 		{
 			FileInputStream fichier = new FileInputStream("paths/" + filename);
 			ois = new ObjectInputStream(fichier);
-			return (LinkedList<ItineraryPoint>) ois.readObject();
+			return (SavedPath) ois.readObject();
 		}
 		catch(IOException | ClassNotFoundException e)
 		{
