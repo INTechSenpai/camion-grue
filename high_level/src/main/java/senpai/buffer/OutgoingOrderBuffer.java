@@ -33,8 +33,7 @@ import pfg.config.Config;
 import pfg.graphic.Chart;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Plottable;
-import pfg.kraken.robot.Cinematique;
-import pfg.kraken.robot.CinematiqueObs;
+import pfg.kraken.robot.ItineraryPoint;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XY_RW;
 
@@ -84,24 +83,6 @@ public class OutgoingOrderBuffer implements Plottable
 		o.ordre.orderSent();
 		return o;
 	}
-	
-	/**
-	 * Signale la vitesse max au bas niveau
-	 * 
-	 * @param vitesse signée
-	 * @return
-	 */
-	public void setMaxSpeed(Speed vitesseInitiale, boolean marcheAvant)
-	{
-		log.write("Envoi d'un ordre de vitesse max : " + vitesseInitiale+". Marche avant : "+marcheAvant, Subject.COMM);
-
-		short vitesseTr; // vitesse signée
-		if(marcheAvant)
-			vitesseTr = (short) (vitesseInitiale.translationalSpeed * 1000);
-		else
-			vitesseTr = (short) (-vitesseInitiale.translationalSpeed * 1000);
-		setMaxSpeed(vitesseTr);
-	}
 
 	private void addToBuffer(Order o)
 	{
@@ -110,25 +91,18 @@ public class OutgoingOrderBuffer implements Plottable
 	
 	public Ticket run()
 	{
-		addToBuffer(new Order(Id.RUN));
-		return Id.RUN.ticket;
+		// TODO ordre ascii
+		return null;
 	}
 
 	public void setCurvature(double courbure)
 	{
-		ByteBuffer data = ByteBuffer.allocate(2);
-		short courbureShort = (short) (Math.round(courbure * 100));
-		data.putShort(courbureShort);
-
-		addToBuffer(new Order(data, Id.SET_CURVATURE));
+		// TODO ordre ascii
 	}
 
 	public void setMaxSpeed(short vitesseTr)
 	{
-		ByteBuffer data = ByteBuffer.allocate(2);
-		data.putShort(vitesseTr);
-
-		addToBuffer(new Order(data, Id.SET_MAX_SPEED));
+		// TODO ordre ascii
 	}
 
 	/**
@@ -167,40 +141,14 @@ public class OutgoingOrderBuffer implements Plottable
 	XY_RW tmp = new XY_RW();
 
 	/**
-	 * Ajoute une position et un angle.
-	 * Occupe 5 octets.
-	 * 
-	 * @param data
-	 * @param pos
-	 * @param angle
-	 */
-	private void addXYO(ByteBuffer data, XY pos, double angle, boolean checkInTable)
-	{
-		double x = pos.getX();
-		double y = pos.getY();
-		
-		if(checkInTable)
-		{
-			x = (x < -1500 ? -1500 : x > 1500 ? 1500 : x);
-			y = (y < 0 ? 0 : y > 2000 ? 2000 : y);
-		}
-		
-		data.put((byte) (((int) (x) + 1500) >> 4));
-		data.put((byte) ((((int) (x) + 1500) << 4) + (((int) (y) + 1000) >> 8)));
-		data.put((byte) ((int) (y) + 1000));
-		short theta = (short) Math.round((angle % (2 * Math.PI)) * 1000);
-		if(theta < 0)
-			theta += (short) Math.round(2000 * Math.PI);
-		data.putShort(theta);
-	}
-
-	/**
 	 * Corrige la position du bas niveau
 	 */
 	public void setPosition(XY pos, double orientation)
 	{
-		ByteBuffer data = ByteBuffer.allocate(5);
-		addXYO(data, pos, orientation, true);
+		ByteBuffer data = ByteBuffer.allocate(12);
+		data.putInt((int)pos.getX());
+		data.putInt((int)pos.getY());
+		data.putFloat((float) orientation);
 		addToBuffer(new Order(data, Id.SET_POSITION));
 	}
 
@@ -209,8 +157,10 @@ public class OutgoingOrderBuffer implements Plottable
 	 */
 	public void correctPosition(XY deltaPos, double deltaOrientation)
 	{
-		ByteBuffer data = ByteBuffer.allocate(5);
-		addXYO(data, deltaPos, deltaOrientation, false);
+		ByteBuffer data = ByteBuffer.allocate(12);
+		data.putInt((int)deltaPos.getX());
+		data.putInt((int)deltaPos.getY());
+		data.putFloat((float) deltaOrientation);
 		addToBuffer(new Order(data, Id.EDIT_POSITION));
 	}
 
@@ -251,18 +201,6 @@ public class OutgoingOrderBuffer implements Plottable
 	}
 	
 	/**
-	 * Demande d'utiliser un certain SensorMode
-	 * 
-	 * @param mode
-	 */
-/*	public void setSensorMode(SensorMode mode)
-	{
-		ByteBuffer data = ByteBuffer.allocate(1);
-		data.put(mode.code);
-		addToBuffer(new Order(data, Id.SET_SENSOR_MODE));
-	}*/
-
-	/**
 	 * Démarre un stream
 	 */
 	public void startStream(Id stream)
@@ -288,96 +226,78 @@ public class OutgoingOrderBuffer implements Plottable
 	}
 	
 	/**
-	 * Envoi un seul arc sans stop. Permet d'avoir une erreur NO_MORE_POINTS
-	 * avec le point d'après
-	 * 
-	 * @param point
+	 * Modifie des points déjà envoyés
+	 * @param points
 	 * @param indexTrajectory
-	 * @return
+	 * @throws InterruptedException
 	 */
-	public void makeNextObsolete(Cinematique c, int indexTrajectory)
+	public void editePointsTrajectoire(List<ItineraryPoint> points, int indexTrajectory) throws InterruptedException
 	{
-		log.write("Envoi d'un arc d'obsolescence", Subject.COMM);
-
-		ByteBuffer data = ByteBuffer.allocate(8);
-		data.put((byte) indexTrajectory);
-		addXYO(data, c.getPosition(), c.orientationReelle, true);
-		short courbure = (short) ((Math.round(Math.abs(c.courbureReelle) * 100)) & 0x7FFF);
-
-		// stop
-		courbure |= 0x8000;
-		if(c.courbureReelle < 0) // bit de signe
-			courbure |= 0x4000;
-
-		data.putShort(courbure);
-
-		addToBuffer(new Order(data, Id.SEND_ARC));
+		log.write("Édition de " + points.size() + " points à partir de l'index " + indexTrajectory, Subject.COMM);
+		envoiePointsTrajectoire(points, false, indexTrajectory);
 	}
 
 	/**
-	 * Envoi de tous les arcs élémentaires d'un arc courbe
+	 * Ajoute des points à la fin de la trajectoire
 	 * @0 arc
 	 * @throws InterruptedException 
 	 */
-	public void envoieArcCourbe(List<CinematiqueObs> points, int indexTrajectory) throws InterruptedException
+	public void ajoutePointsTrajectoire(List<ItineraryPoint> points) throws InterruptedException
 	{
-		log.write("Envoi de " + points.size() + " points à partir de l'index " + indexTrajectory, Subject.COMM);
-
+		log.write("Ajout de " + points.size() + " points.", Subject.COMM);
+		envoiePointsTrajectoire(points, true, 0);
+	}
+	
+	private void envoiePointsTrajectoire(List<ItineraryPoint> points, boolean add, int indexTrajectory) throws InterruptedException
+	{
 		int index = indexTrajectory;
 		int nbEnvoi = (points.size() >> 5) + 1;
 		int modulo = (points.size() & 31); // pour le dernier envoi
-
+		Id id = add ? Id.ADD_POINTS : Id.EDIT_POINTS;
 		for(int i = 0; i < nbEnvoi; i++)
 		{
 			int nbArc = 32;
 			if(i == nbEnvoi - 1) // dernier envoi
 				nbArc = modulo;
-			ByteBuffer data = ByteBuffer.allocate(1 + 7 * nbArc);
-			data.put((byte) index);
+			ByteBuffer data;
+			if(!add)
+			{
+				data = ByteBuffer.allocate(4 + 22 * nbArc);
+				data.putInt(index);
+			}
+			else
+				data = ByteBuffer.allocate(22 * nbArc);
+
 			for(int j = 0; j < nbArc; j++)
 			{
 				int k = (i << 5) + j;
-				double prochaineCourbure; // pour gérer les arrêts qui font
-											// arrêter le robot
-				CinematiqueObs c = points.get(k);
-
-				if(k + 1 < points.size())
-					prochaineCourbure = points.get(k + 1).courbureReelle;
-				else
-					prochaineCourbure = c.courbureReelle; // c'est le dernier
-															// point, de toute
-															// façon ce sera un
-															// STOP_POINT
-
+				ItineraryPoint c = points.get(k);
 				log.write("Point " + k + " : " + c, Subject.COMM);
-				addXYO(data, c.getPosition(), c.orientationReelle, true);
-				short courbure = (short) ((Math.round(Math.abs(c.courbureReelle) * 100)) & 0x7FFF);
-
-				// on vérifie si on va dans le même sens que le prochain point
-				// le dernier point est forcément un point d'arrêt
-				// de plus, si le changement de courbure est trop grand, on
-				// impose un arrêt
-				if(k + 1 == points.size() || c.enMarcheAvant != points.get(k + 1).enMarcheAvant || Math.abs(c.courbureReelle - prochaineCourbure) > 0.5)
-					courbure |= 0x8000; // en cas de rebroussement
-
-				if(c.courbureReelle < 0) // bit de signe
-					courbure |= 0x4000;
-
-				data.putShort(courbure);
+				addPoint(data, c, k == points.size() - 1);
 			}
-			addToBuffer(new Order(data, Id.SEND_ARC));
-			Id.SEND_ARC.ticket.attendStatus();
+			addToBuffer(new Order(data, id));
+			id.ticket.attendStatus();
 			index += nbArc;
 		}
+	}
+	
+	private void addPoint(ByteBuffer data, ItineraryPoint point, boolean last)
+	{
+		data.putInt((int)point.x);
+		data.putInt((int)point.y);
+		data.putFloat((float) point.orientation);
+		data.putFloat((float)point.curvature);
+		if(point.goingForward)
+			data.putFloat((float) point.possibleSpeed);
+		else
+			data.putFloat((float) -point.possibleSpeed);
+		data.put((byte) (point.stop ? 1 : 0));
+		data.put((byte) (last ? 1 : 0));
 	}
 
 	public void waitStop() throws InterruptedException
 	{
-		// TODO : nécessaire ?
-		log.write("Attente de la réception de la réponse au stop", Subject.COMM);
-		Ticket stop = Id.STOP.ticket;
-		if(stop.attendStatus(1500) == null)
-			log.write("Timeout d'attente du stop dépassé !", Severity.WARNING, Subject.COMM);
+		// TODO : télécommande
 	}
 
 	/**

@@ -66,16 +66,14 @@ public class CommProtocol
 		STOP(0x21, -20),
 		WAIT_FOR_JUMPER(0x22),
 		START_MATCH_CHRONO(0x23),
-		RUN(0x30),
 		
 		// Ordres immédiats (0x80 à 0xFF)
 		PING(0x80, true),
 		ASK_COLOR(0x81, true),
 		EDIT_POSITION(0x82, false),
 		SET_POSITION(0x83, false),
-		SEND_ARC(0x84, false, -10),
-		SET_CURVATURE(0x90, false),
-		SET_MAX_SPEED(0x91, false);
+		ADD_POINTS(0x84, false, -10),
+		EDIT_POINTS(0x85, false, -10);
 
 		// Paramètres constants
 		public final byte code;
