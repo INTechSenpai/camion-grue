@@ -18,7 +18,6 @@
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
-  <!--
     <repositories>
         <repository>
             <id>config-pfg-mvn-repo</id>
@@ -61,7 +60,6 @@
             </snapshots>
         </repository>
     </repositories>
-    -->
   <dependencies>
 
     <dependency>
