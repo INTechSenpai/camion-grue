@@ -196,7 +196,7 @@ public class Senpai
 		injector = new Injector();
 
 		DebugTool debug = DebugTool.getDebugTool(new Vec2RO(0,1000), Severity.INFO);
-		log = debug.getLog();
+		log = new Log(Severity.INFO, "senpai.conf", "log");
 		config = new Config(ConfigInfoSenpai.values(), true, "senpai.conf", profiles);
 
 		injector.addService(this);
@@ -255,7 +255,7 @@ public class Senpai
 		RectangularObstacle robotTemplate = new RectangularObstacle(demieLargeurNonDeploye, demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 		injector.addService(RectangularObstacle.class, robotTemplate);
 		
-		Kraken k = new Kraken(robotTemplate, obstaclesFixes, new XY(-1500, 0), new XY(1500, 2000), profiles);
+		Kraken k = new Kraken(robotTemplate, obstaclesFixes, new XY(-1500, 0), new XY(1500, 2000), "senpai.conf", profiles);
 		
 		injector.addService(k);
 		

@@ -13,6 +13,7 @@ import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.robot.ItineraryPoint;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
+import pfg.log.Log;
 import senpai.obstacles.ObstaclesFixes;
 
 /*
@@ -40,11 +41,13 @@ public class ConstructTrajectory
 
 	public static void main(String[] args)
 	{
-		if(args.length != 6)
+		if(args.length != 5 && args.length != 6)
 		{
-			System.out.println("Usage : ./run.sh "+ConstructTrajectory.class.getSimpleName()+" x_depart y_depart o_depart x_arrivee y_arrivee output.path");
+			System.out.println("Usage : ./run.sh "+ConstructTrajectory.class.getSimpleName()+" x_depart y_depart o_depart x_arrivee y_arrivee [output.path]");
 			return;
 		}
+		
+		String configfile = "senpai-trajectory.conf";
 		
 		double x = Double.parseDouble(args[0]);
 		double y = Double.parseDouble(args[1]);
@@ -56,20 +59,24 @@ public class ConstructTrajectory
 //		o = Double.parseDouble(args[5]);
 		XY arrivee = new XY(x,y);
 		
-		String output = args[5];
+		String output = null;
+		if(args.length > 5)
+			output = args[5];
 		
 		List<Obstacle> obsList = new ArrayList<Obstacle>();
 
 		for(ObstaclesFixes obs : ObstaclesFixes.values())
 			obsList.add(obs.obstacle);
 		
-		Config config = new Config(ConfigInfoSenpai.values(), false, "senpai.conf", "default");
+		Config config = new Config(ConfigInfoSenpai.values(), false); // valeur par défaut seulement
 		int demieLargeurNonDeploye = config.getInt(ConfigInfoSenpai.LARGEUR_NON_DEPLOYE) / 2;
 		int demieLongueurArriere = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
 		int demieLongueurAvant = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
 
-		RectangularObstacle robotTemplate = new RectangularObstacle(demieLargeurNonDeploye, demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
-		Kraken kraken = new Kraken(robotTemplate, obsList, new XY(-1500,0), new XY(1500, 2000), "default", "noLL");
+		Log log = new Log(Severity.INFO, configfile, "log");
+		
+		RectangularObstacle robotTemplate = new RectangularObstacle(demieLongueurAvant, demieLongueurArriere, demieLargeurNonDeploye, demieLargeurNonDeploye);
+		Kraken kraken = new Kraken(robotTemplate, obsList, new XY(-1500,0), new XY(1500, 2000), configfile, "default", "graphic");
 		
 		GraphicDisplay display = kraken.getGraphicDisplay();
 
@@ -81,9 +88,15 @@ public class ConstructTrajectory
 			kraken.initializeNewSearch(depart, arrivee);
 			List<ItineraryPoint> path = kraken.search();
 			for(ItineraryPoint p : path)
+			{
+				log.write(p, Subject.STATUS);
 				display.addPrintable(p, Color.BLACK, Layer.FOREGROUND.layer);
+			}
 			display.refresh();
-			KnownPathManager.savePath(output, path);
+			if(output != null)
+				KnownPathManager.savePath(output, path);
+			else
+				log.write("Chemin non sauvegardé", Subject.STATUS);
 		}
 		catch(PathfindingException e)
 		{

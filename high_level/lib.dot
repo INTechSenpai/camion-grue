@@ -1,0 +1,14 @@
+digraph {
+    config -> graphic
+    config -> log
+    config -> eurobotruck
+    config -> Kraken
+    log -> Kraken
+    log -> graphic
+    log -> eurobotruck
+    injector -> graphic
+    injector -> eurobotruck
+    graphic -> Kraken
+    graphic -> eurobotruck
+    Kraken -> eurobotruck
+    }

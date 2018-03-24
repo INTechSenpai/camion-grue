@@ -15,6 +15,7 @@
 package senpai;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -44,12 +45,43 @@ public class KnownPathManager {
 	public static void savePath(String filename, List<ItineraryPoint> path)
 	{
 //		log.write("Sauvegarde d'une trajectoire : "+filename, Subject.DUMMY);
+		FileOutputStream fichier = null;
+		ObjectOutputStream oos;
+		
 		try
 		{
-			FileOutputStream fichier;
-			ObjectOutputStream oos;
-
 			fichier = new FileOutputStream("paths/" + filename);
+		}
+		catch(IOException e)
+		{
+			try
+			{
+				Runtime.getRuntime().exec("mkdir paths");
+				try
+				{
+					Thread.sleep(50);
+				}
+				catch(InterruptedException e1)
+				{
+					e1.printStackTrace();
+				}
+			}
+			catch(IOException e1)
+			{
+				e1.printStackTrace();
+			}
+			try
+			{
+				fichier = new FileOutputStream("paths/" + filename);
+			}
+			catch(FileNotFoundException e1)
+			{
+				e1.printStackTrace();
+			}
+		}
+		
+		try
+		{
 			oos = new ObjectOutputStream(fichier);
 			oos.writeObject(path);
 			oos.flush();
@@ -58,7 +90,6 @@ public class KnownPathManager {
 		catch(IOException e)
 		{
 			e.printStackTrace();
-//			log.write("Erreur lors de la sauvegarde de la trajectoire ! " + e, Severity.CRITICAL, Subject.DUMMY);
 		}
 	}
 	
