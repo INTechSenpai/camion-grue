@@ -28,7 +28,6 @@ import pfg.config.Config;
 import pfg.config.ConfigInfo;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.DebugTool;
-import pfg.graphic.Vec2RO;
 import pfg.graphic.WindowFrame;
 import pfg.injector.Injector;
 import pfg.injector.InjectorException;
@@ -198,14 +197,18 @@ public class Senpai
 	
 			injector = new Injector();
 			
-			DebugTool debug = DebugTool.getDebugTool(new HashMap<ConfigInfo, Object>(), new Vec2RO(0,1000), Severity.INFO, configfile, profiles);
+			
 			log = new Log(Severity.INFO, configfile, profiles);
 			config = new Config(ConfigInfoSenpai.values(), true, configfile, profiles);
 	
 			injector.addService(this);
 			injector.addService(log);
 			injector.addService(config);
-			injector.addService(new Robot(log));		
+			Robot robot = new Robot(log);
+			injector.addService(robot);
+
+			DebugTool debug = DebugTool.getDebugTool(new HashMap<ConfigInfo, Object>(), robot.getCinematique().getPosition(), Severity.INFO, configfile, profiles);
+
 	
 			Speed.TEST.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_TEST) / 1000.;
 			Speed.REPLANIF.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_REPLANIF) / 1000.;
