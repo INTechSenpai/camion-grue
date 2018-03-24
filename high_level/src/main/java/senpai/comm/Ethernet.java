@@ -153,6 +153,9 @@ public class Ethernet implements CommMedium
 	@Override
 	public synchronized void close()
 	{
+		if(socket == null)
+			return;
+		
 		assert socket.isConnected() && !socket.isClosed() : "État du socket : "+socket.isConnected()+" "+socket.isClosed();
 		
 		if(socket.isConnected() && !socket.isClosed())

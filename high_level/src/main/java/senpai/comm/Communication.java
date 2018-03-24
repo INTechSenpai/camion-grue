@@ -92,7 +92,8 @@ public class Communication implements Closeable
 	{
 		assert !closed : "Seconde demande de fermeture !";
 		closed = true;
-		medium.close();
+		if(medium != null)
+			medium.close();
 	}
 
 	/**

@@ -30,7 +30,7 @@ import senpai.comm.Ticket;
 
 public class FollowTrajectory
 {
-	public static void main(String[] args) throws InterruptedException
+	public static void main(String[] args)
 	{
 		if(args.length != 1)
 		{
@@ -41,23 +41,35 @@ public class FollowTrajectory
 		String configfile = "senpai-trajectory.conf";
 		
 		String filename = args[0];
-		Senpai senpai = new Senpai(configfile, "default");
-		Log log = new Log(Severity.INFO, configfile, "log");
-		
-		List<ItineraryPoint> path = KnownPathManager.loadPath(filename);
-		OutgoingOrderBuffer data;
+		Senpai senpai = null;
 		try
 		{
-			data = senpai.getService(OutgoingOrderBuffer.class);
+			senpai = new Senpai(configfile, "default");
+			Log log = new Log(Severity.INFO, configfile, "log");
+			
+			List<ItineraryPoint> path = KnownPathManager.loadPath(filename);
+			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
 
 			data.ajoutePointsTrajectoire(path);
 			Ticket t = data.followTrajectory();
 			InOrder state = t.attendStatus();
 			log.write("Code de retour reçu : "+state, Subject.TRAJECTORY);
 		}
-		catch(InjectorException e)
+		catch(InjectorException | InterruptedException e)
 		{
 			e.printStackTrace();
+		}
+		finally
+		{
+			if(senpai != null)
+				try
+				{
+					senpai.destructor();
+				}
+				catch(InterruptedException e)
+				{
+					e.printStackTrace();
+				}
 		}
 	}
 }

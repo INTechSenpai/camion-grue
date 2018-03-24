@@ -100,6 +100,10 @@ public class ConstructTrajectory
 		{
 			e.printStackTrace();
 		}
+		finally
+		{
+			kraken.stop();
+		}
 	}
 	
 }
