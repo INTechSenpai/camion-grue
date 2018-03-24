@@ -112,19 +112,10 @@ public class OutgoingOrderBuffer implements Plottable
 	 * @param marcheAvant
 	 * @return
 	 */
-	public Ticket followTrajectory(Speed vitesseInitiale, boolean marcheAvant)
+	public Ticket followTrajectory()
 	{
-		short vitesseTr; // vitesse signée
-		if(marcheAvant)
-			vitesseTr = (short) (vitesseInitiale.translationalSpeed * 1000);
-		else
-			vitesseTr = (short) (-vitesseInitiale.translationalSpeed * 1000);
-		log.write("On commence à suivre la trajectoire. Vitesse : "+vitesseTr, Subject.COMM);
-
-		ByteBuffer data = ByteBuffer.allocate(2);
-		data.putShort(vitesseTr);
-
-		addToBuffer(new Order(data, Id.FOLLOW_TRAJECTORY));
+		log.write("On commence à suivre la trajectoire.", Subject.COMM);
+		addToBuffer(new Order(Id.FOLLOW_TRAJECTORY));
 		return Id.FOLLOW_TRAJECTORY.ticket;
 	}
 
@@ -192,7 +183,7 @@ public class OutgoingOrderBuffer implements Plottable
 	}
 
 	/**
-	 * Demande la couleur au bas niveau
+	 * Ping
 	 */
 	public Ticket ping()
 	{

@@ -29,6 +29,7 @@ public enum Subject implements LogCategory
 	CAPTEURS,
 	CORRECTION,
 	COMM,
+	TRAJECTORY,
 	REMOTE_CONTROL;
 	
 	@Override

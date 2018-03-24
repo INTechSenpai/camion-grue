@@ -8,7 +8,8 @@
 
   <packaging>jar</packaging>
 
-  <name>Eurobotruck : software of the third participation of INTech Senpaï to Eurobot</name>
+  <name>Eurobotruck</name>
+  <description>Software of the third participation of INTech Senpaï to Eurobot</descrition>
 
   <url>https://github.com/INTechSenpai/eurobotruck</url>
 

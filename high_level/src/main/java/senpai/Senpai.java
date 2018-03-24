@@ -15,11 +15,9 @@
 package senpai;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -176,7 +174,7 @@ public class Senpai
 	 * @throws ContainerException si un autre container est déjà instancié
 	 * @throws InterruptedException
 	 */
-	public Senpai(String...profiles) throws InterruptedException
+	public Senpai(String configfile, String...profiles) throws InterruptedException
 	{
 		/**
 		 * On vérifie qu'il y ait un seul container à la fois
@@ -196,8 +194,8 @@ public class Senpai
 		injector = new Injector();
 
 		DebugTool debug = DebugTool.getDebugTool(new Vec2RO(0,1000), Severity.INFO);
-		log = new Log(Severity.INFO, "senpai.conf", "log");
-		config = new Config(ConfigInfoSenpai.values(), true, "senpai.conf", profiles);
+		log = new Log(Severity.INFO, configfile, "log");
+		config = new Config(ConfigInfoSenpai.values(), true, configfile, profiles);
 
 		injector.addService(this);
 		injector.addService(log);
@@ -255,7 +253,7 @@ public class Senpai
 		RectangularObstacle robotTemplate = new RectangularObstacle(demieLargeurNonDeploye, demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 		injector.addService(RectangularObstacle.class, robotTemplate);
 		
-		Kraken k = new Kraken(robotTemplate, obstaclesFixes, new XY(-1500, 0), new XY(1500, 2000), "senpai.conf", profiles);
+		Kraken k = new Kraken(robotTemplate, obstaclesFixes, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles);
 		
 		injector.addService(k);
 		
@@ -264,7 +262,7 @@ public class Senpai
 		 */
 		try
 		{
-			log.write("Mise en place du hook d'arrêt", Subject.DUMMY);
+			log.write("Mise en place du hook d'arrêt", Subject.STATUS);
 			Runtime.getRuntime().addShutdownHook(injector.getService(ThreadShutdown.class));
 		}
 		catch(InjectorException e)
@@ -272,15 +270,6 @@ public class Senpai
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
 			assert false : e;
-		}
-		
-		if(!config.getBoolean(ConfigInfoSenpai.GRAPHIC_ENABLE))
-		{
-			HashMap<ConfigInfo, Object> override = new HashMap<ConfigInfo, Object>();
-			List<ConfigInfo> graphicConf = ConfigInfoSenpai.getGraphicConfigInfo();
-			for(ConfigInfo c : graphicConf)
-				override.put(c, false);
-			config.override(override);
 		}
 		
 		startAllThreads();

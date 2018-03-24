@@ -100,7 +100,7 @@ public class KnownPathManager {
 		ObjectInputStream ois = null;
 		try
 		{
-			FileInputStream fichier = new FileInputStream(filename);
+			FileInputStream fichier = new FileInputStream("paths/" + filename);
 			ois = new ObjectInputStream(fichier);
 			return (LinkedList<ItineraryPoint>) ois.readObject();
 		}

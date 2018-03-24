@@ -146,15 +146,10 @@ public class ThreadCommProcess extends Thread
 					paquet.origine.ticket.set(InOrder.ACK_SUCCESS);
 				}
 				
-				else if(paquet.origine == Id.STOP)
-				{
+				else if(paquet.origine == Id.STOP ||
+						paquet.origine == Id.EDIT_POINTS ||
+						paquet.origine == Id.ADD_POINTS)
 					paquet.origine.ticket.set(InOrder.ACK_SUCCESS);
-				}
-
-				else if(paquet.origine == Id.SEND_ARC)
-				{
-					paquet.origine.ticket.set(InOrder.ACK_SUCCESS);
-				}
 				
 				else if(paquet.origine == Id.PING)
 				{

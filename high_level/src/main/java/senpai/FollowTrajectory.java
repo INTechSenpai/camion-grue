@@ -1,6 +1,12 @@
 package senpai;
-import java.util.Arrays;
+
 import java.util.List;
+import pfg.injector.InjectorException;
+import pfg.kraken.robot.ItineraryPoint;
+import pfg.log.Log;
+import senpai.buffer.OutgoingOrderBuffer;
+import senpai.comm.CommProtocol.InOrder;
+import senpai.comm.Ticket;
 
 /*
  * Copyright (C) 2013-2017 Pierre-François Gimenez
@@ -26,32 +32,32 @@ public class FollowTrajectory
 {
 	public static void main(String[] args) throws InterruptedException
 	{
-		// TODO
-		if(args.length == 0)
+		if(args.length != 1)
 		{
-			System.out.println("Usage : ./run.sh "+FollowTrajectory.class.getSimpleName()+" test.path [-p config-profile] [-y]");
-			System.out.println("-y : ne demande pas la confirmation de l'utilisateur");
+			System.out.println("Usage : ./run.sh "+FollowTrajectory.class.getSimpleName()+" chemin");
 			return;
 		}
 		
+		String configfile = "senpai-trajectory.conf";
+		
 		String filename = args[0];
+		Senpai senpai = new Senpai(configfile, "default");
+		Log log = new Log(Severity.INFO, configfile, "log");
 		
-		List<String> configProfile = Arrays.asList("default");
-		boolean needValidation = true;
-		
-		for(int i = 1; i < args.length; i++)
+		List<ItineraryPoint> path = KnownPathManager.loadPath(filename);
+		OutgoingOrderBuffer data;
+		try
 		{
-			if(args[i].equals("-c"))
-				configProfile.add(args[++i]);
-			else if(args[i].equals("-y"))
-				needValidation = false;
+			data = senpai.getService(OutgoingOrderBuffer.class);
+
+			data.ajoutePointsTrajectoire(path);
+			Ticket t = data.followTrajectory();
+			InOrder state = t.attendStatus();
+			log.write("Code de retour reçu : "+state, Subject.TRAJECTORY);
 		}
-		
-		String[] profilesArray = new String[configProfile.size()];
-		for(int i = 0; i < profilesArray.length; i++)
-			profilesArray[i] = configProfile.get(i);
-		
-		Senpai senpai = new Senpai(profilesArray);
-		// display la trajectoire et attend la validation de l'utilisateur (selon needValidation)
+		catch(InjectorException e)
+		{
+			e.printStackTrace();
+		}
 	}
 }

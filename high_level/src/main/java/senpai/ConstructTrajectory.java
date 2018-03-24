@@ -43,7 +43,7 @@ public class ConstructTrajectory
 	{
 		if(args.length != 5 && args.length != 6)
 		{
-			System.out.println("Usage : ./run.sh "+ConstructTrajectory.class.getSimpleName()+" x_depart y_depart o_depart x_arrivee y_arrivee [output.path]");
+			System.out.println("Usage : ./run.sh "+ConstructTrajectory.class.getSimpleName()+" x_depart y_depart o_depart x_arrivee y_arrivee [chemin]");
 			return;
 		}
 		
@@ -80,8 +80,6 @@ public class ConstructTrajectory
 		
 		GraphicDisplay display = kraken.getGraphicDisplay();
 
-		for(Obstacle obs : obsList)
-			display.addPrintable(obs, Color.BLACK, Layer.MIDDLE.layer);
 		display.refresh();
 		try
 		{
