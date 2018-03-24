@@ -60,6 +60,7 @@ public class Senpai
 	private Log log;
 	private Config config;
 	private Injector injector;
+	private DebugTool debug;
 
 	private static int nbInstances = 0;
 	private Thread mainThread;
@@ -118,11 +119,9 @@ public class Senpai
 		if(k != null)
 			k.stop();
 		
-		// On appelle le destructeur du PrintBuffer
-		WindowFrame f = injector.getExistingService(WindowFrame.class);
-		if(f != null)
-			f.close();
-
+		// On appelle le destructeur graphique
+		debug.destructor();
+		
 		// arrêt des threads
 		try {
 			for(ThreadName n : ThreadName.values())
@@ -207,8 +206,7 @@ public class Senpai
 			Robot robot = new Robot(log);
 			injector.addService(robot);
 
-			DebugTool debug = DebugTool.getDebugTool(new HashMap<ConfigInfo, Object>(), robot.getCinematique().getPosition(), Severity.INFO, configfile, profiles);
-
+			debug = DebugTool.getDebugTool(new HashMap<ConfigInfo, Object>(), robot.getCinematique().getPosition(), Severity.INFO, configfile, profiles);
 	
 			Speed.TEST.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_TEST) / 1000.;
 			Speed.REPLANIF.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_REPLANIF) / 1000.;
