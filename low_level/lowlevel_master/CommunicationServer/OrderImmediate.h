@@ -2,17 +2,23 @@
 #define _ORDERIMMEDIATE_h
 
 #include <vector>
+#include "Serializer.h"
 #include "../Locomotion/MotionControlSystem.h"
+#include "../Locomotion/DirectionController.h"
+#include "../Locomotion/MoveState.h"
+#include "../Locomotion/Position.h"
+#include "../Locomotion/TrajectoryPoint.h"
+#include "../Locomotion/MotionControlTunings.h"
 #include "../CommunicationServer/CommunicationServer.h"
 #include "../Tools/Singleton.h"
-#include "../Tools/FloatBinaryEncoder.h"
 
 
 class OrderImmediate
 {
 public:
     OrderImmediate() : 
-        motionControlSystem(MotionControlSystem::Instance())
+        motionControlSystem(MotionControlSystem::Instance()),
+        directionController(DirectionController::Instance())
     {}
 
     /*
@@ -23,18 +29,34 @@ public:
 
 protected:
     MotionControlSystem & motionControlSystem;
+    DirectionController & directionController;
 };
 
 
 // ### Définition des ordres à réponse immédiate ###
 
+/*
 class Rien : public OrderImmediate, public Singleton<Rien>
 {
 public:
     Rien() {}
-    virtual void execute(std::vector<uint8_t> & io) {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == EXPEXTED_SIZE)
+        {
+            // Read input
+            // Process command
+            io.clear();
+            // Write output
+        }
+        else
+        {
+            Server.printf_err("Rien: wrong number of arguments\n");
+            io.clear();
+        }
+    }
 };
-
+//*/
 
 /*
     Ne fait rien, mais indique que le HL est vivant !
@@ -46,9 +68,16 @@ public:
 
     virtual void execute(std::vector<uint8_t> & io)
     {
-        io.clear();
-    // le ping doit répondre, donc on met une donnée qui ne sert à rien
-    io.push_back(0);
+        if (io.size() == 0)
+        {
+            io.clear();
+            Serializer::writeInt(0, io);
+        }
+        else
+        {
+            Server.printf_err("Ping: wrong number of arguments\n");
+            io.clear();
+        }
     }
 };
 
@@ -59,9 +88,307 @@ public:
     GetColor() {}
     virtual void execute(std::vector<uint8_t> & io)
     {
-        io.clear();
+        if (io.size() == 0)
+        {
+            io.clear();
+            // TODO Write output
+            Serializer::writeEnum(2, io);
+        }
+        else
+        {
+            Server.printf_err("GetColor: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
 
-        io.push_back(0x02); // todo
+
+class EditPosition : public OrderImmediate, public Singleton<EditPosition>
+{
+public:
+    EditPosition() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 12)
+        {
+            size_t index = 0;
+            int32_t x = Serializer::readInt(io, index);
+            int32_t y = Serializer::readInt(io, index);
+            float angle = Serializer::readFloat(io, index);
+            Position p = motionControlSystem.getPosition();
+            p.x += (float)x;
+            p.y += (float)y;
+            p.setOrientation(p.orientation + (float)angle);
+            motionControlSystem.setPosition(p);
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("EditPosition: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+
+class SetPosition : public OrderImmediate, public Singleton<SetPosition>
+{
+public:
+    SetPosition() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 12)
+        {
+            size_t index = 0;
+            int32_t x = Serializer::readInt(io, index);
+            int32_t y = Serializer::readInt(io, index);
+            float angle = Serializer::readFloat(io, index);
+            Position p((float)x, (float)y, angle);
+            motionControlSystem.setPosition(p);
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("SetPosition: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+
+class AppendToTraj : public OrderImmediate, public Singleton<AppendToTraj>
+{
+public:
+    AppendToTraj() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        uint8_t ret = TRAJECTORY_EDITION_FAILURE;
+        if (io.size() % 22 == 0)
+        {
+            for (size_t i = 0; i < io.size(); i += 22)
+            {
+                size_t index = i;
+                int32_t x = Serializer::readInt(io, index);
+                int32_t y = Serializer::readInt(io, index);
+                float angle = Serializer::readFloat(io, index);
+                float curvature = Serializer::readFloat(io, index);
+                float speed = Serializer::readFloat(io, index);
+                bool stopPoint = Serializer::readBool(io, index);
+                bool endOfTraj = Serializer::readBool(io, index);
+                Position p((float)x, (float)y, angle);
+                TrajectoryPoint trajPoint(p, curvature, speed, stopPoint, endOfTraj);
+                ret = motionControlSystem.appendToTrajectory(trajPoint);
+                if (ret != TRAJECTORY_EDITION_SUCCESS)
+                {
+                    motionControlSystem.stop_and_clear_trajectory();
+                    break;
+                }
+            }
+        }
+        else
+        {
+            Server.printf_err("AppendToTraj: wrong number of arguments\n");   
+        }
+        io.clear();
+        Serializer::writeEnum(ret, io);
+    }
+};
+
+
+class EditTraj : public OrderImmediate, public Singleton<EditTraj>
+{
+public:
+    EditTraj() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        uint8_t ret = TRAJECTORY_EDITION_FAILURE;
+        if (io.size() > 0 && (io.size() - 1) % 22 == 0)
+        {
+            size_t index = 0;
+            size_t trajIndex = Serializer::readUInt(io, index);
+
+            for (size_t i = 1; i < io.size(); i += 22)
+            {
+                index = i;
+                int32_t x = Serializer::readInt(io, index);
+                int32_t y = Serializer::readInt(io, index);
+                float angle = Serializer::readFloat(io, index);
+                float curvature = Serializer::readFloat(io, index);
+                float speed = Serializer::readFloat(io, index);
+                bool stopPoint = Serializer::readBool(io, index);
+                bool endOfTraj = Serializer::readBool(io, index);
+                Position p((float)x, (float)y, angle);
+                TrajectoryPoint trajPoint(p, curvature, speed, stopPoint, endOfTraj);
+                
+                ret = motionControlSystem.updateTrajectory(trajIndex, trajPoint);
+
+                if (ret != TRAJECTORY_EDITION_SUCCESS)
+                {
+                    motionControlSystem.stop_and_clear_trajectory();
+                    break;
+                }
+                trajIndex++;
+            }
+        }
+        else
+        {
+            Server.printf_err("EditTraj: wrong number of arguments\n");
+        }
+        io.clear();
+        Serializer::writeEnum(ret, io);
+    }
+};
+
+
+
+/********************
+    DEBUG COMMANDS
+*********************/
+
+
+class Display : public OrderImmediate, public Singleton<Display>
+{
+public:
+    Display() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 0)
+        {
+            Server.print(motionControlSystem.getTunings());
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("Display: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+
+class Save : public OrderImmediate, public Singleton<Save>
+{
+public:
+    Save() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 0)
+        {
+            // TODO
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("Save: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+
+class LoadDefaults : public OrderImmediate, public Singleton<LoadDefaults>
+{
+public:
+    LoadDefaults() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 0)
+        {
+            // TODO
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("LoadDefaults: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+
+class GetPosition : public OrderImmediate, public Singleton<GetPosition>
+{
+public:
+    GetPosition() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 0)
+        {
+            io.clear();
+            Position p = motionControlSystem.getPosition();
+            Serializer::writeInt((int32_t)p.x, io);
+            Serializer::writeInt((int32_t)p.y, io);
+            Serializer::writeFloat(p.orientation, io);
+        }
+        else
+        {
+            Server.printf_err("GetPosition: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+
+class GetBattery : public OrderImmediate, public Singleton<GetBattery>
+{
+public:
+    GetBattery() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 0)
+        {
+            io.clear();
+            // TODO
+        }
+        else
+        {
+            Server.printf_err("GetBattery: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+
+class SetControlLevel : public OrderImmediate, public Singleton<SetControlLevel>
+{
+public:
+    SetControlLevel() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 1)
+        {
+            size_t index = 0;
+            uint8_t controlLevel = Serializer::readEnum(io, index);
+            motionControlSystem.setMotionControlLevel(controlLevel);
+            Server.printf(SPY_ORDER, "MotionControlLevel=%u\n", motionControlSystem.getMotionControlLevel());
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("SetControlLevel: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+
+class StartManualMove : public OrderImmediate, public Singleton<StartManualMove>
+{
+public:
+    StartManualMove() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 0)
+        {
+            motionControlSystem.startManualMove();
+            Server.printf(SPY_ORDER, "StartManualMove\n");
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("StartManualMove: wrong number of arguments\n");
+            io.clear();
+        }
     }
 };
 
@@ -72,39 +399,307 @@ public:
     SetPWM() {}
     virtual void execute(std::vector<uint8_t> & io)
     {
-        if (io.size() == 8)
+        if (io.size() == 16)
         {
-            int16_t frontLeft = (int16_t)io.at(0) + ((int16_t)io.at(1) << 8);
-            int16_t frontRight = (int16_t)io.at(2) + ((int16_t)io.at(3) << 8);
-            int16_t backLeft = (int16_t)io.at(4) + ((int16_t)io.at(5) << 8);
-            int16_t backRight = (int16_t)io.at(6) + ((int16_t)io.at(7) << 8);
-            Server.printf("fl%d fr%d bl%d br%d\n", frontLeft, frontRight, backLeft, backRight);
-            motionControlSystem.setPWM(frontLeft, frontRight, backLeft, backRight);
-            motionControlSystem.startManualMove();
+            size_t index = 0;
+            int32_t frontLeftPWM = Serializer::readInt(io, index);
+            int32_t frontRightPWM = Serializer::readInt(io, index);
+            int32_t backLeftPWM = Serializer::readInt(io, index);
+            int32_t backRightPWM = Serializer::readInt(io, index);
+            motionControlSystem.setPWM(frontLeftPWM, frontRightPWM, backLeftPWM, backRightPWM);
+            Server.printf(SPY_ORDER, "SetPWM: fl=%d, fr=%d, bl=%d, br=%d\n", 
+                frontLeftPWM, frontRightPWM, backLeftPWM, backRightPWM);
             io.clear();
         }
         else
         {
-            Server.printf("invalid arg size:%lu\n", io.size());
+            Server.printf_err("SetPWM: wrong number of arguments\n");
+            io.clear();
         }
     }
 };
 
 
-//class Rien : public OrderImmediate, public Singleton<Rien>
-//{
-//public:
-//    Rien() {}
-//    virtual void execute(std::vector<uint8_t> & io) {}
-//};
-//
-//
-//class Rien : public OrderImmediate, public Singleton<Rien>
-//{
-//public:
-//    Rien() {}
-//    virtual void execute(std::vector<uint8_t> & io) {}
-//};
+class SetMaxSpeed : public OrderImmediate, public Singleton<SetMaxSpeed>
+{
+public:
+    SetMaxSpeed() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 4)
+        {
+            size_t index = 0;
+            float speed = Serializer::readFloat(io, index);
+            motionControlSystem.setMaxSpeed(speed);
+            Server.printf(SPY_ORDER, "SetMaxSpeed: %gmm/s\n", speed);
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("SetMaxSpeed: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+
+class SetAimDistance : public OrderImmediate, public Singleton<SetAimDistance>
+{
+public:
+    SetAimDistance() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 4)
+        {
+            size_t index = 0;
+            float aimDistance = Serializer::readFloat(io, index);
+            motionControlSystem.setDistanceToDrive(aimDistance);
+            Server.printf(SPY_ORDER, "SetAimDistance: %gmm\n", aimDistance);
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("SetAimDistance: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+
+class SetCurvature : public OrderImmediate, public Singleton<SetCurvature>
+{
+public:
+    SetCurvature() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == sizeof(float))
+        {
+            size_t readIndex = 0;
+            float curvature = Serializer::readFloat(io, readIndex);
+            motionControlSystem.setCurvature(curvature);
+            directionController.setAimCurvature(curvature);
+            Server.printf(SPY_ORDER, "SetCurvature: %gm^-1\n", curvature);
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("SetCurvature: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+
+class SetSpeedTunings : public OrderImmediate, public Singleton<SetSpeedTunings>
+{
+public:
+    SetSpeedTunings() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 12)
+        {
+            size_t index = 0;
+            float kp = Serializer::readFloat(io, index);
+            float ki = Serializer::readFloat(io, index);
+            float kd = Serializer::readFloat(io, index);
+            MotionControlTunings tunings = motionControlSystem.getTunings();
+            tunings.speedKp = kp;
+            tunings.speedKi = ki;
+            tunings.speedKd = kd;
+            motionControlSystem.setTunings(tunings);
+            Server.printf(SPY_ORDER, "Speed Kp=%g Ki=%g Kd=%g\n", kp, ki, kd);
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("SetSpeedTunings: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+
+class SetTranslationTunings : public OrderImmediate, public Singleton<SetTranslationTunings>
+{
+public:
+    SetTranslationTunings() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 8)
+        {
+            size_t index = 0;
+            float kp = Serializer::readFloat(io, index);
+            float kd = Serializer::readFloat(io, index);
+            MotionControlTunings tunings = motionControlSystem.getTunings();
+            tunings.translationKp = kp;
+            tunings.translationKd = kd;
+            motionControlSystem.setTunings(tunings);
+            Server.printf(SPY_ORDER, "Translation Kp=%g Kd=%g\n", kp, kd);
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("SetTranslationTunings: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+
+class SetTrajectoryTunings : public OrderImmediate, public Singleton<SetTrajectoryTunings>
+{
+public:
+    SetTrajectoryTunings() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 8)
+        {
+            size_t index = 0;
+            float k1 = Serializer::readFloat(io, index);
+            float k2 = Serializer::readFloat(io, index);
+            MotionControlTunings tunings = motionControlSystem.getTunings();
+            tunings.curvatureK1 = k1;
+            tunings.curvatureK2 = k2;
+            motionControlSystem.setTunings(tunings);
+            Server.printf(SPY_ORDER, "Trajectory K1=%g K2=%g\n", k1, k2);
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("SetTrajectoryTunings: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+
+class SetBlockingTunings : public OrderImmediate, public Singleton<SetBlockingTunings>
+{
+public:
+    SetBlockingTunings() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 8)
+        {
+            size_t index = 0;
+            float sensibility = Serializer::readFloat(io, index);
+            uint32_t responseTime = Serializer::readUInt(io, index);
+            MotionControlTunings tunings = motionControlSystem.getTunings();
+            tunings.blockingSensibility = sensibility;
+            tunings.blockingResponseTime = responseTime;
+            motionControlSystem.setTunings(tunings);
+            Server.printf(SPY_ORDER, "Blocking sensib=%g delay=%ums\n", sensibility, responseTime);
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("SetBlockingTunings: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+
+class SetStoppingTunings : public OrderImmediate, public Singleton<SetStoppingTunings>
+{
+public:
+    SetStoppingTunings() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 8)
+        {
+            size_t index = 0;
+            float epsilon = Serializer::readFloat(io, index);
+            uint32_t responseTime = Serializer::readUInt(io, index);
+            MotionControlTunings tunings = motionControlSystem.getTunings();
+            tunings.stoppedSpeed = epsilon;
+            tunings.stoppingResponseTime = responseTime;
+            motionControlSystem.setTunings(tunings);
+            Server.printf(SPY_ORDER, "Stopping epsilon=%gmm/s delay=%ums\n", epsilon, responseTime);
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("SetStoppingTunings: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+
+class SetMaxAcceleration : public OrderImmediate, public Singleton<SetMaxAcceleration>
+{
+public:
+    SetMaxAcceleration() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 4)
+        {
+            size_t index = 0;
+            float acceleration = Serializer::readFloat(io, index);
+            MotionControlTunings tunings = motionControlSystem.getTunings();
+            tunings.maxAcceleration = acceleration;
+            motionControlSystem.setTunings(tunings);
+            Server.printf(SPY_ORDER, "MaxAcceleration=%gmm*s^-2\n", acceleration);
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("SetMaxAcceleration: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+
+class SetMaxDeceleration : public OrderImmediate, public Singleton<SetMaxDeceleration>
+{
+public:
+    SetMaxDeceleration() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 4)
+        {
+            size_t index = 0;
+            float deceleration = Serializer::readFloat(io, index);
+            MotionControlTunings tunings = motionControlSystem.getTunings();
+            tunings.maxDeceleration = deceleration;
+            motionControlSystem.setTunings(tunings);
+            Server.printf(SPY_ORDER, "MaxDeceleration=%gmm*s^-2\n", deceleration);
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("SetMaxDeceleration: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+
+class SetMaxCurvature : public OrderImmediate, public Singleton<SetMaxCurvature>
+{
+public:
+    SetMaxCurvature() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 4)
+        {
+            size_t index = 0;
+            float curvature = Serializer::readFloat(io, index);
+            MotionControlTunings tunings = motionControlSystem.getTunings();
+            tunings.maxCurvature = curvature;
+            motionControlSystem.setTunings(tunings);
+            Server.printf(SPY_ORDER, "MaxCurvature=%gm^-1\n", curvature);
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("SetMaxCurvature: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
 
 #endif
-

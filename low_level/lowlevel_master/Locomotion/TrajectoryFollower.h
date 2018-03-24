@@ -223,13 +223,13 @@ public:
 
 	void setCurvature(float curvature)
 	{
-		if (!trajectoryControlled)
+		if (!trajectoryControlled || movePhase == MOVE_ENDED)
 		{
 			curvatureOrder = curvature;
 		}
 		else
 		{
-            Server.printf_err("TrajectoryFollower::setCurvature : trajectory is controlled\n");
+            Server.printf_err("TrajectoryFollower::setCurvature : trajectory is controlled and move is started\n");
 		}
 	}
 

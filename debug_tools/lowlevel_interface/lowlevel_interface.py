@@ -795,16 +795,17 @@ class GraphSettingGroup(QFrame):
         grid.addWidget(buttonTitle, stretch=0, alignment=Qt.AlignTop)
         self.cbList = []
         for field in fieldList:
-            cb = QCheckBox(field.name, self)
-            if isinstance(field, InfoField):
-                r, g, b, a = field.color.getRgb()
-            else:
-                r, g, b = (197, 200, 198)
-            cb.setStyleSheet("color: rgb("+ str(r) + "," + str(g) + "," + str(b) + ")")
-            cb.clicked.connect(update_callback)
-            grid.addWidget(cb, stretch=0, alignment=Qt.AlignTop)
-            checkboxList.append(cb)
-            self.cbList.append(cb)
+            if field.name != TIMESTAMP_INFO_FIELD:
+                cb = QCheckBox(field.name, self)
+                if isinstance(field, InfoField):
+                    r, g, b, a = field.color.getRgb()
+                else:
+                    r, g, b = (197, 200, 198)
+                cb.setStyleSheet("color: rgb("+ str(r) + "," + str(g) + "," + str(b) + ")")
+                cb.clicked.connect(update_callback)
+                grid.addWidget(cb, stretch=0, alignment=Qt.AlignTop)
+                checkboxList.append(cb)
+                self.cbList.append(cb)
         self.setLayout(grid)
 
     def globalToggle(self):
@@ -848,11 +849,12 @@ class GraphCurveArea(QFrame):
             axis.setLabel(command.name)
             self.data[command.name] = {"viewBox": viewBox, "axis": axis, "data": {}}
             for field in command.outputFormat:
-                self.data[command.name]["data"][field.name] = {"x": [], "y": []}
-                plot = pyqtgraph.PlotCurveItem()
-                plot.setPen(field.color)
-                self.data[command.name]["viewBox"].addItem(plot)
-                self.data[command.name]["data"][field.name]["plot"] = plot
+                if field.name != TIMESTAMP_INFO_FIELD:
+                    self.data[command.name]["data"][field.name] = {"x": [], "y": []}
+                    plot = pyqtgraph.PlotCurveItem()
+                    plot.setPen(field.color)
+                    self.data[command.name]["viewBox"].addItem(plot)
+                    self.data[command.name]["data"][field.name]["plot"] = plot
         self.updateViews()
         self.plotItem.vb.sigResized.connect(self.updateViews)
 

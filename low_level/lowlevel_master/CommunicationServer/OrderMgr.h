@@ -35,10 +35,38 @@ public:
         *    ################################################## */
 
         // Ordres à réponse immédiate
-        immediateOrderList[0x0] = &Ping::Instance();
-        immediateOrderList[0x1] = &SetPWM::Instance();
+        immediateOrderList[0x00] = &Ping::Instance();
+        immediateOrderList[0x01] = &GetColor::Instance();
+        immediateOrderList[0x02] = &EditPosition::Instance();
+        immediateOrderList[0x03] = &SetPosition::Instance();
+        immediateOrderList[0x04] = &AppendToTraj::Instance();
+        immediateOrderList[0x05] = &EditTraj::Instance();
+
+        immediateOrderList[0x10] = &Display::Instance();
+        immediateOrderList[0x11] = &Save::Instance();
+        immediateOrderList[0x12] = &LoadDefaults::Instance();
+        immediateOrderList[0x13] = &GetPosition::Instance();
+        immediateOrderList[0x14] = &GetBattery::Instance();
+        immediateOrderList[0x15] = &SetControlLevel::Instance();
+        immediateOrderList[0x16] = &StartManualMove::Instance();
+        immediateOrderList[0x17] = &SetPWM::Instance();
+        immediateOrderList[0x18] = &SetMaxSpeed::Instance();
+        immediateOrderList[0x19] = &SetAimDistance::Instance();
+        immediateOrderList[0x1A] = &SetCurvature::Instance();
+        immediateOrderList[0x1B] = &SetSpeedTunings::Instance();
+        immediateOrderList[0x1C] = &SetTranslationTunings::Instance();
+        immediateOrderList[0x1D] = &SetTrajectoryTunings::Instance();
+        immediateOrderList[0x1E] = &SetBlockingTunings::Instance();
+        immediateOrderList[0x1F] = &SetStoppingTunings::Instance();
+        immediateOrderList[0x20] = &SetMaxAcceleration::Instance();
+        immediateOrderList[0x21] = &SetMaxDeceleration::Instance();
+        immediateOrderList[0x22] = &SetMaxCurvature::Instance();
 
         // Ordres longs
+        longOrderList[0x00] = &FollowTrajectory::Instance();
+        longOrderList[0x01] = &Stop::Instance();
+        longOrderList[0x02] = &WaitForJumper::Instance();
+        longOrderList[0x03] = &StartChrono::Instance();
     }
 
     void execute()

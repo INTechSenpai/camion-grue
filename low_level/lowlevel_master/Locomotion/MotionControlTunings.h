@@ -1,8 +1,10 @@
 #ifndef _MOTION_CONTROL_TUNINGS_h
 #define _MOTION_CONTROL_TUNINGS_h
 
+#include "Printable.h"
 
-class MotionControlTunings
+
+class MotionControlTunings : public Printable
 {
 public:
 	MotionControlTunings()
@@ -32,6 +34,27 @@ public:
         speedKi = 0.01;
         speedKd = 20;
 	}
+
+    size_t printTo(Print& p) const
+    {
+        size_t ret = 0;
+        ret += p.printf("maxAcceleration=%g\n", maxAcceleration);
+        ret += p.printf("maxDeceleration=%g\n", maxDeceleration);
+        ret += p.printf("maxCurvature=%g\n", maxCurvature);
+        ret += p.printf("blockingSensibility=%g\n", blockingSensibility);
+        ret += p.printf("blockingResponseTime=%u\n", blockingResponseTime);
+        ret += p.printf("stoppedSpeed=%g\n", stoppedSpeed);
+        ret += p.printf("stoppingResponseTime=%u\n", stoppingResponseTime);
+        ret += p.printf("curvatureK1=%g\n", curvatureK1);
+        ret += p.printf("curvatureK2=%g\n", curvatureK2);
+        ret += p.printf("translationKp=%g\n", translationKp);
+        ret += p.printf("translationKd=%g\n", translationKd);
+        ret += p.printf("speedKp=%g\n", speedKp);
+        ret += p.printf("speedKi=%g\n", speedKi);
+        ret += p.printf("speedKd=%g\n", speedKd);
+
+        return ret;
+    }
 
     float maxAcceleration;      // mm*s^-2
     float maxDeceleration;      // mm*s^-2

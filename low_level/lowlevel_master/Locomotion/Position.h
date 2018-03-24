@@ -55,33 +55,6 @@ public:
 		this->orientation = newPosition.orientation;
 	}
 
-	std::vector<uint8_t> getVector() // todo 
-	{
-		std::vector<uint8_t> data;
-
-		float rO = orientation * 1000;
-		uint16_t _x = (uint16_t)(x + 1500);
-		uint16_t _y = (uint16_t)(y + 1000);
-		uint16_t _o = (uint16_t)rO;
-		
-		uint16_t hw_x, lw_x_hw_y, lw_y;
-		hw_x = _x & 0x0FF0;
-		hw_x = hw_x >> 4;
-
-		lw_x_hw_y = (_x & 0x000F) << 4;
-		lw_x_hw_y += (_y & 0x0F00) >> 8;
-
-		lw_y = _y & 0x00FF;
-
-		data.push_back((uint8_t)hw_x);
-		data.push_back((uint8_t)lw_x_hw_y);
-		data.push_back((uint8_t)lw_y);
-		data.push_back((uint8_t)(_o >> 8));
-		data.push_back((uint8_t)_o);
-
-		return data;
-	}
-
 	bool isCloserToAThanB(Position const & positionA, Position const & positionB) const volatile
 	{
 		float squaredDistanceToA = square(x - positionA.x) + square(y - positionA.y);

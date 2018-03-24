@@ -16,15 +16,13 @@ public:
 		algebricMaxSpeed = 0;
 	}
 
-	TrajectoryPoint(const Position & pos, uint8_t hw_curv, uint8_t lw_curv, uint8_t sp_eot, float maxSpeed)
+	TrajectoryPoint(const Position & aPos, float aCurvature, float aSpeed, bool isStopPoint, bool isEndOfTraj)
 	{
-		position = pos;
-		int16_t curv = lw_curv;
-		curv += hw_curv << 8;
-		curvature = ((float)curv) / 100;
-		stopPoint = sp_eot & B00000001;
-		endOfTrajectory = sp_eot & B00000010;
-		algebricMaxSpeed = maxSpeed;
+		position = aPos;
+		curvature = aCurvature;
+		algebricMaxSpeed = aSpeed;
+		stopPoint = isStopPoint;
+		endOfTrajectory = isEndOfTraj;
 	}
 
 	Position getPosition() const

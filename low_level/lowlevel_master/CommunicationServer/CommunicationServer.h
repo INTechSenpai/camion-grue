@@ -52,6 +52,9 @@ public:
     /* Constructeur */
     CommunicationServer();
 
+    /* Initialise le WIZ820io */
+    void begin();
+
     /* Envoie les messages de la file d'attente et lit les messages entrants */
     void communicate();
 

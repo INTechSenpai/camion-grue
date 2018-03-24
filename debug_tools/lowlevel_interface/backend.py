@@ -121,10 +121,17 @@ class Backend:
             else:
                 args = self.interpretBytes(message.data, command.outputFormat)
             if command.type == CommandType.SUBSCRIPTION_CURVE_DATA:
-                i = 0
-                for arg in args:
-                    self.curveGraphEntries.append((message.timestamp, command.name, command.outputFormat[i].name, message.timestamp, float(arg)))
-                    i += 1
+                if len(command.outputFormat) != len(args):
+                    raise IndexError("Wrong number of arguments received")
+                nbArgs = len(args)
+                timestamp = message.timestamp
+                for i in range(nbArgs):
+                    if command.outputFormat[i].name == TIMESTAMP_INFO_FIELD:
+                        timestamp = float(args[i])
+                        break
+                for i in range(nbArgs):
+                    if command.outputFormat[i].name != TIMESTAMP_INFO_FIELD:
+                        self.curveGraphEntries.append((message.timestamp, command.name, command.outputFormat[i].name, timestamp, float(args[i])))
                 self.needUpdateCurveGraph = True
             elif command.type == CommandType.SUBSCRIPTION_SCATTER_DATA:
                 # todo
@@ -209,17 +216,30 @@ class Backend:
     def updateCurveGraph(self):
         #todo : optimize this
         subData = {}
+        tMin = None
+        tMax = None
         for entry in self.curveGraphEntries:
             if self.currentTime - self.zoom <= entry[0] <= self.currentTime:
+                t = entry[3]
+                if tMin is None or t < tMin:
+                    tMin = t
+                if tMax is None or t > tMax:
+                    tMax = t
                 if entry[1] not in subData:
                     subData[entry[1]] = {}
                 if entry[2] in subData[entry[1]]:
-                    subData[entry[1]][entry[2]]["x"].append(entry[3])
+                    subData[entry[1]][entry[2]]["x"].append(t)
                     subData[entry[1]][entry[2]]["y"].append(entry[4])
                 else:
-                    subData[entry[1]][entry[2]] = {"x": [entry[3]], "y": [entry[4]]}
+                    subData[entry[1]][entry[2]] = {"x": [t], "y": [entry[4]]}
         # print(subData)
-        self.graph.update_data(curveData=subData, origin=self.currentTime, xMin=self.currentTime - self.zoom, xMax=self.currentTime)
+        if tMin is None:
+            tMin = self.currentTime - self.zoom
+        if tMax is None:
+            tMax = self.currentTime
+        if tMin > tMax:
+            tMin = tMax
+        self.graph.update_data(curveData=subData, origin=tMax, xMin=tMin, xMax=tMax)
 
     def updateScatterGraph(self):
         #todo

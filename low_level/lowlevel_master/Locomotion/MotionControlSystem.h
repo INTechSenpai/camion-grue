@@ -15,6 +15,9 @@
 #define PERIOD_ASSERV	(1000000 / FREQ_ASSERV)	// Période d'asservissement (µs)
 #define TRAJECTORY_STEP 20			            // Distance entre deux points d'une trajectoire (mm)
 
+#define TRAJECTORY_EDITION_SUCCESS  0
+#define TRAJECTORY_EDITION_FAILURE  1
+
 
 class MotionControlSystem : public Singleton<MotionControlSystem>
 {
@@ -108,12 +111,15 @@ public:
             }
             else if (movePhase != BREAKING)
             {
-                moveStatus |= EMPTY_TRAJ;
                 stop_and_clear_trajectory_from_interrupt();
                 if (movePhase == MOVE_ENDED)
                 {
                     travellingToDestination = false;
                     wasTravellingToDestination = false;
+                }
+                else
+                {
+                    moveStatus |= EMPTY_TRAJ;
                 }
             }
 		}
@@ -197,7 +203,7 @@ private:
 		return moving;
 	}
 
-	void appendToTrajectory(TrajectoryPoint trajectoryPoint)
+	uint8_t appendToTrajectory(TrajectoryPoint trajectoryPoint)
 	{
 		if (!trajectoryComplete)
 		{
@@ -208,31 +214,46 @@ private:
 			{
 				trajectoryComplete = true;
 			}
+            return TRAJECTORY_EDITION_SUCCESS;
 		}
 		else
 		{
-			// todo: throw error
+            return TRAJECTORY_EDITION_FAILURE;
 		}
 	}
 
-	void updateTrajectory(size_t index, TrajectoryPoint trajectoryPoint)
-	{// todo : check if endOfTrajecory
+	uint8_t updateTrajectory(size_t index, TrajectoryPoint trajectoryPoint)
+	{
 		if (index < currentTrajectory.size() && index >= trajectoryIndex)
 		{
 			if (index == trajectoryIndex && travellingToDestination)
 			{
-				// todo: throw error
+                return TRAJECTORY_EDITION_FAILURE;
 			}
 			else
 			{
 				noInterrupts();
+                if (currentTrajectory.at(index).isEndOfTrajectory())
+                {
+                    trajectoryComplete = false;
+                }
 				currentTrajectory.at(index) = trajectoryPoint;
+                if (trajectoryPoint.isEndOfTrajectory())
+                {
+                    trajectoryComplete = true;
+                    if (currentTrajectory.size() > index + 1)
+                    {
+                        currentTrajectory.erase(currentTrajectory.begin() + index + 1, currentTrajectory.end());
+                    }
+                }
 				interrupts();
+
+                return TRAJECTORY_EDITION_SUCCESS;
 			}
 		}
 		else
 		{
-			// todo: throw error
+            return TRAJECTORY_EDITION_FAILURE;
 		}
 	}
 

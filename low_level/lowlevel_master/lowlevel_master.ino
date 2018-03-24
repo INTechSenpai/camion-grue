@@ -4,6 +4,7 @@
  Author:	Sylvain Gaultier
 */
 
+#include "Config/pin_mapping.h"
 #include "CommunicationServer/OrderMgr.h"
 #include "Locomotion/MotionControlSystem.h"
 
@@ -12,9 +13,12 @@
 
 void setup()
 {
+    //pinMode(PIN_DEL_STATUS_1, OUTPUT);
+    //digitalWrite(PIN_DEL_STATUS_1, HIGH);
 #if START_ON_SERIAL
     while (!Serial);
 #endif
+    Server.begin();
 }
 
 

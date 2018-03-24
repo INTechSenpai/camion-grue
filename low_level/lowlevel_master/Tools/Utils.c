@@ -1,4 +1,4 @@
-#include "utils.h"
+#include "Utils.h"
 
 /*
  * La fonction '%' du langage C ne renvoie pas le modulo au sens mathématique du terme.

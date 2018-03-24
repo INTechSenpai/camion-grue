@@ -30,12 +30,10 @@
 #define MAGIC_CORRECTOR	1
 
 /* Angles des AX12 correspondant à des roues alignées vers l'avant */
-#define ANGLE_ORIGIN	150
+#define ANGLE_ORIGIN	149
 
-#define ANGLE_MIN_LEFT	84
-#define ANGLE_MIN_RIGHT	105
-#define ANGLE_MAX_LEFT	193
-#define ANGLE_MAX_RIGHT	216
+#define ANGLE_MIN	90
+#define ANGLE_MAX	210
 
 #define SCANN_PERIOD		100		// ms
 #define SCANN_DELTA			1		// m^-1
@@ -79,7 +77,6 @@ public:
         frontRightMotor.jointMode();
         backLeftMotor.jointMode();
         backRightMotor.jointMode();
-		scanning = false;
 	}
 
     DirectionControllerStatus control()
@@ -95,22 +92,22 @@ public:
 			updateAimAngles();
 			if (counter == 0)
 			{
-                dynamixelStatus = frontLeftMotor.goalPositionDegree(aimLeftAngle + 1) != DYN_STATUS_OK;
+                dynamixelStatus = frontLeftMotor.goalPositionDegree(aimLeftAngle) != DYN_STATUS_OK;
 				counter++;
 			}
 			else if (counter == 1)
 			{
-                dynamixelStatus = frontRightMotor.goalPositionDegree(aimRightAngle + 1);
+                dynamixelStatus = frontRightMotor.goalPositionDegree(aimRightAngle);
 				counter++;
 			}
             else if (counter == 2)
             {
-                dynamixelStatus = backLeftMotor.goalPositionDegree(2 * ANGLE_ORIGIN - aimLeftAngle + 1);
+                dynamixelStatus = backLeftMotor.goalPositionDegree(2 * ANGLE_ORIGIN - aimLeftAngle);
                 counter++;
             }
             else if (counter == 3)
             {
-                dynamixelStatus = backRightMotor.goalPositionDegree(2 * ANGLE_ORIGIN - aimRightAngle + 1);
+                dynamixelStatus = backRightMotor.goalPositionDegree(2 * ANGLE_ORIGIN - aimRightAngle);
                 counter++;
             }
 			else if (counter == 4)
@@ -180,7 +177,6 @@ public:
 	
 	void setAimCurvature(float curvature)
 	{
-		scanning = false;
 		aimCurvature = curvature * MAGIC_CORRECTOR;
 	}
 	float getRealCurvature() const
@@ -206,62 +202,8 @@ public:
 
 	size_t printTo(Print& p) const
 	{
-		return p.printf("%g_%g", aimCurvature, realCurvature);
+		return p.printf("%u_%g_%g", millis(), aimCurvature, realCurvature);
 	}
-
-	/* Fait tourner les roues doucement vers la gauche, puis vers la droite. Renvoie vrai si la procédure est terminée, faux sinon */
-	bool scann(bool launch)
-	{
-		if (launch)
-		{
-			scanning = true;
-			scannLastIterationTime = 0;
-			scannBeginTime = millis();
-			scannPhaseLeft = true;
-			return false;
-		}
-		else if (scanning)
-		{
-			if (millis() - scannBeginTime > SCANN_TIMEOUT)
-			{
-				scanning = false;
-				return true;
-			}
-
-			if (millis() - scannLastIterationTime > SCANN_PERIOD)
-			{
-				scannLastIterationTime = millis();
-				if (scannPhaseLeft)
-				{
-					aimCurvature = SCANN_UPPER_BOUND;
-					if (ABS(aimCurvature - realCurvature) < 0.3)
-					{
-						scannPhaseLeft = false;
-					}
-					return false;
-				}
-				else
-				{
-					aimCurvature -= SCANN_DELTA;
-					if (aimCurvature < SCANN_LOWER_BOUND)
-					{
-						scanning = false;
-						return true;
-					}
-					return false;
-				}
-			}
-			else
-			{
-				return false;
-			}
-		}
-		else
-		{
-			return true;
-		}
-	}
-
 
 private:
 	void updateRealCurvature()
@@ -320,22 +262,22 @@ private:
 		aimLeftAngle = (uint16_t)((ANGLE_ORIGIN + leftAngle_rad * 180 / PI) + 0.5);
 		aimRightAngle = (uint16_t)((ANGLE_ORIGIN + rightAngle_rad * 180 / PI) + 0.5);
 
-		if (aimLeftAngle < ANGLE_MIN_LEFT)
+		if (aimLeftAngle < ANGLE_MIN)
 		{
-			aimLeftAngle = ANGLE_MIN_LEFT;
+			aimLeftAngle = ANGLE_MIN;
 		}
-		else if (aimLeftAngle > ANGLE_MAX_LEFT)
+		else if (aimLeftAngle > ANGLE_MAX)
 		{
-			aimLeftAngle = ANGLE_MAX_LEFT;
+			aimLeftAngle = ANGLE_MAX;
 		}
 
-		if (aimRightAngle < ANGLE_MIN_RIGHT)
+		if (aimRightAngle < ANGLE_MIN)
 		{
-			aimRightAngle = ANGLE_MIN_RIGHT;
+			aimRightAngle = ANGLE_MIN;
 		}
-		else if (aimRightAngle > ANGLE_MAX_RIGHT)
+		else if (aimRightAngle > ANGLE_MAX)
 		{
-			aimRightAngle = ANGLE_MAX_RIGHT;
+			aimRightAngle = ANGLE_MAX;
 		}
 	}
 	
@@ -355,12 +297,6 @@ private:
 	DynamixelMotor frontRightMotor;
 	DynamixelMotor backLeftMotor;
 	DynamixelMotor backRightMotor;
-
-	/* Indique que le robot est en train de faire un scann */
-	volatile bool scanning;
-	uint32_t scannLastIterationTime;
-	uint32_t scannBeginTime;
-	bool scannPhaseLeft;
 };
 
 
