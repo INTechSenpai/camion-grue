@@ -206,7 +206,8 @@ public class Senpai
 			injector.addService(robot);
 
 			debug = DebugTool.getDebugTool(new HashMap<ConfigInfo, Object>(), robot.getCinematique().getPosition(), Severity.INFO, configfile, profiles);
-	
+			injector.addService(GraphicDisplay.class, debug.getGraphicDisplay());
+
 			Speed.TEST.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_TEST) / 1000.;
 			Speed.REPLANIF.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_REPLANIF) / 1000.;
 			Speed.STANDARD.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_STANDARD) / 1000.;
@@ -282,10 +283,7 @@ public class Senpai
 			/**
 			 * L'initialisation est bloquante (on attend le LL), donc on le fait le plus tardivement possible
 			 */
-			try {
-				if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ENABLE))
-					injector.addService(GraphicDisplay.class, debug.getGraphicDisplay());
-				
+			try {				
 				if(config.getBoolean(ConfigInfoSenpai.SAVE_VIDEO))
 					debug.startSaveVideo();
 	
