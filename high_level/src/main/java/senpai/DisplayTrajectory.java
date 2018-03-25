@@ -48,7 +48,7 @@ public class DisplayTrajectory
 		Log log = new Log(Severity.INFO, configfile, "log");
 		
 		DebugTool debug = DebugTool.getDebugTool(new HashMap<ConfigInfo, Object>(), new Vec2RO(0,1000), Severity.INFO, configfile, "default", "graphic");
-		GraphicDisplay display = debug.getWindowFrame().getPrintBuffer();
+		GraphicDisplay display = debug.getGraphicDisplay();
 		
 		for(ItineraryPoint p : path)
 		{

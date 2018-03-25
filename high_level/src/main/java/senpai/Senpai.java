@@ -28,7 +28,6 @@ import pfg.config.Config;
 import pfg.config.ConfigInfo;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.DebugTool;
-import pfg.graphic.WindowFrame;
 import pfg.injector.Injector;
 import pfg.injector.InjectorException;
 import pfg.kraken.Kraken;
@@ -285,13 +284,9 @@ public class Senpai
 			 */
 			try {
 				if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ENABLE))
-				{
-					WindowFrame f = debug.getWindowFrame();
-					injector.addService(WindowFrame.class, f);
-					injector.addService(GraphicDisplay.class, f.getPrintBuffer());
-				}
+					injector.addService(GraphicDisplay.class, debug.getGraphicDisplay());
 				
-				if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_DIFFERENTIAL))
+				if(config.getBoolean(ConfigInfoSenpai.SAVE_VIDEO))
 					debug.startSaveVideo();
 	
 				if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_EXTERNAL))

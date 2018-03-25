@@ -77,12 +77,7 @@ public abstract class JUnit_Test
 	{
 		// s'il y a eu un problème lors de la création de Senpai, par exemple si la connexion avec le LL a échoué
 		if(container != null)
-		{
-			WindowFrame f = container.getExistingService(WindowFrame.class);
-			if(f != null)
-				f.waitUntilExit(timeoutAffichage);
 			container.destructor();
-		}
 	}
 
 	/**
