@@ -214,7 +214,7 @@ public class Senpai
 			/**
 			 * Affiche la version du programme (dernier commit et sa branche)
 			 */
-			try
+/*			try
 			{
 				Process p = Runtime.getRuntime().exec("git log -1 --oneline");
 				Process p2 = Runtime.getRuntime().exec("git branch");
@@ -235,7 +235,7 @@ public class Senpai
 			catch(IOException e1)
 			{
 				System.out.println(e1);
-			}
+			}*/
 	
 			/**
 			 * Infos diverses
