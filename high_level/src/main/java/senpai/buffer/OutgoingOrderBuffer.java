@@ -279,9 +279,9 @@ public class OutgoingOrderBuffer implements Plottable
 		data.putFloat((float) point.orientation);
 		data.putFloat((float)point.curvature);
 		if(point.goingForward)
-			data.putFloat((float) point.possibleSpeed);
+			data.putFloat((float) (1000*point.possibleSpeed));
 		else
-			data.putFloat((float) -point.possibleSpeed);
+			data.putFloat((float) (-1000*point.possibleSpeed));
 		data.put((byte) (point.stop ? 1 : 0));
 		data.put((byte) (last ? 1 : 0));
 	}
