@@ -197,8 +197,8 @@ public class Senpai
 			
 			
 			log = new Log(Severity.INFO, configfile, profiles);
-			config = new Config(ConfigInfoSenpai.values(), true, configfile, profiles);
-	
+			config = new Config(ConfigInfoSenpai.values(), false, configfile, profiles);
+			
 			injector.addService(this);
 			injector.addService(log);
 			injector.addService(config);
@@ -260,8 +260,15 @@ public class Senpai
 			injector.addService(RectangularObstacle.class, robotTemplate);
 			
 			Kraken k = new Kraken(robotTemplate, obstaclesFixes, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles);
-			
 			injector.addService(k);
+
+			System.out.println("Configuration pour eurobotruck");
+			config.printChangedValues();
+			System.out.println("Configuration pour Kraken");
+			k.displayOverriddenConfigValues();
+			System.out.println("Configuration pour l'interface graphique");
+			debug.displayOverriddenConfigValues();
+
 			
 			/**
 			 * Planification du hook de fermeture
