@@ -41,27 +41,38 @@ public class ConstructTrajectory
 
 	public static void main(String[] args)
 	{
-		if(args.length != 5 && args.length != 6)
+		if(args.length < 6 || args.length > 8)
 		{
-			System.out.println("Usage : ./run.sh "+ConstructTrajectory.class.getSimpleName()+" x_depart y_depart o_depart x_arrivee y_arrivee [chemin]");
+			System.out.println("Usage : ./run.sh "+ConstructTrajectory.class.getSimpleName()+" mode x_depart y_depart o_depart x_arrivee y_arrivee [o_arrivee] [chemin]");
 			return;
 		}
 		
+		boolean modeXY = args[0].equals("XY");
 		String configfile = "senpai-trajectory.conf";
 		
-		double x = Double.parseDouble(args[0]);
-		double y = Double.parseDouble(args[1]);
-		double o = Double.parseDouble(args[2]);
+		double x = Double.parseDouble(args[1]);
+		double y = Double.parseDouble(args[2]);
+		double o = Double.parseDouble(args[3]);
 		XYO depart = new XYO(x,y,o);
 		
-		x = Double.parseDouble(args[3]);
-		y = Double.parseDouble(args[4]);
-//		o = Double.parseDouble(args[5]);
-		XY arrivee = new XY(x,y);
+		x = Double.parseDouble(args[4]);
+		y = Double.parseDouble(args[5]);
+		
+		XY arriveeXY = null;
+		XYO arriveeXYO = null;
+		if(modeXY)
+			arriveeXY = new XY(x,y);
+		else
+		{
+			o = Double.parseDouble(args[6]);
+			arriveeXYO = new XYO(x,y,o);
+		}
 		
 		String output = null;
-		if(args.length > 5)
-			output = args[5];
+		if(modeXY && args.length > 6)
+			output = args[6];
+		else if(!modeXY && args.length > 7)
+			output = args[7];		
 		
 		List<Obstacle> obsList = new ArrayList<Obstacle>();
 
@@ -83,7 +94,10 @@ public class ConstructTrajectory
 		display.refresh();
 		try
 		{
-			kraken.initializeNewSearch(depart, arrivee);
+			if(modeXY)
+				kraken.initializeNewSearch(depart, arriveeXY);
+			else
+				kraken.initializeNewSearch(depart, arriveeXYO);
 			List<ItineraryPoint> path = kraken.search();
 			for(ItineraryPoint p : path)
 			{
