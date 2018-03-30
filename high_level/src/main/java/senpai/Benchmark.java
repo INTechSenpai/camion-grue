@@ -37,12 +37,16 @@ public class Benchmark
 		Log log = new Log(Severity.INFO, configfile, "default");
 		Config config = new Config(ConfigInfoSenpai.values(), false, configfile, "default");
 		
-		if(args.length > 0)
+		boolean modeXY = args[0].equals("XY");
+		
+		if(args.length > 1)
 		{
-			int duree = Integer.parseInt(args[0]);
+			int duree = Integer.parseInt(args[1]);
 			config.override(ConfigInfoSenpai.WARM_UP_DURATION, duree);
 		}
-				
+		
+		log.write("Type de benchmark : "+(modeXY ? "XY" : "XYO"), Subject.STATUS);
+		
 		log.write("Durée du warm-up : "+config.getInt(ConfigInfoSenpai.WARM_UP_DURATION), Subject.STATUS);
 		int demieLargeurNonDeploye = config.getInt(ConfigInfoSenpai.LARGEUR_NON_DEPLOYE) / 2;
 		int demieLongueurArriere = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
@@ -56,14 +60,19 @@ public class Benchmark
 		
 		try
 		{
+			double nbIter = 0;
 			long before = System.currentTimeMillis();
-			for(int i = 0; i < 1000; i++)
+			do
 			{
-				kraken.initializeNewSearch(new XYO(-500, 700, 2./3.*Math.PI), new XY(1000, 1300));
+				if(modeXY)
+					kraken.initializeNewSearch(new XYO(-500, 700, 2./3.*Math.PI), new XY(1000, 1300));
+				else
+					kraken.initializeNewSearch(new XYO(-500, 700, 2./3.*Math.PI), new XYO(1000, 1300, 0));
 				kraken.search();
-			}
+				nbIter++;
+			} while(System.currentTimeMillis() - before < 20000);
 			long after = System.currentTimeMillis();
-			System.out.println("Durée : "+(after - before) / 1000.);
+			log.write("Durée moyenne d'une recherche : "+(after - before) / nbIter, Subject.STATUS);
 		}
 		catch(PathfindingException e)
 		{

@@ -52,7 +52,6 @@ public class ThreadWarmUp extends Thread
 		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.STATUS);
 		try
 		{
-			log.write("Démarrage de l'échauffement de la JVM", Subject.STATUS);
 			try
 			{
 				long before = System.currentTimeMillis();
