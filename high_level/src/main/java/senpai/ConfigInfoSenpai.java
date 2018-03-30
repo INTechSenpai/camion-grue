@@ -138,6 +138,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 								// correction au sein d'un même buffer (en ms)
 	ENABLE_CORRECTION(true), // la correction de position et d'orientation
 								// est-elle activée ?
+	WARM_UP_DURATION(5000), // durée du warm-up
 	RAYON_ROBOT_SUPPRESSION_OBSTACLES_FIXES(300), // dans quel rayon
 													// supprime-t-on les
 													// obstacles fixes si on est

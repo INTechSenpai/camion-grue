@@ -43,6 +43,7 @@ import senpai.robot.Speed;
 import senpai.threads.ThreadName;
 import senpai.threads.ThreadRemoteControl;
 import senpai.threads.ThreadShutdown;
+import senpai.threads.ThreadWarmUp;
 
 /**
  * 
@@ -140,7 +141,6 @@ public class Senpai
 				}
 			}
 	
-			Thread.sleep(100);
 			for(ThreadName n : ThreadName.values())
 				if(injector.getService(n.c).isAlive())
 					log.write(n.c.getSimpleName() + " encore vivant !", Severity.CRITICAL, Subject.STATUS);
@@ -259,6 +259,16 @@ public class Senpai
 			RectangularObstacle robotTemplate = new RectangularObstacle(demieLargeurNonDeploye, demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 			injector.addService(RectangularObstacle.class, robotTemplate);
 			
+			/*
+			 * Warm-up without verbose
+			 */
+			String[] profiles2 = new String[profiles.length + 1];
+			profiles2[0] = "nolog";
+			for(int i = 0; i < profiles.length; i++)
+				profiles2[i + 1] = profiles[i];
+			ThreadWarmUp warmUp = new ThreadWarmUp(log, new Kraken(robotTemplate, obstaclesFixes, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles2), config);
+			warmUp.start();
+
 			Kraken k = new Kraken(robotTemplate, obstaclesFixes, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles);
 			injector.addService(k);
 
