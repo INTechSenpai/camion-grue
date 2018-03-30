@@ -99,6 +99,7 @@ public class ThreadRemoteControl extends Thread
 		{
 			this.log = log;
 			this.in = in;
+			setDaemon(true);
 		}
 		
 		private boolean isEmpty()

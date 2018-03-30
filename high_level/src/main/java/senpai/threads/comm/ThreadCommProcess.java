@@ -59,6 +59,7 @@ public class ThreadCommProcess extends Thread
 		this.serie = serie;
 		this.buffer = buffer;
 		this.robot = robot;
+		setDaemon(true);
 	}
 
 	@Override

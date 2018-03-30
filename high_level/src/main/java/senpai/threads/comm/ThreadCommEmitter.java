@@ -37,6 +37,7 @@ public class ThreadCommEmitter extends Thread
 		this.log = log;
 		this.serie = serie;
 		this.data = data;
+		setDaemon(true);
 	}
 
 	@Override

@@ -38,6 +38,7 @@ public class ThreadCommListener extends Thread
 		this.log = log;
 		this.serie = serie;
 		this.buffer = buffer;
+		setDaemon(true);
 	}
 
 	@Override

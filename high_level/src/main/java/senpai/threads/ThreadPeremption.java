@@ -53,6 +53,7 @@ public class ThreadPeremption extends Thread
 		this.dstarlite = dstarlite;
 //		printProxObs = config.getBoolean(ConfigInfo.GRAPHIC_PROXIMITY_OBSTACLES);
 		dureePeremption = config.getInt(ConfigInfoSenpai.DUREE_PEREMPTION_OBSTACLES);
+		setDaemon(true);
 	}
 
 	@Override

@@ -47,6 +47,7 @@ public class ThreadUpdatePathfinding extends Thread
 		this.pathfinding = pathfinding;
 //		this.chemin = chemin;
 		this.out = out;
+		setDaemon(true);
 	}
 
 	@Override

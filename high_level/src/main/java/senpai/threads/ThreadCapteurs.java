@@ -38,6 +38,7 @@ public class ThreadCapteurs extends Thread
 		this.log = log;
 		this.buffer = buffer;
 		this.capteurs = capteurs;
+		setDaemon(true);
 	}
 
 	@Override

@@ -35,6 +35,7 @@ public class ThreadShutdown extends Thread
 	{
 		this.container = container;
 		this.log = log;
+		setDaemon(true);
 	}
 
 	@Override
