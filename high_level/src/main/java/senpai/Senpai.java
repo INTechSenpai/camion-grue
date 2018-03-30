@@ -112,12 +112,6 @@ public class Senpai
 		
 		if(!simuleComm)
 			s.close();
-
-		
-		// On appelle le destructeur de Kraken
-		Kraken k = injector.getExistingService(Kraken.class);
-		if(k != null)
-			k.stop();
 		
 		// On appelle le destructeur graphique
 		debug.destructor();
@@ -435,5 +429,4 @@ public class Senpai
 		errorCode = code;
 		mainThread.interrupt();
 	}
-
 }
