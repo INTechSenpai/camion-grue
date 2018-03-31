@@ -172,6 +172,15 @@ public class OutgoingOrderBuffer implements Plottable
 	}
 
 	/**
+	 * Demande le niveau de batterie
+	 */
+	public Ticket niveauBatterie()
+	{
+		addToBuffer(new Order(Id.GET_BATTERY));
+		return Id.GET_BATTERY.ticket;
+	}
+	
+	/**
 	 * Ping
 	 */
 	public Ticket ping()

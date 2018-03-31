@@ -155,8 +155,14 @@ public class ThreadCommProcess extends Thread
 				
 				else if(paquet.origine == Id.PING)
 				{
-					assert data.capacity() == 1 && data.get() == 0x00 : paquet;
+					assert data.capacity() == 4 && data.getInt() == 0x00 : paquet;
 					paquet.origine.ticket.set(CommProtocol.State.OK);
+				}
+				
+				else if(paquet.origine == Id.GET_BATTERY)
+				{
+					int pourcentage = data.getInt();
+					paquet.origine.ticket.set(CommProtocol.State.OK, pourcentage);
 				}
 
 				/**
