@@ -239,30 +239,32 @@ public class OutgoingOrderBuffer implements Plottable
 	
 	private void envoiePointsTrajectoire(List<ItineraryPoint> points, boolean add, int indexTrajectory) throws InterruptedException
 	{
+		// on peut envoyer 11 arcs par trame au maximum
 		int index = indexTrajectory;
-		int nbEnvoi = (points.size() >> 5) + 1;
-		int modulo = (points.size() & 31); // pour le dernier envoi
+		int nbEnvoi = (points.size() - 1) / 11 + 1;
+		int modulo = points.size() % 11; // pour le dernier envoi
 		Id id = add ? Id.ADD_POINTS : Id.EDIT_POINTS;
 		for(int i = 0; i < nbEnvoi; i++)
 		{
-			int nbArc = 32;
+			int nbArc = 11;
 			if(i == nbEnvoi - 1) // dernier envoi
 				nbArc = modulo;
 			ByteBuffer data;
-			if(!add)
+			if(add)
+				data = ByteBuffer.allocate(22 * nbArc);
+			else
 			{
 				data = ByteBuffer.allocate(4 + 22 * nbArc);
 				data.putInt(index);
 			}
-			else
-				data = ByteBuffer.allocate(22 * nbArc);
 
+			int k = 11 * i;
 			for(int j = 0; j < nbArc; j++)
 			{
-				int k = (i << 5) + j;
 				ItineraryPoint c = points.get(k);
 				log.write("Point " + k + " : " + c, Subject.COMM);
 				addPoint(data, c, k == points.size() - 1);
+				k++;
 			}
 			addToBuffer(new Order(data, id));
 			id.ticket.attendStatus();
