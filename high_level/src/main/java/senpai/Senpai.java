@@ -41,7 +41,6 @@ import senpai.obstacles.ObstaclesFixes;
 import senpai.robot.Robot;
 import senpai.robot.Speed;
 import senpai.threads.ThreadName;
-import senpai.threads.ThreadRemoteControl;
 import senpai.threads.ThreadShutdown;
 import senpai.threads.ThreadWarmUp;
 
@@ -138,9 +137,6 @@ public class Senpai
 			for(ThreadName n : ThreadName.values())
 				if(injector.getService(n.c).isAlive())
 					log.write(n.c.getSimpleName() + " encore vivant !", Severity.CRITICAL, Subject.STATUS);
-	
-			if(config.getBoolean(ConfigInfoSenpai.REMOTE_CONTROL))
-				injector.getService(ThreadRemoteControl.class).interrupt();
 			
 			injector.getService(ThreadShutdown.class).interrupt();
 		} catch(InjectorException e)
@@ -152,9 +148,17 @@ public class Senpai
 		return errorCode;
 	}
 	
-	public synchronized <S> S getService(Class<S> service) throws InjectorException
-	{
-		return injector.getService(service);
+	public synchronized <S> S getService(Class<S> service)
+	{		
+		try
+		{
+			return injector.getService(service);
+		}
+		catch(InjectorException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public synchronized <S> S getExistingService(Class<S> classe)
@@ -300,9 +304,6 @@ public class Senpai
 	
 				if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_EXTERNAL))
 					debug.startPrintServer();
-				
-				if(config.getBoolean(ConfigInfoSenpai.REMOTE_CONTROL))
-					injector.getService(ThreadRemoteControl.class).start();
 	
 				simuleComm = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM); 
 				if(!simuleComm)

@@ -26,7 +26,6 @@ import senpai.comm.Order;
 import senpai.comm.Ticket;
 import senpai.comm.CommProtocol.Channel;
 import senpai.comm.CommProtocol.Id;
-import senpai.robot.Speed;
 import senpai.ConfigInfoSenpai;
 import senpai.Severity;
 import pfg.config.Config;
@@ -93,16 +92,6 @@ public class OutgoingOrderBuffer implements Plottable
 	{
 		// TODO ordre ascii
 		return null;
-	}
-
-	public void setCurvature(double courbure)
-	{
-		// TODO ordre ascii
-	}
-
-	public void setMaxSpeed(short vitesseTr)
-	{
-		// TODO ordre ascii
 	}
 
 	/**

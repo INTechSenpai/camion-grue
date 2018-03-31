@@ -181,7 +181,7 @@ public class ThreadCommProcess extends Thread
 						paquet.origine.ticket.set(InOrder.ROBOT_OK);
 					else
 					{
-						log.write(CommProtocol.TrajEndMask.describe(code), Subject.CAPTEURS);
+						log.write(CommProtocol.TrajEndMask.describe(code), Subject.TRAJECTORY);
 						paquet.origine.ticket.set(InOrder.ROBOT_KO);
 					}
 				}

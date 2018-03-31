@@ -1,6 +1,5 @@
 package senpai;
 
-import pfg.injector.InjectorException;
 import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol.InOrder;
@@ -55,7 +54,7 @@ public class FollowTrajectory
 			InOrder state = t.attendStatus();
 			log.write("Code de retour reçu : "+state, Subject.TRAJECTORY);
 		}
-		catch(InjectorException | InterruptedException e)
+		catch(InterruptedException e)
 		{
 			e.printStackTrace();
 		}

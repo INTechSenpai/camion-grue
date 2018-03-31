@@ -19,7 +19,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
 import pfg.kraken.obstacles.Obstacle;
@@ -59,7 +58,7 @@ public class ObstaclesMemory implements DynamicObstacles
 		return size == listObstaclesDetruits.size() + listObstaclesMobiles.size();
 	}
 	
-	public ObstaclesMemory(Log log, GraphicDisplay buffer, Config config)
+	public ObstaclesMemory(Log log, GraphicDisplay buffer)
 	{
 		this.log = log;
 		this.buffer = buffer;

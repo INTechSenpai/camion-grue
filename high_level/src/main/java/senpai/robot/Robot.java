@@ -27,7 +27,6 @@ import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
 import senpai.Subject;
 import senpai.buffer.OutgoingOrderBuffer;
-import senpai.capteurs.SensorMode;
 import senpai.comm.CommProtocol;
 import senpai.comm.Ticket;
 import senpai.exceptions.ActionneurException;
@@ -75,7 +74,6 @@ public class Robot extends RobotState implements Printable
 	private boolean print, printTrace;
 	private OutgoingOrderBuffer out;
 	private volatile boolean cinematiqueInitialised = false;
-	private SensorMode lastMode = null;
 
 	// Constructeur
 	public Robot(Log log, OutgoingOrderBuffer out, Config config)
@@ -264,15 +262,6 @@ public class Robot extends RobotState implements Printable
 		*/
 	}
 
-/*	public void setSensorMode(SensorMode mode)
-	{
-		if(lastMode != mode)
-		{
-			out.setSensorMode(mode);
-			lastMode = mode;
-		}
-	}*/
-
 	public void avance(double distance, Speed speed)
 			throws UnableToMoveException, InterruptedException {
 		// TODO Auto-generated method stub
@@ -282,6 +271,11 @@ public class Robot extends RobotState implements Printable
 	public void execute(CommProtocol ordre, Object... param) throws InterruptedException, ActionneurException
 	{
 		bloque(ordre.toString(), param);
+	}
+
+	public void initActionneurs()
+	{
+		// TODO Auto-generated method stub		
 	}
 
 }
