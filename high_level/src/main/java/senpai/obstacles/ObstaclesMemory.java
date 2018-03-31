@@ -230,13 +230,13 @@ public class ObstaclesMemory implements DynamicObstacles
 		return listObstaclesMortsTot.poll();
 	}
 
-	@Override
+/*	@Override
 	public Iterator<Obstacle> getFutureDynamicObstacles(long date)
 	{
 		ObstaclesIteratorFutur iter = new ObstaclesIteratorFutur(log, this);
 		iter.init(date, firstNotDeadNow); // TODO vérifier
 		return iter;
-	}
+	}*/
 
 	@Override
 	public Iterator<Obstacle> getCurrentDynamicObstacles()

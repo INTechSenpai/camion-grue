@@ -27,8 +27,9 @@ import senpai.capteurs.SensorsData;
 import senpai.comm.Paquet;
 import senpai.comm.CommProtocol;
 import senpai.comm.CommProtocol.Id;
-import senpai.comm.CommProtocol.InOrder;
+import senpai.comm.CommProtocol.LLStatus;
 import senpai.robot.Robot;
+import senpai.robot.RobotColor;
 import senpai.Subject;
 
 /**
@@ -88,20 +89,20 @@ public class ThreadCommProcess extends Thread
 				if(paquet.origine == Id.ASK_COLOR)
 				{
 					byte code = data.get();
-					if(code == InOrder.COULEUR_VERT.codeInt)
+					if(code == LLStatus.COULEUR_VERT.codeInt)
 					{
-						paquet.origine.ticket.set(InOrder.COULEUR_VERT);
+						paquet.origine.ticket.set(LLStatus.COULEUR_VERT.etat, RobotColor.VERT);
 //						config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(true));
 					}
-					else if(code == InOrder.COULEUR_ORANGE.codeInt)
+					else if(code == LLStatus.COULEUR_ORANGE.codeInt)
 					{
-						paquet.origine.ticket.set(InOrder.COULEUR_ORANGE);
+						paquet.origine.ticket.set(LLStatus.COULEUR_ORANGE.etat, RobotColor.ORANGE);
 //						config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(false));
 					}
 					else
 					{
-						paquet.origine.ticket.set(InOrder.COULEUR_ROBOT_INCONNU);
-						assert code == InOrder.COULEUR_ROBOT_INCONNU.codeInt : "Code couleur inconnu : " + code;
+						paquet.origine.ticket.set(LLStatus.COULEUR_ROBOT_INCONNU.etat);
+						assert code == LLStatus.COULEUR_ROBOT_INCONNU.codeInt : "Code couleur inconnu : " + code;
 					}
 				}
 
@@ -144,18 +145,18 @@ public class ThreadCommProcess extends Thread
 				else if(paquet.origine == Id.WAIT_FOR_JUMPER)
 				{
 					capteursOn = true;
-					paquet.origine.ticket.set(InOrder.ACK_SUCCESS);
+					paquet.origine.ticket.set(CommProtocol.State.OK);
 				}
 				
 				else if(paquet.origine == Id.STOP ||
 						paquet.origine == Id.EDIT_POINTS ||
 						paquet.origine == Id.ADD_POINTS)
-					paquet.origine.ticket.set(InOrder.ACK_SUCCESS);
+					paquet.origine.ticket.set(CommProtocol.State.OK);
 				
 				else if(paquet.origine == Id.PING)
 				{
 					assert data.capacity() == 1 && data.get() == 0x00 : paquet;
-					paquet.origine.ticket.set(InOrder.ACK_SUCCESS);
+					paquet.origine.ticket.set(CommProtocol.State.OK);
 				}
 
 				/**
@@ -178,11 +179,11 @@ public class ThreadCommProcess extends Thread
 				{
 					byte code = data.get();
 					if(code == 0)
-						paquet.origine.ticket.set(InOrder.ROBOT_OK);
+						paquet.origine.ticket.set(CommProtocol.State.OK);
 					else
 					{
 						log.write(CommProtocol.TrajEndMask.describe(code), Subject.TRAJECTORY);
-						paquet.origine.ticket.set(InOrder.ROBOT_KO);
+						paquet.origine.ticket.set(CommProtocol.State.KO, CommProtocol.TrajEndMask.describe(code));
 					}
 				}
 

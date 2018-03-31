@@ -193,7 +193,7 @@ public class Robot extends RobotState implements Printable
 			e.printStackTrace();
 			e.printStackTrace(log.getPrintWriter());
 		}
-		etat = t.attendStatus().etat;
+		etat = t.attendStatus().status;
 		if(etat == CommProtocol.State.KO)
 			throw new ActionneurException("Problème pour l'actionneur " + nom);
 

@@ -38,6 +38,7 @@ import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.Communication;
 import senpai.obstacles.ObstaclesFixes;
+import senpai.obstacles.ObstaclesMemory;
 import senpai.robot.Robot;
 import senpai.robot.Speed;
 import senpai.threads.ThreadName;
@@ -107,42 +108,36 @@ public class Senpai
 		shutdown = true;
 
 		Communication s = injector.getExistingService(Communication.class);
-		assert s != null;
 		
-		if(!simuleComm)
+		if(s != null && !simuleComm)
 			s.close();
 		
 		// On appelle le destructeur graphique
 		debug.destructor();
 		
 		// arrêt des threads
-		try {
-			for(ThreadName n : ThreadName.values())
-				if(injector.getService(n.c).isAlive())
-					injector.getService(n.c).interrupt();
-	
-			for(ThreadName n : ThreadName.values())
-			{
-				try {
-//					log.write("Attente de "+n, Severity.INFO, Subject.STATUS);
-					injector.getService(n.c).join(1000); // on attend un peu que le thread
-														// s'arrête
-				}
-				catch(InterruptedException e)
-				{
-					e.printStackTrace(log.getPrintWriter());
-				}
-			}
-	
-			for(ThreadName n : ThreadName.values())
-				if(injector.getService(n.c).isAlive())
-					log.write(n.c.getSimpleName() + " encore vivant !", Severity.CRITICAL, Subject.STATUS);
-			
-			injector.getService(ThreadShutdown.class).interrupt();
-		} catch(InjectorException e)
+		for(ThreadName n : ThreadName.values())
+			if(getService(n.c).isAlive())
+				getService(n.c).interrupt();
+
+		for(ThreadName n : ThreadName.values())
 		{
-			assert false : e;
+			try {
+//					log.write("Attente de "+n, Severity.INFO, Subject.STATUS);
+				getService(n.c).join(1000); // on attend un peu que le thread
+													// s'arrête
+			}
+			catch(InterruptedException e)
+			{
+				e.printStackTrace(log.getPrintWriter());
+			}
 		}
+
+		for(ThreadName n : ThreadName.values())
+			if(getService(n.c).isAlive())
+				log.write(n.c.getSimpleName() + " encore vivant !", Severity.CRITICAL, Subject.STATUS);
+		
+		getService(ThreadShutdown.class).interrupt();
 		nbInstances--;
 		printMessage("outro.txt");
 		return errorCode;
@@ -248,7 +243,7 @@ public class Senpai
 			List<Obstacle> obstaclesFixes = new ArrayList<Obstacle>();
 			for(ObstaclesFixes o : ObstaclesFixes.values())
 				obstaclesFixes.add(o.obstacle);
-			
+			ObstaclesMemory obsDyn = getService(ObstaclesMemory.class);
 	
 			int demieLargeurNonDeploye = config.getInt(ConfigInfoSenpai.LARGEUR_NON_DEPLOYE) / 2;
 			int demieLongueurArriere = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
@@ -267,7 +262,7 @@ public class Senpai
 			ThreadWarmUp warmUp = new ThreadWarmUp(log, new Kraken(robotTemplate, obstaclesFixes, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles2), config);
 			warmUp.start();
 
-			Kraken k = new Kraken(robotTemplate, obstaclesFixes, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles);
+			Kraken k = new Kraken(robotTemplate, obstaclesFixes, obsDyn, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles);
 			injector.addService(k);
 
 			System.out.println("Configuration pour eurobotruck");
@@ -281,52 +276,38 @@ public class Senpai
 			/**
 			 * Planification du hook de fermeture
 			 */
-			try
-			{
-				log.write("Mise en place du hook d'arrêt", Subject.STATUS);
-				Runtime.getRuntime().addShutdownHook(injector.getService(ThreadShutdown.class));
-			}
-			catch(InjectorException e)
-			{
-				e.printStackTrace();
-				e.printStackTrace(log.getPrintWriter());
-				assert false : e;
-			}
+			log.write("Mise en place du hook d'arrêt", Subject.STATUS);
+			Runtime.getRuntime().addShutdownHook(getService(ThreadShutdown.class));
 			
 			startAllThreads();
 			
 			/**
 			 * L'initialisation est bloquante (on attend le LL), donc on le fait le plus tardivement possible
-			 */
-			try {				
-				if(config.getBoolean(ConfigInfoSenpai.SAVE_VIDEO))
-					debug.startSaveVideo();
-	
-				if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_EXTERNAL))
-					debug.startPrintServer();
-	
-				simuleComm = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM); 
-				if(!simuleComm)
-				{
-					injector.getService(Communication.class).initialize();
-					
-					OutgoingOrderBuffer outBuffer = injector.getService(OutgoingOrderBuffer.class);
-					log.write("On attend la réponse du LL…", Subject.COMM);
-					boolean response;
-					do {
-						response = outBuffer.ping().attendStatus(500) != null;
-					} while(!response);
-	
-					if(config.getBoolean(ConfigInfoSenpai.CHECK_LATENCY))
-						injector.getService(OutgoingOrderBuffer.class).checkLatence();
-				}
-				else
-					log.write("COMMUNICATION SIMULÉE !", Severity.CRITICAL, Subject.STATUS);
+			 */		
+			if(config.getBoolean(ConfigInfoSenpai.SAVE_VIDEO))
+				debug.startSaveVideo();
+
+			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_EXTERNAL))
+				debug.startPrintServer();
+
+			simuleComm = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM); 
+			if(!simuleComm)
+			{
+				getService(Communication.class).initialize();
 				
-			} catch (InjectorException e) {
-				assert false;
-				e.printStackTrace();
+				OutgoingOrderBuffer outBuffer = getService(OutgoingOrderBuffer.class);
+				log.write("On attend la réponse du LL…", Subject.COMM);
+				boolean response;
+				do {
+					response = outBuffer.ping().attendStatus(500) != null;
+				} while(!response);
+
+				if(config.getBoolean(ConfigInfoSenpai.CHECK_LATENCY))
+					getService(OutgoingOrderBuffer.class).checkLatence();
 			}
+			else
+				log.write("COMMUNICATION SIMULÉE !", Severity.CRITICAL, Subject.STATUS);
+
 		} catch(InterruptedException e)
 		{
 			destructor();
@@ -342,23 +323,14 @@ public class Senpai
 
 	public void restartThread(ThreadName n) throws InterruptedException
 	{
-		try
+		Thread t = getService(n.c);
+		if(t.isAlive()) // s'il est encore en vie, on le tue
 		{
-			Thread t = injector.getService(n.c);
-			if(t.isAlive()) // s'il est encore en vie, on le tue
-			{
-				t.interrupt();
-				t.join(1000);
-			}
-			injector.removeService(n.c);
-			injector.getService(n.c).start(); // et on le redémarre
+			t.interrupt();
+			t.join(1000);
 		}
-		catch(InjectorException e)
-		{
-			e.printStackTrace();
-			e.printStackTrace(log.getPrintWriter());
-			assert false;
-		}
+		injector.removeService(n.c);
+		getService(n.c).start(); // et on le redémarre
 	}
 
 	/**
@@ -370,9 +342,9 @@ public class Senpai
 		{
 			try
 			{
-				injector.getService(n.c).start();
+				getService(n.c).start();
 			}
-			catch(InjectorException | IllegalThreadStateException e)
+			catch(IllegalThreadStateException e)
 			{
 				log.write("Erreur lors de la création de thread " + n + " : " + e, Severity.CRITICAL, Subject.STATUS);
 				e.printStackTrace();

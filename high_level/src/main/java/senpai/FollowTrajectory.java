@@ -2,7 +2,7 @@ package senpai;
 
 import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
-import senpai.comm.CommProtocol.InOrder;
+import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
 
 /*
@@ -51,7 +51,7 @@ public class FollowTrajectory
 			
 			data.ajoutePointsTrajectoire(s.path);
 			Ticket t = data.followTrajectory();
-			InOrder state = t.attendStatus();
+			DataTicket state = t.attendStatus();
 			log.write("Code de retour reçu : "+state, Subject.TRAJECTORY);
 		}
 		catch(InterruptedException e)

@@ -51,14 +51,12 @@ public enum ObstaclesFixes
 	
 	public final Obstacle obstacle;
 	private final boolean[] visible = new boolean[2];
-	public final boolean bordure; // TODO : utilisé ?
 
 	private ObstaclesFixes(Obstacle obstacle, boolean visibleBas, boolean visibleHaut)
 	{
 		this.obstacle = obstacle;
 		visible[0] = visibleBas;
 		visible[1] = visibleHaut;
-		bordure = name().startsWith("BORD_");
 	}
 	
 	/**

@@ -17,7 +17,6 @@ package senpai.comm;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
-import senpai.comm.CommProtocol.InOrder;
 
 /**
  * Un ticket. Tu tires un numéro et tu attends ton tour.
@@ -28,18 +27,25 @@ import senpai.comm.CommProtocol.InOrder;
  */
 
 public class Ticket
-{
-	private final BlockingQueue<InOrder> ordre = new ArrayBlockingQueue<InOrder>(1); // seulement un élément !
+{	
+	private final BlockingQueue<DataTicket> ordre = new ArrayBlockingQueue<DataTicket>(1); // seulement un élément !
 	/*
 	public boolean isEmpty()
 	{
 		return ordre.isEmpty();
 	}
 */
-	public void set(InOrder order)
+	
+	public void set(CommProtocol.State order, Object data)
 	{
 //		assert ordre.isEmpty();
-		ordre.offer(order);
+		ordre.offer(new DataTicket(data, order));
+	}
+	
+	public void set(CommProtocol.State order)
+	{
+//		assert ordre.isEmpty();
+		ordre.offer(new DataTicket(order));
 	}
 
 	/**
@@ -48,7 +54,7 @@ public class Ticket
 	 * @return
 	 * @throws InterruptedException
 	 */
-	public InOrder attendStatus() throws InterruptedException
+	public DataTicket attendStatus() throws InterruptedException
 	{
 		return ordre.take();
 	}
@@ -58,7 +64,7 @@ public class Ticket
 	 * @param timeout
 	 * @throws InterruptedException
 	 */
-	public InOrder attendStatus(long timeout) throws InterruptedException
+	public DataTicket attendStatus(long timeout) throws InterruptedException
 	{
 		return ordre.poll(Math.max(0,timeout), TimeUnit.MILLISECONDS);
 	}

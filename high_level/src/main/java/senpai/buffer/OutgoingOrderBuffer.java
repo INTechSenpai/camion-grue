@@ -275,11 +275,6 @@ public class OutgoingOrderBuffer implements Plottable
 		data.put((byte) (last ? 1 : 0));
 	}
 
-	public void waitStop() throws InterruptedException
-	{
-		// TODO : télécommande
-	}
-
 	/**
 	 * Renvoie une estimation de la latence de la comm, en μs
 	 * @throws InterruptedException 

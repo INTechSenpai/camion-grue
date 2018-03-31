@@ -213,15 +213,12 @@ public class CommProtocol
 
 	}
 	
-	public enum InOrder
+	public enum LLStatus
 	{
 		/**
 		 * Protocole bas niveau vers Java
 		 */
 		
-		ROBOT_OK(0x00, State.OK),
-		ROBOT_KO(0x01, State.KO),
-
 		// Couleur
 		COULEUR_ORANGE(0x00, State.OK),
 		COULEUR_VERT(0x01, State.OK),
@@ -233,7 +230,7 @@ public class CommProtocol
 		public final int codeInt;
 		public final State etat;
 
-		private InOrder(int code, State etat)
+		private LLStatus(int code, State etat)
 		{
 			codeInt = code;
 			this.etat = etat;

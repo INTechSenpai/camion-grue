@@ -22,7 +22,6 @@ import senpai.comm.Ticket;
 import senpai.comm.CommProtocol.Id;
 import senpai.comm.CommProtocol.State;
 import pfg.kraken.utils.XY;
-import senpai.ConfigInfoSenpai;
 
 /**
  * Tests unitaires de la série.
@@ -105,7 +104,7 @@ public class Test_Communication extends JUnit_Test
 		do
 		{
 			Ticket t = data.demandeCouleur();
-			etat = t.attendStatus().etat;
+			etat = t.attendStatus().status;
 			Thread.sleep(500);
 		} while(etat != State.OK);
 	}
