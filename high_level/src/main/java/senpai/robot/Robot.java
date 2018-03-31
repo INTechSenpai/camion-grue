@@ -206,14 +206,14 @@ public class Robot extends RobotState implements Printable
 	 * @throws InterruptedException
 	 * @throws UnableToMoveException
 	 */
-	public void followTrajectory(Speed vitesse) throws InterruptedException, UnableToMoveException
+/*	public void followTrajectory(Speed vitesse) throws InterruptedException, UnableToMoveException
 	{
 		if(simuleSerie)
 		{
 //			setCinematique(chemin.getLastCinematique());
 			return;
 		}
-		
+		*/
 /*		boolean oneMoreTime = true;
 		if(chemin.isEmpty())
 			log.warning("Trajectoire vide !");
@@ -260,7 +260,7 @@ public class Robot extends RobotState implements Printable
 			}
 		chemin.clear(); // dans tous les cas, il faut nettoyer le chemin
 		*/
-	}
+//	}
 
 	public void avance(double distance, Speed speed)
 			throws UnableToMoveException, InterruptedException {

@@ -17,6 +17,7 @@ package senpai.threads.comm;
 import java.nio.ByteBuffer;
 import pfg.config.Config;
 import pfg.log.Log;
+import pfg.kraken.astar.DefaultCheminPathfinding;
 import pfg.kraken.robot.Cinematique;
 import senpai.Senpai;
 import senpai.Senpai.ErrorCode;
@@ -48,11 +49,12 @@ public class ThreadCommProcess extends Thread
 	private Robot robot;
 	private Senpai container;
 	private Cinematique current = new Cinematique();
+	private DefaultCheminPathfinding chemin;
 
 	private boolean capteursOn = false;
 	private int nbCapteurs;
 
-	public ThreadCommProcess(Log log, Config config, IncomingOrderBuffer serie, SensorsDataBuffer buffer, Robot robot, Senpai container)
+	public ThreadCommProcess(Log log, Config config, IncomingOrderBuffer serie, SensorsDataBuffer buffer, Robot robot, Senpai container, DefaultCheminPathfinding chemin)
 	{
 		this.container = container;
 		this.log = log;
@@ -60,6 +62,7 @@ public class ThreadCommProcess extends Thread
 		this.serie = serie;
 		this.buffer = buffer;
 		this.robot = robot;
+		this.chemin = chemin;
 		setDaemon(true);
 	}
 
@@ -128,8 +131,7 @@ public class ThreadCommProcess extends Thread
 					double angleTourelleGauche = data.getFloat();
 					double angleTourelleDroite = data.getFloat();
 						
-					// TODO : marche avant ?
-					current.updateReel(xRobot, yRobot, orientationRobot, current.enMarcheAvant, courbure);
+					current.updateReel(xRobot, yRobot, orientationRobot, chemin.getPath().get(indexTrajectory).goingForward, courbure);
 
 					robot.setCinematique(current);
 

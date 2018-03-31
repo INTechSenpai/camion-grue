@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,6 +32,7 @@ import pfg.graphic.DebugTool;
 import pfg.injector.Injector;
 import pfg.injector.InjectorException;
 import pfg.kraken.Kraken;
+import pfg.kraken.astar.DefaultCheminPathfinding;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.utils.XY;
@@ -264,6 +266,16 @@ public class Senpai
 
 			Kraken k = new Kraken(robotTemplate, obstaclesFixes, obsDyn, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles);
 			injector.addService(k);
+			
+			try {
+				Method m = Kraken.class.getDeclaredMethod("getInjector");
+				m.setAccessible(true);
+				Injector injectorKraken = (Injector) m.invoke(k);
+				injector.addService(injectorKraken.getExistingService(DefaultCheminPathfinding.class));
+			} catch(Exception e)
+			{
+				assert false;
+			}
 
 			System.out.println("Configuration pour eurobotruck");
 			config.printChangedValues();
