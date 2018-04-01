@@ -45,7 +45,7 @@ public class Benchmark
 			config.override(ConfigInfoSenpai.WARM_UP_DURATION, duree);
 		}
 		
-		log.write("Type de benchmark : "+(modeXY ? "XY" : "XYO"), Subject.STATUS);
+		log.write("Type de benchmark : "+(modeXY ? "XY" : "XYO"), Subject.STATUS);
 		
 		log.write("Durée du warm-up : "+config.getInt(ConfigInfoSenpai.WARM_UP_DURATION), Subject.STATUS);
 		int demieLargeurNonDeploye = config.getInt(ConfigInfoSenpai.LARGEUR_NON_DEPLOYE) / 2;
@@ -70,7 +70,7 @@ public class Benchmark
 					kraken.initializeNewSearch(new XYO(-500, 700, 2./3.*Math.PI), new XYO(1000, 1300, 0));
 				kraken.search();
 				nbIter++;
-			} while(System.currentTimeMillis() - before < 20000);
+			} while(System.currentTimeMillis() - before < 30000);
 			long after = System.currentTimeMillis();
 			log.write("Durée moyenne d'une recherche : "+(after - before) / nbIter, Subject.STATUS);
 		}
