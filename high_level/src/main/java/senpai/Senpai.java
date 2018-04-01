@@ -257,11 +257,7 @@ public class Senpai
 			/*
 			 * Warm-up without verbose
 			 */
-			String[] profiles2 = new String[profiles.length + 1];
-			profiles2[0] = "nolog";
-			for(int i = 0; i < profiles.length; i++)
-				profiles2[i + 1] = profiles[i];
-			ThreadWarmUp warmUp = new ThreadWarmUp(log, new Kraken(robotTemplate, obstaclesFixes, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles2), config);
+			ThreadWarmUp warmUp = new ThreadWarmUp(log, new Kraken(robotTemplate, obstaclesFixes, new XY(-1500, 0), new XY(1500, 2000), "warmup.conf", "default"), config);
 			warmUp.start();
 
 			Kraken k = new Kraken(robotTemplate, obstaclesFixes, obsDyn, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles);
