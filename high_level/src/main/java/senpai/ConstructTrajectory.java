@@ -7,6 +7,7 @@ import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
 import pfg.kraken.Kraken;
+import pfg.kraken.astar.DirectionStrategy;
 import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
@@ -41,22 +42,24 @@ public class ConstructTrajectory
 
 	public static void main(String[] args)
 	{
-		if(args.length < 6 || args.length > 8)
+		if(args.length < 7 || args.length > 9)
 		{
-			System.out.println("Usage : ./run.sh "+ConstructTrajectory.class.getSimpleName()+" mode x_depart y_depart o_depart x_arrivee y_arrivee [o_arrivee] [chemin]");
+			System.out.println("Usage : ./run.sh "+ConstructTrajectory.class.getSimpleName()+" mode vitesse_max x_depart y_depart o_depart x_arrivee y_arrivee [o_arrivee] [chemin]");
 			return;
 		}
 		
 		boolean modeXY = args[0].equals("XY");
 		String configfile = "senpai-trajectory.conf";
 		
-		double x = Double.parseDouble(args[1]);
-		double y = Double.parseDouble(args[2]);
-		double o = Double.parseDouble(args[3]);
+		double vitesseMax = Double.parseDouble(args[1]) / 1000.;
+		
+		double x = Double.parseDouble(args[2]);
+		double y = Double.parseDouble(args[3]);
+		double o = Double.parseDouble(args[4]);
 		XYO depart = new XYO(x,y,o);
 		
-		x = Double.parseDouble(args[4]);
-		y = Double.parseDouble(args[5]);
+		x = Double.parseDouble(args[5]);
+		y = Double.parseDouble(args[6]);
 		
 		XY arriveeXY = null;
 		XYO arriveeXYO = null;
@@ -64,15 +67,15 @@ public class ConstructTrajectory
 			arriveeXY = new XY(x,y);
 		else
 		{
-			o = Double.parseDouble(args[6]);
+			o = Double.parseDouble(args[7]);
 			arriveeXYO = new XYO(x,y,o);
 		}
 		
 		String output = null;
-		if(modeXY && args.length > 6)
-			output = args[6];
-		else if(!modeXY && args.length > 7)
-			output = args[7];		
+		if(modeXY && args.length > 7)
+			output = args[7];
+		else if(!modeXY && args.length > 8)
+			output = args[8];		
 		
 		List<Obstacle> obsList = new ArrayList<Obstacle>();
 
@@ -95,9 +98,9 @@ public class ConstructTrajectory
 		try
 		{
 			if(modeXY)
-				kraken.initializeNewSearch(depart, arriveeXY);
+				kraken.initializeNewSearch(depart, arriveeXY, DirectionStrategy.FASTEST, vitesseMax);
 			else
-				kraken.initializeNewSearch(depart, arriveeXYO);
+				kraken.initializeNewSearch(depart, arriveeXYO, DirectionStrategy.FASTEST, vitesseMax);
 			List<ItineraryPoint> path = kraken.search();
 			for(ItineraryPoint p : path)
 			{

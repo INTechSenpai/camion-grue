@@ -27,18 +27,22 @@ import pfg.config.ConfigInfo;
 
 public enum ConfigInfoSenpai implements ConfigInfo
 {
-	AFFICHAGE_TIMEOUT(5000), // timeout sur l'affichage (0 pour infini)
+//	AFFICHAGE_TIMEOUT(5000), // timeout sur l'affichage (0 pour infini)
 	CHECK_LATENCY(false), // estime la latence de la communication
+	
+	/**
+	 * Position initiale du robot
+	 */
+	INITIAL_X(1200),
+	INITIAL_Y(1600),
+	INITIAL_O(Math.PI/2),
 	
 	/**
 	 * Infos sur le robot
 	 */
-	DILATATION_ROBOT_DSTARLITE(60), // dilatation des obstacles dans le D* Lite.
-									// Comme c'est une heuristique, on peut
-									// prendre plus petit que la vraie valeur
-	CENTRE_ROTATION_ROUE_X(204), // la position du centre de rotation des roues.
-									// Est utilisé pour la rotation des capteurs
-	CENTRE_ROTATION_ROUE_Y(64),
+	CENTRE_ROTATION_TOURELLE_X(204),
+	CENTRE_ROTATION_TOURELLE_Y(64),
+	
 	DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE(167), // distance entre le centre du robot
 											// et le bord arrière du robot
 											// non-déployé
@@ -47,6 +51,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 												// robot non-déployé
 	LARGEUR_NON_DEPLOYE(182), // distance entre le bord gauche et le bord droit
 								// du robot non-déployé
+	MARGE_PATHFINDING(5), // marge sur la dimension du robot
 	DILATATION_OBSTACLE_ROBOT(30), // la dilatation du robot dans l'A*. S'ajoute
 									// à gauche et à droite
 
@@ -163,16 +168,8 @@ public enum ConfigInfoSenpai implements ConfigInfo
 //	GRAPHIC_GAME_ELEMENTS(true), // affiche les éléments de jeux
 //	GRAPHIC_ROBOT_COLLISION(false), // affiche les obstacles du robot lors de la
 									// vérification des collisions
-	GRAPHIC_BACKGROUND_PATH("img/background-2017-color.png"), // affiche d'image
-																// de la table
-	GRAPHIC_ROBOT_PATH("img/robot_sans_roues.png"), // image du robot sans les
+	GRAPHIC_ROBOT_PATH("camion.png"), // image du robot sans les
 													// roues
-	GRAPHIC_ROBOT_ROUE_GAUCHE_PATH("img/robot_roue_gauche.png"), // image de la
-																	// roue
-																	// gauche
-	GRAPHIC_ROBOT_ROUE_DROITE_PATH("img/robot_roue_droite.png"), // image de la
-																	// roue
-																	// droite
 //	GRAPHIC_PRODUCE_GIF(false), // produit un gif ?
 //	GIF_FILENAME("output.gif"), // le nom du fichier du gif généré
 //	GRAPHIC_BACKGROUND(true), // affiche d'image de la table

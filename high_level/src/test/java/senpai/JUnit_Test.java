@@ -45,7 +45,7 @@ public abstract class JUnit_Test
 	protected Senpai container;
 	protected Config config;
 	protected Log log;
-	private long timeoutAffichage;
+//	private long timeoutAffichage;
 
 	@Rule
 	public TestName testName = new TestName();
@@ -56,7 +56,7 @@ public abstract class JUnit_Test
 
 		container = new Senpai("senpai.conf", profiles);
 		config = container.getService(Config.class);
-		timeoutAffichage = config.getLong(ConfigInfoSenpai.AFFICHAGE_TIMEOUT);
+//		timeoutAffichage = config.getLong(ConfigInfoSenpai.AFFICHAGE_TIMEOUT);
 		log = container.getService(Log.class);		
 		log.write("Test unitaire : " + testName.getMethodName(), Subject.STATUS);
 /*		synchronized(config)

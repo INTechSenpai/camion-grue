@@ -35,6 +35,7 @@ import pfg.kraken.Kraken;
 import pfg.kraken.astar.DefaultCheminPathfinding;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
+import pfg.kraken.robot.Cinematique;
 import pfg.kraken.utils.XY;
 import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
@@ -197,12 +198,15 @@ public class Senpai
 			injector.addService(this);
 			injector.addService(log);
 			injector.addService(config);
-			Robot robot = new Robot(log);
-			injector.addService(robot);
 
-			debug = DebugTool.getDebugTool(new HashMap<ConfigInfo, Object>(), new XY(0,1000), robot.getCinematique().getPosition(), Severity.INFO, configfile, profiles);
+			Cinematique positionRobot = new Cinematique(0, 0, 0, true, 0, false);
+			
+			debug = DebugTool.getDebugTool(new HashMap<ConfigInfo, Object>(), new XY(0,1000), positionRobot.getPosition(), Severity.INFO, configfile, profiles);
 			injector.addService(GraphicDisplay.class, debug.getGraphicDisplay());
 
+			Robot robot = getService(Robot.class);
+			robot.initPositionObject(positionRobot);
+			
 			Speed.TEST.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_TEST) / 1000.;
 			Speed.REPLANIF.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_REPLANIF) / 1000.;
 			Speed.STANDARD.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_STANDARD) / 1000.;
@@ -247,11 +251,12 @@ public class Senpai
 				obstaclesFixes.add(o.obstacle);
 			ObstaclesMemory obsDyn = getService(ObstaclesMemory.class);
 	
-			int demieLargeurNonDeploye = config.getInt(ConfigInfoSenpai.LARGEUR_NON_DEPLOYE) / 2;
+			int marge = config.getInt(ConfigInfoSenpai.MARGE_PATHFINDING);
+			int demieLargeurNonDeploye = config.getInt(ConfigInfoSenpai.LARGEUR_NON_DEPLOYE) / 2 + marge;
 			int demieLongueurArriere = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
 			int demieLongueurAvant = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
 	
-			RectangularObstacle robotTemplate = new RectangularObstacle(demieLargeurNonDeploye, demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
+			RectangularObstacle robotTemplate = new RectangularObstacle(demieLongueurAvant, demieLongueurArriere, demieLargeurNonDeploye, demieLargeurNonDeploye);
 			injector.addService(RectangularObstacle.class, robotTemplate);
 			
 			/*

@@ -43,8 +43,8 @@ public enum ObstaclesFixes
 	DISTRIBUTEUR_BICOLOR_GAUCHE(new RectangularObstacle(new XY(-890, 50), 55, 100), false, true),
 	DISTRIBUTEUR_BICOLOR_DROIT(new RectangularObstacle(new XY(890, 50), 55, 100), false, true),
 
-	ZONE_DEPART_GAUCHE(new RectangularObstacle(new XY(1300, 1675), 400, 650), false, false),
-	ZONE_DEPART_DROITE(new RectangularObstacle(new XY(-1300, 1675), 400, 650), false, false),
+//	ZONE_DEPART_GAUCHE(new RectangularObstacle(new XY(1300, 1675), 400, 650), false, false),
+//	ZONE_DEPART_DROITE(new RectangularObstacle(new XY(-1300, 1675), 400, 650), false, false),
 
 	ZONE_CONSTRUCTION_GAUCHE(new RectangularObstacle(new XY(1100-560/2, 2000-180/2), 560, 180), false, false),
 	ZONE_CONSTRUCTION_DROITE(new RectangularObstacle(new XY(-1100+560/2, 2000-180/2), 560, 180), false, false);

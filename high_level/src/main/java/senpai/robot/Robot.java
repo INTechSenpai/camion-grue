@@ -14,15 +14,16 @@
 
 package senpai.robot;
 
-import java.awt.Graphics;
+import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
-
 import pfg.config.Config;
-import pfg.graphic.GraphicPanel;
-import pfg.graphic.printable.Printable;
+import pfg.graphic.GraphicDisplay;
+import pfg.graphic.printable.Layer;
+import pfg.graphic.printable.Segment;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.robot.RobotState;
-import pfg.kraken.utils.XY;
+import pfg.kraken.utils.XYO;
+import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
 import senpai.Subject;
@@ -38,24 +39,19 @@ import senpai.exceptions.UnableToMoveException;
  * @author pf
  */
 
-public class Robot extends RobotState implements Printable
+public class Robot extends RobotState
 {
 	/*
 	 * DÉPLACEMENT HAUT NIVEAU
 	 */
 
-	private static final long serialVersionUID = 1L;
-
 	protected volatile boolean symetrie;
 	protected Log log;
-	protected volatile boolean filetBaisse = false;
-	protected volatile boolean filetPlein = false;
-
-	public Robot(Log log)
+/*	public Robot(Log log)
 	{
 		this.log = log;
 		cinematique = new Cinematique();
-	}
+	}*/
 /*
 	public int codeForPFCache()
 	{
@@ -68,22 +64,27 @@ public class Robot extends RobotState implements Printable
 		return cinematique.toString();
 	}
 
-	protected volatile boolean matchDemarre = false;
-	protected volatile long dateDebutMatch;
 	private boolean simuleSerie;
-	private boolean print, printTrace;
+	private boolean printTrace;
 	private OutgoingOrderBuffer out;
+	private GraphicDisplay buffer;
+	private RobotPrintable printable = null;
 	private volatile boolean cinematiqueInitialised = false;
 
 	// Constructeur
-	public Robot(Log log, OutgoingOrderBuffer out, Config config)
+	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer)
 	{
 		this.log = log;
 		this.out = out;
+		this.buffer = buffer;
 		
-		// c'est le LL qui fournira la position
-		cinematique = new Cinematique(0, 300, 0, true, 3, false);
-		print = config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS);
+		// On ajoute une fois pour toute l'image du robot
+		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS))
+		{
+			printable = new RobotPrintable(config);
+			buffer.addPrintable(printable, Color.BLACK, Layer.MIDDLE.layer);
+		}
+		
 		printTrace = config.getBoolean(ConfigInfoSenpai.GRAPHIC_TRACE_ROBOT);
 
 		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
@@ -94,21 +95,23 @@ public class Robot extends RobotState implements Printable
 		cinematique.enMarcheAvant = enMarcheAvant;
 	}
 
-	public long getTempsDepuisDebutMatch()
+/*	public long getTempsDepuisDebutMatch()
 	{
 		if(!matchDemarre)
 			return 0;
 		return System.currentTimeMillis() - dateDebutMatch;
-	}
+	}*/
 
 	public boolean isCinematiqueInitialised()
 	{
 		return cinematiqueInitialised;
 	}
 
+	private XY_RW oldPosition = new XY_RW();
+	
 	public synchronized void setCinematique(Cinematique cinematique)
 	{
-		XY old = this.cinematique.getPosition().clone();
+		this.cinematique.getPosition().copy(oldPosition);
 		cinematique.copy(this.cinematique);
 		/*
 		 * On vient juste de récupérer la position initiale
@@ -116,28 +119,16 @@ public class Robot extends RobotState implements Printable
 		if(!cinematiqueInitialised)
 		{
 			cinematiqueInitialised = true;
-			notifyAll();
+//			notifyAll();
 		}
-/*		synchronized(buffer)
+		synchronized(buffer)
 		{
 			// affichage
-			if(printTrace && old.distanceFast(cinematique.getPosition()) < 100)
-				buffer.addSupprimable(new Segment(old, cinematique.getPosition().clone(), Layer.FOREGROUND, Couleur.ROUGE.couleur));
-			else if(print)
-				buffer.notify();
-		}*/
+			if(printTrace && oldPosition.distanceFast(cinematique.getPosition()) < 100)
+				buffer.addPrintable(new Segment(oldPosition, cinematique.getPosition().clone()), Color.RED, Layer.FOREGROUND.layer);
+		}
 	}
 
-	@Override
-	public void print(Graphics g, GraphicPanel f)
-	{
-/*		if(print)
-		{
-			ObstacleRobot o = new ObstacleRobot(demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant, marge);
-			o.update(cinematique.getPosition(), cinematique.orientationReelle);
-			o.print(g, f, robot);
-		}*/
-	}
 
 	/*
 	 * DÉPLACEMENTS
@@ -276,6 +267,34 @@ public class Robot extends RobotState implements Printable
 	public void initActionneurs()
 	{
 		// TODO Auto-generated method stub		
+	}
+
+	public void updateColorAndSendPosition(RobotColor c, Config config)
+	{
+		assert cinematique != null;
+		
+		symetrie = c.symmetry;
+		
+		// on applique la symétrie à la position initiale
+		setCinematique(new Cinematique(new XYO(
+				symetrie ? -config.getDouble(ConfigInfoSenpai.INITIAL_X) : config.getDouble(ConfigInfoSenpai.INITIAL_X),
+				config.getDouble(ConfigInfoSenpai.INITIAL_Y),
+				symetrie ? Math.PI + config.getDouble(ConfigInfoSenpai.INITIAL_O) : config.getDouble(ConfigInfoSenpai.INITIAL_O))));
+
+		// on active le printable
+		if(printable != null)
+			printable.initPositionObject(cinematique);
+
+		// on envoie la position au LL
+		out.setPosition(cinematique.getPosition(), cinematique.orientationReelle);
+	}
+
+	/*
+	 * On a besoin d'initialiser à part car elle est utilisée pour centre l'affichage graphique
+	 */
+	public void initPositionObject(Cinematique c)
+	{
+		cinematique = c;
 	}
 
 }
