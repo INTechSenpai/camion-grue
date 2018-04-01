@@ -3,10 +3,12 @@
 *.so
 *.gz
 *.jar
+*.img
 
 # Dossiers top secrets
 tmp/
 regles/
+images/
 mécanique/
 high_level/target
 
