@@ -10,7 +10,6 @@ tmp/
 regles/
 images/
 mécanique/
-high_level/target
 
 # Documentation
 *.doc
