@@ -1,0 +1,57 @@
+# Moteurs
+Rouge	: moteur (+)
+Noir	: moteur (-)
+Vert	: GND
+Bleu	: Vcc (+5V)
+Jaune	: Enc. CH1
+Blanc	: Enc. CH2
+
+# Encodeurs
+Noir	: GND
+Rouge	: Vcc
+Blanc	: CH1
+Vert	: CH2
+
+# Capteurs
+Orange			: Vin
+Marron			: GND
+Bleu-blanc		: SDA
+Vert-blanc		: SCL
+Marron-blanc	: Enable
+
+
+# Connectique panneau arrière
+## Gauche (de BAS en HAUT)
+DEL-CLIGNO-G	(orange)
+DEL-CLIGNO-D	(orange-blanc)
+DEL-STOP		(bleu)
+DEL-NUIT		(bleu-blanc)
+DEL-RECUL		(vert)
+
+## Droite (de BAS en HAUT)
+3V3		(orange)
+GND		(marron)
+SDA		(Bleu-blanc)
+SCL		(Vert-blanc)
+EN-ARG	(Bleu)
+EN-ARD	(Vert)
+[EN-FLAN-ARG]	(Marron-blanc)
+[EN-FLAN-ARD]	(Orange-blanc)
+
+
+# Connectique cockpit
+## Capteurs + éclairage
+3V3		(orange)
+GND		(marron)
+SDA		(Bleu-blanc)
+SCL		(Vert-blanc)
+EN-AVG	(Marron-blanc)
+EN-AV	(Bleu)
+EN-AVD	(Vert)
+
+## Gyropares
+GND				(marron)
+Gyro1(centre)	(Bleu)
+Gyro2			(Vert-blanc)
+Gyro3			(Vert)
+Gyro4(ext)		(Bleu-blanc)
