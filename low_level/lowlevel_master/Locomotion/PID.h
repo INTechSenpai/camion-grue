@@ -107,7 +107,7 @@ public:
 
 	size_t printTo(Print& p) const
 	{
-		return p.printf("%g_%g_%g", setPoint, input, output);
+		return p.printf("%u_%g_%g_%g", millis(), input, output, setPoint);
 	}
 
 private:

@@ -51,7 +51,7 @@ public:
 
     void runFrontRight(int16_t pwm)
     {
-        runMotor(pwm, PIN_EN_FRONT_RIGHT_MOTOR, PIN_A_FRONT_RIGHT_MOTOR, PIN_B_FRONT_RIGHT_MOTOR);
+        runMotor(-pwm, PIN_EN_FRONT_RIGHT_MOTOR, PIN_A_FRONT_RIGHT_MOTOR, PIN_B_FRONT_RIGHT_MOTOR);
     }
 
     void runBackLeft(int16_t pwm)
@@ -61,7 +61,7 @@ public:
 
     void runBackRight(int16_t pwm)
     {
-        runMotor(pwm, PIN_EN_BACK_RIGHT_MOTOR, PIN_A_BACK_RIGHT_MOTOR, PIN_B_BACK_RIGHT_MOTOR);
+        runMotor(-pwm, PIN_EN_BACK_RIGHT_MOTOR, PIN_A_BACK_RIGHT_MOTOR, PIN_B_BACK_RIGHT_MOTOR);
     }
 
     void breakAll(uint16_t strength = MAX_PWM)

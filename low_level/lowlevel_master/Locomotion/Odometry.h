@@ -28,10 +28,10 @@ public:
 		volatile float & translationSpeed
 	) :
         freqAsserv(freqAsserv),
-        frontLeftMotor(freqAsserv, PIN_A_FRONT_LEFT_MOTOR_ENCODER, PIN_B_FRONT_LEFT_MOTOR_ENCODER, frontLeftMotorSpeed),
-        frontRightMotor(freqAsserv, PIN_B_FRONT_RIGHT_MOTOR_ENCODER, PIN_A_FRONT_RIGHT_MOTOR_ENCODER, frontRightMotorSpeed),
-        backLeftMotor(freqAsserv, PIN_A_BACK_LEFT_MOTOR_ENCODER, PIN_B_BACK_LEFT_MOTOR_ENCODER, backLeftMotorSpeed),
-        backRightMotor(freqAsserv, PIN_B_BACK_RIGHT_MOTOR_ENCODER, PIN_A_BACK_RIGHT_MOTOR_ENCODER, backRightMotorSpeed),
+        frontLeftMotor(freqAsserv, PIN_B_FRONT_LEFT_MOTOR_ENCODER, PIN_A_FRONT_LEFT_MOTOR_ENCODER, frontLeftMotorSpeed),
+        frontRightMotor(freqAsserv, PIN_A_FRONT_RIGHT_MOTOR_ENCODER, PIN_B_FRONT_RIGHT_MOTOR_ENCODER, frontRightMotorSpeed),
+        backLeftMotor(freqAsserv, PIN_B_BACK_LEFT_MOTOR_ENCODER, PIN_A_BACK_LEFT_MOTOR_ENCODER, backLeftMotorSpeed),
+        backRightMotor(freqAsserv, PIN_A_BACK_RIGHT_MOTOR_ENCODER, PIN_B_BACK_RIGHT_MOTOR_ENCODER, backRightMotorSpeed),
 		leftOdometryEncoder(PIN_A_LEFT_ENCODER, PIN_B_LEFT_ENCODER),
 		rightOdometryEncoder(PIN_B_RIGHT_ENCODER, PIN_A_RIGHT_ENCODER),
 		position(p),

@@ -92,7 +92,7 @@ public:
 
 	size_t printTo(Print& p) const
 	{
-		return p.printf("%g_%g_%g", posError, orientationError, curvatureOrder);
+		return p.printf("%u_%g_%g_%g", millis(), posError, orientationError, curvatureOrder);
 	}
 
 private:

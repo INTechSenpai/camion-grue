@@ -4,6 +4,7 @@
 #include <vector>
 #include "Serializer.h"
 #include "../Locomotion/MotionControlSystem.h"
+#include "../Locomotion/TrajectoryFollower.h"
 #include "../Locomotion/DirectionController.h"
 #include "../Locomotion/MoveState.h"
 #include "../Locomotion/Position.h"
@@ -42,7 +43,7 @@ public:
     Rien() {}
     virtual void execute(std::vector<uint8_t> & io)
     {
-        if (io.size() == EXPEXTED_SIZE)
+        if (io.size() == EXPECTED_SIZE)
         {
             // Read input
             // Process command
@@ -372,6 +373,29 @@ public:
 };
 
 
+class SetMonitoredMotor : public OrderImmediate, public Singleton<SetMonitoredMotor>
+{
+public:
+    SetMonitoredMotor() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 1)
+        {
+            size_t index = 0;
+            uint8_t motor = Serializer::readEnum(io, index);
+            motionControlSystem.setMonitoredMotor((MonitoredMotor)motor);
+            Server.printf(SPY_ORDER, "SetMonitoredMotor: %u\n", motor);
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("SetMonitoredMotor: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+
 class StartManualMove : public OrderImmediate, public Singleton<StartManualMove>
 {
 public:
@@ -399,16 +423,12 @@ public:
     SetPWM() {}
     virtual void execute(std::vector<uint8_t> & io)
     {
-        if (io.size() == 16)
+        if (io.size() == 4)
         {
             size_t index = 0;
-            int32_t frontLeftPWM = Serializer::readInt(io, index);
-            int32_t frontRightPWM = Serializer::readInt(io, index);
-            int32_t backLeftPWM = Serializer::readInt(io, index);
-            int32_t backRightPWM = Serializer::readInt(io, index);
-            motionControlSystem.setPWM(frontLeftPWM, frontRightPWM, backLeftPWM, backRightPWM);
-            Server.printf(SPY_ORDER, "SetPWM: fl=%d, fr=%d, bl=%d, br=%d\n", 
-                frontLeftPWM, frontRightPWM, backLeftPWM, backRightPWM);
+            int32_t pwm = Serializer::readInt(io, index);
+            motionControlSystem.setPWM(pwm);
+            Server.printf(SPY_ORDER, "SetPWM: %d\n", pwm);
             io.clear();
         }
         else

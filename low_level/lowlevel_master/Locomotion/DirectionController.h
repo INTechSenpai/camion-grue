@@ -35,12 +35,6 @@
 #define ANGLE_MIN	90
 #define ANGLE_MAX	210
 
-#define SCANN_PERIOD		100		// ms
-#define SCANN_DELTA			1		// m^-1
-#define SCANN_UPPER_BOUND	(5.5)	// m^-1
-#define SCANN_LOWER_BOUND	(-5.5)	// m^-1
-#define SCANN_TIMEOUT		3000	// ms
-
 
 enum DirectionControllerStatus
 {

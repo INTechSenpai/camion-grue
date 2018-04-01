@@ -129,11 +129,7 @@ private:
     void stop_and_clear_trajectory_from_interrupt()
     {
         // todo (vérifier que j'ai pensé  tout)
-        MovePhase movePhase = trajectoryFollower.getMovePhase();
-        if (movePhase != MOVE_ENDED)
-        {
-            trajectoryFollower.emergency_stop_from_interrupt();
-        }
+        trajectoryFollower.emergency_stop_from_interrupt();
         trajectoryIndex = 0;
         currentTrajectory.clear();
     }
@@ -172,7 +168,7 @@ private:
         }
         else
         {
-            // todo: throw error
+            Server.printf_err("MotionControlSystem::followTrajectory : trajectory is not controlled\n");
         }
 	}
 
@@ -302,10 +298,10 @@ private:
 		return trajectoryFollower.getTunings();
 	}
 
-    void setPWM(int16_t frontLeft, int16_t frontRight, int16_t backLeft, int16_t backRight)
+    void setPWM(int16_t pwm)
     {
         noInterrupts();
-        trajectoryFollower.setPWM(frontLeft, frontRight, backLeft, backRight);
+        trajectoryFollower.setPWM(pwm);
         interrupts();
     }
 
@@ -330,6 +326,15 @@ private:
         interrupts();
     }
 
+    void setMonitoredMotor(MonitoredMotor m)
+    {
+        trajectoryFollower.setMonitoredMotor(m);
+    }
+
+    void sendLogs()
+    {
+        trajectoryFollower.sendLogs();
+    }
 
 private:
 	TrajectoryFollower trajectoryFollower;

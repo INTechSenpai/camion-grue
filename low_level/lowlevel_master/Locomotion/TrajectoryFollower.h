@@ -20,6 +20,16 @@
 #define INFINITE_DISTANCE		INT32_MAX
 
 
+enum MonitoredMotor
+{
+    NONE = 0,
+    FRONT_LEFT = 1,
+    FRONT_RIGHT = 2,
+    BACK_LEFT = 3,
+    BACK_RIGHT = 4
+};
+
+
 class TrajectoryFollower
 {
 public:
@@ -233,14 +243,29 @@ public:
 		}
 	}
 
-    void setPWM(int16_t frontLeft, int16_t frontRight, int16_t backLeft, int16_t backRight)
+    void setPWM(int16_t pwm)
     {
         if (!speedControlled)
         {
-            frontLeftPWM = (float)frontLeft;
-            frontRightPWM = (float)frontRight;
-            backLeftPWM = (float)backLeft;
-            backRightPWM = (float)backRight;
+            switch (monitoredMotor)
+            {
+            case NONE:
+                break;
+            case FRONT_LEFT:
+                frontLeftPWM = (float)pwm;
+                break;
+            case FRONT_RIGHT:
+                frontRightPWM = (float)pwm;
+                break;
+            case BACK_LEFT:
+                backLeftPWM = (float)pwm;
+                break;
+            case BACK_RIGHT:
+                backRightPWM = (float)pwm;
+                break;
+            default:
+                break;
+            }
         }
         else
         {
@@ -311,11 +336,20 @@ public:
     {
         if (movePhase != MOVE_ENDED)
         {
-            movePhase = BREAKING;
             if (translationControlled)
             {
+                movePhase = BREAKING;
                 moveStatus |= EMERGENCY_BREAK;
             }
+            else
+            {
+                movePhase = MOVE_ENDED;
+                finalise_stop();
+            }
+        }
+        else
+        {
+            finalise_stop();
         }
     }
 
@@ -380,6 +414,43 @@ public:
 		return motionControlTunings;
 	}
 
+    void setMonitoredMotor(MonitoredMotor m)
+    {
+        monitoredMotor = m;
+    }
+
+    void sendLogs()
+    {
+        noInterrupts();
+        switch (monitoredMotor)
+        {
+        case NONE:
+            break;
+        case FRONT_LEFT:
+            Server.print(PID_SPEED, frontLeftSpeedPID);
+            Server.print(BLOCKING_MGR, frontLeftMotorBlockingMgr);
+            break;
+        case FRONT_RIGHT:
+            Server.print(PID_SPEED, frontRightSpeedPID);
+            Server.print(BLOCKING_MGR, frontRightMotorBlockingMgr);
+            break;
+        case BACK_LEFT:
+            Server.print(PID_SPEED, backLeftSpeedPID);
+            Server.print(BLOCKING_MGR, backLeftMotorBlockingMgr);
+            break;
+        case BACK_RIGHT:
+            Server.print(PID_SPEED, backRightSpeedPID);
+            Server.print(BLOCKING_MGR, backRightMotorBlockingMgr);
+            break;
+        default:
+            break;
+        }
+        Server.print(PID_TRANS, translationPID);
+        Server.print(PID_TRAJECTORY, curvaturePID);
+        Server.print(STOPPING_MGR, endOfMoveMgr);
+        interrupts();
+    }
+
 
 private:
 	void finalise_stop()
@@ -406,6 +477,8 @@ private:
         backLeftSpeedPID.resetDerivativeError();
         backRightSpeedPID.resetIntegralError();
         backRightSpeedPID.resetDerivativeError();
+
+        Server.printf("Robot stopped, status=%d\n", moveStatus);
 	}
 
 	void manageStop()
@@ -439,20 +512,23 @@ private:
 		frontRightMotorBlockingMgr.compute();
         backLeftMotorBlockingMgr.compute();
         backRightMotorBlockingMgr.compute();
-		if (( frontLeftMotorBlockingMgr.isBlocked()    || 
-              frontRightMotorBlockingMgr.isBlocked() ) ||
-            ( backLeftMotorBlockingMgr.isBlocked()     ||
-              backRightMotorBlockingMgr.isBlocked() ))
-		{
-			movePhase = MOVE_ENDED;
-			moveStatus |= INT_BLOCKED;
-			finalise_stop();
-		}
+        if (movePhase == MOVING)
+        {
+            if ((frontLeftMotorBlockingMgr.isBlocked() ||
+                frontRightMotorBlockingMgr.isBlocked()) ||
+                (backLeftMotorBlockingMgr.isBlocked() ||
+                    backRightMotorBlockingMgr.isBlocked()))
+            {
+                movePhase = MOVE_ENDED;
+                moveStatus |= INT_BLOCKED;
+                finalise_stop();
+            }
+        }
 	}
 
 	void checkPosition()
 	{
-		if (movePhase == MOVING)
+		if (movePhase == MOVING && trajectoryControlled)
 		{
 			if (position.distanceTo(trajectoryPoint.getPosition()) > DISTANCE_MAX_TO_TRAJ)
 			{
@@ -589,6 +665,9 @@ private:
 
     /* Pour le réglage des paramètres des PID, BlockingMgr et StoppingMgr */
     MotionControlTunings motionControlTunings;
+
+    /* Pour sélectionner le moteur courant à régler et surveiller */
+    MonitoredMotor monitoredMotor;
 
 };
 

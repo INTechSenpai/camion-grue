@@ -58,7 +58,7 @@ public:
 
 	size_t printTo(Print& p) const
 	{
-		return p.printf("%g_%g_%d", aimSpeed, realSpeed, isBlocked());
+		return p.printf("%u_%g_%g_%d", millis(), aimSpeed, realSpeed, isBlocked());
 	}
 
 private:
@@ -151,7 +151,7 @@ public:
 
 	size_t printTo(Print& p) const
 	{
-		return p.printf("%g_%d", speed, isStopped());
+		return p.printf("%u_%g_%d", millis(), speed, isStopped());
 	}
 
 private:

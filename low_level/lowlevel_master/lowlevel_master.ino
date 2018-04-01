@@ -10,6 +10,8 @@
 
 #define START_ON_SERIAL 0
 
+#define LOG_PERIOD  20  // ms
+
 
 void setup()
 {
@@ -32,10 +34,18 @@ void loop()
     motionControlTimer.priority(253);
     motionControlTimer.begin(motionControlInterrupt, PERIOD_ASSERV);
 
+    uint32_t logTimer = 0;
+
     while (true)
     {
         orderManager.execute();
         directionController.control();
+
+        if (millis() - logTimer > LOG_PERIOD)
+        {
+            motionControlSystem.sendLogs();
+            logTimer = millis();
+        }
     }
 }
 

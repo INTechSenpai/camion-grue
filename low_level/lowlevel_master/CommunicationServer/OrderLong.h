@@ -114,6 +114,7 @@ public:
     {
         if (input.size() == 0)
         {
+            Server.printf("stop");
             motionControlSystem.stop_and_clear_trajectory();
         }
         else

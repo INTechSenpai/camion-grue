@@ -48,19 +48,20 @@ public:
         immediateOrderList[0x13] = &GetPosition::Instance();
         immediateOrderList[0x14] = &GetBattery::Instance();
         immediateOrderList[0x15] = &SetControlLevel::Instance();
-        immediateOrderList[0x16] = &StartManualMove::Instance();
-        immediateOrderList[0x17] = &SetPWM::Instance();
-        immediateOrderList[0x18] = &SetMaxSpeed::Instance();
-        immediateOrderList[0x19] = &SetAimDistance::Instance();
-        immediateOrderList[0x1A] = &SetCurvature::Instance();
-        immediateOrderList[0x1B] = &SetSpeedTunings::Instance();
-        immediateOrderList[0x1C] = &SetTranslationTunings::Instance();
-        immediateOrderList[0x1D] = &SetTrajectoryTunings::Instance();
-        immediateOrderList[0x1E] = &SetBlockingTunings::Instance();
-        immediateOrderList[0x1F] = &SetStoppingTunings::Instance();
-        immediateOrderList[0x20] = &SetMaxAcceleration::Instance();
-        immediateOrderList[0x21] = &SetMaxDeceleration::Instance();
-        immediateOrderList[0x22] = &SetMaxCurvature::Instance();
+        immediateOrderList[0x16] = &SetMonitoredMotor::Instance();
+        immediateOrderList[0x17] = &StartManualMove::Instance();
+        immediateOrderList[0x18] = &SetPWM::Instance();
+        immediateOrderList[0x19] = &SetMaxSpeed::Instance();
+        immediateOrderList[0x1A] = &SetAimDistance::Instance();
+        immediateOrderList[0x1B] = &SetCurvature::Instance();
+        immediateOrderList[0x1C] = &SetSpeedTunings::Instance();
+        immediateOrderList[0x1D] = &SetTranslationTunings::Instance();
+        immediateOrderList[0x1E] = &SetTrajectoryTunings::Instance();
+        immediateOrderList[0x1F] = &SetBlockingTunings::Instance();
+        immediateOrderList[0x20] = &SetStoppingTunings::Instance();
+        immediateOrderList[0x21] = &SetMaxAcceleration::Instance();
+        immediateOrderList[0x22] = &SetMaxDeceleration::Instance();
+        immediateOrderList[0x23] = &SetMaxCurvature::Instance();
 
         // Ordres longs
         longOrderList[0x00] = &FollowTrajectory::Instance();
