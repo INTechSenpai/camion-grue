@@ -200,7 +200,7 @@ public class Senpai
 			Robot robot = new Robot(log);
 			injector.addService(robot);
 
-			debug = DebugTool.getDebugTool(new HashMap<ConfigInfo, Object>(), robot.getCinematique().getPosition(), Severity.INFO, configfile, profiles);
+			debug = DebugTool.getDebugTool(new HashMap<ConfigInfo, Object>(), new XY(0,1000), robot.getCinematique().getPosition(), Severity.INFO, configfile, profiles);
 			injector.addService(GraphicDisplay.class, debug.getGraphicDisplay());
 
 			Speed.TEST.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_TEST) / 1000.;
