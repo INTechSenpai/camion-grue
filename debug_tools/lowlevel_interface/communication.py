@@ -1,6 +1,7 @@
 import socket, threading, serial, time
 
 DEFAULT_ROBOT_IP = "172.16.0.2"
+DEFAULT_ROBOT_SERIAL_PORT = "COM4"
 ROBOT_TCP_PORT = 80
 CONNEXION_TIMEOUT = 5  # seconds
 ORIGIN_TIMESTAMP = int(time.time() * 1000)
@@ -51,7 +52,7 @@ class Communication:
                 b += bytearray([0xFF])
             b += bytearray(message.data)
             self.abstract_interface.sendBytes(b)
-            print("send: ", b)
+            # print("send: ", b)
 
     def available(self):
         return len(self.messageBuffer)
@@ -115,6 +116,10 @@ class Message:
         else:
             print("ERR - id=", ID, "data=", data, "std=", standard)
             raise ValueError
+
+    def __str__(self):
+        return "id=" + str(self.id) + " data=" + self.data.decode('utf-8', errors='ignore') + \
+               " t=" + str(self.timestamp) + " std=" + str(self.standard)
 
 
 class Serial_interface:

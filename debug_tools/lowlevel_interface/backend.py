@@ -137,7 +137,6 @@ class Backend:
                 # todo
                 self.needUpdateScatterGraph = True
             else:
-                string = str(message.timestamp) + "_"
                 if command.type == CommandType.SUBSCRIPTION_TEXT:
                     if command.id == INFO_CHANNEL:
                         descriptor = INFO_CHANNEL_NAME
@@ -149,17 +148,27 @@ class Backend:
                         descriptor = SPY_ORDER_CHANNEL_NAME
                     else:
                         descriptor = INFO_CHANNEL_NAME
-                    string += descriptor + "_"
+                    fullArgs = ""
                     for arg in args:
-                        string += str(arg) + " "
+                        fullArgs += str(arg) + " "
+                    sArgs = fullArgs.split('\n')
+                    for argLine in sArgs:
+                        if len(argLine) > 1:
+                            string = str(message.timestamp) + "_"
+                            string += descriptor + "_" + argLine
+                            string += '\n'
+                            self.consoleEntries.append((message.timestamp, string))
                 else:
+                    string = str(message.timestamp) + "_"
                     string += ANSWER_DESCRIPTOR + "_"
+                    if len(args) == 0:
+                        string += "Order " + command.name + " terminated"
                     i = 0
                     for arg in args:
                         string += command.outputFormat[i].name + ": " + str(arg) + " "
                         i += 1
-                string += '\n'
-                self.consoleEntries.append((message.timestamp, string))
+                    string += '\n'
+                    self.consoleEntries.append((message.timestamp, string))
                 if len(self.consoleEntries) > CONSOLE_HISTORY_SIZE:
                     self.consoleEntries.pop(0)
                     self.consoleEntriesIndex -= 1
@@ -338,7 +347,7 @@ class Backend:
         for i in range(len(self.subscriptions)):
             message = Message(i, bytes([self.subscriptions[i]]))
             self.communication.sendMessage(message)
-        print("Send subscriptions:", self.subscriptions)
+        # print("Send subscriptions:", self.subscriptions)
 
     def updateSubscriptions(self, updateList):
         changed = False

@@ -9,7 +9,7 @@ from numpy.f2py.cb_rules import cb_arg_rules
 
 from CommandList import *
 from backend import Backend
-from communication import DEFAULT_ROBOT_IP
+from communication import DEFAULT_ROBOT_IP, DEFAULT_ROBOT_SERIAL_PORT
 
 import time
 
@@ -97,9 +97,9 @@ class ToolBar(QWidget):
         self.paused = False
 
         self.timeSlider = AnnotatedSlider(self, 0, 10, unit="ms", icon=None, callback=self.timeSliderMoved)
-        self.zoomSlider = AnnotatedSlider(self, 100, 10000, unit="ms", icon=None, callback=mSetZoom)
-        self.zoomSlider.setValue(1000)
-        mSetZoom(1000)
+        self.zoomSlider = AnnotatedSlider(self, 1000, 100000, unit="ms", icon=None, callback=mSetZoom)
+        self.zoomSlider.setValue(10000)
+        mSetZoom(10000)
 
         # Layout
         grid = QGridLayout()
@@ -233,6 +233,7 @@ class SerialChooser(QWidget):
         super().__init__(master)
         grid = QGridLayout()
         self.comboBox = QComboBox(self)
+        self.comboBox.addItem(DEFAULT_ROBOT_SERIAL_PORT)
         self.comboBox.setEditable(True)
         grid.addWidget(self.comboBox, 0, 0)
         self.setLayout(grid)
@@ -408,6 +409,7 @@ class CommandBox(QFrame):
             else:
                 widget = QLineEdit(self)
                 widget.textChanged.connect(self.checkTextFields)
+                widget.returnPressed.connect(self.send)
             widget.setHidden(True)
             grid.addWidget(widget, row, 1)
             self.label_widget_field.append((label, widget, field))
