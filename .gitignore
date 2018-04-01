@@ -8,10 +8,7 @@
 tmp/
 regles/
 mécanique/
-high_level/graphic-toolbox
-high_level/config
-high_level/dependency-injector
-high_level/The-Kraken-Pathfinding
+high_level/target
 
 # Documentation
 *.doc
