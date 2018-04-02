@@ -17,6 +17,7 @@ package senpai.capteurs;
 import pfg.config.Config;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.utils.XY;
+import senpai.robot.Robot;
 
 /**
  * Un capteur immobile
@@ -29,9 +30,9 @@ public class CapteurImmobile extends Capteur
 {
 	private static final long serialVersionUID = 1L;
 
-	public CapteurImmobile(Config config, XY positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
+	public CapteurImmobile(Robot robot, Config config, XY positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
 	{
-		super(config, positionRelative, orientationRelative, type, sureleve);
+		super(robot, config, positionRelative, orientationRelative, type, sureleve);
 		orientationRelativeRotate = orientationRelative;
 		positionRelativeRotate = positionRelative.clone();
 	}

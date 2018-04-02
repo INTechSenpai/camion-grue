@@ -18,19 +18,19 @@ import senpai.ConfigInfoSenpai;
 import senpai.Subject;
 import senpai.buffer.ObstaclesBuffer;
 import senpai.buffer.OutgoingOrderBuffer;
-import senpai.capteurs.SensorsData.TraitementEtat;
+import senpai.comm.CommProtocol;
 import senpai.obstacles.ObstacleProximity;
 import senpai.obstacles.ObstaclesFixes;
+import senpai.robot.Robot;
 import senpai.table.EtatElement;
 import senpai.table.GameElementNames;
 import senpai.table.Table;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-
 import pfg.config.Config;
+import pfg.graphic.GraphicDisplay;
+import pfg.graphic.printable.Layer;
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.utils.XY;
@@ -64,13 +64,13 @@ public class CapteursProcess
 	private long peremptionCorrection;
 	private boolean enableCorrection;
 	private int indexCorrection = 0;
-	private boolean scan = false;
+//	private boolean scan = false;
 	private Cinematique[] bufferCorrection;
 	private long dureeAvantPeremption;
 
-	private List<SensorsData> mesuresScan = new ArrayList<SensorsData>();
+//	private List<SensorsData> mesuresScan = new ArrayList<SensorsData>();
 
-	public CapteursProcess(Log log, RectangularObstacle obstacleRobot, Table table, OutgoingOrderBuffer serie, Config config, ObstaclesBuffer obsbuffer)
+	public CapteursProcess(Robot robot, Log log, RectangularObstacle obstacleRobot, Table table, OutgoingOrderBuffer serie, Config config, ObstaclesBuffer obsbuffer, GraphicDisplay buffer)
 	{
 		this.table = table;
 		this.log = log;
@@ -99,7 +99,7 @@ public class CapteursProcess
 				@SuppressWarnings("unchecked")
 				// On utilise le seul constructeur
 				Constructor<? extends Capteur> constructor = (Constructor<? extends Capteur>) c.classe.getConstructors()[0];
-				capteurs[i] = constructor.newInstance(config, c.pos, c.angle, c.type, c.sureleve);
+				capteurs[i] = constructor.newInstance(robot, config, c.pos, c.angle, c.type, c.sureleve);
 			}
 			catch(InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
 			{
@@ -107,9 +107,9 @@ public class CapteursProcess
 			}
 		}
 
-/*		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS))
+		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS))
 			for(Capteur c : capteurs)
-				buffer.add(c);*/
+				buffer.addPrintable(c, c.type.couleur, Layer.FOREGROUND.layer);
 	}
 
 	/**
@@ -136,17 +136,17 @@ public class CapteursProcess
 			}
 
 		// parfois on n'a pas de mesure
-		if(data.mesures == null)
-			return;
+//		if(data.mesures == null)
+//			return;
 
-		if(scan)
+/*		if(scan)
 		{
 			mesuresScan.add(data);
 			return;
-		}
+		}*/
 
-		try
-		{
+/*		try
+		{*/
 			/**
 			 * Suppression des mesures qui sont hors-table ou qui voient un obstacle
 			 * de table
@@ -155,7 +155,7 @@ public class CapteursProcess
 			{
 				CapteursRobot c = CapteursRobot.values[i];
 	
-				XY positionVue = getPositionVue(data, i, capteurs[i], data.mesures[i], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);
+				XY positionVue = getPositionVue(capteurs[i], data.mesures[i], data.cinematique, data.angleTourelleGauche, data.angleTourelleDroite);
 				if(positionVue == null)
 					continue;
 	
@@ -168,7 +168,7 @@ public class CapteursProcess
 					if(o.isVisible(capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
 					{
 						log.write("Obstacle de table vu : " + o, Subject.CAPTEURS);
-						data.etats[i] = TraitementEtat.DANS_OBSTACLE_FIXE;
+//						data.etats[i] = TraitementEtat.DANS_OBSTACLE_FIXE;
 						stop = true;
 						break;
 					}
@@ -201,7 +201,7 @@ public class CapteursProcess
 				{
 					// if(debugCapteurs)
 					// log.debug("Hors table !");
-					data.etats[i] = TraitementEtat.HORS_TABLE;
+//					data.etats[i] = TraitementEtat.HORS_TABLE;
 					continue; // hors table
 				}
 	
@@ -209,7 +209,7 @@ public class CapteursProcess
 	
 				obsbuffer.addNewObstacle(obs);
 
-				data.etats[i] = TraitementEtat.OBSTACLE_CREE;
+//				data.etats[i] = TraitementEtat.OBSTACLE_CREE;
 				
 				// ObstacleProximity o =
 	//			gridspace.addObstacleAndRemoveNearbyObstacles(obs);
@@ -228,11 +228,11 @@ public class CapteursProcess
 	
 			if(enableCorrection)
 				correctXYO(data);
-		}
+/*		}
 		finally
 		{
 			assert data.checkTraitementEtat();
-		}
+		}*/
 	}
 
 	/**
@@ -261,11 +261,11 @@ public class CapteursProcess
 			if(data.mesures[index1] <= 4 || data.mesures[index2] <= 4)
 				continue;
 			
-			XY_RW pointVu1 = getPositionVue(data, index1, capteurs[index1], data.mesures[index1], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);
+			XY_RW pointVu1 = getPositionVue(capteurs[index1], data.mesures[index1], data.cinematique, data.angleTourelleGauche, data.angleTourelleDroite);
 			if(pointVu1 == null)
 				continue;
 
-			XY_RW pointVu2 = getPositionVue(data, index2, capteurs[index2], data.mesures[index2], data.cinematique, data.angleRoueGauche, data.angleRoueDroite);
+			XY_RW pointVu2 = getPositionVue(capteurs[index2], data.mesures[index2], data.cinematique, data.angleTourelleGauche, data.angleTourelleDroite);
 			if(pointVu2 == null)
 				continue;
 
@@ -382,7 +382,7 @@ public class CapteursProcess
 	 * @param cinematique
 	 * @return
 	 */
-	private XY_RW getPositionVue(SensorsData data, int nbCapteur, Capteur c, int mesure, Cinematique cinematique, double angleRoueGauche, double angleRoueDroite)
+	private XY_RW getPositionVue(Capteur c, int mesure, Cinematique cinematique, double angleRoueGauche, double angleRoueDroite)
 	{
 		c.computePosOrientationRelative(cinematique, angleRoueGauche, angleRoueDroite);
 
@@ -390,7 +390,16 @@ public class CapteursProcess
 		 * Si le capteur voit trop proche ou trop loin, on ne peut pas lui faire
 		 * confiance
 		 */
-		if(mesure <= c.distanceMin || mesure >= c.portee)
+		
+		assert mesure >= 0 : "Mesure de capteur négative ! "+c+" "+mesure;
+		
+		if(mesure <= 3)
+		{
+			log.write("Capteur "+c+" : "+CommProtocol.EtatCapteur.values()[mesure], Subject.CAPTEURS);
+			return null;
+		}
+		
+/*		if(mesure <= c.distanceMin || mesure >= c.portee)
 		{
 			if(mesure == 0)
 				data.etats[nbCapteur] = TraitementEtat.DESACTIVE;
@@ -401,7 +410,7 @@ public class CapteursProcess
 				
 			// log.debug("Mesure d'un capteur trop loin ou trop proche.");
 			return null;
-		}
+		}*/
 
 		XY_RW positionVue = new XY_RW(mesure, c.orientationRelativeRotate, true);
 		positionVue.plus(c.positionRelativeRotate);
@@ -456,11 +465,11 @@ public class CapteursProcess
 		if(murBas)
 			return Mur.MUR_BAS;
 		else if(murDroit)
-			return null;
-//			return Mur.MUR_DROIT;
+//			return null;
+			return Mur.MUR_DROIT;
 		else if(murGauche)
-			return null;
-//			return Mur.MUR_GAUCHE;
+//			return null;
+			return Mur.MUR_GAUCHE;
 		return Mur.MUR_HAUT;
 	}
 }

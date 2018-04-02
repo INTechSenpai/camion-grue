@@ -22,6 +22,7 @@ import pfg.graphic.printable.Printable;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XY_RW;
+import senpai.ConfigInfoSenpai;
 import senpai.robot.Robot;
 
 /**
@@ -39,30 +40,29 @@ public abstract class Capteur implements Printable
 	protected final XY positionRelative;
 	protected final double orientationRelative;
 	public final double angleCone; // angle du cône (en radians)
-	public final int portee;
-	public final int distanceMin;
-//	protected int L, d;
-//	protected XY centreRotationGauche, centreRotationDroite;
+	private final int portee;
+	protected int L, d;
+	protected XY centreRotationGauche, centreRotationDroite;
 	protected double orientationRelativeRotate;
 	protected XY_RW positionRelativeRotate;
-	private TypeCapteur type;
+	public TypeCapteur type;
 	private Robot robot;
 
-	public Capteur(Config config, XY positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
+	public Capteur(Robot robot, Config config, XY positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
 	{
+		this.robot = robot;
 		this.type = type;
 		this.positionRelative = positionRelative;
 		this.orientationRelative = orientationRelative;
 		positionRelativeRotate = new XY_RW();
 		this.angleCone = type.angleCone;
-		this.distanceMin = type.distanceMin;
 		this.portee = type.portee;
 		this.sureleve = sureleve;
 
-/*		L = config.getInt(ConfigInfo.CENTRE_ROTATION_ROUE_X);
-		d = config.getInt(ConfigInfo.CENTRE_ROTATION_ROUE_Y);
+		L = config.getInt(ConfigInfoSenpai.CENTRE_ROTATION_TOURELLE_X);
+		d = config.getInt(ConfigInfoSenpai.CENTRE_ROTATION_TOURELLE_Y);
 		centreRotationGauche = new XY(L, d);
-		centreRotationDroite = new XY(L, -d);*/
+		centreRotationDroite = new XY(L, -d);
 	}
 
 	/**

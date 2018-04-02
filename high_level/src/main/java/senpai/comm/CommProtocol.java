@@ -39,6 +39,14 @@ public class CommProtocol
 		public final boolean started = ordinal() == 1;
 	}
 
+	public enum EtatCapteur
+	{
+		CAPTEUR_HS_BRULE_NOYE,
+		PAS_MESURE,
+		TROP_PROCHE,
+		TROP_LOIN;
+	}
+	
 	public enum Id
 	{
 		/**

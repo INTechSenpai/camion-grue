@@ -16,6 +16,7 @@ package senpai.capteurs;
 
 import pfg.config.Config;
 import pfg.kraken.utils.XY;
+import senpai.robot.Robot;
 import pfg.kraken.robot.Cinematique;
 
 /**
@@ -29,20 +30,38 @@ import pfg.kraken.robot.Cinematique;
 public class CapteurMobile extends Capteur
 {
 	private static final long serialVersionUID = 1L;
-
+	private boolean tourelleDroite;
 	/**
 	 * L'orientation relative à donner est celle du capteur lorsque les roues
 	 * sont droites (courbure nulle)
 	 */
-	public CapteurMobile(Config config, XY positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
+	public CapteurMobile(Robot robot, Config config, XY positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
 	{
-		super(config, positionRelative, orientationRelative, type, sureleve);
+		super(robot, config, positionRelative, orientationRelative, type, sureleve);
+		tourelleDroite = positionRelative.getY() < 0;
 	}
 
 	@Override
 	public void computePosOrientationRelative(Cinematique c, double angleRoueGauche, double angleRoueDroite)
 	{
-		// TODO
+		if(tourelleDroite)
+			orientationRelativeRotate = orientationRelative + angleRoueDroite;
+		else
+			orientationRelativeRotate = orientationRelative + angleRoueGauche;
+
+		positionRelative.copy(positionRelativeRotate);
+		if(tourelleDroite)
+		{
+			positionRelativeRotate.minus(centreRotationDroite);
+			positionRelativeRotate.rotate(orientationRelativeRotate);
+			positionRelativeRotate.plus(centreRotationDroite);
+		}
+		else
+		{
+			positionRelativeRotate.minus(centreRotationGauche);
+			positionRelativeRotate.rotate(orientationRelativeRotate);
+			positionRelativeRotate.plus(centreRotationGauche);
+		}
 	}
 
 }

@@ -93,20 +93,11 @@ public class ThreadCommProcess extends Thread
 				{
 					byte code = data.get();
 					if(code == LLStatus.COULEUR_VERT.codeInt)
-					{
 						paquet.origine.ticket.set(LLStatus.COULEUR_VERT.etat, RobotColor.VERT);
-//						config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(true));
-					}
 					else if(code == LLStatus.COULEUR_ORANGE.codeInt)
-					{
 						paquet.origine.ticket.set(LLStatus.COULEUR_ORANGE.etat, RobotColor.ORANGE);
-//						config.set(ConfigInfo.COULEUR, RobotColor.getCouleur(false));
-					}
 					else
-					{
 						paquet.origine.ticket.set(LLStatus.COULEUR_ROBOT_INCONNU.etat);
-						assert code == LLStatus.COULEUR_ROBOT_INCONNU.codeInt : "Code couleur inconnu : " + code;
-					}
 				}
 
 				/**

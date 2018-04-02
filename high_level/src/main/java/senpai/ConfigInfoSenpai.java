@@ -139,7 +139,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 								// obtenir une correction de recalage
 	PEREMPTION_CORRECTION(100), // temps maximal entre deux mesures de
 								// correction au sein d'un même buffer (en ms)
-	ENABLE_CORRECTION(true), // la correction de position et d'orientation
+	ENABLE_CORRECTION(false), // la correction de position et d'orientation
 								// est-elle activée ?
 	WARM_UP_DURATION(5000), // durée du warm-up
 	RAYON_ROBOT_SUPPRESSION_OBSTACLES_FIXES(300), // dans quel rayon
@@ -179,9 +179,9 @@ public enum ConfigInfoSenpai implements ConfigInfo
 //	GRAPHIC_CERCLE_ARRIVEE(false), // affiche le cercle d'arrivée
 //	GRAPHIC_TIME(false), // affiche le temps écoulé
 	GRAPHIC_TRACE_ROBOT(false), // affiche la trace du robot
-	GRAPHIC_EXTERNAL(true), // l'affichage doit-il être déporté par le serveur
+	GRAPHIC_EXTERNAL(false), // l'affichage doit-il être déporté par le serveur
 							// d'affichage ?
-	SAVE_VIDEO(true), // sauvegarde d'une "vidéo" pour visionner les
+	SAVE_VIDEO(false), // sauvegarde d'une "vidéo" pour visionner les
 								// images plus tard
 //	GRAPHIC_ZOOM(0), // zoom de la fenêtre. Si 0, aucun zoom. Sinon, zoom + focus sur le robot
 	GRAPHIC_COMM_CHART(false), // active les graphes de debug de la communication

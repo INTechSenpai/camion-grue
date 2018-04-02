@@ -27,28 +27,21 @@ import senpai.CouleurSenpai;
 
 public enum TypeCapteur
 {
-	// IR : cône de 5°, horizon à 80mm, distance min 20mm
 	// ToF : cône de 0.1°, horizon à 254mm, distance min 0mm
 	// ToF longue portée : cône de 0.1°, horizon à 500mm
 
-	ToF_COURT(0.01, 1, 254, CouleurSenpai.ToF_COURT, 1),
-	ToF_LONG(0.01, 1, 500, CouleurSenpai.ToF_LONG, 2),
-	IR(5. / 180 * Math.PI, 100, 630, CouleurSenpai.IR, 10);
+	ToF_COURT(0.01, 150, CouleurSenpai.ToF_COURT),
+	ToF_LONG(0.01, 500, CouleurSenpai.ToF_LONG);
 
 	public final double angleCone; // ne sert qu'à l'affichage
-	public final int distanceMin, portee;
-	public final int conversion; // le coeff pour passer en mm
-	public Color couleur, couleurTransparente;
-	public CouleurSenpai couleurOrig;
-
-	private TypeCapteur(double angleCone, int distanceMin, int portee, CouleurSenpai c, int conversion)
+	public final int portee; // ne sert qu'à l'affichage
+	public final Color couleur, couleurTransparente;
+	
+	private TypeCapteur(double angleCone, int portee, CouleurSenpai c)
 	{
-		this.conversion = conversion;
-		couleurOrig = c;
 		couleur = c.couleur;
 		couleurTransparente = new Color(couleur.getRed(), couleur.getGreen(), couleur.getBlue(), 100);
 		this.angleCone = angleCone;
-		this.distanceMin = distanceMin;
 		this.portee = portee;
 	}
 }
