@@ -12,31 +12,38 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package senpai;
+package senpai.scripts;
 
-import pfg.log.LogCategory;
+import pfg.kraken.utils.XYO;
+import senpai.exceptions.ActionneurException;
+import senpai.exceptions.UnableToMoveException;
+import senpai.robot.Robot;
+import senpai.table.Table;
 
 /**
- * Les différents sujets de log
+ * Le script qui dépose le minerai dans le panier
+ * 
  * @author pf
  *
  */
 
-public enum Subject implements LogCategory
+public class ScriptPriseCube extends Script
 {
-	STATUS,
-	DUMMY,
-	CAPTEURS,
-	CORRECTION,
-	COMM,
-	TRAJECTORY,
-	SCRIPT;
+	
+	public ScriptPriseCube(int nbCroix)
+	{
+
+	}
 	
 	@Override
-	public int getMask()
+	public XYO getPointEntree()
 	{
-		return 1 << ordinal();
+		// TODO
+		return null;
 	}
 
-
+	@Override
+	protected void run(Robot robot, Table table) throws InterruptedException, UnableToMoveException, ActionneurException
+	{
+	}
 }
