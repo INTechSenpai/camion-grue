@@ -15,53 +15,51 @@
 package senpai.obstacles;
 
 import java.util.Iterator;
-
 import pfg.kraken.obstacles.Obstacle;
-import pfg.log.Log;
+import pfg.kraken.obstacles.container.DynamicObstacles;
+import senpai.table.Table;
+
 /**
- * Itérator permettant de manipuler facilement les obstacles mobiles
- * 
+ * Regroupe les obstacles de capteurs et de table
  * @author pf
  *
  */
 
-public abstract class ObstaclesIterator implements Iterator<Obstacle>
+public class ObstaclesDynamiques implements DynamicObstacles, Iterator<Obstacle>
 {
-	protected Log log;
-	protected ObstaclesMemory memory;
-
-	protected volatile int nbTmp; // TODO : volatile nécessaire ?
-	protected boolean initialized = false;
-
-	public ObstaclesIterator(Log log, ObstaclesMemory memory)
+	private Table table;
+	private ObstaclesMemory memory;
+	private Iterator<Obstacle> iteratorMemory;
+	private Iterator<Obstacle> iteratorTable;
+	
+	public ObstaclesDynamiques(Table table, ObstaclesMemory memory)
 	{
-		this.log = log;
+		this.table = table;
 		this.memory = memory;
+	}
+
+	@Override
+	public Iterator<Obstacle> getCurrentDynamicObstacles()
+	{
+		iteratorMemory = memory.getCurrentDynamicObstacles();
+		iteratorTable = table.getCurrentObstaclesIterator();
+		return this;
 	}
 
 	@Override
 	public boolean hasNext()
 	{
-		// TODO : vérifier que lancer deux fois hasNext successivement ne cause pas d'erreurs
-		assert initialized;
-		while(nbTmp + 1 < memory.size() && memory.getObstacle(nbTmp + 1) == null)
-			nbTmp++;
-
-		return nbTmp + 1 < memory.size();
+		if(iteratorMemory.hasNext())
+			return true;
+		return iteratorTable.hasNext();
 	}
 
 	@Override
-	public ObstacleProximity next()
+	public Obstacle next()
 	{
-		assert initialized;
-		return memory.getObstacle(++nbTmp);
-	}
-
-	@Override
-	public void remove()
-	{
-		assert initialized;
-		memory.remove(nbTmp);
+		if(iteratorMemory.hasNext())
+			return iteratorMemory.next();
+		return iteratorTable.next();
 	}
 
 }

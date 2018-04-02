@@ -34,7 +34,7 @@ import senpai.CouleurSenpai;
  *
  */
 
-public class ObstaclesMemory implements DynamicObstacles
+public class ObstaclesMemory
 {
 	// Les obstacles mobiles, c'est-à-dire des obstacles de proximité
 	private volatile LinkedList<ObstacleProximity> listObstaclesMobiles = new LinkedList<ObstacleProximity>();
@@ -238,7 +238,6 @@ public class ObstaclesMemory implements DynamicObstacles
 		return iter;
 	}*/
 
-	@Override
 	public Iterator<Obstacle> getCurrentDynamicObstacles()
 	{
 		ObstaclesIteratorPresent iter = new ObstaclesIteratorPresent(log, this);

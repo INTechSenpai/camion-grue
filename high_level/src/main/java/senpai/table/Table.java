@@ -16,12 +16,16 @@ package senpai.table;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.GraphicPanel;
 import pfg.graphic.printable.Layer;
 import pfg.graphic.printable.Printable;
+import pfg.kraken.obstacles.Obstacle;
 import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
 
@@ -40,6 +44,7 @@ public class Table implements Printable
 	protected transient Log log;
 
 	private HashMap<GameElementNames, Boolean> etat = new HashMap<GameElementNames, Boolean>();
+	private List<Obstacle> currentObstacles = new ArrayList<Obstacle>();
 
 	public Table(Log log, Config config, GraphicDisplay buffer)
 	{
@@ -73,17 +78,23 @@ public class Table implements Printable
 		return etat.get(id);
 	}
 
+	public Iterator<Obstacle> getCurrentObstaclesIterator()
+	{
+		currentObstacles.clear();
+		for(GameElementNames n : GameElementNames.values())
+			if(!etat.get(n))
+				currentObstacles.add(n.obstacle);
+		return currentObstacles.iterator();
+	}
 
 	@Override
 	public void print(Graphics g, GraphicPanel f)
 	{
 		for(GameElementNames n : GameElementNames.values())
-		{
 			if(!etat.get(n))
 			{
 				g.setColor(n.couleur.color);
 				n.obstacle.print(g, f);
 			}
-		}
 	}
 }

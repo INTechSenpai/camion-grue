@@ -40,6 +40,7 @@ import pfg.kraken.utils.XY;
 import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.Communication;
+import senpai.obstacles.ObstaclesDynamiques;
 import senpai.obstacles.ObstaclesFixes;
 import senpai.obstacles.ObstaclesMemory;
 import senpai.robot.Robot;
@@ -249,7 +250,7 @@ public class Senpai
 			List<Obstacle> obstaclesFixes = new ArrayList<Obstacle>();
 			for(ObstaclesFixes o : ObstaclesFixes.values())
 				obstaclesFixes.add(o.obstacle);
-			ObstaclesMemory obsDyn = getService(ObstaclesMemory.class);
+			ObstaclesDynamiques obsDyn = getService(ObstaclesDynamiques.class);
 	
 			int marge = config.getInt(ConfigInfoSenpai.MARGE_PATHFINDING);
 			int demieLargeurNonDeploye = config.getInt(ConfigInfoSenpai.LARGEUR_NON_DEPLOYE) / 2 + marge;
