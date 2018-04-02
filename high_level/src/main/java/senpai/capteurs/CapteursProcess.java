@@ -22,7 +22,6 @@ import senpai.comm.CommProtocol;
 import senpai.obstacles.ObstacleProximity;
 import senpai.obstacles.ObstaclesFixes;
 import senpai.robot.Robot;
-import senpai.table.EtatElement;
 import senpai.table.GameElementNames;
 import senpai.table.Table;
 
@@ -126,13 +125,11 @@ public class CapteursProcess
 		 * On update la table avec notre position
 		 */
 		for(GameElementNames g : GameElementNames.values())
-			if(table.isDone(g).hash < EtatElement.PRIS_PAR_NOUS.hash && g.obstacle.isColliding(obstacleRobot))
+			if(g.obstacle.isColliding(obstacleRobot))
 			{
 				// if(debugCapteurs)
 				// log.debug("Élément shooté : "+g);
-				table.setDone(g, EtatElement.PRIS_PAR_NOUS); // on est sûr de
-																// l'avoir
-																// shooté
+				table.setDone(g);
 			}
 
 		// parfois on n'a pas de mesure
@@ -177,7 +174,7 @@ public class CapteursProcess
 					continue;
 	
 				for(GameElementNames o : GameElementNames.values())
-					if(table.isDone(o) != EtatElement.PRIS_PAR_NOUS && o.isVisible(capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
+					if(!table.isDone(o) && o.isVisible(capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
 					{
 						log.write("Élément de jeu vu : " + o, Subject.CAPTEURS);
 						stop = true;

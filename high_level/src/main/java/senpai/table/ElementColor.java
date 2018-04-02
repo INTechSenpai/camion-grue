@@ -14,6 +14,8 @@
 
 package senpai.table;
 
+import java.awt.Color;
+
 /**
  * Les couleurs des éléments de jeux
  * @author Pierre-François Gimenez
@@ -22,5 +24,15 @@ package senpai.table;
 
 public enum ElementColor
 {
-	VERT,NOIR,JAUNE,ORANGE,BLEU;	
+	VERT(Color.GREEN),
+	NOIR(Color.BLACK),
+	JAUNE(Color.YELLOW),
+	ORANGE(Color.ORANGE),
+	BLEU(Color.BLUE);
+	public final Color color;
+	
+	private ElementColor(Color color)
+	{
+		this.color = color;
+	}
 }

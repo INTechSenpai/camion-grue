@@ -14,7 +14,16 @@
 
 package senpai.table;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.util.HashMap;
+import pfg.config.Config;
+import pfg.graphic.GraphicDisplay;
+import pfg.graphic.GraphicPanel;
+import pfg.graphic.printable.Layer;
+import pfg.graphic.printable.Printable;
 import pfg.log.Log;
+import senpai.ConfigInfoSenpai;
 
 /**
  * Gère les éléments de jeux
@@ -23,20 +32,22 @@ import pfg.log.Log;
  *
  */
 
-public class Table
+public class Table implements Printable
 {
+	private static final long serialVersionUID = 1L;
+
 	// Dépendances
-	protected Log log;
+	protected transient Log log;
 
-	/**
-	 * Contient toutes les informations sur les éléments de jeux sans perte
-	 * d'information.
-	 */
-	protected volatile long etatTable = 0L;
+	private HashMap<GameElementNames, Boolean> etat = new HashMap<GameElementNames, Boolean>();
 
-	public Table(Log log)
+	public Table(Log log, Config config, GraphicDisplay buffer)
 	{
 		this.log = log;
+		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ENABLE))
+			buffer.addPrintable(this, Color.BLACK, Layer.BACKGROUND.layer);
+		for(GameElementNames n : GameElementNames.values())
+			etat.put(n, false);
 	}
 
 	/**
@@ -47,12 +58,9 @@ public class Table
 	 * 
 	 * @param id
 	 */
-	public boolean setDone(GameElementNames id, EtatElement done)
+	public void setDone(GameElementNames id)
 	{
-		long old_hash = etatTable;
-		etatTable |= (done.hash << (2 * id.ordinal()));
-		// Si besoin est, on dit à la stratégie que la table a été modifiée
-		return old_hash != etatTable;
+		etat.put(id, true);
 	}
 
 	/**
@@ -60,39 +68,22 @@ public class Table
 	 * 
 	 * @param id
 	 */
-	public EtatElement isDone(GameElementNames id)
+	public boolean isDone(GameElementNames id)
 	{
-		return isDone(id, etatTable);
+		return etat.get(id);
 	}
 
-	/**
-	 * Cet objet est-il présent ou non?
-	 * 
-	 * @param id
-	 */
-	protected EtatElement isDone(GameElementNames id, long etat)
-	{
-		return EtatElement.parse((int) ((etat >> (2 * id.ordinal())) & 3));
-	}
 
-	/**
-	 * La table en argument deviendra la copie de this (this reste inchangé)
-	 * 
-	 * @param ct
-	 */
-	public void copy(Table ct)
-	{
-		ct.etatTable = etatTable;
-	}
-
-	/**
-	 * Fournit un clone.
-	 */
 	@Override
-	public Table clone()
+	public void print(Graphics g, GraphicPanel f)
 	{
-		Table cloned_table = new Table(log);
-		copy(cloned_table);
-		return cloned_table;
+		for(GameElementNames n : GameElementNames.values())
+		{
+			if(!etat.get(n))
+			{
+				g.setColor(n.couleur.color);
+				n.obstacle.print(g, f);
+			}
+		}
 	}
 }

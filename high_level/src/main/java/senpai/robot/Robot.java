@@ -125,7 +125,7 @@ public class Robot extends RobotState
 		{
 			// affichage
 			if(printTrace && oldPosition.distanceFast(cinematique.getPosition()) < 100)
-				buffer.addPrintable(new Segment(oldPosition, cinematique.getPosition().clone()), Color.RED, Layer.FOREGROUND.layer);
+				buffer.addPrintable(new Segment(oldPosition, cinematique.getPosition().clone()), Color.RED, Layer.MIDDLE.layer);
 		}
 	}
 
