@@ -72,8 +72,8 @@ public class CommProtocol
 		ASK_COLOR(0x81, true),
 		EDIT_POSITION(0x82, false),
 		SET_POSITION(0x83, false),
-		ADD_POINTS(0x84, false, -10),
-		EDIT_POINTS(0x85, false, -10),
+		ADD_POINTS(0x84, true, -10),
+		EDIT_POINTS(0x85, true, -10),
 		GET_BATTERY(0x93, true);
 
 		// Paramètres constants
