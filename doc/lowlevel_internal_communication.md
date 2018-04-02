@@ -14,8 +14,10 @@
 ### [0x00] Sensors board report
 uint8_t[9] = [front_left, front, front_right, side_front_left, side_front_right, side_back_left, side_back_right, back_left, back_right]
 Values:
-255: No obstacle in front of the sensor
-[2, 254]: Distance to the obstacle (mm)
+
+[4, MAX_INT]: Distance to the obstacle (mm)
+3: No obstacle in front of the sensor
+2: obstacle too close to measure (you can consider the distance being the minimum applicable, but not use it for repositionning)
 1: Value was not updated yet (use last value instead)
 0: Sensor is not working
 
