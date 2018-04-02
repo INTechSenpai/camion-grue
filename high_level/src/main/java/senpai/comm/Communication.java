@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import pfg.config.Config;
 import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
@@ -159,7 +160,8 @@ public class Communication implements Closeable
 				{	
 					assert taille >= 0 && taille <= 254 : "Le message reçu a un mauvais champ \"length\" : "+taille;
 					ByteBuffer message = ByteBuffer.allocate(taille);
-
+					message.order(ByteOrder.LITTLE_ENDIAN);
+					
 					for(int i = 0; i < taille; i++)
 						message.put((byte) read());
 					message.flip();

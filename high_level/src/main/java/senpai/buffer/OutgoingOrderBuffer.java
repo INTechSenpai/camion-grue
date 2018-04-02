@@ -17,6 +17,7 @@ package senpai.buffer;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -125,7 +126,9 @@ public class OutgoingOrderBuffer implements Plottable
 	 */
 	public void setPosition(XY pos, double orientation)
 	{
+		log.write("Set position en "+pos+", "+orientation, Subject.COMM);
 		ByteBuffer data = ByteBuffer.allocate(12);
+		data.order(ByteOrder.LITTLE_ENDIAN);
 		data.putInt((int)pos.getX());
 		data.putInt((int)pos.getY());
 		data.putFloat((float) orientation);
@@ -138,6 +141,7 @@ public class OutgoingOrderBuffer implements Plottable
 	public void correctPosition(XY deltaPos, double deltaOrientation)
 	{
 		ByteBuffer data = ByteBuffer.allocate(12);
+		data.order(ByteOrder.LITTLE_ENDIAN);
 		data.putInt((int)deltaPos.getX());
 		data.putInt((int)deltaPos.getY());
 		data.putFloat((float) deltaOrientation);
@@ -209,6 +213,7 @@ public class OutgoingOrderBuffer implements Plottable
 	{
 		// on vérifie qu'on ne cherche pas à s'abonner alors qu'on est déjà abonné (idem avec désabonné)
 		ByteBuffer data = ByteBuffer.allocate(1);
+		data.order(ByteOrder.LITTLE_ENDIAN);
 		data.put(ch.code);
 		addToBuffer(new Order(data, stream));
 		stream.changeStreamState(ch);
@@ -251,10 +256,14 @@ public class OutgoingOrderBuffer implements Plottable
 				nbArc = modulo;
 			ByteBuffer data;
 			if(add)
+			{
 				data = ByteBuffer.allocate(22 * nbArc);
+				data.order(ByteOrder.LITTLE_ENDIAN);
+			}
 			else
 			{
 				data = ByteBuffer.allocate(4 + 22 * nbArc);
+				data.order(ByteOrder.LITTLE_ENDIAN);
 				data.putInt(index);
 			}
 
