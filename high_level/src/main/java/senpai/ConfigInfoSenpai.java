@@ -175,10 +175,10 @@ public enum ConfigInfoSenpai implements ConfigInfo
 //	GRAPHIC_BACKGROUND(true), // affiche d'image de la table
 //	GRAPHIC_SIZE_X(1000), // taille par défaut (sans image) de la fenêtre
 //	GRAPHIC_ALL_OBSTACLES(false), // affiche absolument tous les obstacles créés
-	GRAPHIC_ROBOT_AND_SENSORS(true), // affiche le robot et ses capteurs
+	GRAPHIC_ROBOT_AND_SENSORS(false), // affiche le robot et ses capteurs
 //	GRAPHIC_CERCLE_ARRIVEE(false), // affiche le cercle d'arrivée
 //	GRAPHIC_TIME(false), // affiche le temps écoulé
-	GRAPHIC_TRACE_ROBOT(true), // affiche la trace du robot
+	GRAPHIC_TRACE_ROBOT(false), // affiche la trace du robot
 	GRAPHIC_EXTERNAL(true), // l'affichage doit-il être déporté par le serveur
 							// d'affichage ?
 	SAVE_VIDEO(true), // sauvegarde d'une "vidéo" pour visionner les
