@@ -185,17 +185,17 @@ class Backend:
         for field in fieldList:
             try:
                 if field.type == int:
-                    val, = struct.unpack_from("i", byteList, i)
-                    i += struct.calcsize("i")
+                    val, = struct.unpack_from("<i", byteList, i)
+                    i += struct.calcsize("<i")
                 elif field.type == float:
-                    val, = struct.unpack_from("f", byteList, i)
-                    i += struct.calcsize("f")
+                    val, = struct.unpack_from("<f", byteList, i)
+                    i += struct.calcsize("<f")
                 elif field.type == bool:
-                    val, = struct.unpack_from("?", byteList, i)
-                    i += struct.calcsize("?")
+                    val, = struct.unpack_from("<?", byteList, i)
+                    i += struct.calcsize("<?")
                 elif field.type == Enum:
-                    index, = struct.unpack_from("B", byteList, i)
-                    i += struct.calcsize("B")
+                    index, = struct.unpack_from("<B", byteList, i)
+                    i += struct.calcsize("<B")
                     val = field.legend[index]
                 else:
                     raise ValueError
@@ -323,16 +323,16 @@ class Backend:
             i = 0
             for field in command.inputFormat:
                 if field.type == int:
-                    fmt = "i"
+                    fmt = "<i"
                     val = int(args[i])
                 elif field.type == float:
-                    fmt = "f"
+                    fmt = "<f"
                     val = float(args[i])
                 elif field.type == bool:
-                    fmt = "?"
+                    fmt = "<?"
                     val = bool(args[i])
                 elif field.type == Enum:
-                    fmt = "B"
+                    fmt = "<B"
                     val = field.legend.index(args[i])
                 else:
                     raise ValueError("Invalid type in order to send")

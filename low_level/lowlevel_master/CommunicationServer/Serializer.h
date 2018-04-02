@@ -11,14 +11,14 @@ public:
 
     static int32_t readInt(const std::vector<uint8_t> &input, size_t &start)
     {
-        uint8_t buf[4] = { 
-            input.at(start), 
-            input.at(start + 1), 
-            input.at(start + 2), 
-            input.at(start + 3)
-        };
+        int32_t ret = 0;
+
+        ((uint8_t *)(&ret))[0] = input.at(start);
+        ((uint8_t *)(&ret))[1] = input.at(start + 1);
+        ((uint8_t *)(&ret))[2] = input.at(start + 2);
+        ((uint8_t *)(&ret))[3] = input.at(start + 3);
         start += 4;
-        return *((int32_t*)buf);
+        return ret;
     }
 
     static uint32_t readUInt(const std::vector<uint8_t> &input, size_t &start)
@@ -33,14 +33,14 @@ public:
 
     static float readFloat(const std::vector<uint8_t> &input, size_t &start)
     {
-        uint8_t buf[4] = {
-            input.at(start),
-            input.at(start + 1),
-            input.at(start + 2),
-            input.at(start + 3)
-        };
+        float ret = 0;
+
+        ((uint8_t *)(&ret))[0] = input.at(start);
+        ((uint8_t *)(&ret))[1] = input.at(start + 1);
+        ((uint8_t *)(&ret))[2] = input.at(start + 2);
+        ((uint8_t *)(&ret))[3] = input.at(start + 3);
         start += 4;
-        return *((float*)buf);
+        return ret;
     }
 
     static bool readBool(const std::vector<uint8_t> &input, size_t &start)

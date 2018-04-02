@@ -1,19 +1,10 @@
+#include "SensorsMgr.h"
 #include "pin_mapping.h"
 #include "ToF_shortRange.h"
 #include "VL6180X.h"
 #include <Wire.h>
 
-ToF_shortRange tofAVG(42, PIN_EN_TOF_AVG);
-ToF_shortRange tofAV(43, PIN_EN_TOF_AV);
-ToF_shortRange tofAVD(44, PIN_EN_TOF_AVD);
-
-ToF_shortRange tofFlanAVG(45, PIN_EN_TOF_FLAN_AVG);
-ToF_shortRange tofFlanAVD(46, PIN_EN_TOF_FLAN_AVD);
-ToF_shortRange tofFlanARG(47, PIN_EN_TOF_FLAN_ARG);
-ToF_shortRange tofFlanARD(48, PIN_EN_TOF_FLAN_ARD);
-
-ToF_shortRange tofARG(49, PIN_EN_TOF_ARG);
-ToF_shortRange tofARD(50, PIN_EN_TOF_ARD);
+SensorsMgr sensorsMgr;
 
 
 void setup()
@@ -22,6 +13,7 @@ void setup()
     digitalWrite(13, HIGH);
     Wire.begin();
     delay(500);
+    sensorsMgr.init();
 
     pinMode(PIN_DEL_GYRO_1, OUTPUT);
     pinMode(PIN_DEL_GYRO_2, OUTPUT);
@@ -37,25 +29,8 @@ void setup()
 
 void loop()
 {
-    tofAVG.powerON("AVG");
-    tofAV.powerON("AV");
-    tofAVD.powerON("AVD");
-
-    tofFlanAVG.powerON("FlanAVG");
-    tofFlanAVD.powerON("FlanAVD");
-    tofFlanARG.powerON("FlanARG");
-    tofFlanARD.powerON("FlanARD");
-
-    tofARG.powerON("ARG");
-    tofARD.powerON("ARD");
-
     while (true) {
-        //uint32_t mesure1 = tofAVD.getMesure();
-        //uint32_t mesure2 = tofAV.getMesure();
-        //uint32_t mesure3 = tofAVG.getMesure();
-        //uint32_t mesure4 = tofFlanAVD.getMesure();
-        //Serial.printf("AVG=%u AV=%u AVD=%u FAVD=%u\n", mesure3, mesure2, mesure1, mesure4);
-        //delay(20);
+
 
     //    digitalWrite(PIN_DEL_CLIGNO_G, HIGH);
     //    delay(200);

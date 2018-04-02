@@ -16,8 +16,8 @@ public:
 		TrajectoryPoint const & trajectoryPoint
 	) :
 		currentPosition(position),
-		curvatureOrder(curvatureOrder),
-		trajectoryPoint(trajectoryPoint)
+		trajectoryPoint(trajectoryPoint),
+		curvatureOrder(curvatureOrder)
 	{
 		setCurvatureLimits(-20, 20);
 		setTunings(0, 0);

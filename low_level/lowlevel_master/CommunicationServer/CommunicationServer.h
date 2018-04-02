@@ -53,7 +53,7 @@ public:
     CommunicationServer();
 
     /* Initialise le WIZ820io */
-    void begin();
+    int begin();
 
     /* Envoie les messages de la file d'attente et lit les messages entrants */
     void communicate();

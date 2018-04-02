@@ -6,8 +6,6 @@ CommunicationServer Server = CommunicationServer();
 CommunicationServer::CommunicationServer() :
     ethernetServer(TCP_PORT)
 {
-    pinMode(PIN_DEL_STATUS_1, OUTPUT);
-    digitalWrite(PIN_DEL_STATUS_1, HIGH);
     cBufferHead = 0;
     cBufferTail = 0;
     outputBuffer[0] = '\0';
@@ -15,15 +13,16 @@ CommunicationServer::CommunicationServer() :
     {
         subscriptionList[i] = 0;
     }
+    subscriptionList[MAX_SOCK_NUM] |= (1 << ERROR);
     bisTraceVectUsed = false;
 }
 
-void CommunicationServer::begin()
+int CommunicationServer::begin()
 {
     pinMode(PIN_WIZ820_RESET, OUTPUT);
-    digitalWrite(PIN_WIZ820_RESET, LOW);    // begin reset the WIZ820io
     pinMode(PIN_WIZ820_SS, OUTPUT);
-    digitalWrite(PIN_WIZ820_SS, HIGH);        // de-select WIZ820io
+    digitalWrite(PIN_WIZ820_RESET, LOW);    // begin reset the WIZ820io
+    digitalWrite(PIN_WIZ820_SS, HIGH);      // de-select WIZ820io
     digitalWrite(PIN_WIZ820_RESET, HIGH);   // end reset pulse
     uint8_t mac[] = { MAC_ADDR };
     IPAddress ip(IP_ADDR);
@@ -38,9 +37,9 @@ void CommunicationServer::begin()
     {
         subscriptionList[MAX_SOCK_NUM] |= (1 << ERROR);
         printf_err("Network configuration failed\n");
-        pinMode(PIN_DEL_STATUS_2, OUTPUT);
-        digitalWrite(PIN_DEL_STATUS_2, HIGH);
+        return -1;
     }
+    return 0;
 }
 
 void CommunicationServer::communicate()

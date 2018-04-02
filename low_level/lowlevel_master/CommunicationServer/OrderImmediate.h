@@ -120,6 +120,8 @@ public:
             p.x += (float)x;
             p.y += (float)y;
             p.setOrientation(p.orientation + (float)angle);
+            Server.printf(SPY_ORDER, "EditPosition, result=");
+            Server.print(SPY_ORDER, p);
             motionControlSystem.setPosition(p);
             io.clear();
         }
@@ -145,6 +147,8 @@ public:
             int32_t y = Serializer::readInt(io, index);
             float angle = Serializer::readFloat(io, index);
             Position p((float)x, (float)y, angle);
+            Server.printf(SPY_ORDER, "SetPosition");
+            Server.print(SPY_ORDER, p);
             motionControlSystem.setPosition(p);
             io.clear();
         }
@@ -178,6 +182,8 @@ public:
                 bool endOfTraj = Serializer::readBool(io, index);
                 Position p((float)x, (float)y, angle);
                 TrajectoryPoint trajPoint(p, curvature, speed, stopPoint, endOfTraj);
+                Server.printf(SPY_ORDER, "AppendToTraj: ");
+                Server.println(SPY_ORDER, trajPoint);
                 ret = motionControlSystem.appendToTrajectory(trajPoint);
                 if (ret != TRAJECTORY_EDITION_SUCCESS)
                 {
@@ -220,7 +226,8 @@ public:
                 bool endOfTraj = Serializer::readBool(io, index);
                 Position p((float)x, (float)y, angle);
                 TrajectoryPoint trajPoint(p, curvature, speed, stopPoint, endOfTraj);
-                
+                Server.printf(SPY_ORDER, "EditTrajPoint %u ", trajIndex);
+                Server.println(SPY_ORDER, trajPoint);
                 ret = motionControlSystem.updateTrajectory(trajIndex, trajPoint);
 
                 if (ret != TRAJECTORY_EDITION_SUCCESS)

@@ -8,19 +8,26 @@
 #include "CommunicationServer/OrderMgr.h"
 #include "Locomotion/MotionControlSystem.h"
 
-#define START_ON_SERIAL 0
-
 #define LOG_PERIOD  20  // ms
 
 
 void setup()
 {
-    //pinMode(PIN_DEL_STATUS_1, OUTPUT);
-    //digitalWrite(PIN_DEL_STATUS_1, HIGH);
-#if START_ON_SERIAL
-    while (!Serial);
-#endif
-    Server.begin();
+    pinMode(PIN_DEL_STATUS_1, OUTPUT);
+    pinMode(PIN_DEL_STATUS_2, OUTPUT);
+    digitalWrite(PIN_DEL_STATUS_1, HIGH);
+
+    //pinMode(PIN_WIZ820_RESET, OUTPUT);
+    //pinMode(PIN_WIZ820_SS, OUTPUT);
+    //digitalWrite(PIN_WIZ820_RESET, LOW);    // begin reset the WIZ820io
+    //digitalWrite(PIN_WIZ820_SS, HIGH);      // de-select WIZ820io
+    //delay(1000);
+
+    if (Server.begin() != 0)
+    {
+        digitalWrite(PIN_DEL_STATUS_2, HIGH);
+        delay(500);
+    }
 }
 
 
@@ -35,6 +42,8 @@ void loop()
     motionControlTimer.begin(motionControlInterrupt, PERIOD_ASSERV);
 
     uint32_t logTimer = 0;
+    uint32_t delTimer = 0;
+    bool delState = true;
 
     while (true)
     {
@@ -45,6 +54,13 @@ void loop()
         {
             motionControlSystem.sendLogs();
             logTimer = millis();
+        }
+
+        if (millis() - delTimer > 500)
+        {
+            delState = !delState;
+            digitalWrite(PIN_DEL_STATUS_1, delState);
+            delTimer = millis();
         }
     }
 }

@@ -81,6 +81,7 @@ public:
     {
         if (input.size() == 0)
         {
+            Server.printf(SPY_ORDER, "FollowTrajectory\n");
             motionControlSystem.followTrajectory();
         }
         else
@@ -114,7 +115,7 @@ public:
     {
         if (input.size() == 0)
         {
-            Server.printf("stop");
+            Server.printf(SPY_ORDER, "Stop");
             motionControlSystem.stop_and_clear_trajectory();
         }
         else
@@ -162,6 +163,7 @@ public:
     StartChrono() { chrono = 0; }
     void _launch(const std::vector<uint8_t> & input)
     {
+        Server.printf(SPY_ORDER, "StartChrono");
         chrono = millis();
     }
     void onExecute()

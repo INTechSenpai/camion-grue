@@ -12,7 +12,7 @@
 ## Instruction set and associated payloads
 
 ### [0x00] Sensors board report
-uint8_t[9] = [front_left, front, front_right, side_front_left, side_front_right, side_back_left, side_back_right, back_left, back_right]
+uint8_t[9] = [front, front_left, front_right, side_front_left, side_front_right, side_back_left, side_back_right, back_left, back_right]
 Values:
 
 [4, MAX_INT]: Distance to the obstacle (mm)

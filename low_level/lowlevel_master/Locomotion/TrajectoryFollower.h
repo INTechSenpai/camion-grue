@@ -421,6 +421,7 @@ public:
 
     void sendLogs()
     {
+        static MoveStatus lastMoveStatus = MOVE_OK;
         noInterrupts();
         switch (monitoredMotor)
         {
@@ -448,6 +449,18 @@ public:
         Server.print(PID_TRANS, translationPID);
         Server.print(PID_TRAJECTORY, curvaturePID);
         Server.print(STOPPING_MGR, endOfMoveMgr);
+        if (moveStatus != lastMoveStatus)
+        {
+            if (moveStatus != MOVE_OK)
+            {
+                Server.printf_err("Move error: %u\n", (uint8_t)moveStatus);
+            }
+            else
+            {
+                Server.printf("Move status is OK\n");
+            }
+            lastMoveStatus = moveStatus;
+        }
         interrupts();
     }
 
@@ -477,8 +490,6 @@ private:
         backLeftSpeedPID.resetDerivativeError();
         backRightSpeedPID.resetIntegralError();
         backRightSpeedPID.resetDerivativeError();
-
-        Server.printf("Robot stopped, status=%d\n", moveStatus);
 	}
 
 	void manageStop()

@@ -112,15 +112,12 @@ public:
             else if (movePhase != BREAKING)
             {
                 stop_and_clear_trajectory_from_interrupt();
-                if (movePhase == MOVE_ENDED)
-                {
-                    travellingToDestination = false;
-                    wasTravellingToDestination = false;
-                }
-                else
+                if (movePhase != MOVE_ENDED || !wasTravellingToDestination)
                 {
                     moveStatus |= EMPTY_TRAJ;
                 }
+                travellingToDestination = false;
+                wasTravellingToDestination = false;
             }
 		}
 	}
@@ -176,7 +173,10 @@ private:
     {
         if (!trajectoryFollower.isTrajectoryControlled())
         {
+            noInterrupts();
+            moveStatus = MOVE_OK;
             trajectoryFollower.startMove();
+            interrupts();
         }
         else
         {
