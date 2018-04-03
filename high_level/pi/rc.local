@@ -18,5 +18,5 @@ if [ "$_IP" ]; then
 fi
 
 iptables-restore < /etc/iptables.ipv4.nat
-~/gpio_halt.sh &
+/home/pi/gpio_halt.sh &
 exit 0
