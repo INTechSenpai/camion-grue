@@ -103,6 +103,8 @@ public class Senpai
 	{
 		assert Thread.currentThread().getId() == mainThread.getId() : "Appel au destructeur depuis un thread !";
 
+		GPIO.eteintDiode();
+
 		/*
 		 * Il ne faut pas appeler deux fois le destructeur
 		 */
@@ -184,6 +186,8 @@ public class Senpai
 			mainThread = Thread.currentThread();
 			Thread.currentThread().setName("ThreadPrincipal");
 	
+			GPIO.allumeDiode();
+			
 			/**
 			 * Affichage d'un petit message de bienvenue
 			 */
@@ -248,7 +252,7 @@ public class Senpai
 			 * Infos diverses
 			 */
 			log.write("Système : " + System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty("os.arch"), Subject.STATUS);
-			log.write("Java : " + System.getProperty("java.vendor") + " " + System.getProperty("java.version") + ", mémoire max : " + Math.round(100. * Runtime.getRuntime().maxMemory() / (1024. * 1024. * 1024.)) / 100. + "G, coeurs : " + Runtime.getRuntime().availableProcessors(), Subject.STATUS);
+			log.write("Java : " + System.getProperty("java.vendor") + " " + System.getProperty("java.version") + ", mémoire max : " + Math.round(Runtime.getRuntime().maxMemory() / (1024. * 1024.)) + "M, coeurs : " + Runtime.getRuntime().availableProcessors(), Subject.STATUS);
 			log.write("Date : " + new SimpleDateFormat("E dd/MM à HH:mm").format(new Date()), Subject.STATUS);
 	
 			assert checkAssert();
