@@ -33,7 +33,7 @@ public class Benchmark
 {
 	public static void main(String[] args)
 	{
-		String configfile = "senpai-trajectory.conf";
+		String configfile = "warmup.conf";
 		Log log = new Log(Severity.INFO, configfile, "default");
 		Config config = new Config(ConfigInfoSenpai.values(), false, configfile, "default");
 		
@@ -54,7 +54,7 @@ public class Benchmark
 
 		RectangularObstacle robotTemplate = new RectangularObstacle(demieLargeurNonDeploye, demieLargeurNonDeploye, demieLongueurArriere, demieLongueurAvant);
 
-		Kraken kraken = new Kraken(robotTemplate, null, new XY(-1500, 0), new XY(1500, 2000), configfile, "default", "nolog");
+		Kraken kraken = new Kraken(robotTemplate, null, new XY(-1500, 0), new XY(1500, 2000), configfile, "default");
 		ThreadWarmUp warmUp = new ThreadWarmUp(log, kraken, config);
 		warmUp.run();
 		
