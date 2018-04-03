@@ -22,5 +22,17 @@ package senpai;
 
 public enum Severity implements pfg.log.Severity
 {
-	INFO, WARNING, CRITICAL;
+	INFO(false), WARNING(true), CRITICAL(true);
+
+	public final boolean always;
+	
+	private Severity(boolean always)
+	{
+		this.always = always;
+	}
+	
+	@Override
+	public boolean alwaysPrint() {
+		return always;
+	}
 }
