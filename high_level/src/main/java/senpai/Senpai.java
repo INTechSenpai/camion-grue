@@ -42,7 +42,6 @@ import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.Communication;
 import senpai.obstacles.ObstaclesDynamiques;
 import senpai.obstacles.ObstaclesFixes;
-import senpai.obstacles.ObstaclesMemory;
 import senpai.robot.Robot;
 import senpai.robot.Speed;
 import senpai.threads.ThreadName;

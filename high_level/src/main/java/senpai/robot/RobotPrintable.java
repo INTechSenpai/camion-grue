@@ -4,7 +4,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
-import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import pfg.config.Config;
@@ -95,7 +94,7 @@ public class RobotPrintable implements Printable
 		
 		try
 		{
-			imageRobot = ImageIO.read(new File(config.getString(ConfigInfoSenpai.GRAPHIC_ROBOT_PATH)));
+			imageRobot = ImageIO.read(getClass().getResourceAsStream(config.getString(ConfigInfoSenpai.GRAPHIC_ROBOT_PATH)));
 		}
 		catch(IOException e)
 		{

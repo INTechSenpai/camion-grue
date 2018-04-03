@@ -178,7 +178,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 //	GRAPHIC_GAME_ELEMENTS(true), // affiche les éléments de jeux
 //	GRAPHIC_ROBOT_COLLISION(false), // affiche les obstacles du robot lors de la
 									// vérification des collisions
-	GRAPHIC_ROBOT_PATH("camion.png"), // image du robot sans les
+	GRAPHIC_ROBOT_PATH("/camion.png"), // image du robot sans les
 													// roues
 //	GRAPHIC_PRODUCE_GIF(false), // produit un gif ?
 //	GIF_FILENAME("output.gif"), // le nom du fichier du gif généré
