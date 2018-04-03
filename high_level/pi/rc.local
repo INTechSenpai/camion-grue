@@ -18,7 +18,5 @@ if [ "$_IP" ]; then
 fi
 
 iptables-restore < /etc/iptables.ipv4.nat
-cd ~/eurobotruck/high_level/target
-# en cas d'erreur du HL : reboot
-java -jar eurobotruck-match.jar || reboot
+~/gpio_halt.sh &
 exit 0
