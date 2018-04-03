@@ -151,6 +151,16 @@ public enum ConfigInfoSenpai implements ConfigInfo
 //	ENABLE_SCAN(true), // scan-t-on autour du robot s'il est coincé ?
 
 	/**
+	 * Log
+	 */
+	PRINT_STATUS(true),
+	PRINT_CAPTEURS(false),
+	PRINT_CORRECTION(false),
+	PRINT_COMM(false),
+	PRINT_TRAJECTORY(true),
+	PRINT_SCRIPT(true),
+	
+	/**
 	 * Interface graphique
 	 */
 //	GRAPHIC_HEURISTIQUE(false), // affichage des orientations heuristiques

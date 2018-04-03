@@ -130,7 +130,7 @@ public class ThreadUpdatePathfinding extends Thread
 			}
 			catch(InterruptedException e1)*/
 			{
-				log.write("Arrêt de " + Thread.currentThread().getName() + " après une exception inattendue récupérée", Subject.DUMMY);
+				log.write("Arrêt de " + Thread.currentThread().getName() + " après une exception inattendue récupérée", Subject.STATUS);
 				Thread.currentThread().interrupt();
 			}
 		}

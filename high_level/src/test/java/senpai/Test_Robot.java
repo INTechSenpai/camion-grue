@@ -104,7 +104,7 @@ public class Test_Robot extends JUnit_Test
 		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 		data.startStream(Id.ODO_AND_SENSORS);
 		v = Speed.TEST;
-		log.write("Vitesse du robot : " + v.translationalSpeed * 1000, Subject.DUMMY);
+		log.write("Vitesse du robot : " + v.translationalSpeed * 1000, Subject.STATUS);
 	}
 
 }

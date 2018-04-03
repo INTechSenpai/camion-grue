@@ -149,7 +149,7 @@ public class Robot extends RobotState
 	protected void bloque(String nom, Object... param) throws InterruptedException, ActionneurException
 	{
 		if(param == null || param.length == 0)
-			log.write("Appel à " + nom, Subject.DUMMY);
+			log.write("Appel à " + nom, Subject.SCRIPT);
 		else
 		{
 			String s = "";
@@ -159,7 +159,7 @@ public class Robot extends RobotState
 					s += ", ";
 				s += o;
 			}
-			log.write("Appel à " + nom + " (param = " + s + ")", Subject.DUMMY);
+			log.write("Appel à " + nom + " (param = " + s + ")", Subject.SCRIPT);
 		}
 
 		if(simuleSerie)
@@ -188,7 +188,7 @@ public class Robot extends RobotState
 		if(etat == CommProtocol.State.KO)
 			throw new ActionneurException("Problème pour l'actionneur " + nom);
 
-		log.write("Temps d'exécution de " + nom + " : " + (System.currentTimeMillis() - avant), Subject.DUMMY);
+		log.write("Temps d'exécution de " + nom + " : " + (System.currentTimeMillis() - avant), Subject.SCRIPT);
 	}
 
 	/**

@@ -25,17 +25,29 @@ import pfg.log.LogCategory;
 public enum Subject implements LogCategory
 {
 	STATUS,
-	DUMMY,
 	CAPTEURS,
 	CORRECTION,
 	COMM,
 	TRAJECTORY,
 	SCRIPT;
 	
+	public boolean shouldPrint = false;
+	
 	@Override
 	public int getMask()
 	{
 		return 1 << ordinal();
+	}
+
+	public void setShouldPrint(boolean shouldPrint)
+	{
+		this.shouldPrint = shouldPrint;
+	}
+	
+	@Override
+	public boolean shouldPrint()
+	{
+		return shouldPrint;
 	}
 
 

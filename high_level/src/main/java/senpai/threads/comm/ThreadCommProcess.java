@@ -163,7 +163,7 @@ public class ThreadCommProcess extends Thread
 				 */
 				else if(paquet.origine == Id.START_MATCH_CHRONO)
 				{
-					log.write("Fin du Match !", Subject.DUMMY);
+					log.write("Fin du Match !", Subject.STATUS);
 					container.interruptWithCodeError(ErrorCode.END_OF_MATCH);
 
 					// On attend d'être arrêté

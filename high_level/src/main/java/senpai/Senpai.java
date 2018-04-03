@@ -196,6 +196,13 @@ public class Senpai
 			log = new Log(Severity.INFO, configfile, profiles);
 			config = new Config(ConfigInfoSenpai.values(), false, configfile, profiles);
 			
+			Subject.STATUS.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_STATUS));
+			Subject.CAPTEURS.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_CAPTEURS));
+			Subject.CORRECTION.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_CORRECTION));
+			Subject.COMM.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_COMM));
+			Subject.TRAJECTORY.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_TRAJECTORY));
+			Subject.SCRIPT.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_SCRIPT));
+			
 			injector.addService(this);
 			injector.addService(log);
 			injector.addService(config);
@@ -412,7 +419,7 @@ public class Senpai
 
 	public void interruptWithCodeError(ErrorCode code)
 	{
-		log.write("Demande d'interruption avec le code : "+code, Severity.WARNING, Subject.DUMMY);
+		log.write("Demande d'interruption avec le code : "+code, Severity.WARNING, Subject.STATUS);
 		errorCode = code;
 		mainThread.interrupt();
 	}
