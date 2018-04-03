@@ -1,1 +1,1 @@
-java -cp ~/eurobotruck/high_level/target/eurobotruck.jar senpai.FollowTrajectory $@
+java -cp target/eurobotruck.jar senpai.FollowTrajectory $@

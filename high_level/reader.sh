@@ -1,1 +1,1 @@
-java -cp ~/eurobotruck/high_level/target/eurobotruck.jar pfg.graphic.VideoReader $@
+java -cp target/eurobotruck.jar pfg.graphic.VideoReader $@
