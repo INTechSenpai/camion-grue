@@ -41,7 +41,7 @@ public enum GameElementNames
 
 	CROIX_3_CENTRE(new RectangularObstacle(new XY(-1200, 810), 58, 58), ElementColor.JAUNE),
 	CROIX_3_GAUCHE(new RectangularObstacle(new XY(-1200-58, 810), 58, 58), ElementColor.VERT),
-	CROIX_3_DROITE(new RectangularObstacle(new XY(-2100+58, 810), 58, 58), ElementColor.ORANGE),
+	CROIX_3_DROITE(new RectangularObstacle(new XY(-1200+58, 810), 58, 58), ElementColor.ORANGE),
 	CROIX_3_HAUT(new RectangularObstacle(new XY(-1200, 810+58), 58, 58), ElementColor.NOIR),
 	CROIX_3_BAS(new RectangularObstacle(new XY(-1200, 810-58), 58, 58), ElementColor.BLEU),
 	
@@ -60,7 +60,7 @@ public enum GameElementNames
 
 	CROIX_6_CENTRE(new RectangularObstacle(new XY(1200, 810), 58, 58), ElementColor.JAUNE),
 	CROIX_6_GAUCHE(new RectangularObstacle(new XY(1200-58, 810), 58, 58), ElementColor.ORANGE),
-	CROIX_6_DROITE(new RectangularObstacle(new XY(2100+58, 810), 58, 58), ElementColor.VERT),
+	CROIX_6_DROITE(new RectangularObstacle(new XY(1200+58, 810), 58, 58), ElementColor.VERT),
 	CROIX_6_HAUT(new RectangularObstacle(new XY(1200, 810+58), 58, 58), ElementColor.NOIR),
 	CROIX_6_BAS(new RectangularObstacle(new XY(1200, 810-58), 58, 58), ElementColor.BLEU);
 
