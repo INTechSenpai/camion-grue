@@ -46,7 +46,6 @@ import senpai.obstacles.ObstaclesFixes;
 import senpai.robot.Robot;
 import senpai.robot.Speed;
 import senpai.threads.ThreadName;
-import senpai.threads.ThreadShutdown;
 import senpai.threads.ThreadWarmUp;
 
 /**
@@ -102,10 +101,14 @@ public class Senpai
 	 */
 	public synchronized void destructor(ErrorCode error) throws InterruptedException
 	{
-		this.errorCode = error;
+		if(errorCode == ErrorCode.NO_ERROR)
+			this.errorCode = error;
+		
 		assert Thread.currentThread().getId() == mainThread.getId() : "Appel au destructeur depuis un thread !";
 		log.write("Arrêt de Senpai avec le code d'erreur : "+errorCode, Subject.STATUS);
-
+		
+		if(Thread.currentThread() != mainThread)
+			log.write("L'arrêt est initié par le thread "+Thread.currentThread().getName(), Subject.STATUS);
 		/*
 		 * Il ne faut pas appeler deux fois le destructeur
 		 */
@@ -123,25 +126,14 @@ public class Senpai
 		
 		// arrêt des threads
 		for(ThreadName n : ThreadName.values())
-			if(getService(n.c).isAlive())
-				getService(n.c).interrupt();
-
-		for(ThreadName n : ThreadName.values())
 		{
-			try {
-//					log.write("Attente de "+n, Severity.INFO, Subject.STATUS);
-				getService(n.c).join(1000); // on attend un peu que le thread
-													// s'arrête
-			}
-			catch(InterruptedException e)
-			{
-				e.printStackTrace(log.getPrintWriter());
-			}
-		}
-
-		for(ThreadName n : ThreadName.values())
-			if(getService(n.c).isAlive())
+			Thread t = getService(n.c);
+			if(t.isAlive())
+				t.interrupt();
+			t.join(1000);
+			if(t.isAlive())
 				log.write(n.c.getSimpleName() + " encore vivant !", Severity.CRITICAL, Subject.STATUS);
+		}
 
 		nbInstances--;
 		printMessage("outro.txt");
@@ -215,7 +207,7 @@ public class Senpai
 			 * Planification du hook de fermeture (le plus tôt possible)
 			 */
 			log.write("Mise en place du hook d'arrêt", Subject.STATUS);
-			Runtime.getRuntime().addShutdownHook(getService(ThreadShutdown.class));
+			Runtime.getRuntime().addShutdownHook(new ThreadShutdown(this));
 
 			Cinematique positionRobot = new Cinematique(0, 0, 0, true, 0, false);
 			
@@ -420,9 +412,34 @@ public class Senpai
 
 	public void interruptWithCodeError(ErrorCode code) throws InterruptedException
 	{
-		log.write("Demande d'interruption avec le code : "+code, Severity.WARNING, Subject.STATUS);
 		errorCode = code;
 		mainThread.interrupt();
-		mainThread.join();
+	}
+	
+	private class ThreadShutdown extends Thread
+	{
+		protected Senpai container;
+
+		public ThreadShutdown(Senpai container)
+		{
+			this.container = container;
+			setDaemon(true);
+		}
+
+		@Override
+		public void run()
+		{
+			try {
+				Thread.currentThread().setName(getClass().getSimpleName());
+				// c'est le thread principal qui va terminer ce thread
+				if(!container.isShutdownInProgress())
+				{
+					container.interruptWithCodeError(ErrorCode.TERMINATION_SIGNAL);
+					mainThread.join(); // on attend que le thread principal se termine, car dès que le shutdown hook s'arrête, tout s'arrête !
+				}				
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		}
 	}
 }
