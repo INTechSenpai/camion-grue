@@ -31,6 +31,7 @@ value & b00001000: stop_light
 value & b00010000: reverse_light
 value & b00100000: night_lights_low
 value & b01000000: night_lights_high
+value & b10000000: alarm_signal
 
 ### [0x..] Actuators board report
 
