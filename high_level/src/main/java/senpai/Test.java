@@ -14,9 +14,13 @@
 
 package senpai;
 
+import java.awt.Color;
 import java.util.LinkedList;
 import pfg.config.Config;
+import pfg.graphic.GraphicDisplay;
+import pfg.graphic.printable.Layer;
 import pfg.kraken.Kraken;
+import pfg.kraken.obstacles.CircularObstacle;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.robot.ItineraryPoint;
 import pfg.kraken.utils.XY;
@@ -29,6 +33,8 @@ import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
+import senpai.scripts.ScriptPriseCube;
+import senpai.table.ElementColor;
 
 /**
  * Test rapide
@@ -49,6 +55,7 @@ public class Test {
 			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
 			Robot robot = senpai.getService(Robot.class);
 			Kraken kraken = senpai.getService(Kraken.class);
+			GraphicDisplay buffer = senpai.getService(GraphicDisplay.class);
 			
 			log.write("Initialisation des actionneurs…", Subject.STATUS);
 			robot.initActionneurs();
@@ -71,13 +78,19 @@ public class Test {
 				couleur = RobotColor.ORANGE;
 			
 			robot.updateColorAndSendPosition(couleur, config);
-		
-			kraken.initializeNewSearch(new XYO(robot.getCinematique().getPosition().clone(), robot.getCinematique().orientationReelle), new XY(0, 1000));
+			//XYO destination = new XYO(0, 1000, Math.PI);
+			XYO destination = new ScriptPriseCube(0, ElementColor.VERT, ScriptPriseCube.Face.DROITE, false).getPointEntree();
+			
+//			robot.setCinematique(new Cinematique(new XYO(0,1000, 0)));
+			buffer.addPrintable(new Cinematique(destination), Color.BLUE, Layer.FOREGROUND.layer);
+			
+			kraken.initializeNewSearch(new XYO(robot.getCinematique().getPosition().clone(), robot.getCinematique().orientationReelle), destination);
 			LinkedList<ItineraryPoint> path = kraken.search();
 			Cinematique c = robot.getCinematique().clone();
 		
 			for(ItineraryPoint p : path)
 			{
+				System.out.println(p);
 				c.updateReel(p.x, p.y, p.orientation, p.goingForward, p.curvature);
 				robot.setCinematique(c);
 				Thread.sleep(100);

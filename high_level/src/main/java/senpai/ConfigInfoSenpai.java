@@ -51,7 +51,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 												// robot non-déployé
 	LARGEUR_NON_DEPLOYE(182), // distance entre le bord gauche et le bord droit
 								// du robot non-déployé
-	MARGE_PATHFINDING(5), // marge sur la dimension du robot
+	MARGE_PATHFINDING(20), // marge sur la dimension du robot
 	DILATATION_OBSTACLE_ROBOT(30), // la dilatation du robot dans l'A*. S'ajoute
 									// à gauche et à droite
 

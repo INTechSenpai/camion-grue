@@ -15,6 +15,8 @@
 package senpai.table;
 
 import java.awt.Color;
+import senpai.scripts.ScriptPriseCube;
+import senpai.scripts.ScriptPriseCube.CubePlace;
 
 /**
  * Les couleurs des éléments de jeux
@@ -24,15 +26,26 @@ import java.awt.Color;
 
 public enum ElementColor
 {
-	VERT(Color.GREEN),
-	NOIR(Color.BLACK),
-	JAUNE(Color.YELLOW),
-	ORANGE(Color.ORANGE),
-	BLEU(Color.BLUE);
-	public final Color color;
+	VERT(Color.GREEN, CubePlace.DROITE, CubePlace.GAUCHE),
+	NOIR(Color.BLACK, CubePlace.HAUT, CubePlace.HAUT),
+	JAUNE(Color.YELLOW, CubePlace.CENTRE, CubePlace.CENTRE),
+	ORANGE(Color.ORANGE, CubePlace.GAUCHE, CubePlace.DROITE),
+	BLEU(Color.BLUE, CubePlace.BAS, CubePlace.BAS);
 	
-	private ElementColor(Color color)
+	public final Color color;
+	private CubePlace placeDroite, placeGauche;
+	
+	private ElementColor(Color color, CubePlace placeDroite, CubePlace placeGauche)
 	{
 		this.color = color;
+		this.placeDroite = placeDroite;
+		this.placeGauche = placeGauche;
+	}
+	
+	public CubePlace getPlace(boolean coteDroit)
+	{
+		if(coteDroit)
+			return placeDroite;
+		return placeGauche;
 	}
 }

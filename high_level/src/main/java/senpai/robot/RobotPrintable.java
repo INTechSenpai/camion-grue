@@ -124,7 +124,7 @@ public class RobotPrintable implements Printable
 		if(coinBasDroiteRotate == null)
 			return;
 
-		int[] X = new int[4];
+/*		int[] X = new int[4];
 		X[0] = (int) coinBasDroiteRotate.getX();
 		X[1] = (int) coinHautDroiteRotate.getX();
 		X[2] = (int) coinHautGaucheRotate.getX();
@@ -141,7 +141,7 @@ public class RobotPrintable implements Printable
 			X[i] = f.XtoWindow(X[i]);
 			Y[i] = f.YtoWindow(Y[i]);
 		}
-		g.fillPolygon(X, Y, 4);
+		g.fillPolygon(X, Y, 4);*/
 
 		if(imageRobot != null)
 		{

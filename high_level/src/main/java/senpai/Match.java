@@ -63,6 +63,13 @@ public class Match {
 			} while(etat.status != CommProtocol.State.OK);
 			
 			
+			/*
+			 * Stratégie:
+			 * golden cube dans le coffre
+			 * on va prendre le cube du bas
+			 * on pose le cube qu'on tenait puis le golden cube
+			 */
+			
 			System.out.println("Code du match !");
 		}
 		catch(Exception e)
