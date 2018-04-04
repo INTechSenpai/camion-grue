@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -67,7 +68,7 @@ public class Senpai
 
 	private static int nbInstances = 0;
 	private Thread mainThread;
-	private ErrorCode errorCode = ErrorCode.NO_ERROR;
+	private volatile ErrorCode errorCode = ErrorCode.NO_ERROR;
 	private boolean shutdown = false;
 	private boolean simuleComm;
 	
@@ -103,6 +104,7 @@ public class Senpai
 	{
 		this.errorCode = error;
 		assert Thread.currentThread().getId() == mainThread.getId() : "Appel au destructeur depuis un thread !";
+		log.write("Arrêt de Senpai avec le code d'erreur : "+errorCode, Subject.STATUS);
 
 		/*
 		 * Il ne faut pas appeler deux fois le destructeur
@@ -140,11 +142,10 @@ public class Senpai
 		for(ThreadName n : ThreadName.values())
 			if(getService(n.c).isAlive())
 				log.write(n.c.getSimpleName() + " encore vivant !", Severity.CRITICAL, Subject.STATUS);
-		
-		getService(ThreadShutdown.class).interrupt();
+
 		nbInstances--;
 		printMessage("outro.txt");
-		
+
 		// en cas d'erreur, la led clignote
 		if(errorCode.code != 0)
 			GPIO.clignoteDiode(5);
@@ -181,13 +182,13 @@ public class Senpai
 			/**
 			 * On vérifie qu'il y ait un seul container à la fois
 			 */
-			assert nbInstances == 0 : "Un autre container existe déjà! Annulation du constructeur.";
+			assert nbInstances == 0 : "Un autre \"Senpai\" existe déjà! Annulation du constructeur.";
 	
 			nbInstances++;
 			
 			mainThread = Thread.currentThread();
 			Thread.currentThread().setName("ThreadPrincipal");
-	
+			
 			/**
 			 * Affichage d'un petit message de bienvenue
 			 */
@@ -209,6 +210,12 @@ public class Senpai
 			injector.addService(this);
 			injector.addService(log);
 			injector.addService(config);
+			
+			/**
+			 * Planification du hook de fermeture (le plus tôt possible)
+			 */
+			log.write("Mise en place du hook d'arrêt", Subject.STATUS);
+			Runtime.getRuntime().addShutdownHook(getService(ThreadShutdown.class));
 
 			Cinematique positionRobot = new Cinematique(0, 0, 0, true, 0, false);
 			
@@ -225,7 +232,7 @@ public class Senpai
 			/**
 			 * Affiche la version du programme (dernier commit et sa branche)
 			 */
-/*			try
+			try
 			{
 				Process p = Runtime.getRuntime().exec("git log -1 --oneline");
 				Process p2 = Runtime.getRuntime().exec("git branch");
@@ -244,9 +251,7 @@ public class Senpai
 				in2.close();
 			}
 			catch(IOException e1)
-			{
-				System.out.println(e1);
-			}*/
+			{}
 	
 			/**
 			 * Infos diverses
@@ -284,7 +289,7 @@ public class Senpai
 				m.setAccessible(true);
 				Injector injectorKraken = (Injector) m.invoke(k);
 				injector.addService(injectorKraken.getExistingService(DefaultCheminPathfinding.class));
-			} catch(Exception e)
+			} catch(NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
 			{
 				assert false;
 			}
@@ -295,19 +300,9 @@ public class Senpai
 			k.displayOverriddenConfigValues();
 			System.out.println("Configuration pour l'interface graphique");
 			debug.displayOverriddenConfigValues();
-
-			
-			/**
-			 * Planification du hook de fermeture
-			 */
-			log.write("Mise en place du hook d'arrêt", Subject.STATUS);
-			Runtime.getRuntime().addShutdownHook(getService(ThreadShutdown.class));
 			
 			startAllThreads();
 			
-			/**
-			 * L'initialisation est bloquante (on attend le LL), donc on le fait le plus tardivement possible
-			 */		
 			if(config.getBoolean(ConfigInfoSenpai.SAVE_VIDEO))
 				debug.startSaveVideo();
 
@@ -317,6 +312,9 @@ public class Senpai
 			simuleComm = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM); 
 			if(!simuleComm)
 			{
+				/**
+				 * L'initialisation est bloquante (on attend le LL), donc on le fait le plus tardivement possible
+				 */		
 				getService(Communication.class).initialize();
 				
 				OutgoingOrderBuffer outBuffer = getService(OutgoingOrderBuffer.class);
@@ -420,10 +418,11 @@ public class Senpai
 		}
 	}
 
-	public void interruptWithCodeError(ErrorCode code)
+	public void interruptWithCodeError(ErrorCode code) throws InterruptedException
 	{
 		log.write("Demande d'interruption avec le code : "+code, Severity.WARNING, Subject.STATUS);
 		errorCode = code;
 		mainThread.interrupt();
+		mainThread.join();
 	}
 }

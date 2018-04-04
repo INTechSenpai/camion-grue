@@ -46,10 +46,8 @@ public class ThreadShutdown extends Thread
 			if(!container.isShutdownInProgress())
 			{
 				log.write("Appel prématuré à " + Thread.currentThread().getName(), Subject.STATUS);
-				container.interruptWithCodeError(ErrorCode.TERMINATION_SIGNAL);
 				// c'est le thread principal qui va terminer ce thread
-				while(true)
-					Thread.sleep(100);
+				container.interruptWithCodeError(ErrorCode.TERMINATION_SIGNAL);
 			}
 			// si l'arrêt a déjà était fait, ce thread ne fait rien
 		} catch (InterruptedException e) {
