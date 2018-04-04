@@ -15,7 +15,10 @@ while [ $nbBas -lt 5 ]; do
     sleep 0.2
 done
 wall "Arrêt du système par GPIO !"
+gpio write 22 1 # diode allumée pendant l'arrêt du système
+pkill -f eurobotruck.jar && sleep 3 # on éteint le HL et on laisse un peu de temps au HL pour s'éteindre (s'il était déjà éteint, pas de sleep)
 sudo halt
+# la diode va être éteinte quand la raspi sera logiciellement arrêtée
 
 #La pin 29 (GPIO 05), wiring pi 21, est reliée à l'interrupteur
 #il y a un pull up, donc tu liras LOW quand on appuie sur le bouton
