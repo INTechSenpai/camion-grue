@@ -67,7 +67,7 @@ public class Test_Capteurs extends JUnit_Test
 		int[] mesures = { 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100 };
 		Cinematique cinematique = new Cinematique(1250, 500, Math.PI / 2 + 0.03, true, 0, false);
 		Assert.assertTrue(buffer[0] == null);
-		capteurs.updateObstaclesMobiles(new SensorsData(150, 150, mesures, cinematique));
+		capteurs.updateObstaclesMobiles(new SensorsData(150, 150, 0, mesures, cinematique));
 		Assert.assertTrue(buffer[0] == null);
 	}
 
@@ -80,7 +80,7 @@ public class Test_Capteurs extends JUnit_Test
 		int[] mesures = { 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100 };
 		Cinematique cinematique = new Cinematique(1280, 500, Math.PI / 2 + 0.15, true, 0, false);
 		Assert.assertTrue(buffer[0] == null);
-		capteurs.updateObstaclesMobiles(new SensorsData(150, 150, mesures, cinematique));
+		capteurs.updateObstaclesMobiles(new SensorsData(150, 150, 0, mesures, cinematique));
 		Assert.assertTrue(buffer[0] == null);
 	}
 
@@ -121,7 +121,7 @@ public class Test_Capteurs extends JUnit_Test
 		int[] mesures = { 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100 };
 		Cinematique cinematique = new Cinematique(300, 500, Math.PI / 2 + 0.03, true, 0, false);
 		Assert.assertTrue(buffer[0] == null);
-		capteurs.updateObstaclesMobiles(new SensorsData(150, 150, mesures, cinematique));
+		capteurs.updateObstaclesMobiles(new SensorsData(150, 150, 0, mesures, cinematique));
 		Assert.assertTrue(buffer[0] == null);
 	}
 
@@ -134,7 +134,7 @@ public class Test_Capteurs extends JUnit_Test
 		int[] mesures = { 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150 };
 		Cinematique cinematique = new Cinematique(1280, 70, Math.PI / 4 + 0.03, true, 0, false);
 		Assert.assertTrue(buffer[0] == null);
-		capteurs.updateObstaclesMobiles(new SensorsData(150, 150, mesures, cinematique));
+		capteurs.updateObstaclesMobiles(new SensorsData(150, 150, 0, mesures, cinematique));
 		Assert.assertTrue(buffer[0] == null);
 	}
 
@@ -143,7 +143,7 @@ public class Test_Capteurs extends JUnit_Test
 	{
 		int[] mesures = { 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100 };
 		Cinematique cinematique = new Cinematique(0, 0, 0, true, 0, false);
-		capteurs.updateObstaclesMobiles(new SensorsData(150, 150, mesures, cinematique));
+		capteurs.updateObstaclesMobiles(new SensorsData(150, 150, 0, mesures, cinematique));
 	}
 
 }

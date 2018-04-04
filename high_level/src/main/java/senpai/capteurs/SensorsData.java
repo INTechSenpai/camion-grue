@@ -37,31 +37,24 @@ public class SensorsData
 		OBSTACLE_CREE;
 	}*/
 	
-	public Cinematique cinematique;
+	public final Cinematique cinematique;
 	/* Ce que voit chacun des capteurs */
-	public int[] mesures;
-	public long dateCreation;
+	public final int[] mesures;
+	public final long dateCreation;
 //	public TraitementEtat[] etats;
-	public double angleTourelleGauche, angleTourelleDroite;
+	public final double angleTourelleGauche, angleTourelleDroite, angleGrue;
 
-	public SensorsData(double angleRoueGauche, double angleRoueDroite, int[] mesures, Cinematique cinematique)
+	public SensorsData(double angleRoueGauche, double angleRoueDroite, double angleGrue, int[] mesures, Cinematique cinematique)
 	{
-		this(cinematique);
+		dateCreation = System.currentTimeMillis();
+		this.cinematique = cinematique;
 		this.angleTourelleDroite = angleRoueDroite;
 		this.angleTourelleGauche = angleRoueGauche;
+		this.angleGrue = angleGrue;
 		this.mesures = mesures;
 //		etats = new TraitementEtat[mesures.length];
 	}
 
-	private SensorsData(Cinematique cinematique)
-	{
-		dateCreation = System.currentTimeMillis();
-		angleTourelleDroite = 0;
-		angleTourelleGauche = 0;
-		mesures = null;
-//		etats = null;
-		this.cinematique = cinematique;
-	}
 	
 	/**
 	 * On vérifie que tous les capteurs ont bien reçu un traitement

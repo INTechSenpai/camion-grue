@@ -42,26 +42,18 @@ public class CapteurMobile extends Capteur
 	}
 
 	@Override
-	public void computePosOrientationRelative(Cinematique c, double angleRoueGauche, double angleRoueDroite)
+	public void computePosOrientationRelative(Cinematique c, double angleTourelleGauche, double angleTourelleDroite, double angleGrue)
 	{
+		// positionRelative est dans le repère de la tourelle !
+		double angleTourelle = angleTourelleGauche;
 		if(tourelleDroite)
-			orientationRelativeRotate = orientationRelative + angleRoueDroite;
-		else
-			orientationRelativeRotate = orientationRelative + angleRoueGauche;
+			angleTourelle = angleTourelleDroite;
+
+		orientationRelativeRotate = orientationRelative + angleTourelle + angleGrue;
 
 		positionRelative.copy(positionRelativeRotate);
-		if(tourelleDroite)
-		{
-			positionRelativeRotate.minus(centreRotationDroite);
-			positionRelativeRotate.rotate(orientationRelativeRotate);
-			positionRelativeRotate.plus(centreRotationDroite);
-		}
-		else
-		{
-			positionRelativeRotate.minus(centreRotationGauche);
-			positionRelativeRotate.rotate(orientationRelativeRotate);
-			positionRelativeRotate.plus(centreRotationGauche);
-		}
+		positionRelativeRotate.rotate(angleGrue);
+		positionRelativeRotate.plus(centreRotationGrue);
 	}
 
 }

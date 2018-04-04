@@ -41,8 +41,7 @@ public abstract class Capteur implements Printable
 	protected final double orientationRelative;
 	public final double angleCone; // angle du cône (en radians)
 	private final int portee;
-	protected int L, d;
-	protected XY centreRotationGauche, centreRotationDroite;
+	protected XY centreRotationGrue;
 	protected double orientationRelativeRotate;
 	protected XY_RW positionRelativeRotate;
 	public TypeCapteur type;
@@ -59,10 +58,7 @@ public abstract class Capteur implements Printable
 		this.portee = type.portee;
 		this.sureleve = sureleve;
 
-		L = config.getInt(ConfigInfoSenpai.CENTRE_ROTATION_TOURELLE_X);
-		d = config.getInt(ConfigInfoSenpai.CENTRE_ROTATION_TOURELLE_Y);
-		centreRotationGauche = new XY(L, d);
-		centreRotationDroite = new XY(L, -d);
+		centreRotationGrue = new XY(config.getInt(ConfigInfoSenpai.CENTRE_ROTATION_GRUE_X), config.getInt(ConfigInfoSenpai.CENTRE_ROTATION_GRUE_Y));
 	}
 
 	/**
@@ -72,7 +68,7 @@ public abstract class Capteur implements Printable
 	 * @param angleRoueGauche
 	 * @param angleRoueDroite
 	 */
-	public abstract void computePosOrientationRelative(Cinematique c, double angleRoueGauche, double angleRoueDroite);
+	public abstract void computePosOrientationRelative(Cinematique c, double angleRoueGauche, double angleRoueDroite, double angleGrue);
 
 	@Override
 	public void print(Graphics g, GraphicPanel f)
@@ -80,7 +76,7 @@ public abstract class Capteur implements Printable
 		if(robot.isCinematiqueInitialised())
 		{
 			double orientation = robot.getCinematique().orientationReelle;
-			computePosOrientationRelative(robot.getCinematique(), 0, 0);
+			computePosOrientationRelative(robot.getCinematique(), 0, 0, 0); // TODO demander les angles actuels
 			XY_RW p1 = positionRelativeRotate.clone();
 			p1.rotate(orientation);
 			p1.plus(robot.getCinematique().getPosition());

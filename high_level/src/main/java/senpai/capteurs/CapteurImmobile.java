@@ -38,7 +38,7 @@ public class CapteurImmobile extends Capteur
 	}
 
 	@Override
-	public void computePosOrientationRelative(Cinematique c, double angleRoueGauche, double angleRoueDroite)
+	public void computePosOrientationRelative(Cinematique c, double angleRoueGauche, double angleRoueDroite, double angleGrue)
 	{}
 
 }

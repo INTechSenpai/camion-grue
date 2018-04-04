@@ -121,6 +121,7 @@ public class ThreadCommProcess extends Thread
 					}
 					double angleTourelleGauche = data.getFloat();
 					double angleTourelleDroite = data.getFloat();
+					double angleGrue = data.getFloat();
 						
 					current.updateReel(xRobot, yRobot, orientationRobot, chemin.getPath().get(indexTrajectory).goingForward, courbure);
 
@@ -129,7 +130,7 @@ public class ThreadCommProcess extends Thread
 					log.write("Le robot est en " + current.getPosition() + ", orientation : " + orientationRobot + ", index : " + indexTrajectory, Subject.CAPTEURS);
 
 					if(capteursOn)
-						buffer.add(new SensorsData(angleTourelleGauche, angleTourelleDroite, mesures, current));
+						buffer.add(new SensorsData(angleTourelleGauche, angleTourelleDroite, angleGrue, mesures, current));
 				}
 
 				/**

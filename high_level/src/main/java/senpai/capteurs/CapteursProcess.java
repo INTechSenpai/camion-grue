@@ -152,7 +152,7 @@ public class CapteursProcess
 			{
 				CapteursRobot c = CapteursRobot.values[i];
 	
-				XY positionVue = getPositionVue(capteurs[i], data.mesures[i], data.cinematique, data.angleTourelleGauche, data.angleTourelleDroite);
+				XY positionVue = getPositionVue(capteurs[i], data.mesures[i], data.cinematique, data.angleTourelleGauche, data.angleTourelleDroite, data.angleGrue);
 				if(positionVue == null)
 					continue;
 	
@@ -258,11 +258,11 @@ public class CapteursProcess
 			if(data.mesures[index1] <= 4 || data.mesures[index2] <= 4)
 				continue;
 			
-			XY_RW pointVu1 = getPositionVue(capteurs[index1], data.mesures[index1], data.cinematique, data.angleTourelleGauche, data.angleTourelleDroite);
+			XY_RW pointVu1 = getPositionVue(capteurs[index1], data.mesures[index1], data.cinematique, data.angleTourelleGauche, data.angleTourelleDroite, data.angleGrue);
 			if(pointVu1 == null)
 				continue;
 
-			XY_RW pointVu2 = getPositionVue(capteurs[index2], data.mesures[index2], data.cinematique, data.angleTourelleGauche, data.angleTourelleDroite);
+			XY_RW pointVu2 = getPositionVue(capteurs[index2], data.mesures[index2], data.cinematique, data.angleTourelleGauche, data.angleTourelleDroite, data.angleGrue);
 			if(pointVu2 == null)
 				continue;
 
@@ -379,9 +379,9 @@ public class CapteursProcess
 	 * @param cinematique
 	 * @return
 	 */
-	private XY_RW getPositionVue(Capteur c, int mesure, Cinematique cinematique, double angleRoueGauche, double angleRoueDroite)
+	private XY_RW getPositionVue(Capteur c, int mesure, Cinematique cinematique, double angleRoueGauche, double angleRoueDroite, double angleGrue)
 	{
-		c.computePosOrientationRelative(cinematique, angleRoueGauche, angleRoueDroite);
+		c.computePosOrientationRelative(cinematique, angleRoueGauche, angleRoueDroite, angleGrue);
 
 		/**
 		 * Si le capteur voit trop proche ou trop loin, on ne peut pas lui faire

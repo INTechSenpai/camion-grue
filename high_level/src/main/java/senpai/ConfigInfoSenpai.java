@@ -40,8 +40,11 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	/**
 	 * Infos sur le robot
 	 */
-	CENTRE_ROTATION_TOURELLE_X(204),
-	CENTRE_ROTATION_TOURELLE_Y(64),
+//	CENTRE_ROTATION_TOURELLE_X(40), // par rapport au centre de rotation de la tourelle !
+//	CENTRE_ROTATION_TOURELLE_Y(52),
+	
+	CENTRE_ROTATION_GRUE_X(-50), // position de la grue dans le repère du robot
+	CENTRE_ROTATION_GRUE_Y(0),
 	
 	DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE(167), // distance entre le centre du robot
 											// et le bord arrière du robot
