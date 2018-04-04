@@ -65,29 +65,39 @@ public class Senpai
 	private Injector injector;
 	private DebugTool debug;
 
-	private static int nbInstances = 0;
+	private volatile static int nbInstances = 0;
 	private Thread mainThread;
 	private volatile ErrorCode errorCode = ErrorCode.NO_ERROR;
-	private boolean shutdown = false;
+	private volatile boolean shutdown = false;
 	private boolean simuleComm;
-	
-	public boolean isShutdownInProgress()
-	{
-		return shutdown;
-	}
+	private boolean threadsDemarres = false;
 	
 	public enum ErrorCode
 	{
-		NO_ERROR(0),
-		END_OF_MATCH(0),
-		UNKNOWN_ERROR(1),
-		TERMINATION_SIGNAL(2);
+		NO_ERROR(true),
+		END_OF_MATCH(true),
+		EXCEPTION(false),
+		SIGTERM(false);
 		
-		public final int code;
+		public final boolean normal;
+		public Exception e = null;
 		
-		private ErrorCode(int code)
+		private ErrorCode(boolean normal)
 		{
-			this.code = code;
+			this.normal = normal;
+		}
+		
+		public void setException(Exception e)
+		{
+			this.e = e;
+		}
+		
+		@Override
+		public String toString()
+		{
+			if(e == null)
+				return name();
+			return name()+" : "+e.getMessage();
 		}
 	}
 	
@@ -105,10 +115,12 @@ public class Senpai
 			this.errorCode = error;
 		
 		assert Thread.currentThread().getId() == mainThread.getId() : "Appel au destructeur depuis un thread !";
-		log.write("Arrêt de Senpai avec le code d'erreur : "+errorCode, Subject.STATUS);
 		
-		if(Thread.currentThread() != mainThread)
-			log.write("L'arrêt est initié par le thread "+Thread.currentThread().getName(), Subject.STATUS);
+		log.write("Arrêt : "+errorCode, errorCode.normal ? Severity.INFO : Severity.CRITICAL, Subject.STATUS);
+		
+		if(errorCode.e != null)
+			errorCode.e.printStackTrace();
+		
 		/*
 		 * Il ne faut pas appeler deux fois le destructeur
 		 */
@@ -125,21 +137,26 @@ public class Senpai
 		debug.destructor();
 		
 		// arrêt des threads
-		for(ThreadName n : ThreadName.values())
-		{
-			Thread t = getService(n.c);
-			if(t.isAlive())
-				t.interrupt();
-			t.join(1000);
-			if(t.isAlive())
-				log.write(n.c.getSimpleName() + " encore vivant !", Severity.CRITICAL, Subject.STATUS);
-		}
+		if(threadsDemarres)
+			for(ThreadName n : ThreadName.values())
+			{
+				Thread t = getService(n.c);
+				if(t.isAlive())
+				{
+					t.interrupt();
+					t.join(1000);
+					if(t.isAlive())
+						log.write(n.c.getSimpleName() + " encore vivant !", Severity.CRITICAL, Subject.STATUS);
+				}
+				else
+					log.write(n.c.getSimpleName() + " déjà mort !", Severity.CRITICAL, Subject.STATUS);
+			}
 
 		nbInstances--;
 		printMessage("outro.txt");
 
 		// en cas d'erreur, la led clignote
-		if(errorCode.code != 0)
+		if(!errorCode.normal)
 			GPIO.clignoteDiode(5);
 	}
 	
@@ -168,165 +185,164 @@ public class Senpai
 	 * @throws ContainerException si un autre container est déjà instancié
 	 * @throws InterruptedException
 	 */
-	public Senpai(String configfile, String...profiles) throws InterruptedException
+	public void initialize(String configfile, String...profiles) throws InterruptedException
 	{
-		try {
-			/**
-			 * On vérifie qu'il y ait un seul container à la fois
-			 */
-			assert nbInstances == 0 : "Un autre \"Senpai\" existe déjà! Annulation du constructeur.";
-	
-			nbInstances++;
-			
-			mainThread = Thread.currentThread();
-			Thread.currentThread().setName("ThreadPrincipal");
-			
-			/**
-			 * Affichage d'un petit message de bienvenue
-			 */
-			printMessage("intro.txt");
-	
-			injector = new Injector();
-			
-			
-			log = new Log(Severity.INFO, configfile, profiles);
-			config = new Config(ConfigInfoSenpai.values(), false, configfile, profiles);
-			
-			Subject.STATUS.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_STATUS));
-			Subject.CAPTEURS.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_CAPTEURS));
-			Subject.CORRECTION.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_CORRECTION));
-			Subject.COMM.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_COMM));
-			Subject.TRAJECTORY.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_TRAJECTORY));
-			Subject.SCRIPT.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_SCRIPT));
-			
-			injector.addService(this);
-			injector.addService(log);
-			injector.addService(config);
-			
-			/**
-			 * Planification du hook de fermeture (le plus tôt possible)
-			 */
-			log.write("Mise en place du hook d'arrêt", Subject.STATUS);
-			Runtime.getRuntime().addShutdownHook(new ThreadShutdown(this));
+		/**
+		 * On vérifie qu'il y ait un seul container à la fois
+		 */
+		assert nbInstances == 0 : "Un autre \"Senpai\" existe déjà! Annulation du constructeur.";
 
-			Cinematique positionRobot = new Cinematique(0, 0, 0, true, 0, false);
-			
-			debug = DebugTool.getDebugTool(new HashMap<ConfigInfo, Object>(), new XY(0,1000), positionRobot.getPosition(), Severity.INFO, configfile, profiles);
-			injector.addService(GraphicDisplay.class, debug.getGraphicDisplay());
+		nbInstances++;
+		
+		mainThread = Thread.currentThread();
+		Thread.currentThread().setName("ThreadPrincipal");
+		
+		/**
+		 * Affichage d'un petit message de bienvenue
+		 */
+		printMessage("intro.txt");
 
-			Robot robot = getService(Robot.class);
-			robot.initPositionObject(positionRobot);
-			
-			Speed.TEST.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_TEST) / 1000.;
-			Speed.REPLANIF.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_REPLANIF) / 1000.;
-			Speed.STANDARD.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_STANDARD) / 1000.;
-	
-			/**
-			 * Affiche la version du programme (dernier commit et sa branche)
-			 */
-			try
-			{
-				Process p = Runtime.getRuntime().exec("git log -1 --oneline");
-				Process p2 = Runtime.getRuntime().exec("git branch");
-				BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-				BufferedReader in2 = new BufferedReader(new InputStreamReader(p2.getInputStream()));
-				String s = in.readLine();
-				int index = s.indexOf(" ");
-				in.close();
-				String s2 = in2.readLine();
-	
-				while(!s2.contains("*"))
-					s2 = in2.readLine();
-	
-				int index2 = s2.indexOf(" ");
-				log.write("Version : " + s.substring(0, index) + " on " + s2.substring(index2 + 1) + " - [" + s.substring(index + 1) + "]", Subject.STATUS);
-				in2.close();
-			}
-			catch(IOException e1)
-			{}
-	
-			/**
-			 * Infos diverses
-			 */
-			log.write("Système : " + System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty("os.arch"), Subject.STATUS);
-			log.write("Java : " + System.getProperty("java.vendor") + " " + System.getProperty("java.version") + ", mémoire max : " + Math.round(Runtime.getRuntime().maxMemory() / (1024. * 1024.)) + "M, coeurs : " + Runtime.getRuntime().availableProcessors(), Subject.STATUS);
-			log.write("Date : " + new SimpleDateFormat("E dd/MM à HH:mm").format(new Date()), Subject.STATUS);
-	
-			assert checkAssert();
-			
-			List<Obstacle> obstaclesFixes = new ArrayList<Obstacle>();
-			for(ObstaclesFixes o : ObstaclesFixes.values())
-				obstaclesFixes.add(o.obstacle);
-			ObstaclesDynamiques obsDyn = getService(ObstaclesDynamiques.class);
-	
-			int marge = config.getInt(ConfigInfoSenpai.MARGE_PATHFINDING);
-			int demieLargeurNonDeploye = config.getInt(ConfigInfoSenpai.LARGEUR_NON_DEPLOYE) / 2 + marge;
-			int demieLongueurArriere = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
-			int demieLongueurAvant = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
-	
-			RectangularObstacle robotTemplate = new RectangularObstacle(demieLongueurAvant, demieLongueurArriere, demieLargeurNonDeploye, demieLargeurNonDeploye);
-			injector.addService(RectangularObstacle.class, robotTemplate);
-			
-			/*
-			 * Warm-up without verbose
-			 */
-			ThreadWarmUp warmUp = new ThreadWarmUp(log, new Kraken(robotTemplate, obstaclesFixes, new XY(-1500, 0), new XY(1500, 2000), "warmup.conf", "default"), config);
-			warmUp.start();
+		injector = new Injector();
+		
+		
+		log = new Log(Severity.INFO, configfile, profiles);
+		config = new Config(ConfigInfoSenpai.values(), false, configfile, profiles);
+		
+		Subject.STATUS.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_STATUS));
+		Subject.CAPTEURS.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_CAPTEURS));
+		Subject.CORRECTION.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_CORRECTION));
+		Subject.COMM.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_COMM));
+		Subject.TRAJECTORY.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_TRAJECTORY));
+		Subject.SCRIPT.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_SCRIPT));
+		
+		injector.addService(this);
+		injector.addService(log);
+		injector.addService(config);
+		
+		/**
+		 * Planification du hook de fermeture (le plus tôt possible)
+		 */
+		log.write("Mise en place du hook d'arrêt", Subject.STATUS);
+		Runtime.getRuntime().addShutdownHook(new ThreadShutdown(this));
 
-			Kraken k = new Kraken(robotTemplate, obstaclesFixes, obsDyn, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles);
-			injector.addService(k);
-			
-			try {
-				Method m = Kraken.class.getDeclaredMethod("getInjector");
-				m.setAccessible(true);
-				Injector injectorKraken = (Injector) m.invoke(k);
-				injector.addService(injectorKraken.getExistingService(DefaultCheminPathfinding.class));
-			} catch(NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
-			{
-				assert false;
-			}
+		Cinematique positionRobot = new Cinematique(0, 0, 0, true, 0, false);
+		
+		debug = DebugTool.getDebugTool(new HashMap<ConfigInfo, Object>(), new XY(0,1000), positionRobot.getPosition(), Severity.INFO, configfile, profiles);
+		injector.addService(GraphicDisplay.class, debug.getGraphicDisplay());
 
-			System.out.println("Configuration pour eurobotruck");
-			config.printChangedValues();
-			System.out.println("Configuration pour Kraken");
-			k.displayOverriddenConfigValues();
-			System.out.println("Configuration pour l'interface graphique");
-			debug.displayOverriddenConfigValues();
-			
-			startAllThreads();
-			
-			if(config.getBoolean(ConfigInfoSenpai.SAVE_VIDEO))
-				debug.startSaveVideo();
+		Robot robot = getService(Robot.class);
+		robot.initPositionObject(positionRobot);
+		
+		Speed.TEST.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_TEST) / 1000.;
+		Speed.REPLANIF.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_REPLANIF) / 1000.;
+		Speed.STANDARD.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_STANDARD) / 1000.;
 
-			if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_EXTERNAL))
-				debug.startPrintServer();
-
-			simuleComm = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM); 
-			if(!simuleComm)
-			{
-				/**
-				 * L'initialisation est bloquante (on attend le LL), donc on le fait le plus tardivement possible
-				 */		
-				getService(Communication.class).initialize();
-				
-				OutgoingOrderBuffer outBuffer = getService(OutgoingOrderBuffer.class);
-				log.write("On attend la réponse du LL…", Subject.COMM);
-				boolean response;
-				do {
-					response = outBuffer.ping().attendStatus(500) != null;
-				} while(!response);
-
-				if(config.getBoolean(ConfigInfoSenpai.CHECK_LATENCY))
-					getService(OutgoingOrderBuffer.class).checkLatence();
-			}
-			else
-				log.write("COMMUNICATION SIMULÉE !", Severity.CRITICAL, Subject.STATUS);
-
-		} catch(InterruptedException e)
+		/**
+		 * Affiche la version du programme (dernier commit et sa branche)
+		 */
+		try
 		{
-			destructor(ErrorCode.UNKNOWN_ERROR);
-			throw e;
+			Process p = Runtime.getRuntime().exec("git log -1 --oneline");
+			Process p2 = Runtime.getRuntime().exec("git branch");
+			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			BufferedReader in2 = new BufferedReader(new InputStreamReader(p2.getInputStream()));
+			String s = in.readLine();
+			int index = s.indexOf(" ");
+			in.close();
+			String s2 = in2.readLine();
+
+			while(!s2.contains("*"))
+				s2 = in2.readLine();
+
+			int index2 = s2.indexOf(" ");
+			log.write("Version : " + s.substring(0, index) + " on " + s2.substring(index2 + 1) + " - [" + s.substring(index + 1) + "]", Subject.STATUS);
+			in2.close();
 		}
+		catch(IOException e1)
+		{}
+
+		/**
+		 * Infos diverses
+		 */
+		log.write("Système : " + System.getProperty("os.name") + " " + System.getProperty("os.version") + " " + System.getProperty("os.arch"), Subject.STATUS);
+		log.write("Java : " + System.getProperty("java.vendor") + " " + System.getProperty("java.version") + ", mémoire max : " + Math.round(Runtime.getRuntime().maxMemory() / (1024. * 1024.)) + "M, coeurs : " + Runtime.getRuntime().availableProcessors(), Subject.STATUS);
+		log.write("Date : " + new SimpleDateFormat("E dd/MM à HH:mm").format(new Date()), Subject.STATUS);
+
+		assert checkAssert();
+		
+		List<Obstacle> obstaclesFixes = new ArrayList<Obstacle>();
+		for(ObstaclesFixes o : ObstaclesFixes.values())
+			obstaclesFixes.add(o.obstacle);
+		ObstaclesDynamiques obsDyn = getService(ObstaclesDynamiques.class);
+
+		int marge = config.getInt(ConfigInfoSenpai.MARGE_PATHFINDING);
+		int demieLargeurNonDeploye = config.getInt(ConfigInfoSenpai.LARGEUR_NON_DEPLOYE) / 2 + marge;
+		int demieLongueurArriere = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_ARRIERE);
+		int demieLongueurAvant = config.getInt(ConfigInfoSenpai.DEMI_LONGUEUR_NON_DEPLOYE_AVANT);
+
+		RectangularObstacle robotTemplate = new RectangularObstacle(demieLongueurAvant, demieLongueurArriere, demieLargeurNonDeploye, demieLargeurNonDeploye);
+		injector.addService(RectangularObstacle.class, robotTemplate);
+		
+		if(Thread.currentThread().isInterrupted())
+			throw new InterruptedException();
+		
+		/*
+		 * Warm-up without verbose
+		 */
+		ThreadWarmUp warmUp = new ThreadWarmUp(log, new Kraken(robotTemplate, obstaclesFixes, new XY(-1500, 0), new XY(1500, 2000), "warmup.conf", "default"), config);
+		warmUp.start();
+
+		Kraken k = new Kraken(robotTemplate, obstaclesFixes, obsDyn, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles);
+		injector.addService(k);
+
+		try {
+			Method m = Kraken.class.getDeclaredMethod("getInjector");
+			m.setAccessible(true);
+			Injector injectorKraken = (Injector) m.invoke(k);
+			injector.addService(injectorKraken.getExistingService(DefaultCheminPathfinding.class));
+		} catch(NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+		{
+			assert false;
+		}
+
+		if(Thread.currentThread().isInterrupted())
+			throw new InterruptedException();
+
+		System.out.println("Configuration pour eurobotruck");
+		config.printChangedValues();
+		System.out.println("Configuration pour Kraken");
+		k.displayOverriddenConfigValues();
+		System.out.println("Configuration pour l'interface graphique");
+		debug.displayOverriddenConfigValues();
+		
+		startAllThreads();
+		
+		if(config.getBoolean(ConfigInfoSenpai.SAVE_VIDEO))
+			debug.startSaveVideo();
+
+		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_EXTERNAL))
+			debug.startPrintServer();
+
+		simuleComm = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM); 
+		if(!simuleComm)
+		{
+			/**
+			 * L'initialisation est bloquante (on attend le LL), donc on le fait le plus tardivement possible
+			 */		
+			getService(Communication.class).initialize();
+			
+			OutgoingOrderBuffer outBuffer = getService(OutgoingOrderBuffer.class);
+			log.write("On attend la réponse du LL…", Subject.COMM);
+			boolean response;
+			do {
+				response = outBuffer.ping().attendStatus(500) != null;
+			} while(!response);
+
+			if(config.getBoolean(ConfigInfoSenpai.CHECK_LATENCY))
+				getService(OutgoingOrderBuffer.class).checkLatence();
+		}
+		else
+			log.write("COMMUNICATION SIMULÉE !", Severity.CRITICAL, Subject.STATUS);
 	}
 
 	private boolean checkAssert()
@@ -362,9 +378,9 @@ public class Senpai
 			{
 				log.write("Erreur lors de la création de thread " + n + " : " + e, Severity.CRITICAL, Subject.STATUS);
 				e.printStackTrace();
-				e.printStackTrace(log.getPrintWriter());
 			}
 		}
+		threadsDemarres = true;
 	}
 
 	/**
@@ -432,9 +448,9 @@ public class Senpai
 			try {
 				Thread.currentThread().setName(getClass().getSimpleName());
 				// c'est le thread principal qui va terminer ce thread
-				if(!container.isShutdownInProgress())
+				if(!shutdown)
 				{
-					container.interruptWithCodeError(ErrorCode.TERMINATION_SIGNAL);
+					container.interruptWithCodeError(ErrorCode.SIGTERM);
 					mainThread.join(); // on attend que le thread principal se termine, car dès que le shutdown hook s'arrête, tout s'arrête !
 				}				
 			} catch (InterruptedException e) {

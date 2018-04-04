@@ -182,7 +182,6 @@ public class Robot extends RobotState
 		catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e)
 		{
 			e.printStackTrace();
-			e.printStackTrace(log.getPrintWriter());
 		}
 		etat = t.attendStatus().status;
 		if(etat == CommProtocol.State.KO)

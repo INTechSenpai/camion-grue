@@ -34,7 +34,8 @@ public class Match {
 
 	public static void main(String[] args) throws InterruptedException
 	{
-		Senpai senpai = new Senpai("match.conf", args);
+		Senpai senpai = new Senpai();
+		senpai.initialize("match.conf", args);
 		ErrorCode error = ErrorCode.NO_ERROR;
 		try {
 			Log log = senpai.getService(Log.class);
@@ -67,7 +68,7 @@ public class Match {
 		catch(Exception e)
 		{
 			e.printStackTrace();
-			error = ErrorCode.UNKNOWN_ERROR;
+			error = ErrorCode.EXCEPTION;
 		}
 		finally
 		{

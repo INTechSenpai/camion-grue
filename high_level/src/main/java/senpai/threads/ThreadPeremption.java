@@ -107,7 +107,6 @@ public class ThreadPeremption extends Thread
 		{
 			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, Subject.STATUS);
 			e.printStackTrace();
-			e.printStackTrace(log.getPrintWriter());
 			Thread.currentThread().interrupt();
 		}
 	}

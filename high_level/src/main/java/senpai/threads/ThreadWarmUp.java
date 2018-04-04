@@ -52,25 +52,23 @@ public class ThreadWarmUp extends Thread
 		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.STATUS);
 		try
 		{
-			try
-			{
-				long before = System.currentTimeMillis();
-				do {
-					k.initializeNewSearch(new XYO(-500, 1000, Math.PI), new XY(1000, 1000));
-					k.search();
-				} while(System.currentTimeMillis() - before < dureeWarmUp);
-			}
-			catch(PathfindingException e)
-			{
-				log.write("Erreur lors de l'échauffement de la JVM : "+e, Severity.CRITICAL, Subject.STATUS);
-			}
+			long before = System.currentTimeMillis();
+			do {
+				if(Thread.currentThread().isInterrupted())
+				{
+					log.write("Arrêt prématuré de " + Thread.currentThread().getName(), Subject.STATUS);
+					Thread.currentThread().interrupt();
+				}
+				k.initializeNewSearch(new XYO(-500, 1000, Math.PI), new XY(1000, 1000));
+				k.search();
+			} while(System.currentTimeMillis() - before < dureeWarmUp);
 			log.write("Échauffement de la JVM terminé", Subject.STATUS);
 		}
-		catch(Exception e)
+		catch(PathfindingException e)
 		{
-			log.write("Arrêt de " + Thread.currentThread().getName() + " : " + e, Subject.STATUS);
-			Thread.currentThread().interrupt();
+			log.write("Erreur lors de l'échauffement de la JVM : "+e, Severity.CRITICAL, Subject.STATUS);
 		}
+
 	}
 
 }

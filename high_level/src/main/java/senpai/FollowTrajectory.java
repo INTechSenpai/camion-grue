@@ -39,11 +39,12 @@ public class FollowTrajectory
 		String configfile = "senpai-trajectory.conf";
 		
 		String filename = args[0];
-		Senpai senpai = null;
+		Senpai senpai = new Senpai();
 		ErrorCode error = ErrorCode.NO_ERROR;
 		try
 		{
-			senpai = new Senpai(configfile, "default");
+			senpai = new Senpai();
+			senpai.initialize(configfile, "default");
 			Log log = new Log(Severity.INFO, configfile, "log");
 			
 			SavedPath s = KnownPathManager.loadPath(filename);
@@ -59,19 +60,19 @@ public class FollowTrajectory
 		catch(Exception e)
 		{
 			e.printStackTrace();
-			error = ErrorCode.UNKNOWN_ERROR;
+			error = ErrorCode.EXCEPTION;
+			error.setException(e);
 		}
 		finally
 		{
-			if(senpai != null)
-				try
-				{
-					senpai.destructor(error);
-				}
-				catch(InterruptedException e)
-				{
-					e.printStackTrace();
-				}
+			try
+			{
+				senpai.destructor(error);
+			}
+			catch(InterruptedException e)
+			{
+				e.printStackTrace();
+			}
 		}
 	}
 }

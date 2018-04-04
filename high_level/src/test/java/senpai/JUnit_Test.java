@@ -55,7 +55,8 @@ public abstract class JUnit_Test
 	{
 		System.out.println("----- DÉBUT DU TEST " + testName.getMethodName() + " -----");
 
-		container = new Senpai("senpai-test.conf", profiles);
+		container = new Senpai();
+		container.initialize("senpai-test.conf", profiles);
 		config = container.getService(Config.class);
 //		timeoutAffichage = config.getLong(ConfigInfoSenpai.AFFICHAGE_TIMEOUT);
 		log = container.getService(Log.class);		

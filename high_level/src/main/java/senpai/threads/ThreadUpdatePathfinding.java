@@ -114,7 +114,6 @@ public class ThreadUpdatePathfinding extends Thread
 		{
 			log.write("Exception inattendue dans " + Thread.currentThread().getName() + " : " + e, Severity.CRITICAL, Subject.STATUS);
 			e.printStackTrace();
-			e.printStackTrace(log.getPrintWriter());
 /*			try
 			{
 				while(true)
