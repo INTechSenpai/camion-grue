@@ -4,10 +4,15 @@ gpio mode 21 in # interrupteur en input
 gpio mode 21 up # interrupteur pull-up
 gpio write 22 0 # diode éteinte par défaut
 
-# on s'arrête si la pin passe à l'état bas
-while [ $(gpio read 21) -eq 1 ]
-do
-    sleep 0.5
+nbBas=0
+# on s'arrête si la pin est à l'état bas cinq fois de suite
+while [ $nbBas -lt 5 ]; do
+    if [ $(gpio read 21) -eq 0 ]; then
+        let "nbBas += 1"
+    else
+        nbBas=0
+    fi
+    sleep 0.2
 done
 wall "Arrêt du système par GPIO !"
 sudo halt
