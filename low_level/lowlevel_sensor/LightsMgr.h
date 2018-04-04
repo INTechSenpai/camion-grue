@@ -7,11 +7,11 @@
 	#include "WProgram.h"
 #endif
 
-#include "pin_mapping.h"
+#include "config.h"
 
 #define DEFAULT_BLINK_DURATION  500 // ms
 #define ALARM_BLINK_DURATION    100 // ms
-#define DEFAULT_TOGGLE_DELAY    150 // ms
+#define DEFAULT_TOGGLE_DELAY    50 // ms
 
 
 typedef uint8_t LightningMode;
@@ -63,6 +63,10 @@ public:
 
     void blink(uint32_t onDuration, uint32_t offDuration)
     {
+        if (blinkOnDuration == 0 || blinkOffDuration == 0)
+        {
+            lastBlinkTime = millis();
+        }
         blinkOnDuration = onDuration;
         blinkOffDuration = offDuration;
     }
@@ -76,12 +80,12 @@ public:
             if (aimState && now - lastBlinkTime > blinkOnDuration)
             {
                 aimState = false;
-                lastBlinkTime = now;
+                lastBlinkTime += blinkOnDuration;
             }
             else if (!aimState && now - lastBlinkTime > blinkOffDuration)
             {
                 aimState = true;
-                lastBlinkTime = now;
+                lastBlinkTime += blinkOffDuration;
             }
         }
 
@@ -116,13 +120,13 @@ class FlashingLight
 {
 public:
     FlashingLight(uint8_t pin1, uint8_t pin2, uint8_t pin3, uint8_t pin4):
-        led1(pin1, 200),
-        led2(pin2, 200),
-        led3(pin3, 200),
-        led4(pin4, 200),
-        delayToPropagate(300),
-        blinkOn(200),
-        blinkOff(600)
+        led1(pin1, 150),
+        led2(pin2, 150),
+        led3(pin3, 150),
+        led4(pin4, 150),
+        delayToPropagate(150),
+        blinkOn(150),
+        blinkOff(350)
     {
         lastStartTime = 0;
         phase = 0;
@@ -237,12 +241,12 @@ public:
         if (mode & NIGHT_LIGHT_HIGH)
         {
             ledNightFront.turnOn();
-            ledNightBack.turnOn(128);
+            ledNightBack.turnOn(64);
         }
         else if (mode & NIGHT_LIGHT_LOW)
         {
-            ledNightFront.turnOn(128);
-            ledNightBack.turnOn(128);
+            ledNightFront.turnOn(32);
+            ledNightBack.turnOn(64);
         }
         else
         {

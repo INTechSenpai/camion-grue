@@ -3,10 +3,9 @@
 
 #include <Printable.h>
 #include "ToF_shortRange.h"
-#include "pin_mapping.h"
+#include "config.h"
 
-#define NB_SENSORS      9
-#define STD_MIN_RANGE   15
+#define STD_MIN_RANGE   18
 #define STD_MAX_RANGE   150
 
 

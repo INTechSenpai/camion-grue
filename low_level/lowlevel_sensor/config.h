@@ -1,6 +1,14 @@
 #ifndef _PIN_MAPPING_h
 #define _PIN_MAPPING_h
 
+/* Master serial */
+#define SERIAL  Serial1
+#define BAUDRATE_SERIAL 115200
+
+/* Sensors config */
+#define NB_SENSORS      9
+
+
 /* ToF sensors */
 #define PIN_EN_TOF_AVG      2
 #define PIN_EN_TOF_AV       7
@@ -14,6 +22,7 @@
 
 
 /* LEDs */
+#define PIN_DEL_ON_BOARD    13
 #define PIN_DEL_CLIGNO_G    10
 #define PIN_DEL_CLIGNO_D    20
 #define PIN_DEL_NUIT_AV     9
