@@ -1,6 +1,7 @@
 package senpai;
 
 import pfg.log.Log;
+import senpai.Senpai.ErrorCode;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
@@ -39,6 +40,7 @@ public class FollowTrajectory
 		
 		String filename = args[0];
 		Senpai senpai = null;
+		ErrorCode error = ErrorCode.NO_ERROR;
 		try
 		{
 			senpai = new Senpai(configfile, "default");
@@ -54,16 +56,17 @@ public class FollowTrajectory
 			DataTicket state = t.attendStatus();
 			log.write("Code de retour reçu : "+state, Subject.TRAJECTORY);
 		}
-		catch(InterruptedException e)
+		catch(Exception e)
 		{
 			e.printStackTrace();
+			error = ErrorCode.UNKNOWN_ERROR;
 		}
 		finally
 		{
 			if(senpai != null)
 				try
 				{
-					senpai.destructor();
+					senpai.destructor(error);
 				}
 				catch(InterruptedException e)
 				{

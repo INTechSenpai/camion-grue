@@ -17,6 +17,7 @@ package senpai;
 import pfg.config.Config;
 import pfg.kraken.Kraken;
 import pfg.log.Log;
+import senpai.Senpai.ErrorCode;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
 import senpai.comm.DataTicket;
@@ -34,6 +35,7 @@ public class Match {
 	public static void main(String[] args) throws InterruptedException
 	{
 		Senpai senpai = new Senpai("match.conf", args);
+		ErrorCode error = ErrorCode.NO_ERROR;
 		try {
 			Log log = senpai.getService(Log.class);
 			Config config = senpai.getService(Config.class);
@@ -62,9 +64,14 @@ public class Match {
 			
 			System.out.println("Code du match !");
 		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			error = ErrorCode.UNKNOWN_ERROR;
+		}
 		finally
 		{
-			senpai.destructor();
+			senpai.destructor(error);
 		}
 	}
 	

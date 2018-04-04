@@ -24,6 +24,7 @@ import pfg.kraken.robot.ItineraryPoint;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import pfg.log.Log;
+import senpai.Senpai.ErrorCode;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
 import senpai.comm.DataTicket;
@@ -41,6 +42,7 @@ public class Test {
 
 	public static void main(String[] args) throws InterruptedException
 	{
+		ErrorCode error = ErrorCode.NO_ERROR;
 		Senpai senpai = new Senpai("match.conf", "default", "graphic", "test", "noLL");
 		try {
 			Log log = senpai.getService(Log.class);
@@ -85,15 +87,15 @@ public class Test {
 			Thread.sleep(5000);
 			System.out.println("Code du match !");
 		}
-		catch(PathfindingException e)
+		catch(Exception e)
 		{
 			Thread.sleep(5000);
-			// TODO Auto-generated catch block
+			error = ErrorCode.UNKNOWN_ERROR;
 			e.printStackTrace();
 		}
 		finally
 		{
-			senpai.destructor();
+			senpai.destructor(error);
 		}
 	}
 	

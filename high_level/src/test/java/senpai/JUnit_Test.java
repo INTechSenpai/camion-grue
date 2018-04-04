@@ -29,6 +29,7 @@ import org.junit.After;
 import senpai.robot.Robot;
 import senpai.ConfigInfoSenpai;
 import senpai.Senpai;
+import senpai.Senpai.ErrorCode;
 import senpai.Subject;
 
 /**
@@ -77,7 +78,7 @@ public abstract class JUnit_Test
 	{
 		// s'il y a eu un problème lors de la création de Senpai, par exemple si la connexion avec le LL a échoué
 		if(container != null)
-			container.destructor();
+			container.destructor(ErrorCode.NO_ERROR);
 	}
 
 	/**

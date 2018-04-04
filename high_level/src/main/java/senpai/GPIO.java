@@ -43,4 +43,21 @@ public class GPIO
 		catch(IOException e)
 		{}
 	}
+	
+	public static void clignoteDiode(int nbSecondes)
+	{
+		try
+		{
+			for(int i = 0; i < nbSecondes; i++)
+			{
+				Runtime.getRuntime().exec("gpio write 22 1");
+				Thread.sleep(500);
+				Runtime.getRuntime().exec("gpio write 22 0");
+				Thread.sleep(500);
+			}
+		}
+		catch(IOException  | InterruptedException e)
+		{}
+	}
+	
 }

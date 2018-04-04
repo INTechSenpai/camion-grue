@@ -80,8 +80,8 @@ public class Senpai
 	{
 		NO_ERROR(0),
 		END_OF_MATCH(0),
-		EMERGENCY_STOP(2),
-		TERMINATION_SIGNAL(3);
+		UNKNOWN_ERROR(1),
+		TERMINATION_SIGNAL(2);
 		
 		public final int code;
 		
@@ -99,11 +99,10 @@ public class Senpai
 	 * @throws InterruptedException
 	 * @throws ContainerException
 	 */
-	public synchronized ErrorCode destructor() throws InterruptedException
+	public synchronized void destructor(ErrorCode error) throws InterruptedException
 	{
+		this.errorCode = error;
 		assert Thread.currentThread().getId() == mainThread.getId() : "Appel au destructeur depuis un thread !";
-
-		GPIO.eteintDiode();
 
 		/*
 		 * Il ne faut pas appeler deux fois le destructeur
@@ -145,7 +144,10 @@ public class Senpai
 		getService(ThreadShutdown.class).interrupt();
 		nbInstances--;
 		printMessage("outro.txt");
-		return errorCode;
+		
+		// en cas d'erreur, la led clignote
+		if(errorCode.code != 0)
+			GPIO.clignoteDiode(5);
 	}
 	
 	public synchronized <S> S getService(Class<S> service)
@@ -186,8 +188,6 @@ public class Senpai
 			mainThread = Thread.currentThread();
 			Thread.currentThread().setName("ThreadPrincipal");
 	
-			GPIO.allumeDiode();
-			
 			/**
 			 * Affichage d'un petit message de bienvenue
 			 */
@@ -334,7 +334,7 @@ public class Senpai
 
 		} catch(InterruptedException e)
 		{
-			destructor();
+			destructor(ErrorCode.UNKNOWN_ERROR);
 			throw e;
 		}
 	}
