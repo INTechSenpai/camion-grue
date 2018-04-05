@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#define INTERNAL_COM_MAX_LISTEN_DURATION    2   // ms
+#define INTERNAL_COM_MAX_LISTEN_DURATION    5   // ms
 
 
 class InternalMessage
@@ -133,7 +133,7 @@ public:
                     if (recByte == 0xFF) {
                         readPhase = HEADER2;
                     } else {
-                        // err
+                        Serial.println("Invalid header1");
                     }
                     break;
                 case HEADER2:
@@ -141,7 +141,7 @@ public:
                         readPhase = INSTRUCTION;
                     } else {
                         readPhase = HEADER1;
-                        // err
+                        Serial.println("Invalid header2");
                     }
                     break;
                 case INSTRUCTION:
@@ -160,7 +160,7 @@ public:
                             return;
                         } else {
                             message.reset();
-                            // err
+                            Serial.println("Invalid message received");
                         }
                     } else {
                         message.appendToPayload(recByte);
@@ -200,7 +200,7 @@ public:
         }
         else
         {
-            // err
+            Serial.println("Invalid message to send");
         }
     }
 

@@ -17,6 +17,7 @@
 typedef uint8_t LightningMode;
 enum LightId
 {
+    ALL_OFF             = 0,
     TURN_LEFT           = 1,
     TURN_RIGHT          = 2,
     FLASHING            = 4,
@@ -54,11 +55,25 @@ public:
         blinkOffDuration = 0;
     }
 
+    void forceOn(uint8_t aPower = 255)
+    {
+        turnOn(aPower);
+        currentPWM = (int32_t)aPower;
+        analogWrite(pin, (uint8_t)currentPWM);
+    }
+
     void turnOff()
     {
         aimState = false;
         blinkOnDuration = 0;
         blinkOffDuration = 0;
+    }
+
+    void forceOff()
+    {
+        turnOff();
+        currentPWM = 0;
+        analogWrite(pin, 0);
     }
 
     void blink(uint32_t onDuration, uint32_t offDuration)
@@ -281,6 +296,18 @@ public:
         ledReverse.update();
         ledNightFront.update();
         ledNightBack.update();
+    }
+
+    void infoSignalOn()
+    {
+        ledTurnLeft.forceOn();
+        ledTurnRight.forceOn();
+    }
+
+    void infoSignalOff()
+    {
+        ledTurnLeft.forceOff();
+        ledTurnRight.forceOff();
     }
 
 private:

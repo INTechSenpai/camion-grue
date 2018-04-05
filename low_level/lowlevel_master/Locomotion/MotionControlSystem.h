@@ -278,6 +278,14 @@ private:
 		return ms;
 	}
 
+    size_t getTrajectoryIndex() const
+    {
+        noInterrupts();
+        size_t ret = trajectoryIndex;
+        interrupts();
+        return ret;
+    }
+
 	void setMotionControlLevel(uint8_t level)
 	{
 		trajectoryFollower.setMotionControlLevel(level);
@@ -293,7 +301,7 @@ private:
 		trajectoryFollower.setTunings(tunings);
 	}
 
-	MotionControlTunings getTunings()
+	MotionControlTunings getTunings() const
 	{
 		return trajectoryFollower.getTunings();
 	}
@@ -324,6 +332,14 @@ private:
         noInterrupts();
         trajectoryFollower.setCurvature(curvature);
         interrupts();
+    }
+
+    float getCurvature() const
+    {
+        noInterrupts();
+        float curvature = trajectoryFollower.getCurvature();
+        interrupts();
+        return curvature;
     }
 
     void setMonitoredMotor(MonitoredMotor m)

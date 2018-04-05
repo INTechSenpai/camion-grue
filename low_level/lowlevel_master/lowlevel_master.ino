@@ -7,8 +7,10 @@
 #include "Config/pin_mapping.h"
 #include "CommunicationServer/OrderMgr.h"
 #include "Locomotion/MotionControlSystem.h"
+#include "SlaveCommunication/SlaveSensorLed.h"
+#include "CommunicationServer/Serializer.h"
 
-#define LOG_PERIOD  20  // ms
+#define ODOMETRY_REPORT_PERIOD  20  // ms
 
 
 void setup()
@@ -16,12 +18,6 @@ void setup()
     pinMode(PIN_DEL_STATUS_1, OUTPUT);
     pinMode(PIN_DEL_STATUS_2, OUTPUT);
     digitalWrite(PIN_DEL_STATUS_1, HIGH);
-
-    //pinMode(PIN_WIZ820_RESET, OUTPUT);
-    //pinMode(PIN_WIZ820_SS, OUTPUT);
-    //digitalWrite(PIN_WIZ820_RESET, LOW);    // begin reset the WIZ820io
-    //digitalWrite(PIN_WIZ820_SS, HIGH);      // de-select WIZ820io
-    //delay(1000);
 
     if (Server.begin() != 0)
     {
@@ -33,15 +29,28 @@ void setup()
 
 void loop()
 {
-    OrderMgr orderManager = OrderMgr();
+    OrderMgr orderManager;
     MotionControlSystem &motionControlSystem = MotionControlSystem::Instance();
     DirectionController &directionController = DirectionController::Instance();
+    SlaveSensorLed slaveSensorLed;
 
     IntervalTimer motionControlTimer;
     motionControlTimer.priority(253);
     motionControlTimer.begin(motionControlInterrupt, PERIOD_ASSERV);
 
-    uint32_t logTimer = 0;
+    uint32_t odometryReportTimer = 0;
+    std::vector<uint8_t> odometryReport;
+    std::vector<uint8_t> shortRangeSensorsValues;
+    std::vector<uint8_t> longRangeSensorsValues;
+    for (size_t i = 0; i < 9; i++)
+    {
+        Serializer::writeInt(0, shortRangeSensorsValues);
+    }
+    for (size_t i = 0; i < 5; i++)
+    {
+        Serializer::writeInt(0, longRangeSensorsValues);
+    }
+
     uint32_t delTimer = 0;
     bool delState = true;
 
@@ -50,10 +59,28 @@ void loop()
         orderManager.execute();
         directionController.control();
 
-        if (millis() - logTimer > LOG_PERIOD)
+        slaveSensorLed.listen();
+        if (slaveSensorLed.available())
         {
+            slaveSensorLed.getSensorsValues(shortRangeSensorsValues);
+        }
+
+        if (millis() - odometryReportTimer > ODOMETRY_REPORT_PERIOD)
+        {
+            odometryReportTimer = millis();
+
+            odometryReport.clear();
+            Position p = motionControlSystem.getPosition();
+            Serializer::writeInt(p.x, odometryReport);
+            Serializer::writeInt(p.y, odometryReport);
+            Serializer::writeFloat(p.orientation, odometryReport);
+            Serializer::writeFloat(motionControlSystem.getCurvature(), odometryReport);
+            Serializer::writeUInt(motionControlSystem.getTrajectoryIndex(), odometryReport);
+            odometryReport.insert(odometryReport.end(), shortRangeSensorsValues.begin(), shortRangeSensorsValues.end());
+            odometryReport.insert(odometryReport.end(), longRangeSensorsValues.begin(), longRangeSensorsValues.end());
+            Server.sendData(ODOMETRY_AND_SENSORS, odometryReport);
+
             motionControlSystem.sendLogs();
-            logTimer = millis();
         }
 
         if (millis() - delTimer > 500)

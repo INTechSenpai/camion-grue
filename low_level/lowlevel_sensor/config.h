@@ -2,7 +2,7 @@
 #define _PIN_MAPPING_h
 
 /* Master serial */
-#define SERIAL  Serial1
+#define MASTER_SERIAL  Serial1
 #define BAUDRATE_SERIAL 115200
 
 /* Sensors config */

@@ -243,6 +243,11 @@ public:
 		}
 	}
 
+    float getCurvature() const
+    {
+        return curvatureOrder;
+    }
+
     void setPWM(int16_t pwm)
     {
         if (!speedControlled)
