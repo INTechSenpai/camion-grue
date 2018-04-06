@@ -20,7 +20,11 @@ import pfg.kraken.utils.XY_RW;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
-import senpai.table.ElementColor;
+import senpai.table.CubePlace;
+import senpai.table.Croix;
+import senpai.table.Cube;
+import senpai.table.CubeColor;
+import senpai.table.CubeFace;
 import senpai.table.Table;
 
 /**
@@ -32,50 +36,14 @@ import senpai.table.Table;
 
 public class ScriptPriseCube extends Script
 {
+	private final CubeFace face;
+	private Cube cube;
+	private boolean coteDroit;
 	
-	public enum CubePlace
-	{
-		CENTRE(0,0),
-		GAUCHE(-58,0),
-		DROITE(58,0),
-		BAS(0,-58),
-		HAUT(0,58);
-		
-		public final int deltaX, deltaY;
-		
-		private CubePlace(int deltaX, int deltaY)
-		{
-			this.deltaX = deltaX;
-			this.deltaY = deltaY;
-		}
-	}
-	
-	public enum Face
-	{
-		GAUCHE(Math.PI),
-		DROITE(0),
-		BAS(- Math.PI / 2),
-		HAUT(Math.PI / 2);
-		
-		public final double angleAttaque;
-		
-		private Face(double angleAttaque)
-		{
-			this.angleAttaque = angleAttaque;
-		}
-	}
-	
-	private final Face face;
-	private CubePlace place;
-	private XY cubePosition;
-	boolean coteDroit;
-	
-	public ScriptPriseCube(int nbCroix, ElementColor color, Face face, boolean coteDroit)
+	public ScriptPriseCube(Croix croix, CubeColor couleur, CubeFace face, boolean coteDroit)
 	{
 		this.face = face;
-		cubePosition = new XY_RW(650, 1460);
-		this.place = color.getPlace(cubePosition.getX() > 0);
-		cubePosition = cubePosition.plusNewVector(new XY(place.deltaX, place.deltaY));
+		cube = Cube.getCube(croix, couleur);
 		this.coteDroit = coteDroit;
 	}
 	
@@ -86,7 +54,7 @@ public class ScriptPriseCube extends Script
 			return null;
 		else
 		{
-			XY_RW position = new XY_RW(298, face.angleAttaque, true).plus(cubePosition);
+			XY_RW position = new XY_RW(298, face.angleAttaque, true).plus(cube.position);
 			double angle = face.angleAttaque + Math.PI / 2 + 15. * Math.PI / 180.;
 			position.plus(new XY(50, angle, true));
 			return new XYO(position, angle);

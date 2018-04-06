@@ -43,7 +43,7 @@ public class Table implements Printable
 	// Dépendances
 	protected transient Log log;
 
-	private HashMap<GameElementNames, Boolean> etat = new HashMap<GameElementNames, Boolean>();
+	private HashMap<Cube, Boolean> etat = new HashMap<Cube, Boolean>();
 	private List<Obstacle> currentObstacles = new ArrayList<Obstacle>();
 
 	public Table(Log log, Config config, GraphicDisplay buffer)
@@ -51,7 +51,7 @@ public class Table implements Printable
 		this.log = log;
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ENABLE))
 			buffer.addPrintable(this, Color.BLACK, Layer.BACKGROUND.layer);
-		for(GameElementNames n : GameElementNames.values())
+		for(Cube n : Cube.values())
 			etat.put(n, false);
 	}
 
@@ -63,7 +63,7 @@ public class Table implements Printable
 	 * 
 	 * @param id
 	 */
-	public void setDone(GameElementNames id)
+	public void setDone(Cube id)
 	{
 		etat.put(id, true);
 	}
@@ -73,7 +73,7 @@ public class Table implements Printable
 	 * 
 	 * @param id
 	 */
-	public boolean isDone(GameElementNames id)
+	public boolean isDone(Cube id)
 	{
 		return etat.get(id);
 	}
@@ -81,7 +81,7 @@ public class Table implements Printable
 	public Iterator<Obstacle> getCurrentObstaclesIterator()
 	{
 		currentObstacles.clear();
-		for(GameElementNames n : GameElementNames.values())
+		for(Cube n : Cube.values())
 			if(!etat.get(n))
 				currentObstacles.add(n.obstacle);
 		return currentObstacles.iterator();
@@ -90,7 +90,7 @@ public class Table implements Printable
 	@Override
 	public void print(Graphics g, GraphicPanel f)
 	{
-		for(GameElementNames n : GameElementNames.values())
+		for(Cube n : Cube.values())
 			if(!etat.get(n))
 			{
 				g.setColor(n.couleur.color);

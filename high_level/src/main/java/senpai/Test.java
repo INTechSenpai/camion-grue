@@ -35,7 +35,9 @@ import senpai.comm.Ticket;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
 import senpai.scripts.ScriptPriseCube;
-import senpai.table.ElementColor;
+import senpai.table.Croix;
+import senpai.table.CubeColor;
+import senpai.table.CubeFace;
 
 /**
  * Test rapide
@@ -81,7 +83,7 @@ public class Test {
 			robot.updateColorAndSendPosition(couleur, config);
 			//XYO destination = new XYO(0, 1000, Math.PI);
 //			XYO destination = new ScriptPriseCube(0, ElementColor.BLEU, ScriptPriseCube.Face.BAS, false).getPointEntree();
-			XYO destination = new ScriptPriseCube(0, ElementColor.BLEU, ScriptPriseCube.Face.GAUCHE, false).getPointEntree();
+			XYO destination = new ScriptPriseCube(Croix.CROIX_HAUT_DROITE, CubeColor.BLEU, CubeFace.GAUCHE, false).getPointEntree();
 			
 //			robot.setCinematique(new Cinematique(new XYO(0,1000, 0)));
 			buffer.addPrintable(new Cinematique(destination), Color.BLUE, Layer.FOREGROUND.layer);

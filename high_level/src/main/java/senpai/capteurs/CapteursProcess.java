@@ -22,7 +22,7 @@ import senpai.comm.CommProtocol;
 import senpai.obstacles.ObstacleProximity;
 import senpai.obstacles.ObstaclesFixes;
 import senpai.robot.Robot;
-import senpai.table.GameElementNames;
+import senpai.table.Cube;
 import senpai.table.Table;
 
 import java.lang.reflect.Constructor;
@@ -124,7 +124,7 @@ public class CapteursProcess
 		/**
 		 * On update la table avec notre position
 		 */
-		for(GameElementNames g : GameElementNames.values())
+		for(Cube g : Cube.values())
 			if(g.obstacle.isColliding(obstacleRobot))
 			{
 				// if(debugCapteurs)
@@ -173,7 +173,7 @@ public class CapteursProcess
 				if(stop)
 					continue;
 	
-				for(GameElementNames o : GameElementNames.values())
+				for(Cube o : Cube.values())
 					if(!table.isDone(o) && o.isVisible(capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
 					{
 						log.write("Élément de jeu vu : " + o, Subject.CAPTEURS);
