@@ -22,11 +22,11 @@ package senpai.table;
 
 public enum CubePlace
 {
-	CENTRE(0,0),
-	GAUCHE(-58,0),
 	DROITE(58,0),
+	HAUT(0,58),
+	GAUCHE(-58,0),
 	BAS(0,-58),
-	HAUT(0,58);
+	CENTRE(0,0);
 	
 	public final int deltaX, deltaY;
 	

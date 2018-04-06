@@ -24,8 +24,8 @@ package senpai.table;
 public enum CubeFace
 {
 	GAUCHE(Math.PI),
-	DROITE(0),
 	BAS(- Math.PI / 2),
+	DROITE(0),
 	HAUT(Math.PI / 2);
 	
 	public final double angleAttaque;
@@ -33,5 +33,14 @@ public enum CubeFace
 	private CubeFace(double angleAttaque)
 	{
 		this.angleAttaque = angleAttaque;
+	}
+	
+	public CubePlace getVoisin(CubePlace c)
+	{
+		if(c == CubePlace.CENTRE)
+			return CubePlace.values()[(c.ordinal() + 2) % 4];
+		else if(c.ordinal() == ordinal())
+			return CubePlace.CENTRE;
+		return null;
 	}
 }
