@@ -7,6 +7,7 @@ import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
 import pfg.kraken.Kraken;
+import pfg.kraken.SearchParameters;
 import pfg.kraken.astar.DirectionStrategy;
 import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.obstacles.Obstacle;
@@ -97,10 +98,15 @@ public class ConstructTrajectory
 		display.refresh();
 		try
 		{
+			SearchParameters sp;
 			if(modeXY)
-				kraken.initializeNewSearch(depart, arriveeXY, DirectionStrategy.FASTEST, vitesseMax);
+				sp = new SearchParameters(depart, arriveeXY);
 			else
-				kraken.initializeNewSearch(depart, arriveeXYO, DirectionStrategy.FASTEST, vitesseMax);
+				sp = new SearchParameters(depart, arriveeXYO);
+			sp.setDirectionStrategy(DirectionStrategy.FASTEST);
+			sp.setMaxSpeed(vitesseMax);
+			kraken.initializeNewSearch(sp);
+			
 			List<ItineraryPoint> path = kraken.search();
 			for(ItineraryPoint p : path)
 			{

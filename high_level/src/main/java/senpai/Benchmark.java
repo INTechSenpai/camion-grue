@@ -2,6 +2,7 @@ package senpai;
 
 import pfg.config.Config;
 import pfg.kraken.Kraken;
+import pfg.kraken.SearchParameters;
 import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.utils.XY;
@@ -65,14 +66,15 @@ public class Benchmark
 			do
 			{
 				if(modeXY)
-					kraken.initializeNewSearch(new XYO(-500, 700, 2./3.*Math.PI), new XY(1000, 1300));
+					kraken.initializeNewSearch(new SearchParameters(new XYO(-500, 700, 2./3.*Math.PI), new XY(1000, 1300)));
 				else
-					kraken.initializeNewSearch(new XYO(-500, 700, 2./3.*Math.PI), new XYO(1000, 1300, 0));
+					kraken.initializeNewSearch(new SearchParameters(new XYO(-500, 700, 2./3.*Math.PI), new XYO(1000, 1300, 0)));
 				kraken.search();
 				nbIter++;
 			} while(System.currentTimeMillis() - before < 30000);
 			long after = System.currentTimeMillis();
 			log.write("Durée moyenne d'une recherche : "+(after - before) / nbIter, Subject.STATUS);
+			System.out.println("Durée moyenne d'une recherche : "+(after - before) / nbIter);
 		}
 		catch(PathfindingException e)
 		{

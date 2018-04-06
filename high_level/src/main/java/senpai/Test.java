@@ -20,6 +20,7 @@ import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
 import pfg.kraken.Kraken;
+import pfg.kraken.SearchParameters;
 import pfg.kraken.obstacles.CircularObstacle;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.robot.ItineraryPoint;
@@ -79,21 +80,31 @@ public class Test {
 			
 			robot.updateColorAndSendPosition(couleur, config);
 			//XYO destination = new XYO(0, 1000, Math.PI);
-			XYO destination = new ScriptPriseCube(0, ElementColor.VERT, ScriptPriseCube.Face.DROITE, false).getPointEntree();
+//			XYO destination = new ScriptPriseCube(0, ElementColor.BLEU, ScriptPriseCube.Face.BAS, false).getPointEntree();
+			XYO destination = new ScriptPriseCube(0, ElementColor.BLEU, ScriptPriseCube.Face.GAUCHE, false).getPointEntree();
 			
 //			robot.setCinematique(new Cinematique(new XYO(0,1000, 0)));
 			buffer.addPrintable(new Cinematique(destination), Color.BLUE, Layer.FOREGROUND.layer);
 			
-			kraken.initializeNewSearch(new XYO(robot.getCinematique().getPosition().clone(), robot.getCinematique().orientationReelle), destination);
+			kraken.initializeNewSearch(new SearchParameters(new XYO(robot.getCinematique().getPosition().clone(), robot.getCinematique().orientationReelle), destination));
+			long avant = System.currentTimeMillis();
 			LinkedList<ItineraryPoint> path = kraken.search();
+			System.out.println("Durée de la recherche : "+(System.currentTimeMillis() - avant));
 			Cinematique c = robot.getCinematique().clone();
 		
+			for(ItineraryPoint p : path)
+				buffer.addPrintable(p, p.stop ? Color.BLUE : Color.BLACK, Layer.FOREGROUND.layer);
+
 			for(ItineraryPoint p : path)
 			{
 				System.out.println(p);
 				c.updateReel(p.x, p.y, p.orientation, p.goingForward, p.curvature);
 				robot.setCinematique(c);
-				Thread.sleep(100);
+				buffer.refresh();
+				if(p.stop)
+					Thread.sleep(150);
+				else
+					Thread.sleep(Math.round(50./p.possibleSpeed));
 			}
 			
 			Thread.sleep(5000);

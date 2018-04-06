@@ -16,6 +16,7 @@ package senpai.threads;
 
 import pfg.config.Config;
 import pfg.kraken.Kraken;
+import pfg.kraken.SearchParameters;
 import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
@@ -59,7 +60,7 @@ public class ThreadWarmUp extends Thread
 					log.write("Arrêt prématuré de " + Thread.currentThread().getName(), Subject.STATUS);
 					Thread.currentThread().interrupt();
 				}
-				k.initializeNewSearch(new XYO(-500, 1000, Math.PI), new XY(1000, 1000));
+				k.initializeNewSearch(new SearchParameters(new XYO(-500, 1000, Math.PI), new XY(1000, 1000)));
 				k.search();
 			} while(System.currentTimeMillis() - before < dureeWarmUp);
 			log.write("Échauffement de la JVM terminé", Subject.STATUS);
