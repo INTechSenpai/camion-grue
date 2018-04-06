@@ -135,6 +135,7 @@ class Backend:
                 self.needUpdateCurveGraph = True
             elif command.type == CommandType.SUBSCRIPTION_SCATTER_DATA:
                 # todo
+                print(message.data)
                 self.needUpdateScatterGraph = True
             else:
                 if command.type == CommandType.SUBSCRIPTION_TEXT:

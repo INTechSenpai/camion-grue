@@ -32,7 +32,8 @@ void loop()
     OrderMgr orderManager;
     MotionControlSystem &motionControlSystem = MotionControlSystem::Instance();
     DirectionController &directionController = DirectionController::Instance();
-    SlaveSensorLed slaveSensorLed;
+    SlaveSensorLed &slaveSensorLed = SlaveSensorLed::Instance();
+    slaveSensorLed.setLightningMode(0); // Trigger init of slave Teensy
 
     IntervalTimer motionControlTimer;
     motionControlTimer.priority(253);
@@ -42,14 +43,17 @@ void loop()
     std::vector<uint8_t> odometryReport;
     std::vector<uint8_t> shortRangeSensorsValues;
     std::vector<uint8_t> longRangeSensorsValues;
-    for (size_t i = 0; i < 9; i++)
+    while (!slaveSensorLed.available())
     {
-        Serializer::writeInt(0, shortRangeSensorsValues);
+        slaveSensorLed.listen();
     }
+    slaveSensorLed.getSensorsValues(shortRangeSensorsValues);
     for (size_t i = 0; i < 5; i++)
     {
-        Serializer::writeInt(0, longRangeSensorsValues);
+        Serializer::writeInt(0, longRangeSensorsValues); // provisoire, à termes il faudra attendre de recevoir la première trame pour initialiser avec
     }
+
+    slaveSensorLed.setLightningMode(32);
 
     uint32_t delTimer = 0;
     bool delState = true;

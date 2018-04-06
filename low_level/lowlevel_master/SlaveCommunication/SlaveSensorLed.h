@@ -4,12 +4,13 @@
 #include "InternalCom.h"
 #include "../Config/serial_config.h"
 #include "../CommunicationServer/Serializer.h"
+#include "../Tools/Singleton.h"
 
 #define ID_FRAME_SENSORS_REPORT 0x00
 #define ID_FRAME_LED_MODE       0x01
 
 
-class SlaveSensorLed
+class SlaveSensorLed : public Singleton<SlaveSensorLed>
 {
 public:
     SlaveSensorLed() :

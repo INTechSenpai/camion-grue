@@ -7,6 +7,7 @@
 
 #define STD_MIN_RANGE   18
 #define STD_MAX_RANGE   150
+#define MAX_POWERON_ATTEMPTS    10
 
 
 class SensorsMgr : public Printable
@@ -45,9 +46,15 @@ public:
         int ret = 0;
         for (size_t i = 0; i < NB_SENSORS; i++)
         {
-            if (sensors[i].powerON() != 0)
+            int nbAttempts = 0;
+            while (sensors[i].powerON() != 0)
             {
-                ret = -1;
+                nbAttempts++;
+                if (nbAttempts > MAX_POWERON_ATTEMPTS)
+                {
+                    ret = -1;
+                    break;
+                }
             }
         }
         return ret;

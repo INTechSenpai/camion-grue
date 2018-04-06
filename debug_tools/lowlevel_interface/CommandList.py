@@ -100,7 +100,8 @@ Command(0x00, "Odometry and Sensors", CommandType.SUBSCRIPTION_SCATTER_DATA, [Fi
          Field("ToF LongRangeLeft", int, description="mm"),
          Field("ToF LongRangeRight", int, description="mm"),
          Field("Angle LongRangeLeft", float, description="radians"),
-         Field("Angle LongRangeRight", float, description="radians")]),
+         Field("Angle LongRangeRight", float, description="radians"),
+         Field("Angle Grue", float, description="radians")]),
 
 Command(0x01, "Info", CommandType.SUBSCRIPTION_TEXT, [Field("Subscribe", Enum, ["No", "Yes"])], [InfoField("Info")], outputInfoFrame=True),
 Command(0x02, "Error", CommandType.SUBSCRIPTION_TEXT, [Field("Subscribe", Enum, ["No", "Yes"])], [InfoField("Error")], outputInfoFrame=True),

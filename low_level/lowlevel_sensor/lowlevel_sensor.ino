@@ -16,14 +16,13 @@ void setup()
 {
     pinMode(PIN_DEL_ON_BOARD, OUTPUT);
     digitalWrite(PIN_DEL_ON_BOARD, HIGH);
-    lightsMgr.infoSignalOn();
     Wire.begin();
     uint32_t beginWait = millis();
     while (!commMgr.available() || millis() - beginWait < 500)
     {
         commMgr.listen();
     }
-
+    lightsMgr.infoSignalOn();
     int ret = sensorsMgr.init();
     lightsMgr.infoSignalOff();
     if (ret != 0)

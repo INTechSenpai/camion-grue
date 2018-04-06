@@ -61,6 +61,9 @@ public:
 			{
                 sensorValue = (SensorValue)SENSOR_DEAD;
                 standby();
+                Serial.print("Sensor ");
+                Serial.print(name);
+                Serial.println("timed out, RIP");
 			}
             else if (distance > maxRange)
             {
