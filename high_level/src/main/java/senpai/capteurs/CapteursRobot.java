@@ -3,7 +3,7 @@ package senpai.capteurs;
 import pfg.kraken.utils.XY;
 
 /*
- * Copyright (C) 2013-2017 Pierre-François Gimenez
+ * Copyright (C) 2013-2018 Pierre-François Gimenez
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
