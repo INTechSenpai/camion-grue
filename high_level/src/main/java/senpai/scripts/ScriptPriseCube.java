@@ -20,7 +20,6 @@ import pfg.kraken.utils.XY_RW;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
-import senpai.table.CubePlace;
 import senpai.table.Croix;
 import senpai.table.Cube;
 import senpai.table.CubeColor;
@@ -51,7 +50,12 @@ public class ScriptPriseCube extends Script
 	public XYO getPointEntree()
 	{
 		if(coteDroit)
-			return null;
+		{
+			XY_RW position = new XY_RW(298, face.angleAttaque, true).plus(cube.position);
+			double angle = face.angleAttaque - Math.PI / 2 - 15. * Math.PI / 180.;
+			position.plus(new XY(50, angle, true));
+			return new XYO(position, angle);
+		}
 		else
 		{
 			XY_RW position = new XY_RW(298, face.angleAttaque, true).plus(cube.position);
@@ -60,15 +64,7 @@ public class ScriptPriseCube extends Script
 			return new XYO(position, angle);
 		}
 	}
-	
-	private boolean isFacePossible()
-	{
-		/*
-		 * possible si aucun cube entre le robot et le cube voulu
-		 * les cubes à gauche et à droite du cube pris vont être bougés
-		 */
-		return false;
-	}
+
 
 	@Override
 	protected void run(Robot robot, Table table) throws InterruptedException, UnableToMoveException, ActionneurException
