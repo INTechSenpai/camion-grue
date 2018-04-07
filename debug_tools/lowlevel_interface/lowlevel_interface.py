@@ -372,7 +372,13 @@ class CommandBox(QFrame):
         self.command = command
         self.sendCallback = sendCallback
         grid = QGridLayout()
-        self.id = QLabel('0x%02x' % command.id, self) # todo ajouter code couleur en fonction du type d'ordre (long, court, débug)
+        self.id = QLabel('0x%02x' % command.id, self)
+        if command.id < 0x80:
+            self.id.setStyleSheet("""background-color: rgb(209, 255, 232)""")
+        elif command.id < 0x90:
+            self.id.setStyleSheet("""background-color: rgb(251, 255, 209)""")
+        else:
+            self.id.setStyleSheet("""background-color: rgb(248, 209, 255)""")
         if len(command.inputFormat) > 0:
             self.nameButton = QPushButton(command.name, self)
             self.nameButton.setCheckable(True)

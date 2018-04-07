@@ -188,6 +188,7 @@ public:
                 if (ret != TRAJECTORY_EDITION_SUCCESS)
                 {
                     motionControlSystem.stop_and_clear_trajectory();
+                    Server.printf_err("AppendToTraj: TRAJECTORY_EDITION_FAILURE");
                     break;
                 }
             }
@@ -552,16 +553,18 @@ public:
     SetTranslationTunings() {}
     virtual void execute(std::vector<uint8_t> & io)
     {
-        if (io.size() == 8)
+        if (io.size() == 12)
         {
             size_t index = 0;
             float kp = Serializer::readFloat(io, index);
             float kd = Serializer::readFloat(io, index);
+            float minAimSpeed = Serializer::readFloat(io, index);
             MotionControlTunings tunings = motionControlSystem.getTunings();
             tunings.translationKp = kp;
             tunings.translationKd = kd;
+            tunings.minAimSpeed = minAimSpeed;
             motionControlSystem.setTunings(tunings);
-            Server.printf(SPY_ORDER, "Translation Kp=%g Kd=%g\n", kp, kd);
+            Server.printf(SPY_ORDER, "Translation Kp=%g Kd=%g MinSpeed=%g\n", kp, kd, minAimSpeed);
             io.clear();
         }
         else

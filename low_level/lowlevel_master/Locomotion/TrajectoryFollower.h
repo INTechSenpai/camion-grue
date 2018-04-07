@@ -33,7 +33,7 @@ enum MonitoredMotor
 class TrajectoryFollower
 {
 public:
-	TrajectoryFollower(float freqAsserv, volatile Position & position, volatile MoveStatus & moveStatus) :
+	TrajectoryFollower(const float freqAsserv, volatile Position & position, volatile MoveStatus & moveStatus) :
         freqAsserv(freqAsserv),
 		directionController(DirectionController::Instance()),
 		moveStatus(moveStatus),
@@ -48,15 +48,15 @@ public:
 			currentTranslation,
 			currentMovingSpeed
 		),
-		frontLeftSpeedPID(currentFrontLeftSpeed, frontLeftPWM, leftSpeedSetPoint),
-		backLeftSpeedPID(currentBackLeftSpeed, backLeftPWM, leftSpeedSetPoint),
+		frontLeftSpeedPID(currentFrontLeftSpeed, frontLeftPWM, leftSpeedSetPoint, freqAsserv),
+		backLeftSpeedPID(currentBackLeftSpeed, backLeftPWM, leftSpeedSetPoint, freqAsserv),
         frontLeftMotorBlockingMgr(leftSpeedSetPoint, currentFrontLeftSpeed),
         backLeftMotorBlockingMgr(leftSpeedSetPoint, currentBackLeftSpeed),
-		frontRightSpeedPID(currentFrontRightSpeed, frontRightPWM, rightSpeedSetPoint),
-		backRightSpeedPID(currentBackRightSpeed, backRightPWM, rightSpeedSetPoint),
+		frontRightSpeedPID(currentFrontRightSpeed, frontRightPWM, rightSpeedSetPoint, freqAsserv),
+		backRightSpeedPID(currentBackRightSpeed, backRightPWM, rightSpeedSetPoint, freqAsserv),
 		frontRightMotorBlockingMgr(rightSpeedSetPoint, currentFrontRightSpeed),
 		backRightMotorBlockingMgr(rightSpeedSetPoint, currentBackRightSpeed),
-		translationPID(currentTranslation, movingSpeedSetPoint, translationSetPoint),
+		translationPID(currentTranslation, movingSpeedSetPoint, translationSetPoint, freqAsserv),
 		endOfMoveMgr(currentMovingSpeed),
 		curvaturePID(position, curvatureOrder, trajectoryPoint)
 	{
@@ -95,6 +95,7 @@ public:
             {
                 movePhase = MOVE_ENDED;
                 moveStatus |= EXT_BLOCKED;
+                Server.asynchronous_trace(__LINE__);
                 finalise_stop();
             }
 			else if (trajectoryControlled)
@@ -153,6 +154,20 @@ public:
 			{
 				movingSpeedSetPoint = -ABS(maxMovingSpeed);
 			}
+
+            if (ABS(movingSpeedSetPoint) < stoppedSpeed)
+            {
+                movingSpeedSetPoint = 0;
+            }
+            else if (ABS(movingSpeedSetPoint) < minAimSpeed)
+            {
+                if (movingSpeedSetPoint > 0) {
+                    movingSpeedSetPoint = minAimSpeed;
+                }
+                else {
+                    movingSpeedSetPoint = -minAimSpeed;
+                }
+            }
 
 			// Calcul des vitesses gauche et droite en fonction de la vitesse globale
 			leftSpeedSetPoint = movingSpeedSetPoint * leftSideDistanceFactor;
@@ -345,6 +360,7 @@ public:
             {
                 movePhase = BREAKING;
                 moveStatus |= EMERGENCY_BREAK;
+                Server.asynchronous_trace(__LINE__);
             }
             else
             {
@@ -510,6 +526,7 @@ private:
                     if (trajectoryControlled && !trajectoryPoint.isStopPoint())
                     {
                         moveStatus |= EXT_BLOCKED;
+                        Server.asynchronous_trace(__LINE__);
                     }
                     finalise_stop();
                 }
@@ -538,6 +555,7 @@ private:
                 movePhase = MOVE_ENDED;
                 moveStatus |= INT_BLOCKED;
                 finalise_stop();
+                Server.asynchronous_trace(__LINE__);
             }
         }
 	}
@@ -550,6 +568,7 @@ private:
 			{
 				movePhase = BREAKING;
 				moveStatus |= FAR_AWAY;
+                Server.asynchronous_trace(__LINE__);
 			}
 		}
 	}
@@ -583,6 +602,8 @@ private:
         noInterrupts();
         maxAcceleration = motionControlTunings.maxAcceleration;
         maxDeceleration = motionControlTunings.maxDeceleration;
+        minAimSpeed = motionControlTunings.minAimSpeed;
+        stoppedSpeed = motionControlTunings.stoppedSpeed;
 
         frontLeftSpeedPID.setOutputLimits(-MAX_PWM, MAX_PWM);
         frontRightSpeedPID.setOutputLimits(-MAX_PWM, MAX_PWM);
@@ -672,6 +693,12 @@ private:
     /* Accélérations maximale (variation maximale de movingSpeedSetpoint) */
     float maxAcceleration;              // (mm*s^-2)
     float maxDeceleration;              // (mm*s^-2)
+
+    /* Vitesse non nulle minimale pouvant être donnée en tant que consigne */
+    float minAimSpeed;                  // (mm*s^-1)
+
+    /* En dessous de cette vitesse, on considère être à l'arrêt */
+    float stoppedSpeed;                 // (mm*s^-1)
 
 	/* Pour le calcul de l'accélération */
 	float previousMovingSpeedSetpoint;	// (mm/s)

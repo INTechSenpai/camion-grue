@@ -120,9 +120,9 @@ class Backend:
                 args = self.interpretStrings(message.data, command.outputFormat)
             else:
                 args = self.interpretBytes(message.data, command.outputFormat)
+            if len(command.outputFormat) != len(args):
+                raise IndexError("Wrong number of arguments received")
             if command.type == CommandType.SUBSCRIPTION_CURVE_DATA:
-                if len(command.outputFormat) != len(args):
-                    raise IndexError("Wrong number of arguments received")
                 nbArgs = len(args)
                 timestamp = message.timestamp
                 for i in range(nbArgs):
@@ -134,9 +134,29 @@ class Backend:
                         self.curveGraphEntries.append((message.timestamp, command.name, command.outputFormat[i].name, timestamp, float(args[i])))
                 self.needUpdateCurveGraph = True
             elif command.type == CommandType.SUBSCRIPTION_SCATTER_DATA:
-                # todo
-                print(message.data)
-                self.needUpdateScatterGraph = True
+                x = None
+                y = None
+                color = None
+                for i in range(len(args)):
+                    if command.outputFormat[i].name == "x":
+                        x = float(args[i])
+                        if color is None:
+                            try:
+                                color = command.outputFormat[i].color
+                            except (AttributeError, IndexError):
+                                pass
+                    elif command.outputFormat[i].name == "y":
+                        y = float(args[i])
+                        if color is None:
+                            try:
+                                color = command.outputFormat[i].color
+                            except (AttributeError, IndexError):
+                                pass
+                if color is None:
+                    color = QColor(197, 200, 198)
+                if x is not None and y is not None:
+                    self.scatterGraphEntries.append((message.timestamp, command.name, x, y, color))
+                    self.needUpdateScatterGraph = True
             else:
                 if command.type == CommandType.SUBSCRIPTION_TEXT:
                     if command.id == INFO_CHANNEL:
@@ -224,7 +244,6 @@ class Backend:
         self.consoleEntriesIndex = len(self.consoleEntries)
 
     def updateCurveGraph(self):
-        #todo : optimize this
         subData = {}
         tMin = None
         tMax = None
@@ -242,7 +261,6 @@ class Backend:
                     subData[entry[1]][entry[2]]["y"].append(entry[4])
                 else:
                     subData[entry[1]][entry[2]] = {"x": [t], "y": [entry[4]]}
-        # print(subData)
         if tMin is None:
             tMin = self.currentTime - self.zoom
         if tMax is None:
@@ -252,9 +270,19 @@ class Backend:
         self.graph.update_data(curveData=subData, origin=tMax, xMin=tMin, xMax=tMax)
 
     def updateScatterGraph(self):
-        #todo
-        # self.graph.update_data(scatterData={})
-        pass
+        subData = {}
+        for entry in self.scatterGraphEntries:
+            if entry[1] not in subData:
+                subData[entry[1]] = {"x": [], "y": [], "color": []}
+            allowAppend = True
+            if len(subData[entry[1]]["x"]) > 0 and len(subData[entry[1]]["y"]) > 0:
+                if subData[entry[1]]["x"][-1] == entry[2] and subData[entry[1]]["y"][-1] == entry[3]:
+                    allowAppend = False
+            if allowAppend:
+                subData[entry[1]]["x"].append(entry[2])
+                subData[entry[1]]["y"].append(entry[3])
+                subData[entry[1]]["color"].append(entry[4])
+        self.graph.update_data(scatterData=subData)
 
     def updateTimeBounds(self):
         # print("Set bounds")

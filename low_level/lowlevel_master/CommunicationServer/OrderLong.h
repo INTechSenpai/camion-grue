@@ -99,6 +99,7 @@ public:
     }
     void terminate(std::vector<uint8_t> & output)
     {
+        Server.printf(SPY_ORDER, "End FollowTrajectory with status %u\n", status);
         Serializer::writeInt((int32_t)status, output);
     }
 

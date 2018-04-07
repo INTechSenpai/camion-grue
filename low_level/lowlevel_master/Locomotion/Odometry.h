@@ -18,7 +18,7 @@ class Odometry
 {
 public:
 	Odometry(
-		float freqAsserv,
+		const float freqAsserv,
 		volatile Position & p, 
 		volatile float & frontLeftMotorSpeed,
         volatile float & frontRightMotorSpeed,

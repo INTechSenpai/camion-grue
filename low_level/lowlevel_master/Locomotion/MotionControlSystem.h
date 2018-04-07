@@ -52,11 +52,11 @@ public:
 			    if (!wasTravellingToDestination)
 			    {// Démarrage du suivi de trajectoire
 				    trajectoryFollower.setTrajectoryPoint(currentTrajectory.at(trajectoryIndex));
+                    updateDistanceToTravel();
 				    trajectoryFollower.startMove();
 				    wasTravellingToDestination = true;
 			    }
-            
-                if (movePhase == MOVING && !currentTrajectory.at(trajectoryIndex).isStopPoint())
+                else if (movePhase == MOVING && !currentTrajectory.at(trajectoryIndex).isStopPoint())
                 {
                     Position trajPoint = currentTrajectory.at(trajectoryIndex).getPosition();
                     float sign;
@@ -79,6 +79,7 @@ public:
                         {
                             moveStatus |= EMPTY_TRAJ;
                             stop_and_clear_trajectory_from_interrupt();
+                            Server.asynchronous_trace(__LINE__);
                         }
                     }
                 }
@@ -105,6 +106,7 @@ public:
                             stop_and_clear_trajectory_from_interrupt();
                             travellingToDestination = false;
                             wasTravellingToDestination = false;
+                            Server.asynchronous_trace(__LINE__);
                         }
                     }
                 }
@@ -177,6 +179,7 @@ private:
             moveStatus = MOVE_OK;
             trajectoryFollower.startMove();
             interrupts();
+            Server.printf("Manual move started");
         }
         else
         {

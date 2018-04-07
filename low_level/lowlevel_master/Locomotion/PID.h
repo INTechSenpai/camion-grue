@@ -7,10 +7,11 @@ class PID : public Printable
 {
 public:
 
-	PID(volatile float const & input, volatile float & output, volatile float const & setPoint) :
+	PID(volatile float const & input, volatile float & output, volatile float const & setPoint, const float freqAsserv) :
 		input(input),
 		output(output),
-		setPoint(setPoint)
+		setPoint(setPoint),
+        callFreq(freqAsserv)
 	{
 		setOutputLimits(INT32_MIN, INT32_MAX);
 		setTunings(0, 0, 0);
@@ -23,8 +24,8 @@ public:
 	inline void compute()
 	{
 		float error = setPoint - input;
-		derivative = error - pre_error;
-		integral += error;
+		derivative = (error - pre_error) * callFreq;
+		integral += error / callFreq;
 		pre_error = error;
 
 		float result = kp * error + ki * integral + kd * derivative;
@@ -124,6 +125,8 @@ private:
 	float pre_error;
 	float derivative;
 	float integral;
+
+    const float callFreq;   // s^-1
 };
 
 
