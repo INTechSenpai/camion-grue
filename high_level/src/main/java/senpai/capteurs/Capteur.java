@@ -45,11 +45,11 @@ public abstract class Capteur implements Printable
 	protected double orientationRelativeRotate;
 	protected XY_RW positionRelativeRotate;
 	public TypeCapteur type;
-	private Robot robot;
+	private Cinematique cinemRobot;
 
 	public Capteur(Robot robot, Config config, XY positionRelative, double orientationRelative, TypeCapteur type, boolean sureleve)
 	{
-		this.robot = robot;
+		cinemRobot = robot.getCinematique();
 		this.type = type;
 		this.positionRelative = positionRelative;
 		this.orientationRelative = orientationRelative;
@@ -73,34 +73,39 @@ public abstract class Capteur implements Printable
 	@Override
 	public void print(Graphics g, GraphicPanel f)
 	{
-		if(robot.isCinematiqueInitialised())
-		{
-			double orientation = robot.getCinematique().orientationReelle;
-			computePosOrientationRelative(robot.getCinematique(), 0, 0, 0); // TODO demander les angles actuels
-			XY_RW p1 = positionRelativeRotate.clone();
-			p1.rotate(orientation);
-			p1.plus(robot.getCinematique().getPosition());
-			XY_RW p2 = positionRelativeRotate.clone();
-			p2.plus(new XY(portee, angleCone + orientationRelativeRotate, false));
-			p2.rotate(orientation);
-			p2.plus(robot.getCinematique().getPosition());
-			XY_RW p3 = positionRelativeRotate.clone();
-			p3.plus(new XY(portee, -angleCone + orientationRelativeRotate, false));
-			p3.rotate(orientation);
-			p3.plus(robot.getCinematique().getPosition());
-			int[] x = new int[3];
-			x[0] = f.XtoWindow(p1.getX());
-			x[1] = f.XtoWindow(p2.getX());
-			x[2] = f.XtoWindow(p3.getX());
-			int[] y = new int[3];
-			y[0] = f.YtoWindow(p1.getY());
-			y[1] = f.YtoWindow(p2.getY());
-			y[2] = f.YtoWindow(p3.getY());
-			g.setColor(type.couleurTransparente);
-			g.fillPolygon(x, y, 3);
-			g.setColor(type.couleur);
-			g.drawPolygon(x, y, 3);
-		}
+		double orientation = cinemRobot.orientationReelle;
+		computePosOrientationRelative(cinemRobot, 0, 0, 0); // TODO demander les angles actuels
+		XY_RW p1 = positionRelativeRotate.clone();
+		p1.rotate(orientation);
+		p1.plus(cinemRobot.getPosition());
+		XY_RW p2 = positionRelativeRotate.clone();
+		p2.plus(new XY(portee, angleCone + orientationRelativeRotate, false));
+		p2.rotate(orientation);
+		p2.plus(cinemRobot.getPosition());
+		XY_RW p3 = positionRelativeRotate.clone();
+		p3.plus(new XY(portee, -angleCone + orientationRelativeRotate, false));
+		p3.rotate(orientation);
+		p3.plus(cinemRobot.getPosition());
+		int[] x = new int[3];
+		x[0] = f.XtoWindow(p1.getX());
+		x[1] = f.XtoWindow(p2.getX());
+		x[2] = f.XtoWindow(p3.getX());
+		int[] y = new int[3];
+		y[0] = f.YtoWindow(p1.getY());
+		y[1] = f.YtoWindow(p2.getY());
+		y[2] = f.YtoWindow(p3.getY());
+		g.setColor(type.couleurTransparente);
+		g.fillPolygon(x, y, 3);
+		g.setColor(type.couleur);
+		g.drawPolygon(x, y, 3);
 	}
 
+	/**
+	 * Utilisé pour l'affichage uniquement
+	 * @param c
+	 */
+	public void setCinematique(Cinematique c)
+	{
+		cinemRobot = c.clone();
+	}
 }

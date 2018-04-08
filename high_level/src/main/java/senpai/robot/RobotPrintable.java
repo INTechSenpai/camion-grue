@@ -181,4 +181,9 @@ public class RobotPrintable implements Printable
 	{
 		cinematique = c;
 	}
+
+	public Cinematique getCinematique()
+	{
+		return cinematique.clone();
+	}
 }
