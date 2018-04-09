@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import senpai.capteurs.CapteursProcess;
 import senpai.capteurs.SensorsData;
+import senpai.robot.Robot;
 import pfg.kraken.robot.Cinematique;
 
 /**
@@ -33,11 +34,13 @@ public class Test_Capteurs extends JUnit_Test
 {
 
 	private CapteursProcess capteurs;
+	private Robot robot;
 
 	@Before
 	public void setUp() throws Exception
 	{
 		setUp("default", "capteurs", "graphic");
+		robot = container.getService(Robot.class);
 		capteurs = container.getService(CapteursProcess.class);
 	}
 
@@ -142,9 +145,8 @@ public class Test_Capteurs extends JUnit_Test
 	public void test_capteurs() throws Exception
 	{
 		int[] mesures = { 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100 };
-		Cinematique cinematique = new Cinematique(0, 0, 0, true, 0, false);
-		capteurs.updateObstaclesMobiles(new SensorsData(0, 0, 0, mesures, cinematique));
-		Thread.sleep(3000);
+		capteurs.updateObstaclesMobiles(new SensorsData(0, 0, 0, mesures, robot.getCinematique()));
+		Thread.sleep(10000);
 	}
 
 }
