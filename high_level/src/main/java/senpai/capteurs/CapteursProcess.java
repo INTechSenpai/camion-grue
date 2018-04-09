@@ -16,11 +16,11 @@ package senpai.capteurs;
 
 import senpai.ConfigInfoSenpai;
 import senpai.Subject;
-import senpai.buffer.ObstaclesBuffer;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
 import senpai.obstacles.ObstacleProximity;
 import senpai.obstacles.ObstaclesFixes;
+import senpai.obstacles.ObstaclesMemory;
 import senpai.robot.Robot;
 import senpai.table.Cube;
 import senpai.table.Table;
@@ -49,7 +49,6 @@ public class CapteursProcess
 	protected Log log;
 	private Table table;
 	private OutgoingOrderBuffer serie;
-	private ObstaclesBuffer obsbuffer;
 
 	private int nbCapteurs;
 	private int largeurEnnemi, longueurEnnemi;
@@ -66,15 +65,16 @@ public class CapteursProcess
 //	private boolean scan = false;
 	private Cinematique[] bufferCorrection;
 	private long dureeAvantPeremption;
+	private ObstaclesMemory obstacles;
 
 //	private List<SensorsData> mesuresScan = new ArrayList<SensorsData>();
 
-	public CapteursProcess(Robot robot, Log log, RectangularObstacle obstacleRobot, Table table, OutgoingOrderBuffer serie, Config config, ObstaclesBuffer obsbuffer, GraphicDisplay buffer)
+	public CapteursProcess(Robot robot, Log log, RectangularObstacle obstacleRobot, Table table, OutgoingOrderBuffer serie, Config config, ObstaclesMemory obstacles, GraphicDisplay buffer)
 	{
 		this.table = table;
 		this.log = log;
 		this.serie = serie;
-		this.obsbuffer = obsbuffer;
+		this.obstacles = obstacles;
 
 		dureeAvantPeremption = config.getInt(ConfigInfoSenpai.DUREE_PEREMPTION_OBSTACLES);
 		largeurEnnemi = config.getInt(ConfigInfoSenpai.LARGEUR_OBSTACLE_ENNEMI);
@@ -127,20 +127,9 @@ public class CapteursProcess
 		for(Cube g : Cube.values())
 			if(g.obstacle.isColliding(obstacleRobot))
 			{
-				// if(debugCapteurs)
-				// log.debug("Élément shooté : "+g);
+				log.write("Élément shooté", Subject.CAPTEURS);
 				table.setDone(g);
 			}
-
-		// parfois on n'a pas de mesure
-//		if(data.mesures == null)
-//			return;
-
-/*		if(scan)
-		{
-			mesuresScan.add(data);
-			return;
-		}*/
 
 /*		try
 		{*/
@@ -196,15 +185,14 @@ public class CapteursProcess
 	
 				if(obs.isHorsTable())
 				{
-					// if(debugCapteurs)
-					// log.debug("Hors table !");
+					log.write(c+" voit quelque chose hors table.", Subject.CAPTEURS);
 //					data.etats[i] = TraitementEtat.HORS_TABLE;
 					continue; // hors table
 				}
 	
 				log.write("Ajout d'un obstacle d'ennemi en " + positionEnnemi + " vu par " + c, Subject.CAPTEURS);
 	
-				obsbuffer.addNewObstacle(obs);
+				obstacles.add(obs);
 
 //				data.etats[i] = TraitementEtat.OBSTACLE_CREE;
 				

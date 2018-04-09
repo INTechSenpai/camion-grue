@@ -22,7 +22,6 @@ import pfg.kraken.obstacles.Obstacle;
 import pfg.log.Log;
 import senpai.Severity;
 import senpai.Subject;
-import senpai.buffer.ObstaclesBuffer;
 import senpai.buffer.OutgoingOrderBuffer;
 
 /**
@@ -38,11 +37,9 @@ public class ThreadUpdatePathfinding extends Thread
 	private TentacularAStar pathfinding;
 //	private CheminPathfinding chemin;
 	private OutgoingOrderBuffer out;
-	private ObstaclesBuffer obsbuffer;
 
-	public ThreadUpdatePathfinding(Log log, TentacularAStar pathfinding, /*CheminPathfinding chemin,*/ OutgoingOrderBuffer out, ObstaclesBuffer obsbuffer)
+	public ThreadUpdatePathfinding(Log log, TentacularAStar pathfinding, /*CheminPathfinding chemin,*/ OutgoingOrderBuffer out)
 	{
-		this.obsbuffer = obsbuffer;
 		this.log = log;
 		this.pathfinding = pathfinding;
 //		this.chemin = chemin;
@@ -62,18 +59,8 @@ public class ThreadUpdatePathfinding extends Thread
 		{
 			while(true)
 			{
-				synchronized(obsbuffer)
-				{
-					if(obsbuffer.needToWait())
-						obsbuffer.wait();
-					
-					while(!obsbuffer.isNewObstaclesEmpty())
-						newObs.add(obsbuffer.pollNewObstacle());
-
-					while(!obsbuffer.isOldObstaclesEmpty())
-						oldObs.add(obsbuffer.pollOldObstacle());
-				}
-				
+				// TODO : vérifier validité du chemin
+				Thread.sleep(100);
 //				pathfinding.updateObstacles(newObs, oldObs);
 				
 /*				synchronized(chemin)

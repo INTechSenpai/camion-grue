@@ -78,12 +78,12 @@ public class Test {
 				couleur = (RobotColor) etat.data;
 			}
 			else
-				couleur = RobotColor.ORANGE;
+				couleur = RobotColor.VERT;
 			
-			robot.updateColorAndSendPosition(couleur, config);
+			robot.updateColorAndSendPosition(couleur);
 			//XYO destination = new XYO(0, 1000, Math.PI);
 //			XYO destination = new ScriptPriseCube(0, ElementColor.BLEU, ScriptPriseCube.Face.BAS, false).getPointEntree();
-			XYO destination = new ScriptPriseCube(Croix.CROIX_HAUT_DROITE, CubeColor.BLEU, CubeFace.GAUCHE, false).getPointEntree();
+			XYO destination = new ScriptPriseCube(Croix.CROIX_HAUT_DROITE, CubeColor.BLEU, CubeFace.GAUCHE, true).getPointEntree();
 			
 //			robot.setCinematique(new Cinematique(new XYO(0,1000, 0)));
 			buffer.addPrintable(new Cinematique(destination), Color.BLUE, Layer.FOREGROUND.layer);

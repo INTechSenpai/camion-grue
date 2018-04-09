@@ -86,7 +86,10 @@ public class Robot extends RobotState
 		}
 		
 		printTrace = config.getBoolean(ConfigInfoSenpai.GRAPHIC_TRACE_ROBOT);
-
+		cinematique = new Cinematique(new XYO(
+				config.getDouble(ConfigInfoSenpai.INITIAL_X),
+				config.getDouble(ConfigInfoSenpai.INITIAL_Y),
+				config.getDouble(ConfigInfoSenpai.INITIAL_O)));
 		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 	}
 	
@@ -268,21 +271,20 @@ public class Robot extends RobotState
 		// TODO Auto-generated method stub		
 	}
 
-	public void updateColorAndSendPosition(RobotColor c, Config config)
+	public void updateColorAndSendPosition(RobotColor c)
 	{
 		assert cinematique != null;
 		
 		symetrie = c.symmetry;
-		
-		// on applique la symétrie à la position initiale
-		setCinematique(new Cinematique(new XYO(
-				symetrie ? -config.getDouble(ConfigInfoSenpai.INITIAL_X) : config.getDouble(ConfigInfoSenpai.INITIAL_X),
-				config.getDouble(ConfigInfoSenpai.INITIAL_Y),
-				symetrie ? Math.PI + config.getDouble(ConfigInfoSenpai.INITIAL_O) : config.getDouble(ConfigInfoSenpai.INITIAL_O))));
 
-		// on active le printable
-		if(printable != null)
-			printable.initPositionObject(cinematique);
+		// on applique la symétrie à la position initiale
+		if(symetrie)
+			setCinematique(new Cinematique(-cinematique.getPosition().getX(),
+					cinematique.getPosition().getY(),
+					Math.PI + cinematique.orientationReelle,
+					cinematique.enMarcheAvant,
+					cinematique.courbureReelle,
+					false));
 
 		// on envoie la position au LL
 		out.setPosition(cinematique.getPosition(), cinematique.orientationReelle);
@@ -293,7 +295,12 @@ public class Robot extends RobotState
 	 */
 	public void initPositionObject(Cinematique c)
 	{
+		cinematique.copy(c);
 		cinematique = c;
+		
+		// on active le printable
+		if(printable != null)
+			printable.initPositionObject(cinematique);
 	}
 
 }

@@ -14,15 +14,8 @@
 
 package senpai.threads;
 
-import java.util.List;
-
-import pfg.config.Config;
-import pfg.kraken.dstarlite.DStarLite;
-import pfg.kraken.obstacles.Obstacle;
 import pfg.log.Log;
-import senpai.ConfigInfoSenpai;
 import senpai.Subject;
-import senpai.buffer.ObstaclesBuffer;
 import senpai.obstacles.ObstaclesMemory;
 
 /**
@@ -37,22 +30,13 @@ public class ThreadPeremption extends Thread
 {
 	private ObstaclesMemory memory;
 	protected Log log;
-//	private PrintBufferInterface buffer;
-	private DStarLite dstarlite;
-	private ObstaclesBuffer buffer;
 
 	private int dureePeremption;
-	private boolean printProxObs;
 
-	public ThreadPeremption(Log log, ObstaclesMemory memory, Config config, ObstaclesBuffer buffer)
+	public ThreadPeremption(Log log, ObstaclesMemory memory)
 	{
 		this.log = log;
-		this.buffer = buffer;
 		this.memory = memory;
-//		this.buffer = buffer;
-		this.dstarlite = dstarlite;
-//		printProxObs = config.getBoolean(ConfigInfo.GRAPHIC_PROXIMITY_OBSTACLES);
-		dureePeremption = config.getInt(ConfigInfoSenpai.DUREE_PEREMPTION_OBSTACLES);
 		setDaemon(true);
 	}
 
@@ -65,24 +49,7 @@ public class ThreadPeremption extends Thread
 		{
 			while(true)
 			{
-				// TODO
-				synchronized(buffer)
-				{
-					List<Obstacle> oldObs = memory.deleteOldObstacles();
-					buffer.addAllOldObstacle(oldObs);
-					
-					buffer.notify();
-				}
-				
-//				if(memory.deleteOldObstacles())
-//					dstarlite.updateObstaclesEnnemi();
-
-				// mise à jour des obstacles : on réaffiche
-/*				if(printProxObs)
-					synchronized(buffer)
-					{
-						buffer.notify();
-					}*/
+				// TODO : est-ce utile ? memory manager gère automatiquement la disparition des anciens obstacles
 
 				long prochain = memory.getNextDeathDate();
 

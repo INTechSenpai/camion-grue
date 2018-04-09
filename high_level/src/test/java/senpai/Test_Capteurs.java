@@ -37,7 +37,7 @@ public class Test_Capteurs extends JUnit_Test
 	@Before
 	public void setUp() throws Exception
 	{
-		setUp("default");
+		setUp("default", "capteurs", "graphic");
 		capteurs = container.getService(CapteursProcess.class);
 	}
 
@@ -143,7 +143,8 @@ public class Test_Capteurs extends JUnit_Test
 	{
 		int[] mesures = { 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100 };
 		Cinematique cinematique = new Cinematique(0, 0, 0, true, 0, false);
-		capteurs.updateObstaclesMobiles(new SensorsData(150, 150, 0, mesures, cinematique));
+		capteurs.updateObstaclesMobiles(new SensorsData(0, 0, 0, mesures, cinematique));
+		Thread.sleep(3000);
 	}
 
 }

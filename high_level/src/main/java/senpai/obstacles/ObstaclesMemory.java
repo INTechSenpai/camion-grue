@@ -18,12 +18,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
+import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
 import pfg.kraken.obstacles.Obstacle;
-import pfg.kraken.obstacles.container.DynamicObstacles;
 import pfg.log.Log;
+import senpai.ConfigInfoSenpai;
 import senpai.CouleurSenpai;
 
 /**
@@ -58,11 +58,11 @@ public class ObstaclesMemory
 		return size == listObstaclesDetruits.size() + listObstaclesMobiles.size();
 	}
 	
-	public ObstaclesMemory(Log log, GraphicDisplay buffer)
+	public ObstaclesMemory(Log log, GraphicDisplay buffer, Config config)
 	{
 		this.log = log;
 		this.buffer = buffer;
-//		printProx = config.getBoolean(ConfigInfo.GRAPHIC_PROXIMITY_OBSTACLES);
+		printProx = config.getBoolean(ConfigInfoSenpai.GRAPHIC_SEEN_OBSTACLES);
 //		printDStarLite = config.getBoolean(ConfigInfo.GRAPHIC_D_STAR_LITE);
 	}
 

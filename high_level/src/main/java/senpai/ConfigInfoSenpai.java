@@ -183,20 +183,13 @@ public enum ConfigInfoSenpai implements ConfigInfo
 									// vérification des collisions
 	GRAPHIC_ROBOT_PATH("/camion.png"), // image du robot sans les
 													// roues
-//	GRAPHIC_PRODUCE_GIF(false), // produit un gif ?
-//	GIF_FILENAME("output.gif"), // le nom du fichier du gif généré
-//	GRAPHIC_BACKGROUND(true), // affiche d'image de la table
-//	GRAPHIC_SIZE_X(1000), // taille par défaut (sans image) de la fenêtre
-//	GRAPHIC_ALL_OBSTACLES(false), // affiche absolument tous les obstacles créés
+	GRAPHIC_SEEN_OBSTACLES(false), // affiche les obstacles vus
 	GRAPHIC_ROBOT_AND_SENSORS(false), // affiche le robot et ses capteurs
-//	GRAPHIC_CERCLE_ARRIVEE(false), // affiche le cercle d'arrivée
-//	GRAPHIC_TIME(false), // affiche le temps écoulé
 	GRAPHIC_TRACE_ROBOT(false), // affiche la trace du robot
 	GRAPHIC_EXTERNAL(false), // l'affichage doit-il être déporté par le serveur
 							// d'affichage ?
 	SAVE_VIDEO(false), // sauvegarde d'une "vidéo" pour visionner les
 								// images plus tard
-//	GRAPHIC_ZOOM(0), // zoom de la fenêtre. Si 0, aucun zoom. Sinon, zoom + focus sur le robot
 	GRAPHIC_COMM_CHART(false), // active les graphes de debug de la communication
 	GRAPHIC_CAPTEURS_CHART(false); // active les graphes de debug des capteurs
 
