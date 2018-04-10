@@ -1,5 +1,6 @@
 package senpai;
 
+import pfg.kraken.robot.ItineraryPoint;
 import pfg.log.Log;
 import senpai.Senpai.ErrorCode;
 import senpai.buffer.OutgoingOrderBuffer;
@@ -30,24 +31,28 @@ public class FollowTrajectory
 {
 	public static void main(String[] args)
 	{
-		if(args.length != 1)
+		if(args.length < 1 || args.length > 2)
 		{
-			System.out.println("Usage : ./run.sh "+FollowTrajectory.class.getSimpleName()+" chemin");
+			System.out.println("Usage : ./run.sh "+FollowTrajectory.class.getSimpleName()+" chemin [maxSpeed]");
 			return;
 		}
 		
 		String configfile = "senpai-trajectory.conf";
 		
-		String filename = args[0];
+		String filename = args[0];			
 		Senpai senpai = new Senpai();
 		ErrorCode error = ErrorCode.NO_ERROR;
 		try
 		{
-			senpai = new Senpai();
-			senpai.initialize(configfile, "default");
 			Log log = new Log(Severity.INFO, configfile, "log");
 			
 			SavedPath s = KnownPathManager.loadPath(filename);
+			if(args.length > 1)
+				s = KnownPathManager.limitMaxSpeed(s, Double.parseDouble(args[1]) / 1000.);
+
+			senpai = new Senpai();
+			senpai.initialize(configfile, "default");
+
 			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
 
 			data.setPosition(s.depart.position, s.depart.orientation);

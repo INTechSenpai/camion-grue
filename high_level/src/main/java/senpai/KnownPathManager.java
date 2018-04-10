@@ -20,6 +20,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import pfg.kraken.robot.ItineraryPoint;
 
 /**
  * Gestionnaire de trajectoires déjà calculées
@@ -87,6 +90,15 @@ public class KnownPathManager {
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	public static SavedPath limitMaxSpeed(SavedPath path, double maxSpeed)
+	{
+		List<ItineraryPoint> newPath = new ArrayList<ItineraryPoint>();
+		for(ItineraryPoint it : path.path)
+			newPath.add(new ItineraryPoint(it.x, it.y, it.orientation, it.curvature, it.goingForward, Math.min(maxSpeed, it.maxSpeed), Math.min(maxSpeed, it.possibleSpeed), it.stop));
+
+		return new SavedPath(newPath, path.depart);
 	}
 	
 	public static SavedPath loadPath(String filename)
