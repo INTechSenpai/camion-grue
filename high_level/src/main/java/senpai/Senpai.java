@@ -33,9 +33,9 @@ import pfg.graphic.DebugTool;
 import pfg.injector.Injector;
 import pfg.injector.InjectorException;
 import pfg.kraken.Kraken;
-import pfg.kraken.astar.DefaultCheminPathfinding;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
+import pfg.kraken.path.StaticPath;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.utils.XY;
 import pfg.log.Log;
@@ -299,7 +299,7 @@ public class Senpai
 			Method m = Kraken.class.getDeclaredMethod("getInjector");
 			m.setAccessible(true);
 			Injector injectorKraken = (Injector) m.invoke(k);
-			injector.addService(injectorKraken.getExistingService(DefaultCheminPathfinding.class));
+			injector.addService(injectorKraken.getExistingService(StaticPath.class));
 		} catch(NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
 		{
 			assert false;

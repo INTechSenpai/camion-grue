@@ -88,7 +88,8 @@ public class Test {
 //			robot.setCinematique(new Cinematique(new XYO(0,1000, 0)));
 			buffer.addPrintable(new Cinematique(destination), Color.BLUE, Layer.FOREGROUND.layer);
 			
-			kraken.initializeNewSearch(new SearchParameters(new XYO(robot.getCinematique().getPosition().clone(), robot.getCinematique().orientationReelle), destination));
+			XYO origine = new XYO(robot.getCinematique().getPosition().clone(), robot.getCinematique().orientationReelle);
+			kraken.initializeNewSearch(new SearchParameters(origine, destination));
 			long avant = System.currentTimeMillis();
 			LinkedList<ItineraryPoint> path = kraken.search();
 			System.out.println("Durée de la recherche : "+(System.currentTimeMillis() - avant));

@@ -17,7 +17,7 @@ package senpai.threads.comm;
 import java.nio.ByteBuffer;
 import pfg.config.Config;
 import pfg.log.Log;
-import pfg.kraken.astar.DefaultCheminPathfinding;
+import pfg.kraken.path.StaticPath;
 import pfg.kraken.robot.Cinematique;
 import senpai.Senpai;
 import senpai.Senpai.ErrorCode;
@@ -49,12 +49,12 @@ public class ThreadCommProcess extends Thread
 	private Robot robot;
 	private Senpai container;
 	private Cinematique current = new Cinematique();
-	private DefaultCheminPathfinding chemin;
+	private StaticPath chemin;
 
 	private boolean capteursOn = false;
 	private int nbCapteurs;
 
-	public ThreadCommProcess(Log log, Config config, IncomingOrderBuffer serie, SensorsDataBuffer buffer, Robot robot, Senpai container, DefaultCheminPathfinding chemin)
+	public ThreadCommProcess(Log log, Config config, IncomingOrderBuffer serie, SensorsDataBuffer buffer, Robot robot, Senpai container, StaticPath chemin)
 	{
 		this.container = container;
 		this.log = log;
