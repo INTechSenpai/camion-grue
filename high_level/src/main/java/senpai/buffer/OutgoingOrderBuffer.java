@@ -220,17 +220,19 @@ public class OutgoingOrderBuffer implements Plottable
 	}
 	
 	/**
-	 * Modifie des points déjà envoyés
-	 * @param points
-	 * @param indexTrajectory
-	 * @throws InterruptedException
+	 * Détruit la trajectoire à partir de l'indice en paramètre (inclus)
+	 * @param firstDestroyIndex
+	 * @throws InterruptedException 
 	 */
-	public void editePointsTrajectoire(List<ItineraryPoint> points, int indexTrajectory, boolean endOfTrajectory) throws InterruptedException
+	public void destroyPointsTrajectoires(int firstDestroyIndex) throws InterruptedException
 	{
-		log.write("Édition de " + points.size() + " points à partir de l'index " + indexTrajectory, Subject.COMM);
-		envoiePointsTrajectoire(points, false, indexTrajectory, endOfTrajectory);
+		ByteBuffer data = ByteBuffer.allocate(4);
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.putInt(firstDestroyIndex);
+		addToBuffer(new Order(data, Id.DESTROY_POINTS));
+		Id.DESTROY_POINTS.ticket.attendStatus(); // on attend d'avoir une confirmation !
 	}
-
+	
 	/**
 	 * Ajoute des points à la fin de la trajectoire
 	 * @0 arc
@@ -239,33 +241,18 @@ public class OutgoingOrderBuffer implements Plottable
 	public void ajoutePointsTrajectoire(List<ItineraryPoint> points, boolean endOfTrajectory) throws InterruptedException
 	{
 		log.write("Ajout de " + points.size() + " points.", Subject.COMM);
-		envoiePointsTrajectoire(points, true, 0,endOfTrajectory);
-	}
-	
-	private void envoiePointsTrajectoire(List<ItineraryPoint> points, boolean add, int indexTrajectory, boolean endOfTrajectory) throws InterruptedException
-	{
+
 		// on peut envoyer 11 arcs par trame au maximum
-		int index = indexTrajectory;
 		int nbEnvoi = (points.size() - 1) / 11 + 1;
 		int modulo = points.size() % 11; // pour le dernier envoi
-		Id id = add ? Id.ADD_POINTS : Id.EDIT_POINTS;
 		for(int i = 0; i < nbEnvoi; i++)
 		{
 			int nbArc = 11;
 			if(i == nbEnvoi - 1) // dernier envoi
 				nbArc = modulo;
-			ByteBuffer data;
-			if(add)
-			{
-				data = ByteBuffer.allocate(22 * nbArc);
-				data.order(ByteOrder.LITTLE_ENDIAN);
-			}
-			else
-			{
-				data = ByteBuffer.allocate(4 + 22 * nbArc);
-				data.order(ByteOrder.LITTLE_ENDIAN);
-				data.putInt(index);
-			}
+			
+			ByteBuffer data = ByteBuffer.allocate(22 * nbArc);
+			data.order(ByteOrder.LITTLE_ENDIAN);
 
 			int k = 11 * i;
 			for(int j = 0; j < nbArc; j++)
@@ -275,9 +262,8 @@ public class OutgoingOrderBuffer implements Plottable
 				addPoint(data, c, endOfTrajectory && k == points.size() - 1);
 				k++;
 			}
-			addToBuffer(new Order(data, id));
-			id.ticket.attendStatus();
-			index += nbArc;
+			addToBuffer(new Order(data, Id.ADD_POINTS));
+			Id.ADD_POINTS.ticket.attendStatus();
 		}
 	}
 	

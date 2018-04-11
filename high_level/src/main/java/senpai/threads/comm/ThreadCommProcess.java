@@ -143,7 +143,7 @@ public class ThreadCommProcess extends Thread
 				}
 				
 				else if(paquet.origine == Id.STOP ||
-						paquet.origine == Id.EDIT_POINTS ||
+						paquet.origine == Id.DESTROY_POINTS ||
 						paquet.origine == Id.ADD_POINTS)
 					paquet.origine.ticket.set(CommProtocol.State.OK);
 				

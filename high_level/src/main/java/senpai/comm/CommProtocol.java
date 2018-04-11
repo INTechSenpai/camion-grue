@@ -81,7 +81,7 @@ public class CommProtocol
 		EDIT_POSITION(0x82, false),
 		SET_POSITION(0x83, false),
 		ADD_POINTS(0x84, true, -10),
-		EDIT_POINTS(0x85, true, -10),
+		DESTROY_POINTS(0x85, true, -10),
 		GET_BATTERY(0x93, true);
 
 		// Paramètres constants
