@@ -123,7 +123,8 @@ public class ThreadCommProcess extends Thread
 					double angleTourelleDroite = data.getFloat();
 					double angleGrue = data.getFloat();
 						
-					current.updateReel(xRobot, yRobot, orientationRobot, chemin.getPath().get(indexTrajectory).enMarcheAvant, courbure);
+					chemin.setCurrentTrajectoryIndex(indexTrajectory).copy(current);
+					current.updateReel(xRobot, yRobot, orientationRobot, courbure);
 
 					robot.setCinematique(current);
 

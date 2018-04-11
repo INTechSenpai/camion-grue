@@ -103,7 +103,8 @@ public class Test {
 			for(ItineraryPoint p : path)
 			{
 				System.out.println(p);
-				c.updateReel(p.x, p.y, p.orientation, p.goingForward, p.curvature);
+				c.enMarcheAvant = p.goingForward;
+				c.updateReel(p.x, p.y, p.orientation, p.curvature);
 				robot.setCinematique(c);
 				buffer.refresh();
 				if(p.stop)
