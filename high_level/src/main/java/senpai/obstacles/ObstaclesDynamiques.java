@@ -16,7 +16,7 @@ package senpai.obstacles;
 
 import java.util.Iterator;
 import pfg.kraken.obstacles.Obstacle;
-import pfg.kraken.obstacles.container.DynamicObstacles;
+import pfg.kraken.obstacles.container.SmartDynamicObstacles;
 import senpai.table.Table;
 
 /**
@@ -25,7 +25,7 @@ import senpai.table.Table;
  *
  */
 
-public class ObstaclesDynamiques implements DynamicObstacles, Iterator<Obstacle>
+public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterator<Obstacle>
 {
 	private Table table;
 	private ObstaclesMemory memory;
@@ -60,6 +60,13 @@ public class ObstaclesDynamiques implements DynamicObstacles, Iterator<Obstacle>
 		if(iteratorMemory.hasNext())
 			return iteratorMemory.next();
 		return iteratorTable.next();
+	}
+
+	@Override
+	protected void addObstacle(Obstacle obs)
+	{
+		assert obs instanceof ObstacleProximity;
+		memory.add((ObstacleProximity)obs);
 	}
 
 }

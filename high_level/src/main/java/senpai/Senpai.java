@@ -18,8 +18,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,7 +33,6 @@ import pfg.injector.InjectorException;
 import pfg.kraken.Kraken;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
-import pfg.kraken.path.StaticPath;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.utils.XY;
 import pfg.log.Log;
@@ -295,15 +292,7 @@ public class Senpai
 		Kraken k = new Kraken(robotTemplate, obstaclesFixes, obsDyn, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles);
 		injector.addService(k);
 
-		try {
-			Method m = Kraken.class.getDeclaredMethod("getInjector");
-			m.setAccessible(true);
-			Injector injectorKraken = (Injector) m.invoke(k);
-			injector.addService(injectorKraken.getExistingService(StaticPath.class));
-		} catch(NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
-		{
-			assert false;
-		}
+		injector.addService(k.enableAutoReplanning());
 
 		if(Thread.currentThread().isInterrupted())
 			throw new InterruptedException();

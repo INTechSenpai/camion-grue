@@ -16,6 +16,8 @@ package senpai;
 
 import java.awt.Color;
 import java.util.LinkedList;
+import java.util.List;
+
 import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
@@ -91,7 +93,7 @@ public class Test {
 			XYO origine = new XYO(robot.getCinematique().getPosition().clone(), robot.getCinematique().orientationReelle);
 			kraken.initializeNewSearch(new SearchParameters(origine, destination));
 			long avant = System.currentTimeMillis();
-			LinkedList<ItineraryPoint> path = kraken.search();
+			List<ItineraryPoint> path = kraken.search();
 			System.out.println("Durée de la recherche : "+(System.currentTimeMillis() - avant));
 			Cinematique c = robot.getCinematique().clone();
 		
