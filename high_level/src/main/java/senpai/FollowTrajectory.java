@@ -57,7 +57,7 @@ public class FollowTrajectory
 
 			data.setPosition(s.depart.position, s.depart.orientation);
 			
-			data.ajoutePointsTrajectoire(s.path);
+			data.ajoutePointsTrajectoire(s.path, true);
 			Ticket t = data.followTrajectory();
 			DataTicket state = t.attendStatus();
 			log.write("Code de retour reçu : "+state, Subject.TRAJECTORY);

@@ -225,10 +225,10 @@ public class OutgoingOrderBuffer implements Plottable
 	 * @param indexTrajectory
 	 * @throws InterruptedException
 	 */
-	public void editePointsTrajectoire(List<ItineraryPoint> points, int indexTrajectory) throws InterruptedException
+	public void editePointsTrajectoire(List<ItineraryPoint> points, int indexTrajectory, boolean endOfTrajectory) throws InterruptedException
 	{
 		log.write("Édition de " + points.size() + " points à partir de l'index " + indexTrajectory, Subject.COMM);
-		envoiePointsTrajectoire(points, false, indexTrajectory);
+		envoiePointsTrajectoire(points, false, indexTrajectory, endOfTrajectory);
 	}
 
 	/**
@@ -236,13 +236,13 @@ public class OutgoingOrderBuffer implements Plottable
 	 * @0 arc
 	 * @throws InterruptedException 
 	 */
-	public void ajoutePointsTrajectoire(List<ItineraryPoint> points) throws InterruptedException
+	public void ajoutePointsTrajectoire(List<ItineraryPoint> points, boolean endOfTrajectory) throws InterruptedException
 	{
 		log.write("Ajout de " + points.size() + " points.", Subject.COMM);
-		envoiePointsTrajectoire(points, true, 0);
+		envoiePointsTrajectoire(points, true, 0,endOfTrajectory);
 	}
 	
-	private void envoiePointsTrajectoire(List<ItineraryPoint> points, boolean add, int indexTrajectory) throws InterruptedException
+	private void envoiePointsTrajectoire(List<ItineraryPoint> points, boolean add, int indexTrajectory, boolean endOfTrajectory) throws InterruptedException
 	{
 		// on peut envoyer 11 arcs par trame au maximum
 		int index = indexTrajectory;
@@ -272,7 +272,7 @@ public class OutgoingOrderBuffer implements Plottable
 			{
 				ItineraryPoint c = points.get(k);
 				log.write("Point " + k + " : " + c, Subject.COMM);
-				addPoint(data, c, k == points.size() - 1);
+				addPoint(data, c, endOfTrajectory && k == points.size() - 1);
 				k++;
 			}
 			addToBuffer(new Order(data, id));
