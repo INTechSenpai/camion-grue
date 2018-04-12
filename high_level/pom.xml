@@ -4,7 +4,7 @@
 
   <groupId>senpai</groupId>
   <artifactId>eurobotruck</artifactId>
-  <version>1.0</version>
+  <version>1.0-SNAPSHOT</version>
 
   <packaging>jar</packaging>
 
@@ -23,41 +23,29 @@
         <repository>
             <id>config-pfg-mvn-repo</id>
             <url>https://raw.githubusercontent.com/PFGimenez/config/mvn-repo/</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
         </repository>
         <repository>
             <id>injector-pfg-mvn-repo</id>
             <url>https://raw.githubusercontent.com/PFGimenez/dependency-injector/mvn-repo/</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
         </repository>
         <repository>
             <id>graphic-pfg-mvn-repo</id>
             <url>https://raw.githubusercontent.com/PFGimenez/graphic-toolbox/mvn-repo/</url>
             <snapshots>
                 <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
+                <updatePolicy>never</updatePolicy>
             </snapshots>
         </repository>
         <repository>
             <id>log-pfg-mvn-repo</id>
             <url>https://raw.githubusercontent.com/PFGimenez/log/mvn-repo/</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
         </repository>
         <repository>
             <id>kraken-pfg-mvn-repo</id>
             <url>https://raw.githubusercontent.com/PFGimenez/The-Kraken-Pathfinding/mvn-repo/</url>
             <snapshots>
                 <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
+                <updatePolicy>never</updatePolicy>
             </snapshots>
         </repository>
     </repositories>
@@ -122,13 +110,6 @@
             <configuration>
                 <appendAssemblyId>false</appendAssemblyId>
                 <finalName>eurobotruck</finalName>
-                <!--
-                <archive>
-                    <manifest>
-                        <mainClass>senpai.Match</mainClass>
-                    </manifest>
-                </archive>
-                -->
                 <descriptorRefs>
                     <descriptorRef>jar-with-dependencies</descriptorRef>
                 </descriptorRefs>
