@@ -24,14 +24,18 @@
     <id>PFGimenez-Kraken</id>
     <url>https://packagecloud.io/PFGimenez/Kraken/maven2</url>
     <releases>
-      <enabled>true</enabled>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
     </releases>
     <snapshots>
-      <enabled>true</enabled>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
     </snapshots>
   </repository>
 </repositories>
 
+
+  <dependencies>
     <dependency>
       <groupId>pfg.injector</groupId>
       <artifactId>dependency-injector</artifactId>
