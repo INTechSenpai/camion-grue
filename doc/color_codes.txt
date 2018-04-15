@@ -55,3 +55,21 @@ Gyro1(centre)	(Bleu)
 Gyro2			(Vert-blanc)
 Gyro3			(Vert)
 Gyro4(ext)		(Bleu-blanc)
+
+# Grue
+Grue MOSI		(Vert)
+Grue MISO		(Vert-blanc)
+GND				(Marron)
+Vcc+12V			(Rose)
+
+## Gyrophares Grue
+Gyro	(Orange)
+GND		(Orange-blanc)
+
+## Capteurs Grue
+3V3		(orange)
+GND		(marron)
+SDA		(Bleu-blanc)
+SCL		(Vert-blanc)
+EN-INT	(Bleu)
+EN-EXT	(Vert)

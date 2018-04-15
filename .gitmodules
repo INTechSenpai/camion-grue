@@ -4,3 +4,6 @@
 [submodule "low_level/lowlevel_master/Servos/dynamixel_teensy"]
 	path = low_level/lowlevel_master/Servos/dynamixel_teensy
 	url = https://github.com/sylvaing19/dynamixel_teensy.git
+[submodule "low_level/lowlevel_actuator/dynamixel_teensy"]
+	path = low_level/lowlevel_actuator/dynamixel_teensy
+	url = https://github.com/sylvaing19/dynamixel_teensy.git
