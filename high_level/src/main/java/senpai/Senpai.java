@@ -226,9 +226,6 @@ public class Senpai
 		
 		debug = DebugTool.getDebugTool(new HashMap<ConfigInfo, Object>(), new XY(0,1000), positionRobot.getPosition(), Severity.INFO, configfile, profiles);
 		injector.addService(GraphicDisplay.class, debug.getGraphicDisplay());
-
-		Robot robot = getService(Robot.class);
-		robot.initPositionObject(positionRobot);
 		
 		Speed.TEST.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_TEST) / 1000.;
 		Speed.REPLANIF.translationalSpeed = config.getDouble(ConfigInfoSenpai.VITESSE_ROBOT_REPLANIF) / 1000.;
@@ -293,6 +290,9 @@ public class Senpai
 		injector.addService(k);
 
 		injector.addService(k.enableAutoReplanning());
+
+		Robot robot = getService(Robot.class);
+		robot.initPositionObject(positionRobot);
 
 		if(Thread.currentThread().isInterrupted())
 			throw new InterruptedException();

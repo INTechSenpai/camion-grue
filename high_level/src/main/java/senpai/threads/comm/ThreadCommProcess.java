@@ -182,13 +182,11 @@ public class ThreadCommProcess extends Thread
 					byte code = data.get();
 					if(code == 0)
 					{
-						robot.endMoveOK();
 						chemin.endContinuousSearch();
 						paquet.origine.ticket.set(CommProtocol.State.OK);
 					}
 					else
 					{
-						robot.endMoveKO();
 						chemin.endContinuousSearchWithException(new NotFastEnoughException("Erreur de suivi de trajectoire"));
 						log.write(CommProtocol.TrajEndMask.describe(code), Subject.TRAJECTORY);
 						paquet.origine.ticket.set(CommProtocol.State.KO, CommProtocol.TrajEndMask.describe(code));

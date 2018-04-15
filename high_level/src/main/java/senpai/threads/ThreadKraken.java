@@ -41,7 +41,7 @@ public class ThreadKraken extends Thread
 	private OutgoingOrderBuffer data;
 	private GraphicDisplay display;
 	private Robot robot;
-	private boolean simuleLL;
+	private boolean simuleLL, graphic;
 	
 	protected Log log;
 
@@ -53,7 +53,9 @@ public class ThreadKraken extends Thread
 		this.display = display;
 		this.robot = robot;
 		simuleLL = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
+		graphic = config.getBoolean(ConfigInfoSenpai.GRAPHIC_PATH);
 		setDaemon(true);
+		setPriority(Thread.MAX_PRIORITY);
 	}
 
 	@Override
@@ -67,8 +69,13 @@ public class ThreadKraken extends Thread
 			{
 				try {
 					PathDiff diff = dpath.waitDiff();					
-					for(ItineraryPoint p : diff.diff)
-						display.addPrintable(p, p.stop ? Color.BLUE : Color.BLACK, Layer.FOREGROUND.layer);
+
+					if(graphic)
+						for(ItineraryPoint p : diff.diff)
+						{
+//							System.out.println(p);
+							display.addPrintable(p, p.stop ? Color.BLUE : Color.BLACK, Layer.FOREGROUND.layer);
+						}
 
 					if(!simuleLL)
 					{
@@ -85,7 +92,6 @@ public class ThreadKraken extends Thread
 
 				} catch(PathfindingException e)
 				{
-					robot.endMoveKO();
 					data.immobilise();
 				}
 			}

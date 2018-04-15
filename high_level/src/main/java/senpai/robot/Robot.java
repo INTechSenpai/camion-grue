@@ -16,11 +16,17 @@ package senpai.robot;
 
 import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
 import pfg.graphic.printable.Segment;
+import pfg.kraken.Kraken;
+import pfg.kraken.SearchParameters;
+import pfg.kraken.astar.thread.DynamicPath;
+import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.robot.Cinematique;
+import pfg.kraken.robot.ItineraryPoint;
 import pfg.kraken.robot.RobotState;
 import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
@@ -29,6 +35,7 @@ import senpai.ConfigInfoSenpai;
 import senpai.Subject;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
+import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
@@ -45,9 +52,7 @@ public class Robot extends RobotState
 	{
 		STANDBY, // le robot est à l'arrêt
 		READY_TO_GO, // une trajectoire a été envoyée
-		MOVING, // le robot se déplace
-		MOVE_END_OK, // le robot a fini son déplacement, tout va bien
-		MOVE_END_KO; // le robot a fini son déplacement à cause d'une erreur
+		MOVING; // le robot se déplace
 	}
 	
 	/*
@@ -56,6 +61,9 @@ public class Robot extends RobotState
 
 	protected volatile boolean symetrie;
 	protected Log log;
+	protected Kraken kraken;
+	private DynamicPath dpath;
+	
 /*	public Robot(Log log)
 	{
 		this.log = log;
@@ -82,11 +90,13 @@ public class Robot extends RobotState
 	private volatile boolean cinematiqueInitialised = false;
 
 	// Constructeur
-	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer)
+	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, DynamicPath dpath)
 	{
 		this.log = log;
 		this.out = out;
 		this.buffer = buffer;
+		this.kraken = kraken;
+		this.dpath = dpath;
 		
 		// On ajoute une fois pour toute l'image du robot
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS))
@@ -320,7 +330,20 @@ public class Robot extends RobotState
 		notifyAll();
 	}
 	
-	public synchronized boolean followTrajectory() throws InterruptedException
+	public synchronized DataTicket goTo(XYO destination) throws PathfindingException, InterruptedException
+	{
+		return goTo(new SearchParameters(cinematique.getXYO(), destination));
+	}
+	
+	public synchronized DataTicket goTo(SearchParameters sp) throws PathfindingException, InterruptedException
+	{
+		kraken.startContinuousSearch(sp);
+		DataTicket out = followTrajectory();
+		kraken.endContinuousSearch();
+		return out;
+	}
+	
+	public synchronized DataTicket followTrajectory() throws InterruptedException
 	{
 		assert etat == State.READY_TO_GO || etat == State.STANDBY;
 
@@ -334,35 +357,30 @@ public class Robot extends RobotState
 		assert etat == State.READY_TO_GO;
 		etat = State.MOVING;
 		
-		out.followTrajectory();
+		DataTicket dt;
 		
-		while(etat == State.MOVING)
-			wait();
+		if(!simuleSerie)
+		{
+			Ticket t = out.followTrajectory();
+		
+			dt = t.attendStatus();
+			assert etat != State.MOVING : etat;
+//			while(etat == State.MOVING)
+//				wait();
+		}
+		else
+		{
+			dt = new DataTicket(dpath.getPath(), CommProtocol.State.OK);
+		}
 		
 		log.write("Le robot ne bouge plus : "+etat, Subject.TRAJECTORY);
 		
-		assert etat == State.MOVE_END_OK || etat == State.MOVE_END_KO;
-		boolean out = etat == State.MOVE_END_OK;
 		etat = State.STANDBY;
-		return out;
+		return dt;
 	}
 
 	public synchronized boolean isStandby()
 	{
 		return etat == State.STANDBY;
-	}
-
-	public synchronized void endMoveKO()
-	{
-		assert etat == State.MOVING || etat == State.MOVE_END_KO; // l'erreur peut venir de plusieurs endroits
-		etat = State.MOVE_END_KO;
-		notifyAll();
-	}
-
-	public synchronized void endMoveOK()
-	{
-		assert etat == State.MOVING;
-		etat = State.MOVE_END_OK;
-		notifyAll();
 	}
 }

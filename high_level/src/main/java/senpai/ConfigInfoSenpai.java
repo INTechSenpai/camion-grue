@@ -188,6 +188,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	GRAPHIC_TRACE_ROBOT(false), // affiche la trace du robot
 	GRAPHIC_EXTERNAL(false), // l'affichage doit-il être déporté par le serveur
 							// d'affichage ?
+	GRAPHIC_PATH(false), // affiche le chemin en cours
 	SAVE_VIDEO(false), // sauvegarde d'une "vidéo" pour visionner les
 								// images plus tard
 	GRAPHIC_COMM_CHART(false), // active les graphes de debug de la communication

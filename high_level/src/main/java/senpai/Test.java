@@ -15,18 +15,15 @@
 package senpai;
 
 import java.awt.Color;
-import java.util.LinkedList;
 import java.util.List;
-
 import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
 import pfg.kraken.Kraken;
 import pfg.kraken.SearchParameters;
-import pfg.kraken.obstacles.CircularObstacle;
+import pfg.kraken.astar.thread.DynamicPath;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.robot.ItineraryPoint;
-import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import pfg.log.Log;
 import senpai.Senpai.ErrorCode;
@@ -59,7 +56,7 @@ public class Test {
 			Config config = senpai.getService(Config.class);
 			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
 			Robot robot = senpai.getService(Robot.class);
-			Kraken kraken = senpai.getService(Kraken.class);
+			DynamicPath dpath = senpai.getService(DynamicPath.class);
 			GraphicDisplay buffer = senpai.getService(GraphicDisplay.class);
 			
 			log.write("Initialisation des actionneurs…", Subject.STATUS);
@@ -89,17 +86,12 @@ public class Test {
 			
 //			robot.setCinematique(new Cinematique(new XYO(0,1000, 0)));
 			buffer.addPrintable(new Cinematique(destination), Color.BLUE, Layer.FOREGROUND.layer);
-			
-			XYO origine = new XYO(robot.getCinematique().getPosition().clone(), robot.getCinematique().orientationReelle);
-			kraken.startContinuousSearch(new SearchParameters(origine, destination));
-			
-			robot.followTrajectory();
-/*			
-			long avant = System.currentTimeMillis();
-			List<ItineraryPoint> path = kraken.search();
-			System.out.println("Durée de la recherche : "+(System.currentTimeMillis() - avant));
+			System.out.println("Destination : "+destination);
+			DataTicket dt = robot.goTo(destination);
+				
 			Cinematique c = robot.getCinematique().clone();
 		
+			List<ItineraryPoint> path = (List<ItineraryPoint>) dt.data;
 			for(ItineraryPoint p : path)
 				buffer.addPrintable(p, p.stop ? Color.BLUE : Color.BLACK, Layer.FOREGROUND.layer);
 
@@ -114,7 +106,7 @@ public class Test {
 					Thread.sleep(150);
 				else
 					Thread.sleep(Math.round(50./p.possibleSpeed));
-			}*/
+			}
 			
 			Thread.sleep(5000);
 		}
