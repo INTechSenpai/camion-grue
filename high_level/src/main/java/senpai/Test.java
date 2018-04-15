@@ -84,13 +84,14 @@ public class Test {
 //			XYO destination = new ScriptPriseCube(0, ElementColor.BLEU, ScriptPriseCube.Face.BAS, false).getPointEntree();
 			XYO destination = new ScriptPriseCube(Croix.CROIX_HAUT_DROITE, CubeColor.BLEU, CubeFace.GAUCHE, true).getPointEntree();
 			
-//			robot.setCinematique(new Cinematique(new XYO(0,1000, 0)));
 			buffer.addPrintable(new Cinematique(destination), Color.BLUE, Layer.FOREGROUND.layer);
-			System.out.println("Destination : "+destination);
+
 			DataTicket dt = robot.goTo(destination);
 				
-			Cinematique c = robot.getCinematique().clone();
+			Cinematique c = robot.getCinematique();//.clone();
 		
+			// Ceci ne fonctionne qu'avec la simulation du LL !
+			@SuppressWarnings("unchecked")
 			List<ItineraryPoint> path = (List<ItineraryPoint>) dt.data;
 			for(ItineraryPoint p : path)
 				buffer.addPrintable(p, p.stop ? Color.BLUE : Color.BLACK, Layer.FOREGROUND.layer);
@@ -100,7 +101,7 @@ public class Test {
 				System.out.println(p);
 				c.enMarcheAvant = p.goingForward;
 				c.updateReel(p.x, p.y, p.orientation, p.curvature);
-				robot.setCinematique(c);
+//				robot.setCinematique(c);
 				buffer.refresh();
 				if(p.stop)
 					Thread.sleep(150);

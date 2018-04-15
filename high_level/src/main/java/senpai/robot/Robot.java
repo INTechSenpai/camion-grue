@@ -213,77 +213,20 @@ public class Robot extends RobotState
 		log.write("Temps d'exécution de " + nom + " : " + (System.currentTimeMillis() - avant), Subject.SCRIPT);
 	}
 
-	/**
-	 * Méthode bloquante qui suit une trajectoire précédemment envoyée
-	 * 
-	 * @throws InterruptedException
-	 * @throws UnableToMoveException
-	 */
-/*	public void followTrajectory(Speed vitesse) throws InterruptedException, UnableToMoveException
-	{
-		if(simuleSerie)
-		{
-//			setCinematique(chemin.getLastCinematique());
-			return;
-		}
-		*/
-/*		boolean oneMoreTime = true;
-		if(chemin.isEmpty())
-			log.warning("Trajectoire vide !");
-		else
-			while(!chemin.isArrived())
-			{
-				boolean marcheAvant = chemin.getCurrentMarcheAvant();
-				if(marcheAvant)
-					setSensorMode(SensorMode.FRONT_AND_SIDES);
-				else
-					setSensorMode(SensorMode.BACK_AND_SIDES);
-				try
-				{
-					// on attend toujours que la trajectoire soit bien envoyée
-					// avant de lancer un FollowTrajectory
-					chemin.waitTrajectoryTickets();
-					Ticket t = out.followTrajectory(vitesse, marcheAvant);
-					InOrder i = t.attendStatus();
-					if(i.etat == State.KO)
-					{
-						chemin.clear();
-
-						// on attend la fin du stop
-						if(i == InOrder.STOP_REQUIRED)
-							out.waitStop();
-						else
-							log.critical("Erreur : " + i);
-
-						if(i == InOrder.ROBOT_BLOCAGE_EXTERIEUR && oneMoreTime)
-						{
-							oneMoreTime = false;
-							log.debug("One more time !");
-							continue;
-						}
-
-						throw new UnableToMoveException(i.name());
-					}
-					log.debug("Le trajet s'est bien terminé (" + i + ")");
-				}
-				finally
-				{
-					setSensorMode(SensorMode.ALL);
-				}
-			}
-		chemin.clear(); // dans tous les cas, il faut nettoyer le chemin
-		*/
-//	}
-
 	public void avance(double distance, Speed speed)
 			throws UnableToMoveException, InterruptedException {
 		// TODO Auto-generated method stub
 		
 	}
-
-	public void execute(CommProtocol ordre, Object... param) throws InterruptedException, ActionneurException
+	
+	public void execute(CommProtocol.Id ordre, Object... param) throws InterruptedException, ActionneurException
 	{
-		bloque(ordre.toString(), param);
+		bloque(ordre.getMethodName(), param);
+	}
+	
+	// TODO remove
+	private void exempleAct()
+	{
 	}
 
 	public void initActionneurs()

@@ -1,6 +1,5 @@
 package senpai;
 
-import pfg.kraken.robot.ItineraryPoint;
 import pfg.log.Log;
 import senpai.Senpai.ErrorCode;
 import senpai.buffer.OutgoingOrderBuffer;

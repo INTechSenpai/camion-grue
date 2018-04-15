@@ -75,6 +75,8 @@ public class CommProtocol
 		WAIT_FOR_JUMPER(0x22),
 		START_MATCH_CHRONO(0x23),
 		
+		EXEMPLE_ACTIONNEUR(0x24, "exempleAct"), // TODO virer
+		
 		// Ordres immédiats (0x80 à 0xFF)
 		PING(0x80, true),
 		ASK_COLOR(0x81, true),
@@ -91,7 +93,8 @@ public class CommProtocol
 		private final boolean isStream; // stream ?
 		private final boolean expectAnswer;
 		public final int priority; // basse priorité = urgent
-
+		private String name;
+		
 		// Variables d'état
 		private volatile boolean waitingForAnswer; // pour les canaux, permet de savoir s'ils sont ouverts ou non
 		private volatile boolean sendIsPossible; // "true" si un ordre long est lancé, "false" sinon
@@ -124,6 +127,11 @@ public class CommProtocol
 				dateLastClose = System.currentTimeMillis();
 		}
 		
+		public String getMethodName()
+		{
+			return name;
+		}
+		
 		@Override
 		public String toString()
 		{
@@ -136,6 +144,13 @@ public class CommProtocol
 			this(code, 0);
 		}
 	
+		// priorité par défaut : 0
+		private Id(int code, String name)
+		{
+			this(code, 0);
+			this.name = name;
+		}
+		
 		// constructeur des ordres longs et des streams
 		private Id(int code, int priority)
 		{
@@ -169,6 +184,8 @@ public class CommProtocol
 				ticket = new Ticket();
 			else
 				ticket = null;
+			
+			name = toString();
 		}
 		
 		public void answerReceived()
