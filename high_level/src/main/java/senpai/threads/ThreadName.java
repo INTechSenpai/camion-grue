@@ -28,6 +28,7 @@ import senpai.threads.comm.ThreadCommProcess;
 public enum ThreadName
 {
 	CAPTEURS(ThreadCapteurs.class),
+	KRAKEN(ThreadKraken.class),
 	PEREMPTION(ThreadPeremption.class),
 	SERIAL_INPUT_ORDRE(ThreadCommProcess.class),
 	SERIAL_INPUT_TRAME(ThreadCommListener.class),

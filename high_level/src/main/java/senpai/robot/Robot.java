@@ -41,6 +41,15 @@ import senpai.exceptions.UnableToMoveException;
 
 public class Robot extends RobotState
 {
+	public enum State
+	{
+		STANDBY, // le robot est à l'arrêt
+		READY_TO_GO, // une trajectoire a été envoyée
+		MOVING, // le robot se déplace
+		MOVE_END_OK, // le robot a fini son déplacement, tout va bien
+		MOVE_END_KO; // le robot a fini son déplacement à cause d'une erreur
+	}
+	
 	/*
 	 * DÉPLACEMENT HAUT NIVEAU
 	 */
@@ -64,6 +73,7 @@ public class Robot extends RobotState
 		return cinematique.toString();
 	}
 
+	private volatile State etat = State.STANDBY;
 	private boolean simuleSerie;
 	private boolean printTrace;
 	private OutgoingOrderBuffer out;
@@ -303,4 +313,56 @@ public class Robot extends RobotState
 			printable.initPositionObject(cinematique);
 	}
 
+	public synchronized void setReady()
+	{
+		assert etat == State.STANDBY;
+		etat = State.READY_TO_GO;
+		notifyAll();
+	}
+	
+	public synchronized boolean followTrajectory() throws InterruptedException
+	{
+		assert etat == State.READY_TO_GO || etat == State.STANDBY;
+
+		log.write("Attente de la trajectoire…", Subject.TRAJECTORY);
+
+		while(etat == State.STANDBY)
+			wait();
+
+		log.write("On commence à suivre la trajectoire", Subject.TRAJECTORY);
+		
+		assert etat == State.READY_TO_GO;
+		etat = State.MOVING;
+		
+		out.followTrajectory();
+		
+		while(etat == State.MOVING)
+			wait();
+		
+		log.write("Le robot ne bouge plus : "+etat, Subject.TRAJECTORY);
+		
+		assert etat == State.MOVE_END_OK || etat == State.MOVE_END_KO;
+		boolean out = etat == State.MOVE_END_OK;
+		etat = State.STANDBY;
+		return out;
+	}
+
+	public synchronized boolean isStandby()
+	{
+		return etat == State.STANDBY;
+	}
+
+	public synchronized void endMoveKO()
+	{
+		assert etat == State.MOVING || etat == State.MOVE_END_KO; // l'erreur peut venir de plusieurs endroits
+		etat = State.MOVE_END_KO;
+		notifyAll();
+	}
+
+	public synchronized void endMoveOK()
+	{
+		assert etat == State.MOVING;
+		etat = State.MOVE_END_OK;
+		notifyAll();
+	}
 }

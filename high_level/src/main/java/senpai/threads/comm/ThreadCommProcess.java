@@ -18,6 +18,7 @@ import java.nio.ByteBuffer;
 import pfg.config.Config;
 import pfg.log.Log;
 import pfg.kraken.astar.thread.DynamicPath;
+import pfg.kraken.exceptions.NotFastEnoughException;
 import pfg.kraken.robot.Cinematique;
 import senpai.Senpai;
 import senpai.Senpai.ErrorCode;
@@ -180,9 +181,15 @@ public class ThreadCommProcess extends Thread
 				{
 					byte code = data.get();
 					if(code == 0)
+					{
+						robot.endMoveOK();
+						chemin.endContinuousSearch();
 						paquet.origine.ticket.set(CommProtocol.State.OK);
+					}
 					else
 					{
+						robot.endMoveKO();
+						chemin.endContinuousSearchWithException(new NotFastEnoughException("Erreur de suivi de trajectoire"));
 						log.write(CommProtocol.TrajEndMask.describe(code), Subject.TRAJECTORY);
 						paquet.origine.ticket.set(CommProtocol.State.KO, CommProtocol.TrajEndMask.describe(code));
 					}

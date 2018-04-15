@@ -91,7 +91,10 @@ public class Test {
 			buffer.addPrintable(new Cinematique(destination), Color.BLUE, Layer.FOREGROUND.layer);
 			
 			XYO origine = new XYO(robot.getCinematique().getPosition().clone(), robot.getCinematique().orientationReelle);
-			kraken.initializeNewSearch(new SearchParameters(origine, destination));
+			kraken.startContinuousSearch(new SearchParameters(origine, destination));
+			
+			robot.followTrajectory();
+/*			
 			long avant = System.currentTimeMillis();
 			List<ItineraryPoint> path = kraken.search();
 			System.out.println("Durée de la recherche : "+(System.currentTimeMillis() - avant));
@@ -111,7 +114,7 @@ public class Test {
 					Thread.sleep(150);
 				else
 					Thread.sleep(Math.round(50./p.possibleSpeed));
-			}
+			}*/
 			
 			Thread.sleep(5000);
 		}
