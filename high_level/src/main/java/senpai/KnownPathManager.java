@@ -14,6 +14,7 @@
 
 package senpai;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -21,7 +22,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import pfg.kraken.robot.ItineraryPoint;
 
 /**
@@ -31,17 +34,17 @@ import pfg.kraken.robot.ItineraryPoint;
  */
 
 public class KnownPathManager {
-/*
-	private Log log;
 	
-	public KnownPathManager(Log log)
+	public KnownPathManager()
 	{
-		this.log = log;
+		loadAllPaths();
 	}
-	*/
 	
 	
-	public static void savePath(String filename, SavedPath path)
+	private Map<String, SavedPath> paths = new HashMap<String, SavedPath>();
+	
+	
+	public void savePath(String filename, SavedPath path)
 	{
 //		log.write("Sauvegarde d'une trajectoire : "+filename, Subject.DUMMY);
 		FileOutputStream fichier = null;
@@ -92,7 +95,7 @@ public class KnownPathManager {
 		}
 	}
 	
-	public static SavedPath limitMaxSpeed(SavedPath path, double maxSpeed)
+	public SavedPath limitMaxSpeed(SavedPath path, double maxSpeed)
 	{
 		List<ItineraryPoint> newPath = new ArrayList<ItineraryPoint>();
 		for(ItineraryPoint it : path.path)
@@ -101,7 +104,32 @@ public class KnownPathManager {
 		return new SavedPath(newPath, path.depart);
 	}
 	
-	public static SavedPath loadPath(String filename)
+	private void loadAllPaths()
+	{
+		File[] files = new File("paths/").listFiles();
+		for(File f : files)
+		{
+			ObjectInputStream ois = null;
+			try
+			{
+				ois = new ObjectInputStream(new FileInputStream(f));
+				paths.put(f.getName(), (SavedPath) ois.readObject());
+				ois.close();
+			}
+			catch(IOException | ClassNotFoundException | ClassCastException e)
+			{
+				System.out.println("Erreur avec le fichier : "+f.getName());
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public SavedPath loadPath(String filename)
+	{
+		return paths.get(filename);
+	}
+	
+/*	public SavedPath loadPath(String filename)
 	{
 //		log.debug("Chargement d'une trajectoire : "+nom);
 		ObjectInputStream ois = null;
@@ -126,6 +154,6 @@ public class KnownPathManager {
 				}
 		}
 		return null;
-	}
+	}*/
 	
 }

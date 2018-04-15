@@ -19,9 +19,6 @@ import java.util.List;
 import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
-import pfg.kraken.Kraken;
-import pfg.kraken.SearchParameters;
-import pfg.kraken.astar.thread.DynamicPath;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.robot.ItineraryPoint;
 import pfg.kraken.utils.XYO;
@@ -56,7 +53,6 @@ public class Test {
 			Config config = senpai.getService(Config.class);
 			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
 			Robot robot = senpai.getService(Robot.class);
-			DynamicPath dpath = senpai.getService(DynamicPath.class);
 			GraphicDisplay buffer = senpai.getService(GraphicDisplay.class);
 			
 			log.write("Initialisation des actionneurs…", Subject.STATUS);
@@ -82,7 +78,7 @@ public class Test {
 			robot.updateColorAndSendPosition(couleur);
 			//XYO destination = new XYO(0, 1000, Math.PI);
 //			XYO destination = new ScriptPriseCube(0, ElementColor.BLEU, ScriptPriseCube.Face.BAS, false).getPointEntree();
-			XYO destination = new ScriptPriseCube(Croix.CROIX_HAUT_DROITE, CubeColor.BLEU, CubeFace.GAUCHE, true).getPointEntree();
+			XYO destination = new ScriptPriseCube(Croix.CROIX_HAUT_DROITE, CubeColor.BLEU, CubeFace.GAUCHE, false).getPointEntree();
 			
 			buffer.addPrintable(new Cinematique(destination), Color.BLUE, Layer.FOREGROUND.layer);
 
@@ -106,7 +102,7 @@ public class Test {
 				if(p.stop)
 					Thread.sleep(150);
 				else
-					Thread.sleep(Math.round(50./p.possibleSpeed));
+					Thread.sleep(Math.min(150, Math.round(50./p.possibleSpeed)));
 			}
 			
 			Thread.sleep(5000);

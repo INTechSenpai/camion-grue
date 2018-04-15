@@ -43,7 +43,8 @@ public class DisplayTrajectory
 		
 		String configfile = "senpai-trajectory.conf";
 		String filename = args[0];
-		List<ItineraryPoint> path = KnownPathManager.loadPath(filename).path;
+		KnownPathManager manager = new KnownPathManager();
+		List<ItineraryPoint> path = manager.loadPath(filename).path;
 
 		Log log = new Log(Severity.INFO, configfile, "log");
 		

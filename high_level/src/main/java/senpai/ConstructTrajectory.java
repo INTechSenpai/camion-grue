@@ -115,7 +115,10 @@ public class ConstructTrajectory
 			}
 			display.refresh();
 			if(output != null)
-				KnownPathManager.savePath(output, new SavedPath(path, depart));
+			{
+				KnownPathManager manager = new KnownPathManager();
+				manager.savePath(output, new SavedPath(path, depart));
+			}
 			else
 				log.write("Chemin non sauvegardé", Subject.STATUS);
 		}
