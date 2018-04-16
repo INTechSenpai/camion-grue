@@ -62,15 +62,19 @@
 #define BLOCKING_DELAY          100 // ms
 #define BLOCKING_SENSIBILITY    0
 
-#define SPEED_KP    3
-#define SPEED_KI    50
-#define SPEED_KD    0.1
+#define H_SPEED_KP    900
+#define H_SPEED_KI    15000
+#define H_SPEED_KD    30
+
+#define V_SPEED_KP    90
+#define V_SPEED_KI    1500
+#define V_SPEED_KD    3
 
 #define HMOTOR_KP   10
 #define HMOTOR_KD   0
 
 #define HMOTOR_MAX_SPEED    3   // rad/s
-#define VMOTOR_MAX_SPEED    100 // mm/s
+#define VMOTOR_MAX_SPEED    30  // mm/s
 
 
 #endif

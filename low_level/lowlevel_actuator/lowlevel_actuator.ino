@@ -23,6 +23,7 @@ void loop()
     delay(200);
 
     ArmController & armController = ArmController::Instance();
+    armController.init();
     IntervalTimer timer;
     timer.priority(253);
     timer.begin(armControllerInterrupt, PERIOD_ASSERV);
@@ -34,12 +35,13 @@ void loop()
     armController.getCurrentPosition(p);
     Serial.println(p);
     p.setHAngle(1.2);
-    //p.setVAngle(0.17);
+    p.setVAngle(0.17);
     armController.setAimPosition(p);
     Serial.println(p);
+    Serial.println();
     while (armController.isMoving())
     {
-        //armController.controlServos(); todo: debug this shit
+        armController.controlServos();
 
         static uint32_t lastTime = 0;
         static bool state = false;

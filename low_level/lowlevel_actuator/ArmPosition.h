@@ -17,10 +17,10 @@
 #define ARM_MIN_V_ANGLE     -0.26   // TBD
 #define ARM_MAX_V_ANGLE     0.35    // TBD
 #define ARM_POS_VMOT_ORIGIN 128.3   // [mm]
-#define ARM_MIN_HEAD_ANGLE  -2.356  // min(headLocalAngle)
-#define ARM_MAX_HEAD_ANGLE  2.18    // max(headLocalAngle)
+#define ARM_MIN_HEAD_ANGLE  0.436   //0.262   //-2.356  // min(headLocalAngle)
+#define ARM_MAX_HEAD_ANGLE  4.974   //4.798   //2.18    // max(headLocalAngle)
 #define ARM_MIN_PLIER_POS   0       // [mm]
-#define ARM_MAX_PLIER_POS   50      // [mm]
+#define ARM_MAX_PLIER_POS   49      // [mm]
 
 /* Tolérances */
 #define ARM_H_TOLERANCE     0.035   // [rad]
@@ -50,7 +50,7 @@ public:
 
     void resetAXToOrigin()
     {
-        setHeadLocalAngle(ARM_MIN_HEAD_ANGLE);
+        setHeadLocalAngle(ARM_MAX_HEAD_ANGLE);
         setPlierPos(ARM_MIN_PLIER_POS);
     }
 
@@ -105,7 +105,7 @@ public:
     void setPlierAngle(float angle)
     {
         plierAngle = angle;
-        plierPos = ARM_PLIER_AMPLITUDE * (1 + cosf(M_PI / 3 - plierAngle));
+        plierPos = ARM_PLIER_AMPLITUDE * (1 - cosf(plierAngle - M_PI / 3)) - 0.38;
     }
 
     void setPlierAngleDeg(float angleDeg)
@@ -116,7 +116,7 @@ public:
     void setPlierPos(float pos)
     {
         plierPos = constrain(pos, ARM_MIN_PLIER_POS, ARM_MAX_PLIER_POS);
-        plierAngle = M_PI / 3 - acosf(constrain(plierPos / ARM_PLIER_AMPLITUDE - 1, -1, 1));
+        plierAngle = M_PI / 3 + acosf(constrain(1 - (plierPos + 0.38) / ARM_PLIER_AMPLITUDE, -1, 1));
     }
 
     bool closeEnoughTo(ArmPosition position)
@@ -130,7 +130,7 @@ public:
 
     size_t printTo(Print& p) const
     {
-        return p.printf("%g_%g_%g_%g_%g_%g_%g",
+        return p.printf("%g\t%g\t%g\t%g\t%g\t%g\t%g",
             hAngle,
             vAngle,
             posMotV,
@@ -143,13 +143,13 @@ public:
 private:
     void updateHeadGlobalAngle()
     {
-        headGlobalAngle = headLocalAngle - ARM_MIN_HEAD_ANGLE - HALF_PI + vAngle;
+        headGlobalAngle = ARM_MAX_HEAD_ANGLE - headLocalAngle - HALF_PI + vAngle;
     }
 
     void updateHeadLocalAngle()
     {
         headLocalAngle = constrain(
-            headGlobalAngle + ARM_MIN_HEAD_ANGLE + HALF_PI - vAngle, 
+            ARM_MAX_HEAD_ANGLE - headGlobalAngle - HALF_PI + vAngle,
             ARM_MIN_HEAD_ANGLE, 
             ARM_MAX_HEAD_ANGLE);
     }

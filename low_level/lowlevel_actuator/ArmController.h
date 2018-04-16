@@ -31,19 +31,31 @@ public:
         plierAX12(serialAX, ID_AX12_PLIER)
     {
         hMotorBlockingMgr.setTunings(BLOCKING_SENSIBILITY, BLOCKING_DELAY);
-        hMotorSpeedPID.setTunings(SPEED_KP, SPEED_KI, SPEED_KD);
+        hMotorSpeedPID.setTunings(H_SPEED_KP, H_SPEED_KI, H_SPEED_KD);
         hMotorSpeedPID.setOutputLimits(-MAX_PWM, MAX_PWM);
         hMotorPosPID.setTunings(HMOTOR_KP, 0, HMOTOR_KD);
         hMotorPosPID.setOutputLimits(-HMOTOR_MAX_SPEED, HMOTOR_MAX_SPEED);
 
         vMotorBlockingMgr.setTunings(BLOCKING_SENSIBILITY, BLOCKING_DELAY);
-        vMotorSpeedPID.setTunings(SPEED_KP, SPEED_KI, SPEED_KD);
+        vMotorSpeedPID.setTunings(V_SPEED_KP, V_SPEED_KI, V_SPEED_KD);
         vMotorSpeedPID.setOutputLimits(-MAX_PWM, MAX_PWM);
 
         resetToOrigin();
         aimPosition.resetAXToOrigin();
         currentPosition.resetAXToOrigin();
         stop();
+
+        serialAX.begin(SERIAL_AX12_BAUDRATE);
+    }
+
+    void init()
+    {
+        headAX12.init();
+        headAX12.jointMode();
+        headAX12.enableTorque();
+        plierAX12.init();
+        plierAX12.jointMode();
+        plierAX12.enableTorque();
     }
 
     /* A appeller depuis l'interruption sur timer */
@@ -58,13 +70,11 @@ public:
         hMotorPosPID.compute(); // update aimHSpeed
         hMotorSpeedPID.compute(); // update hMotorPWM
 
-        static uint8_t a = 0;
-        if (a == 0) {
-            Serial.println(vMotorSpeedPID);
+        if (abs(currentPosition.getPosMotV() - aimPosition.getPosMotV()) < ARM_V_TOLERANCE)
+        {
+            aimVSpeed = 0;
         }
-        a++;
-
-        if (currentPosition.getPosMotV() < aimPosition.getPosMotV())
+        else if (currentPosition.getPosMotV() < aimPosition.getPosMotV())
         {
             aimVSpeed = VMOTOR_MAX_SPEED;
         }
@@ -73,6 +83,16 @@ public:
             aimVSpeed = -VMOTOR_MAX_SPEED;
         }
         vMotorSpeedPID.compute(); // update vMotorPWM
+
+        //static uint8_t a = 0;
+        //if (a == 0) {
+        //    //Serial.print(vMotorSpeedPID);
+        //    //Serial.print("  ");
+        //    //Serial.println(hMotorSpeedPID);
+
+        //    Serial.println(currentPosition.getHAngle());
+        //}
+        //a+=4;
 
         hMotorBlockingMgr.compute();
         vMotorBlockingMgr.compute();
@@ -97,6 +117,10 @@ public:
         {
             hMotor.breakMotor();
             vMotor.breakMotor();
+            hMotorSpeedPID.resetDerivativeError();
+            hMotorSpeedPID.resetIntegralError();
+            vMotorSpeedPID.resetDerivativeError();
+            vMotorSpeedPID.resetIntegralError();
         }
     }
 
