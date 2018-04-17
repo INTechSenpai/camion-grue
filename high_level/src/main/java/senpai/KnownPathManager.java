@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import pfg.kraken.SearchParameters;
 import pfg.kraken.robot.ItineraryPoint;
 
 /**
@@ -34,15 +35,14 @@ import pfg.kraken.robot.ItineraryPoint;
  */
 
 public class KnownPathManager {
+			
+	private Map<String, SavedPath> paths = new HashMap<String, SavedPath>();
+	private SearchParameters currentSp;
 	
 	public KnownPathManager()
 	{
 		loadAllPaths();
 	}
-	
-	
-	private Map<String, SavedPath> paths = new HashMap<String, SavedPath>();
-	
 	
 	public void savePath(String filename, SavedPath path)
 	{
@@ -100,8 +100,9 @@ public class KnownPathManager {
 		List<ItineraryPoint> newPath = new ArrayList<ItineraryPoint>();
 		for(ItineraryPoint it : path.path)
 			newPath.add(new ItineraryPoint(it.x, it.y, it.orientation, it.curvature, it.goingForward, Math.min(maxSpeed, it.maxSpeed), Math.min(maxSpeed, it.possibleSpeed), it.stop));
-
-		return new SavedPath(newPath, path.depart);
+		SavedPath s = new SavedPath(newPath, path.sp);
+		s.sp.maxSpeed = maxSpeed;
+		return s;
 	}
 	
 	private void loadAllPaths()
@@ -129,40 +130,43 @@ public class KnownPathManager {
 		return paths.get(filename);
 	}
 	
-	public List<SavedPath> loadPathStartingWith(String filename)
+	public List<SavedPath> loadCompatiblePath(SearchParameters sp)
 	{
+		String prefix = getTrajectoryNamePrefix(sp);
 		List<SavedPath> out = new ArrayList<SavedPath>();
 		for(String k : paths.keySet())
-			if(k.startsWith(filename))
+			if(k.startsWith(prefix))
 				out.add(paths.get(k));
 		return out;
 	}
-	
-/*	public SavedPath loadPath(String filename)
+
+	public void currentSearchParameters(SearchParameters sp)
 	{
-//		log.debug("Chargement d'une trajectoire : "+nom);
-		ObjectInputStream ois = null;
-		try
-		{
-			FileInputStream fichier = new FileInputStream("paths/" + filename);
-			ois = new ObjectInputStream(fichier);
-			return (SavedPath) ois.readObject();
-		}
-		catch(IOException | ClassNotFoundException e)
-		{
-			e.printStackTrace();
-//			log.warning(e);
-		}
-		finally
-		{
-			if(ois != null)
-				try {
-					ois.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-		}
-		return null;
-	}*/
+		this.currentSp = sp;
+	}
+	
+	public void addPath(List<ItineraryPoint> diff)
+	{
+		SavedPath s = new SavedPath(diff, currentSp);
+		String name = getTrajectoryNamePrefix(currentSp);
+		int biggest = 0;
+		for(String k : paths.keySet())
+			if(k.startsWith(name))
+			{
+				SavedPath o = paths.get(k);
+				if(o.equals(s))
+					return; // chemin déjà connu
+				biggest++;
+			}
+		name += biggest;
+		paths.put(name, s);
+		savePath(name, s);
+	}
+
+	private String getTrajectoryNamePrefix(SearchParameters sp)
+	{
+		currentSp = sp;
+		return Math.abs(sp.start.hashCode())+"-"+Math.abs(sp.arrival.hashCode())+"-";
+	}
 	
 }

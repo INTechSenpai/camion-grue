@@ -55,7 +55,7 @@ public class FollowTrajectory
 
 			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
 
-			data.setPosition(s.depart.position, s.depart.orientation);
+			data.setPosition(s.sp.start.getPosition(), s.sp.start.orientationReelle);
 			
 			data.ajoutePointsTrajectoire(s.path, true);
 			Ticket t = data.followTrajectory();

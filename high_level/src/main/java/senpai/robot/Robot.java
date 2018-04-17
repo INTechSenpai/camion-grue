@@ -282,15 +282,9 @@ public class Robot extends RobotState
 		return goTo(new SearchParameters(cinematique.getXYO(), destination));
 	}
 	
-	private String getTrajectoryName(SearchParameters sp)
-	{
-		return Math.abs(sp.start.hashCode())+"-"+Math.abs(sp.arrival.hashCode());
-	}
-	
 	public synchronized DataTicket goTo(SearchParameters sp) throws PathfindingException, InterruptedException
 	{
-		String name = getTrajectoryName(sp);
-		List<SavedPath> allSaved = known.loadPathStartingWith(name);
+		List<SavedPath> allSaved = known.loadCompatiblePath(sp);
 		boolean initialized = false;
 		if(allSaved.isEmpty())
 			log.write("Aucun chemin connu pour : "+sp, Subject.TRAJECTORY);
@@ -309,6 +303,8 @@ public class Robot extends RobotState
 		}
 		if(!initialized)
 			kraken.startContinuousSearch(sp);
+		else
+			log.write("On réutilise un chemin déjà connu !", Subject.TRAJECTORY);
 		DataTicket out = followTrajectory();
 		kraken.endContinuousSearch();
 		return out;

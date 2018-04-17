@@ -24,6 +24,7 @@ import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.robot.ItineraryPoint;
 import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
+import senpai.KnownPathManager;
 import senpai.Subject;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.robot.Robot;
@@ -41,17 +42,19 @@ public class ThreadKraken extends Thread
 	private OutgoingOrderBuffer data;
 	private GraphicDisplay display;
 	private Robot robot;
+	private KnownPathManager known;
 	private boolean simuleLL, graphic;
 	
 	protected Log log;
 
-	public ThreadKraken(Log log, Config config, DynamicPath dpath, OutgoingOrderBuffer data, GraphicDisplay display, Robot robot)
+	public ThreadKraken(Log log, Config config, DynamicPath dpath, OutgoingOrderBuffer data, GraphicDisplay display, Robot robot, KnownPathManager known)
 	{
 		this.log = log;
 		this.data = data;
 		this.dpath = dpath;
 		this.display = display;
 		this.robot = robot;
+		this.known = known;
 		simuleLL = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 		graphic = config.getBoolean(ConfigInfoSenpai.GRAPHIC_PATH);
 		setDaemon(true);
@@ -77,10 +80,11 @@ public class ThreadKraken extends Thread
 							display.addPrintable(p, p.stop ? Color.BLUE : Color.BLACK, Layer.FOREGROUND.layer);
 						}
 
+					known.addPath(diff.diff);
 					if(!simuleLL)
 					{
 						data.destroyPointsTrajectoires(diff.firstDifferentPoint);
-						data.ajoutePointsTrajectoire(diff.diff, diff.isComplete);
+						data.ajoutePointsTrajectoire(diff.diff.subList(diff.firstDifferentPoint, diff.diff.size()), diff.isComplete);
 					}
 					
 					if(robot.isStandby())
