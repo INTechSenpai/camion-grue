@@ -32,6 +32,8 @@ import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
+import senpai.KnownPathManager;
+import senpai.SavedPath;
 import senpai.Subject;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
@@ -86,17 +88,19 @@ public class Robot extends RobotState
 	private boolean printTrace;
 	private OutgoingOrderBuffer out;
 	private GraphicDisplay buffer;
+	private KnownPathManager known;
 	private RobotPrintable printable = null;
 	private volatile boolean cinematiqueInitialised = false;
 
 	// Constructeur
-	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, DynamicPath dpath)
+	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, DynamicPath dpath, KnownPathManager known)
 	{
 		this.log = log;
 		this.out = out;
 		this.buffer = buffer;
 		this.kraken = kraken;
 		this.dpath = dpath;
+		this.known = known;
 		
 		// On ajoute une fois pour toute l'image du robot
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS))
@@ -278,15 +282,39 @@ public class Robot extends RobotState
 		return goTo(new SearchParameters(cinematique.getXYO(), destination));
 	}
 	
+	private String getTrajectoryName(SearchParameters sp)
+	{
+		return Math.abs(sp.start.hashCode())+"-"+Math.abs(sp.arrival.hashCode());
+	}
+	
 	public synchronized DataTicket goTo(SearchParameters sp) throws PathfindingException, InterruptedException
 	{
-		kraken.startContinuousSearch(sp);
+		String name = getTrajectoryName(sp);
+		List<SavedPath> allSaved = known.loadPathStartingWith(name);
+		boolean initialized = false;
+		if(allSaved.isEmpty())
+			log.write("Aucun chemin connu pour : "+sp, Subject.TRAJECTORY);
+		for(SavedPath saved : allSaved)
+		{
+			try
+			{
+				kraken.startContinuousSearchWithInitialPath(sp, saved.path);
+				initialized = true;
+				break;
+			}
+			catch(PathfindingException e)
+			{
+				log.write("Chemin inadapté : "+e.getMessage(), Subject.TRAJECTORY);
+			}
+		}
+		if(!initialized)
+			kraken.startContinuousSearch(sp);
 		DataTicket out = followTrajectory();
 		kraken.endContinuousSearch();
 		return out;
 	}
 	
-	public synchronized DataTicket followTrajectory() throws InterruptedException
+	private synchronized DataTicket followTrajectory() throws InterruptedException
 	{
 		assert etat == State.READY_TO_GO || etat == State.STANDBY;
 

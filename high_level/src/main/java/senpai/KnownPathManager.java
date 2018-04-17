@@ -129,6 +129,15 @@ public class KnownPathManager {
 		return paths.get(filename);
 	}
 	
+	public List<SavedPath> loadPathStartingWith(String filename)
+	{
+		List<SavedPath> out = new ArrayList<SavedPath>();
+		for(String k : paths.keySet())
+			if(k.startsWith(filename))
+				out.add(paths.get(k));
+		return out;
+	}
+	
 /*	public SavedPath loadPath(String filename)
 	{
 //		log.debug("Chargement d'une trajectoire : "+nom);
