@@ -21,6 +21,7 @@ import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.robot.ItineraryPoint;
+import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import pfg.log.Log;
 import senpai.Senpai.ErrorCode;
@@ -28,6 +29,8 @@ import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
 import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
+import senpai.obstacles.ObstacleProximity;
+import senpai.obstacles.ObstaclesMemory;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
 import senpai.scripts.ScriptPriseCube;
@@ -54,6 +57,7 @@ public class Test {
 			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
 			Robot robot = senpai.getService(Robot.class);
 			GraphicDisplay buffer = senpai.getService(GraphicDisplay.class);
+			ObstaclesMemory mem = senpai.getService(ObstaclesMemory.class);
 			
 			log.write("Initialisation des actionneurs…", Subject.STATUS);
 			robot.initActionneurs();
@@ -81,7 +85,9 @@ public class Test {
 			XYO destination = new ScriptPriseCube(Croix.CROIX_HAUT_DROITE, CubeColor.BLEU, CubeFace.GAUCHE, false).getPointEntree();
 			
 			buffer.addPrintable(new Cinematique(destination), Color.BLUE, Layer.FOREGROUND.layer);
-
+			ObstacleProximity obs = new ObstacleProximity(new XY(-150.84,1543.50), 100, 100, 0, 0, null, 0);
+			buffer.addPrintable(obs, Color.RED, Layer.FOREGROUND.layer);
+			mem.add(obs);
 			DataTicket dt = robot.goTo(destination);
 				
 			Cinematique c = robot.getCinematique();//.clone();

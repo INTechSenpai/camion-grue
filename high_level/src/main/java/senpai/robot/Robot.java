@@ -17,6 +17,7 @@ package senpai.robot;
 import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.PriorityQueue;
 import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
@@ -284,12 +285,14 @@ public class Robot extends RobotState
 	
 	public synchronized DataTicket goTo(SearchParameters sp) throws PathfindingException, InterruptedException
 	{
-		List<SavedPath> allSaved = known.loadCompatiblePath(sp);
+		PriorityQueue<SavedPath> allSaved = known.loadCompatiblePath(sp);
 		boolean initialized = false;
 		if(allSaved.isEmpty())
 			log.write("Aucun chemin connu pour : "+sp, Subject.TRAJECTORY);
-		for(SavedPath saved : allSaved)
+		
+		while(!allSaved.isEmpty())
 		{
+			SavedPath saved = allSaved.poll();
 			try
 			{
 				kraken.startContinuousSearchWithInitialPath(sp, saved.path);

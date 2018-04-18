@@ -22,9 +22,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import pfg.kraken.SearchParameters;
 import pfg.kraken.robot.ItineraryPoint;
 
@@ -130,10 +132,19 @@ public class KnownPathManager {
 		return paths.get(filename);
 	}
 	
-	public List<SavedPath> loadCompatiblePath(SearchParameters sp)
+	private class SavedPathComparator implements Comparator<SavedPath>
+	{
+		@Override
+		public int compare(SavedPath o1, SavedPath o2)
+		{
+			return o1.path.size() - o2.path.size();
+		}
+	}
+	
+	public PriorityQueue<SavedPath> loadCompatiblePath(SearchParameters sp)
 	{
 		String prefix = getTrajectoryNamePrefix(sp);
-		List<SavedPath> out = new ArrayList<SavedPath>();
+		PriorityQueue<SavedPath> out = new PriorityQueue<SavedPath>(new SavedPathComparator());
 		for(String k : paths.keySet())
 			if(k.startsWith(prefix))
 				out.add(paths.get(k));
