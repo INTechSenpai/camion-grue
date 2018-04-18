@@ -52,6 +52,25 @@ void loop()
             digitalWrite(PIN_DEL_GYRO_D, state);
         }
     }
+
+    p.setHAngle(0);
+    p.setVAngle(0);
+    armController.setAimPosition(p);
+    Serial.println(p);
+    Serial.println();
+    while (armController.isMoving())
+    {
+        armController.controlServos();
+
+        static uint32_t lastTime = 0;
+        static bool state = false;
+        if (millis() - lastTime > 500)
+        {
+            lastTime = millis();
+            state = !state;
+            digitalWrite(PIN_DEL_GYRO_D, state);
+        }
+    }
     Serial.println("The end");
 
     while (true)

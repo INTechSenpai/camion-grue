@@ -4,6 +4,7 @@
 #include "config.h"
 #include "Singleton.h"
 #include "ArmPosition.h"
+#include "ArmStatus.h"
 #include "Motor.h"
 #include "MotorSensor.h"
 #include "BlockingMgr.h"
@@ -44,11 +45,12 @@ public:
         aimPosition.resetAXToOrigin();
         currentPosition.resetAXToOrigin();
         stop();
+        status = ARM_STATUS_OK;
 
         serialAX.begin(SERIAL_AX12_BAUDRATE);
     }
 
-    void init()
+    int init()
     {
         headAX12.init();
         headAX12.jointMode();
@@ -56,6 +58,14 @@ public:
         plierAX12.init();
         plierAX12.jointMode();
         plierAX12.enableTorque();
+        if (headAX12.statusReturnLevel() == 2 && plierAX12.statusReturnLevel() == 2)
+        {
+            return 0;
+        }
+        else
+        {
+            return -1;
+        }
     }
 
     /* A appeller depuis l'interruption sur timer */
@@ -84,22 +94,19 @@ public:
         }
         vMotorSpeedPID.compute(); // update vMotorPWM
 
-        //static uint8_t a = 0;
-        //if (a == 0) {
-        //    //Serial.print(vMotorSpeedPID);
-        //    //Serial.print("  ");
-        //    //Serial.println(hMotorSpeedPID);
-
-        //    Serial.println(currentPosition.getHAngle());
-        //}
-        //a+=4;
-
         hMotorBlockingMgr.compute();
         vMotorBlockingMgr.compute();
-        if (hMotorBlockingMgr.isBlocked() || vMotorBlockingMgr.isBlocked())
+        if (hMotorBlockingMgr.isBlocked())
         {
+            status |= ARM_STATUS_HBLOCKED;
             stopFromInterrupt();
-            Serial.println("Motor blocked !"); // debug
+            Serial.println("H-Motor blocked !"); // debug
+        }
+        if (vMotorBlockingMgr.isBlocked())
+        {
+            status |= ARM_STATUS_VBLOCKED;
+            stopFromInterrupt();
+            Serial.println("V-Motor blocked !"); // debug
         }
 
         if (moving && currentPosition.closeEnoughTo(aimPosition))
@@ -184,8 +191,19 @@ public:
                 counter = 0;
             }
 
-            if (lastStatus != DYN_STATUS_OK)
+
+            if (lastStatus == DYN_STATUS_OVERHEATING_ERROR || lastStatus == DYN_STATUS_OVERLOAD_ERROR)
             {
+                noInterrupts();
+                status |= ARM_STATUS_AXBLOCKED;
+                interrupts();
+                Serial.printf("AX12 OVERLOAD: errno %u c=%u\n", lastStatus, counter);
+            }
+            else if (lastStatus != DYN_STATUS_OK)
+            {
+                noInterrupts();
+                status |= ARM_STATUS_AXERR;
+                interrupts();
                 Serial.printf("AX12 NOT OK: errno %u c=%u\n", lastStatus, counter);
             }
         }
@@ -196,6 +214,7 @@ public:
         noInterrupts();
         aimPosition = position;
         moving = true;
+        status = ARM_STATUS_OK;
         interrupts();
         Serial.println("Start moving");
     }
@@ -215,9 +234,18 @@ public:
         return ret;
     }
 
+    ArmStatus getStatus() const
+    {
+        noInterrupts();
+        ArmStatus ret = status;
+        interrupts();
+        return ret;
+    }
+
     void stop()
     {
         noInterrupts();
+        status |= ARM_STATUS_MANUAL_STOP;
         stopFromInterrupt();
         interrupts();
     }
@@ -246,12 +274,12 @@ private:
         aimVSpeed = 0;
         vMotorPWM = 0;
         moving = false;
-        Serial.println("Stop");
     }
 
     ArmPosition aimPosition;
     ArmPosition currentPosition;
     bool moving;
+    ArmStatus status;
 
     /* Contrôle du mouvement horizontal */
     Motor hMotor;
