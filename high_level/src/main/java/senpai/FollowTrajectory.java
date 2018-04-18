@@ -45,7 +45,7 @@ public class FollowTrajectory
 		{
 			Log log = new Log(Severity.INFO, configfile, "log");
 			
-			KnownPathManager manager = new KnownPathManager();
+			KnownPathManager manager = new KnownPathManager(log);
 			SavedPath s = manager.loadPath(filename);
 			if(args.length > 1)
 				s = manager.limitMaxSpeed(s, Double.parseDouble(args[1]) / 1000.);

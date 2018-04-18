@@ -30,6 +30,7 @@ import java.util.PriorityQueue;
 import pfg.kraken.SearchParameters;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.robot.ItineraryPoint;
+import pfg.log.Log;
 
 /**
  * Gestionnaire de trajectoires déjà calculées
@@ -41,9 +42,11 @@ public class KnownPathManager {
 			
 	private Map<String, SavedPath> paths = new HashMap<String, SavedPath>();
 	private SearchParameters currentSp;
+	private Log log;
 	
-	public KnownPathManager()
+	public KnownPathManager(Log log)
 	{
+		this.log = log;
 		loadAllPaths();
 	}
 	
@@ -111,6 +114,8 @@ public class KnownPathManager {
 	private void loadAllPaths()
 	{
 		File[] files = new File("paths/").listFiles();
+		int nb = 0;
+		int nbErreurs = 0;
 		for(File f : files)
 		{
 			ObjectInputStream ois = null;
@@ -119,13 +124,15 @@ public class KnownPathManager {
 				ois = new ObjectInputStream(new FileInputStream(f));
 				paths.put(f.getName(), (SavedPath) ois.readObject());
 				ois.close();
+				nb++;
 			}
 			catch(IOException | ClassNotFoundException | ClassCastException e)
 			{
+				nbErreurs++;
 				System.out.println("Erreur avec le fichier : "+f.getName());
-				e.printStackTrace();
 			}
 		}
+		log.write(nb+" chemins chargés"+(nbErreurs == 0 ? "." : ", "+nbErreurs+" erreurs."), Subject.STATUS);
 	}
 	
 	public SavedPath loadPath(String filename)
@@ -216,13 +223,10 @@ public class KnownPathManager {
 			{
 				SavedPath o = paths.get(k);
 				if(o.equals(s))
-				{
-					System.out.println("Chemin pas enregistré car déjà connu");
 					return; // chemin déjà connu
-				}
 				biggest++;
 			}
-		System.out.println("Chemin enregistré");
+		log.write("Nouveau chemin enregistré.", Subject.STATUS);
 		name += biggest;
 		paths.put(name, s);
 		savePath(name, s);

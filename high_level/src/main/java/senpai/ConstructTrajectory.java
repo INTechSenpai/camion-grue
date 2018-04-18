@@ -116,7 +116,7 @@ public class ConstructTrajectory
 			display.refresh();
 			if(output != null)
 			{
-				KnownPathManager manager = new KnownPathManager();
+				KnownPathManager manager = new KnownPathManager(log);
 				manager.savePath(output, new SavedPath(path, sp));
 			}
 			else
