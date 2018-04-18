@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import pfg.kraken.SearchParameters;
+import pfg.kraken.robot.Cinematique;
 import pfg.kraken.robot.ItineraryPoint;
 
 /**
@@ -141,6 +142,49 @@ public class KnownPathManager {
 		}
 	}
 	
+	private SearchParameters symetrise(SearchParameters sp)
+	{
+		SearchParameters out = new SearchParameters(
+				symetrise(sp.start),
+				symetrise(sp.arrival),
+				sp.mode);
+		out.directionstrategy = sp.directionstrategy;
+		out.maxSpeed = sp.maxSpeed;
+		return out;
+	}
+	
+	private Cinematique symetrise(Cinematique c)
+	{
+		return new Cinematique(
+				-c.getPosition().getX(),
+				c.getPosition().getY(),
+				Math.PI - c.orientationGeometrique,
+				c.enMarcheAvant,
+				-c.courbureGeometrique,
+				c.stop);
+	}
+	
+	private ItineraryPoint symetrise(ItineraryPoint ip)
+	{
+		return new ItineraryPoint(
+				-ip.x,
+				ip.y,
+				Math.PI - ip.orientation,
+				-ip.curvature,
+				ip.goingForward,
+				ip.maxSpeed,
+				ip.possibleSpeed,
+				ip.stop);
+	}
+	
+	private List<ItineraryPoint> symetrise(List<ItineraryPoint> diff)
+	{
+		List<ItineraryPoint> out = new ArrayList<ItineraryPoint>();
+		for(ItineraryPoint ip : diff)
+			out.add(symetrise(ip));
+		return out;
+	}
+	
 	public PriorityQueue<SavedPath> loadCompatiblePath(SearchParameters sp)
 	{
 		String prefix = getTrajectoryNamePrefix(sp);
@@ -158,17 +202,27 @@ public class KnownPathManager {
 	
 	public void addPath(List<ItineraryPoint> diff)
 	{
-		SavedPath s = new SavedPath(diff, currentSp);
-		String name = getTrajectoryNamePrefix(currentSp);
+		addPathNoSym(diff, currentSp);
+		addPathNoSym(symetrise(diff), symetrise(currentSp));
+	}
+
+	private void addPathNoSym(List<ItineraryPoint> diff, SearchParameters sp)
+	{
+		SavedPath s = new SavedPath(diff, sp);
+		String name = getTrajectoryNamePrefix(sp);
 		int biggest = 0;
 		for(String k : paths.keySet())
 			if(k.startsWith(name))
 			{
 				SavedPath o = paths.get(k);
 				if(o.equals(s))
+				{
+					System.out.println("Chemin pas enregistré car déjà connu");
 					return; // chemin déjà connu
+				}
 				biggest++;
 			}
+		System.out.println("Chemin enregistré");
 		name += biggest;
 		paths.put(name, s);
 		savePath(name, s);
