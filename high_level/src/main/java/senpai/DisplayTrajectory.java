@@ -42,19 +42,25 @@ public class DisplayTrajectory
 		}
 		
 		String configfile = "senpai-trajectory.conf";
-		String filename = args[0];
-		KnownPathManager manager = new KnownPathManager();
-		List<ItineraryPoint> path = manager.loadPath(filename).path;
-
 		Log log = new Log(Severity.INFO, configfile, "log");
 		
 		DebugTool debug = DebugTool.getDebugTool(new HashMap<ConfigInfo, Object>(), new Vec2RO(0,1000), Severity.INFO, configfile, "default", "graphic");
 		GraphicDisplay display = debug.getGraphicDisplay();
+
+		Color[] couleurs = new Color[]{Color.BLACK, Color.RED, Color.BLUE, Color.GRAY, Color.ORANGE, Color.MAGENTA};
 		
-		for(ItineraryPoint p : path)
+		for(int i = 0; i < args.length; i++)
 		{
-			log.write(p, Subject.STATUS);
-			display.addPrintable(p, Color.BLACK, Layer.FOREGROUND.layer);
+			String filename = args[i];
+			KnownPathManager manager = new KnownPathManager();
+			String f = filename.substring(filename.lastIndexOf("/")+1, filename.length());
+			List<ItineraryPoint> path = manager.loadPath(f).path;
+				
+			for(ItineraryPoint p : path)
+			{
+				log.write(p, Subject.STATUS);
+				display.addPrintable(p, couleurs[i % couleurs.length], Layer.FOREGROUND.layer);
+			}
 		}
 		display.refresh();
 
