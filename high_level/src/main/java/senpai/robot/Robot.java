@@ -32,17 +32,15 @@ import pfg.kraken.robot.RobotState;
 import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
-import senpai.ConfigInfoSenpai;
-import senpai.KnownPathManager;
-import senpai.SavedPath;
-import senpai.Severity;
-import senpai.Subject;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
 import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
+import senpai.utils.ConfigInfoSenpai;
+import senpai.utils.Severity;
+import senpai.utils.Subject;
 
 /**
  * Classe abstraite du robot, dont héritent RobotVrai et RobotChrono

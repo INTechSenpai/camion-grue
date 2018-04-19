@@ -12,7 +12,7 @@ import pfg.graphic.printable.Printable;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XY_RW;
-import senpai.ConfigInfoSenpai;
+import senpai.utils.ConfigInfoSenpai;
 
 public class RobotPrintable implements Printable
 {

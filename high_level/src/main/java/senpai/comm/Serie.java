@@ -14,9 +14,9 @@ import gnu.io.SerialPortEventListener;
 import gnu.io.UnsupportedCommOperationException;
 import pfg.config.Config;
 import pfg.log.Log;
-import senpai.ConfigInfoSenpai;
-import senpai.Severity;
-import senpai.Subject;
+import senpai.utils.ConfigInfoSenpai;
+import senpai.utils.Severity;
+import senpai.utils.Subject;
 
 /**
  * Communication série

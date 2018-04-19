@@ -15,9 +15,9 @@
 package senpai.threads.comm;
 
 import pfg.log.Log;
-import senpai.Subject;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.Communication;
+import senpai.utils.Subject;
 
 /**
  * Thread qui vérifie s'il faut envoyer des ordres

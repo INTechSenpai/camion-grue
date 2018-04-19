@@ -15,9 +15,9 @@
 package senpai.threads;
 
 import pfg.log.Log;
-import senpai.Subject;
 import senpai.buffer.SensorsDataBuffer;
 import senpai.capteurs.CapteursProcess;
+import senpai.utils.Subject;
 
 /**
  * Thread qui gère les entrées des capteurs

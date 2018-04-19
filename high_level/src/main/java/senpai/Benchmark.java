@@ -9,6 +9,9 @@ import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import pfg.log.Log;
 import senpai.threads.ThreadWarmUp;
+import senpai.utils.ConfigInfoSenpai;
+import senpai.utils.Severity;
+import senpai.utils.Subject;
 
 /*
  * Copyright (C) 2013-2018 Pierre-François Gimenez

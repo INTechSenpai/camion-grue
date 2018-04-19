@@ -15,8 +15,8 @@
 package senpai.threads;
 
 import pfg.log.Log;
-import senpai.Subject;
 import senpai.obstacles.ObstaclesMemory;
+import senpai.utils.Subject;
 
 /**
  * Thread qui gère la péremption des obstacles en dormant

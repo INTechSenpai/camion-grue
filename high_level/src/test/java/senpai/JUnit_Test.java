@@ -27,10 +27,10 @@ import pfg.log.Log;
 import org.junit.After;
 
 import senpai.robot.Robot;
-import senpai.ConfigInfoSenpai;
+import senpai.utils.ConfigInfoSenpai;
+import senpai.utils.Subject;
 import senpai.Senpai;
 import senpai.Senpai.ErrorCode;
-import senpai.Subject;
 
 /**
  * Classe mère de tous les tests.

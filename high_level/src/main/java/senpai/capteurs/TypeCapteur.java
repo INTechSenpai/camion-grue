@@ -15,8 +15,7 @@
 package senpai.capteurs;
 
 import java.awt.Color;
-
-import senpai.CouleurSenpai;
+import senpai.utils.CouleurSenpai;
 
 /**
  * Les différents types de capteurs

@@ -12,7 +12,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package senpai;
+package senpai.robot;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,6 +31,7 @@ import pfg.kraken.SearchParameters;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.robot.ItineraryPoint;
 import pfg.log.Log;
+import senpai.utils.Subject;
 
 /**
  * Gestionnaire de trajectoires déjà calculées

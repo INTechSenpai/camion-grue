@@ -23,11 +23,11 @@ import pfg.kraken.astar.autoreplanning.PathDiff;
 import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.robot.ItineraryPoint;
 import pfg.log.Log;
-import senpai.ConfigInfoSenpai;
-import senpai.KnownPathManager;
-import senpai.Subject;
 import senpai.buffer.OutgoingOrderBuffer;
+import senpai.robot.KnownPathManager;
 import senpai.robot.Robot;
+import senpai.utils.ConfigInfoSenpai;
+import senpai.utils.Subject;
 
 /**
  * Thread qui gère l'envoi des trajectoires

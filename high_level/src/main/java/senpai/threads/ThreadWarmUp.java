@@ -21,9 +21,9 @@ import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import pfg.log.Log;
-import senpai.ConfigInfoSenpai;
-import senpai.Severity;
-import senpai.Subject;
+import senpai.utils.ConfigInfoSenpai;
+import senpai.utils.Severity;
+import senpai.utils.Subject;
 
 /**
  * Thread d'échauffement de la JVM

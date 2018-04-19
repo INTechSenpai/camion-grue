@@ -15,9 +15,9 @@
 package senpai.threads.comm;
 
 import pfg.log.Log;
-import senpai.Subject;
 import senpai.buffer.IncomingOrderBuffer;
 import senpai.comm.Communication;
+import senpai.utils.Subject;
 
 /**
  * Thread qui s'occupe de la partie bas niveau du protocole série

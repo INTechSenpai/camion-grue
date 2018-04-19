@@ -25,8 +25,8 @@ import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol.Id;
 import senpai.robot.Robot;
 import senpai.robot.Speed;
-import senpai.ConfigInfoSenpai;
-import senpai.Subject;
+import senpai.utils.ConfigInfoSenpai;
+import senpai.utils.Subject;
 
 /**
  * Tests unitaires des trajectoires et des actionneurs

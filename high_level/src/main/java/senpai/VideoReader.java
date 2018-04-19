@@ -36,6 +36,7 @@ import pfg.graphic.Vec2RW;
 import pfg.graphic.printable.ColoredPrintable;
 import senpai.capteurs.Capteur;
 import senpai.robot.RobotPrintable;
+import senpai.utils.ConfigInfoSenpai;
 
 /**
  * Un lecteur de vidéo enregistrée sur le rover

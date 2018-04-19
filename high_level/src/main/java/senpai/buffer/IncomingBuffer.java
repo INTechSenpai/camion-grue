@@ -19,8 +19,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import pfg.log.Log;
-import senpai.Severity;
-import senpai.Subject;
+import senpai.utils.Severity;
+import senpai.utils.Subject;
 import pfg.graphic.Chart;
 import pfg.graphic.printable.Plottable;
 

@@ -14,8 +14,6 @@
 
 package senpai.capteurs;
 
-import senpai.ConfigInfoSenpai;
-import senpai.Subject;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
 import senpai.obstacles.ObstacleProximity;
@@ -24,7 +22,8 @@ import senpai.obstacles.ObstaclesMemory;
 import senpai.robot.Robot;
 import senpai.table.Cube;
 import senpai.table.Table;
-
+import senpai.utils.ConfigInfoSenpai;
+import senpai.utils.Subject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import pfg.config.Config;

@@ -23,8 +23,8 @@ import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.log.Log;
-import senpai.ConfigInfoSenpai;
-import senpai.CouleurSenpai;
+import senpai.utils.ConfigInfoSenpai;
+import senpai.utils.CouleurSenpai;
 
 /**
  * Mémorise tous les obstacles mobiles qu'on a rencontré jusque là.

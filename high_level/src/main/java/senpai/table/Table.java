@@ -27,7 +27,7 @@ import pfg.graphic.printable.Layer;
 import pfg.graphic.printable.Printable;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.log.Log;
-import senpai.ConfigInfoSenpai;
+import senpai.utils.ConfigInfoSenpai;
 
 /**
  * Gère les éléments de jeux

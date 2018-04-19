@@ -5,6 +5,10 @@ import senpai.Senpai.ErrorCode;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
+import senpai.robot.KnownPathManager;
+import senpai.robot.SavedPath;
+import senpai.utils.Severity;
+import senpai.utils.Subject;
 
 /*
  * Copyright (C) 2013-2018 Pierre-François Gimenez

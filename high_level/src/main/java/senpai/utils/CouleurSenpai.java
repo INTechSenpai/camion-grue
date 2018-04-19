@@ -12,7 +12,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package senpai;
+package senpai.utils;
 
 import java.awt.Color;
 import pfg.graphic.printable.Layer;

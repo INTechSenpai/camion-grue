@@ -9,6 +9,9 @@ import pfg.graphic.Vec2RO;
 import pfg.graphic.printable.Layer;
 import pfg.kraken.robot.ItineraryPoint;
 import pfg.log.Log;
+import senpai.robot.KnownPathManager;
+import senpai.utils.Severity;
+import senpai.utils.Subject;
 
 /*
  * Copyright (C) 2013-2018 Pierre-François Gimenez

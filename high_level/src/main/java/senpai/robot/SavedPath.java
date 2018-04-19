@@ -1,4 +1,4 @@
-package senpai;
+package senpai.robot;
 
 import java.io.Serializable;
 import java.util.List;

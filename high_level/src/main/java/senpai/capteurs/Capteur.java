@@ -22,8 +22,8 @@ import pfg.graphic.printable.Printable;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XY_RW;
-import senpai.ConfigInfoSenpai;
 import senpai.robot.Robot;
+import senpai.utils.ConfigInfoSenpai;
 
 /**
  * Un capteur de proximité du robot

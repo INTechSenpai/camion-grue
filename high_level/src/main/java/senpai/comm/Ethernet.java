@@ -23,9 +23,9 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import pfg.config.Config;
 import pfg.log.Log;
-import senpai.ConfigInfoSenpai;
-import senpai.Severity;
-import senpai.Subject;
+import senpai.utils.ConfigInfoSenpai;
+import senpai.utils.Severity;
+import senpai.utils.Subject;
 
 /**
  * Une connexion Ethernet

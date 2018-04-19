@@ -23,6 +23,7 @@ import senpai.comm.CommProtocol;
 import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
 import senpai.robot.Robot;
+import senpai.utils.Subject;
 
 /**
  * Code d'un match

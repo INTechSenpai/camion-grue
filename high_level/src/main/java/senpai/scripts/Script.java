@@ -16,12 +16,12 @@ package senpai.scripts;
 
 import pfg.kraken.utils.XYO;
 import pfg.log.Log;
-import senpai.Severity;
-import senpai.Subject;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.table.Table;
+import senpai.utils.Severity;
+import senpai.utils.Subject;
 
 /**
  * Script abstrait

@@ -17,8 +17,8 @@ package senpai.buffer;
 import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
 import pfg.log.Log;
-import senpai.ConfigInfoSenpai;
 import senpai.capteurs.SensorsData;
+import senpai.utils.ConfigInfoSenpai;
 
 /**
  * Buffer qui contient les infos provenant des capteurs du LL

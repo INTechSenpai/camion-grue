@@ -12,27 +12,52 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package senpai;
+package senpai.utils;
+
+import java.io.IOException;
 
 /**
- * Les différents niveaux de sévérité
+ * Classe pour contrôler les GPIO
  * @author pf
  *
  */
 
-public enum Severity implements pfg.log.Severity
+public class GPIO
 {
-	INFO(false), WARNING(true), CRITICAL(true);
-
-	public final boolean always;
-	
-	private Severity(boolean always)
+	public static void allumeDiode()
 	{
-		this.always = always;
+		try
+		{
+			Runtime.getRuntime().exec("gpio write 22 1");
+		}
+		catch(IOException e)
+		{}
 	}
 	
-	@Override
-	public boolean alwaysPrint() {
-		return always;
+	public static void eteintDiode()
+	{
+		try
+		{
+			Runtime.getRuntime().exec("gpio write 22 0");
+		}
+		catch(IOException e)
+		{}
 	}
+	
+	public static void clignoteDiode(int nbSecondes)
+	{
+		try
+		{
+			for(int i = 0; i < nbSecondes; i++)
+			{
+				Runtime.getRuntime().exec("gpio write 22 1");
+				Thread.sleep(500);
+				Runtime.getRuntime().exec("gpio write 22 0");
+				Thread.sleep(500);
+			}
+		}
+		catch(IOException  | InterruptedException e)
+		{}
+	}
+	
 }

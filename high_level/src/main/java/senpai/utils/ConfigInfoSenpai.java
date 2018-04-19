@@ -12,7 +12,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package senpai;
+package senpai.utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -153,6 +153,8 @@ public enum ConfigInfoSenpai implements ConfigInfo
 											// fixe, est-ce qu'on le vire ?
 //	ENABLE_SCAN(true), // scan-t-on autour du robot s'il est coincé ?
 
+	ENABLE_KNOWN_PATHS(true), // active les chemins enregistrés ?
+	
 	/**
 	 * Log
 	 */

@@ -22,10 +22,10 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import pfg.config.Config;
 import pfg.log.Log;
-import senpai.ConfigInfoSenpai;
-import senpai.Severity;
-import senpai.Subject;
 import senpai.comm.CommProtocol.Id;
+import senpai.utils.ConfigInfoSenpai;
+import senpai.utils.Severity;
+import senpai.utils.Subject;
 
 /**
  * La connexion série

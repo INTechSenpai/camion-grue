@@ -32,7 +32,7 @@ import senpai.comm.CommProtocol.Id;
 import senpai.comm.CommProtocol.LLStatus;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
-import senpai.Subject;
+import senpai.utils.Subject;
 
 /**
  * Thread qui écoute la série et appelle qui il faut.

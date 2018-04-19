@@ -37,6 +37,8 @@ import senpai.scripts.ScriptPriseCube;
 import senpai.table.Croix;
 import senpai.table.CubeColor;
 import senpai.table.CubeFace;
+import senpai.utils.ConfigInfoSenpai;
+import senpai.utils.Subject;
 
 /**
  * Test rapide
@@ -86,8 +88,8 @@ public class Test {
 			
 			buffer.addPrintable(new Cinematique(destination), Color.BLUE, Layer.FOREGROUND.layer);
 			ObstacleProximity obs = new ObstacleProximity(new XY(-150.84,1543.50), 100, 100, 0, 0, null, 0);
-			buffer.addPrintable(obs, Color.RED, Layer.FOREGROUND.layer);
-			mem.add(obs);
+//			buffer.addPrintable(obs, Color.RED, Layer.FOREGROUND.layer);
+//			mem.add(obs);
 			DataTicket dt = robot.goTo(destination);
 				
 			Cinematique c = robot.getCinematique();//.clone();
@@ -111,7 +113,7 @@ public class Test {
 					Thread.sleep(Math.min(150, Math.round(50./p.possibleSpeed)));
 			}
 			
-			Thread.sleep(5000);
+			Thread.sleep(1000);
 		}
 		catch(Exception e)
 		{
