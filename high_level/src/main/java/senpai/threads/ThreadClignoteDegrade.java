@@ -48,6 +48,7 @@ public class ThreadClignoteDegrade extends Thread
 				while(!robot.isDegrade())
 					robot.wait();
 			}
+			log.write("Activation du mode dégradé : clignotement démarré", Subject.STATUS);
 			while(true)
 			{
 				GPIO.allumeDiode();

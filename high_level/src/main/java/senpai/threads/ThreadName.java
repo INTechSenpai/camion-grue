@@ -31,6 +31,7 @@ public enum ThreadName
 	KRAKEN(ThreadKraken.class),
 	PEREMPTION(ThreadPeremption.class),
 	CLIGOTE_DEGRADE(ThreadClignoteDegrade.class),
+	COLLISION_DEGRADE(ThreadCollisionDegrade.class),
 	SERIAL_INPUT_ORDRE(ThreadCommProcess.class),
 	SERIAL_INPUT_TRAME(ThreadCommListener.class),
 	SERIAL_OUTPUT_ORDER(ThreadCommEmitter.class);

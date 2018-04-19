@@ -17,7 +17,7 @@ package senpai.threads.comm;
 import java.nio.ByteBuffer;
 import pfg.config.Config;
 import pfg.log.Log;
-import pfg.kraken.astar.thread.DynamicPath;
+import pfg.kraken.astar.autoreplanning.DynamicPath;
 import pfg.kraken.exceptions.NotFastEnoughException;
 import pfg.kraken.robot.Cinematique;
 import senpai.Senpai;

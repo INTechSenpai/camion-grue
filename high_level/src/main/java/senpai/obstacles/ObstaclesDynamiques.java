@@ -15,7 +15,10 @@
 package senpai.obstacles;
 
 import java.util.Iterator;
+import java.util.List;
+
 import pfg.kraken.obstacles.Obstacle;
+import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.obstacles.container.SmartDynamicObstacles;
 import senpai.table.Table;
 
@@ -69,4 +72,20 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 		memory.add((ObstacleProximity)obs);
 	}
 
+	public synchronized int isThereCollision(List<RectangularObstacle> currentPath)
+	{
+		int i = 0;
+		for(RectangularObstacle ro : currentPath)
+		{
+			for(Obstacle o : newObs)
+				if(o.isColliding(ro))
+				{
+					newObs.clear();
+					return i;
+				}
+			i++;
+		}
+		newObs.clear();
+		return i;
+	}
 }

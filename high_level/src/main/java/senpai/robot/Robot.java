@@ -22,20 +22,17 @@ import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
 import pfg.graphic.printable.Segment;
-import pfg.injector.Injector;
 import pfg.kraken.Kraken;
 import pfg.kraken.SearchParameters;
-import pfg.kraken.astar.thread.DynamicPath;
+import pfg.kraken.astar.autoreplanning.DynamicPath;
 import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.robot.ItineraryPoint;
 import pfg.kraken.robot.RobotState;
-import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
-import senpai.GPIO;
 import senpai.KnownPathManager;
 import senpai.SavedPath;
 import senpai.Severity;
@@ -71,6 +68,7 @@ public class Robot extends RobotState
 	protected Kraken kraken;
 	private DynamicPath dpath;
 	private volatile boolean modeDegrade = false;
+	private List<ItineraryPoint> pathDegrade;
 	
 /*	public Robot(Log log)
 	{
@@ -332,6 +330,7 @@ public class Robot extends RobotState
 				out.ajoutePointsTrajectoire(path, true);
 			}
 			setReady();
+			pathDegrade = path;
 		}
 		else
 		{
@@ -341,13 +340,13 @@ public class Robot extends RobotState
 				log.write("On réutilise un chemin déjà connu !", Subject.TRAJECTORY);
 		}
 
-		DataTicket out = followTrajectory(path);
+		DataTicket out = followTrajectory();
 		if(!modeDegrade)
 			kraken.endContinuousSearch();
 		return out;
 	}
 	
-	private synchronized DataTicket followTrajectory(List<ItineraryPoint> pathDegrade) throws InterruptedException
+	private synchronized DataTicket followTrajectory() throws InterruptedException
 	{
 		assert modeDegrade == (pathDegrade != null) : modeDegrade+" "+pathDegrade;
 		assert etat == State.READY_TO_GO || etat == State.STANDBY;
@@ -379,7 +378,7 @@ public class Robot extends RobotState
 		}
 		
 		log.write("Le robot ne bouge plus : "+etat, Subject.TRAJECTORY);
-		
+		pathDegrade = null;
 		etat = State.STANDBY;
 		return dt;
 	}
@@ -399,5 +398,16 @@ public class Robot extends RobotState
 	
 	public boolean isDegrade() {
 		return modeDegrade;
+	}
+
+	public boolean needCollisionCheck()
+	{
+		return etat == State.MOVING;
+	}
+
+	public List<ItineraryPoint> getPath()
+	{
+		assert etat == State.READY_TO_GO || etat == State.MOVING;
+		return pathDegrade;
 	}
 }
