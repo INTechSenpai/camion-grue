@@ -33,6 +33,7 @@ import senpai.obstacles.ObstacleProximity;
 import senpai.obstacles.ObstaclesMemory;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
+import senpai.scripts.ScriptManager;
 import senpai.scripts.ScriptPriseCube;
 import senpai.table.Croix;
 import senpai.table.CubeColor;
@@ -46,7 +47,7 @@ import senpai.utils.Subject;
  *
  */
 
-public class Test {
+public class TestDeplacement {
 
 	public static void main(String[] args) throws InterruptedException
 	{
@@ -60,6 +61,7 @@ public class Test {
 			Robot robot = senpai.getService(Robot.class);
 			GraphicDisplay buffer = senpai.getService(GraphicDisplay.class);
 			ObstaclesMemory mem = senpai.getService(ObstaclesMemory.class);
+			ScriptManager scripts = senpai.getService(ScriptManager.class);
 			
 			log.write("Initialisation des actionneurs…", Subject.STATUS);
 			robot.initActionneurs();
@@ -84,15 +86,14 @@ public class Test {
 			robot.updateColorAndSendPosition(couleur);
 			//XYO destination = new XYO(0, 1000, Math.PI);
 //			XYO destination = new ScriptPriseCube(0, ElementColor.BLEU, ScriptPriseCube.Face.BAS, false).getPointEntree();
-			XYO destination = new ScriptPriseCube(Croix.CROIX_HAUT_DROITE, CubeColor.BLEU, CubeFace.GAUCHE, false).getPointEntree();
-			
+			XYO destination = new ScriptPriseCube(Croix.CROIX_HAUT_DROITE, CubeColor.ORANGE, CubeFace.GAUCHE, false).getPointEntree();
 			buffer.addPrintable(new Cinematique(destination), Color.BLUE, Layer.FOREGROUND.layer);
 			ObstacleProximity obs = new ObstacleProximity(new XY(-150.84,1543.50), 100, 100, 0, 0, null, 0);
 //			buffer.addPrintable(obs, Color.RED, Layer.FOREGROUND.layer);
 //			mem.add(obs);
 			Cinematique init = robot.getCinematique().clone();
 			
-			for(int i = 0; i < 2; i++)
+			for(int i = 0; i < 1; i++)
 			{
 				init.copy(robot.getCinematique());
 				DataTicket dt = robot.goTo(destination);
