@@ -22,6 +22,7 @@ import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
 import pfg.graphic.printable.Segment;
+import pfg.injector.Injector;
 import pfg.kraken.Kraken;
 import pfg.kraken.SearchParameters;
 import pfg.kraken.astar.thread.DynamicPath;
@@ -29,12 +30,15 @@ import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.robot.ItineraryPoint;
 import pfg.kraken.robot.RobotState;
+import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.ConfigInfoSenpai;
+import senpai.GPIO;
 import senpai.KnownPathManager;
 import senpai.SavedPath;
+import senpai.Severity;
 import senpai.Subject;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
@@ -66,6 +70,7 @@ public class Robot extends RobotState
 	protected Log log;
 	protected Kraken kraken;
 	private DynamicPath dpath;
+	private volatile boolean modeDegrade = false;
 	
 /*	public Robot(Log log)
 	{
@@ -85,7 +90,7 @@ public class Robot extends RobotState
 	}
 
 	private volatile State etat = State.STANDBY;
-	private boolean simuleSerie;
+	private boolean simuleLL;
 	private boolean printTrace;
 	private OutgoingOrderBuffer out;
 	private GraphicDisplay buffer;
@@ -93,6 +98,8 @@ public class Robot extends RobotState
 	private RobotPrintable printable = null;
 	private volatile boolean cinematiqueInitialised = false;
 
+
+	
 	// Constructeur
 	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, DynamicPath dpath, KnownPathManager known)
 	{
@@ -115,7 +122,7 @@ public class Robot extends RobotState
 				config.getDouble(ConfigInfoSenpai.INITIAL_X),
 				config.getDouble(ConfigInfoSenpai.INITIAL_Y),
 				config.getDouble(ConfigInfoSenpai.INITIAL_O)));
-		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
+		simuleLL = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 	}
 	
 	public void setEnMarcheAvance(boolean enMarcheAvant)
@@ -190,7 +197,7 @@ public class Robot extends RobotState
 			log.write("Appel à " + nom + " (param = " + s + ")", Subject.SCRIPT);
 		}
 
-		if(simuleSerie)
+		if(simuleLL)
 			return;
 
 		CommProtocol.State etat;
@@ -286,35 +293,63 @@ public class Robot extends RobotState
 	public synchronized DataTicket goTo(SearchParameters sp) throws PathfindingException, InterruptedException
 	{
 		PriorityQueue<SavedPath> allSaved = known.loadCompatiblePath(sp);
-		boolean initialized = false;
 		if(allSaved.isEmpty())
 			log.write("Aucun chemin connu pour : "+sp, Subject.TRAJECTORY);
 		
+		if(modeDegrade)
+			kraken.initializeNewSearch(sp);
+		
+		List<ItineraryPoint> path = null;
+
 		while(!allSaved.isEmpty())
 		{
 			SavedPath saved = allSaved.poll();
 			try
 			{
-				kraken.startContinuousSearchWithInitialPath(sp, saved.path);
-				initialized = true;
-				break;
+				if(kraken.checkPath(saved.path))
+				{
+					if(!modeDegrade)
+						kraken.startContinuousSearchWithInitialPath(sp, saved.path);
+					path = saved.path;
+					break;
+				}
 			}
 			catch(PathfindingException e)
 			{
 				log.write("Chemin inadapté : "+e.getMessage(), Subject.TRAJECTORY);
 			}
 		}
-		if(!initialized)
-			kraken.startContinuousSearch(sp);
+
+		if(modeDegrade)
+		{
+			System.out.println(path);
+			// On cherche et on envoie
+			if(path == null)
+				path = kraken.search();
+			if(!simuleLL)
+			{
+				out.destroyPointsTrajectoires(0);
+				out.ajoutePointsTrajectoire(path, true);
+			}
+			setReady();
+		}
 		else
-			log.write("On réutilise un chemin déjà connu !", Subject.TRAJECTORY);
-		DataTicket out = followTrajectory();
-		kraken.endContinuousSearch();
+		{
+			if(path == null)
+				kraken.startContinuousSearch(sp);
+			else
+				log.write("On réutilise un chemin déjà connu !", Subject.TRAJECTORY);
+		}
+
+		DataTicket out = followTrajectory(path);
+		if(!modeDegrade)
+			kraken.endContinuousSearch();
 		return out;
 	}
 	
-	private synchronized DataTicket followTrajectory() throws InterruptedException
+	private synchronized DataTicket followTrajectory(List<ItineraryPoint> pathDegrade) throws InterruptedException
 	{
+		assert modeDegrade == (pathDegrade != null) : modeDegrade+" "+pathDegrade;
 		assert etat == State.READY_TO_GO || etat == State.STANDBY;
 
 		log.write("Attente de la trajectoire…", Subject.TRAJECTORY);
@@ -329,7 +364,7 @@ public class Robot extends RobotState
 		
 		DataTicket dt;
 		
-		if(!simuleSerie)
+		if(!simuleLL)
 		{
 			Ticket t = out.followTrajectory();
 		
@@ -340,7 +375,7 @@ public class Robot extends RobotState
 		}
 		else
 		{
-			dt = new DataTicket(dpath.getPath(), CommProtocol.State.OK);
+			dt = new DataTicket(modeDegrade ? pathDegrade : dpath.getPath(), CommProtocol.State.OK);
 		}
 		
 		log.write("Le robot ne bouge plus : "+etat, Subject.TRAJECTORY);
@@ -352,5 +387,17 @@ public class Robot extends RobotState
 	public synchronized boolean isStandby()
 	{
 		return etat == State.STANDBY;
+	}
+
+	public synchronized void setDegrade()
+	{
+		log.write("Le robot entre en mode dégradé !", Severity.CRITICAL, Subject.STATUS);
+		kraken.endAutoReplanning();
+		modeDegrade = true;
+		notifyAll();
+	}
+	
+	public boolean isDegrade() {
+		return modeDegrade;
 	}
 }
