@@ -43,6 +43,8 @@ public class ScriptPriseCube extends Script
 	{
 		this.face = face;
 		cube = Cube.getCube(croix, couleur);
+		assert cube.couleur == couleur : cube.couleur+" "+couleur;
+		assert cube.croix == croix : cube.croix+" "+croix;
 		this.coteDroit = coteDroit;
 	}
 	
@@ -69,5 +71,7 @@ public class ScriptPriseCube extends Script
 	@Override
 	protected void run(Robot robot, Table table) throws InterruptedException, UnableToMoveException, ActionneurException
 	{
+		// TODO
+		table.setDone(cube);
 	}
 }
