@@ -219,6 +219,13 @@ public:
         Serial.println("Start moving");
     }
 
+    void getAimPosition(ArmPosition & position) const
+    {
+        noInterrupts();
+        position = aimPosition;
+        interrupts();
+    }
+
     void getCurrentPosition(ArmPosition & position) const
     {
         noInterrupts();

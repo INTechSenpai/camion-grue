@@ -17,10 +17,21 @@
 #define ARM_MIN_V_ANGLE     -0.26   // TBD
 #define ARM_MAX_V_ANGLE     0.35    // TBD
 #define ARM_POS_VMOT_ORIGIN 128.3   // [mm]
-#define ARM_MIN_HEAD_ANGLE  0.436   //0.262   //-2.356  // min(headLocalAngle)
-#define ARM_MAX_HEAD_ANGLE  4.974   //4.798   //2.18    // max(headLocalAngle)
+#define ARM_MIN_HEAD_ANGLE  0.436   // min(headLocalAngle)
+#define ARM_MAX_HEAD_ANGLE  4.974   // max(headLocalAngle)
 #define ARM_MIN_PLIER_POS   0       // [mm]
 #define ARM_MAX_PLIER_POS   49      // [mm]
+
+#define ARM_H_ANGLE_CABIN           0.8     // [rad] Angle horizontal en dessous duquel on peut se manger la cabine
+#define ARM_HEAD_SCAN_ANGLE         -1.3    // [rad] Angle global permettant de voir le cube à prendre
+#define ARM_HEAD_L_ANGLE_TRANSPORT  0.698   // [rad] Angle local de la tête de bras pour transporter un cube
+#define ARM_HEAD_G_ANGLE_STORAGE    -0.785  // [rad] Angle de premettant la prise et la dépose dans la zone de stockage interne
+#define ARM_V_ANGLE_STORAGE         0.157   // [rad] (TBD) Angle vertical permettant la prise et la dépose dans la zone de stockage interne
+#define ARM_V_ANGLE_STAGE_0         -0.157  // [rad] (TBD) Angle vertical de prise/dépose de cube sur le sol
+#define ARM_V_ANGLE_STAGE_1         -0.157  // [rad] (TBD) Angle vertical de prise/dépose de cube sur l'étage 1
+#define ARM_V_ANGLE_STAGE_2         -0.157  // [rad] (TBD) Angle vertical de prise/dépose de cube sur l'étage 2
+#define ARM_V_ANGLE_STAGE_3         -0.157  // [rad] (TBD) Angle vertical de prise/dépose de cube sur l'étage 3
+#define ARM_V_ANGLE_STAGE_4         -0.157  // [rad] (TBD) Angle vertical de prise/dépose de cube sur l'étage 4
 
 /* Tolérances */
 #define ARM_H_TOLERANCE     0.035   // [rad]

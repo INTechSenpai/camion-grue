@@ -1,0 +1,22 @@
+#ifndef _COMMAND_ID_h
+#define _COMMAND_ID_h
+
+
+enum CommandId
+{
+    ACTUATOR_ACK                = 0x02,
+    ACTUATOR_BOARD_REPORT       = 0x03,
+    ACTUATOR_GO_TO_HOME         = 0x04,
+    ACTUATOR_TAKE_CUBE_SMART    = 0x05,
+    ACTUATOR_TAKE_CUBE_FIXED    = 0x06,
+    ACTUATOR_STORE_CUBE_INSIDE  = 0x07,
+    ACTUATOR_STORE_CUBE_TOP     = 0x08,
+    ACTUATOR_TAKE_CUBE_STORAGE  = 0x09,
+    ACTUATOR_PUT_CUBE_SMART     = 0x0A,
+    ACTUATOR_PUT_CUBE_FIXED     = 0x0B,
+
+    ACTUATOR_NO_COMMAND         = 0xFF
+};
+
+
+#endif

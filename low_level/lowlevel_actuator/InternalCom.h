@@ -77,6 +77,11 @@ public:
         return payload.at(i);
     }
 
+    const std::vector<uint8_t> & getPayload() const
+    {
+        return payload;
+    }
+
     bool payloadIsFull() const
     {
         return payload.size() == length;
