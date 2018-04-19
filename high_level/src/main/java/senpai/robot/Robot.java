@@ -93,7 +93,7 @@ public class Robot extends RobotState
 	private KnownPathManager known;
 	private RobotPrintable printable = null;
 	private volatile boolean cinematiqueInitialised = false;
-
+	private boolean enableLoadPath;
 
 	
 	// Constructeur
@@ -113,6 +113,7 @@ public class Robot extends RobotState
 			buffer.addPrintable(printable, Color.BLACK, Layer.MIDDLE.layer);
 		}
 		
+		enableLoadPath = config.getBoolean(ConfigInfoSenpai.ENABLE_KNOWN_PATHS);
 		printTrace = config.getBoolean(ConfigInfoSenpai.GRAPHIC_TRACE_ROBOT);
 		cinematique = new Cinematique(new XYO(
 				config.getDouble(ConfigInfoSenpai.INITIAL_X),
@@ -288,8 +289,11 @@ public class Robot extends RobotState
 	
 	public synchronized DataTicket goTo(SearchParameters sp) throws PathfindingException, InterruptedException
 	{
-		PriorityQueue<SavedPath> allSaved = known.loadCompatiblePath(sp);
-		if(allSaved.isEmpty())
+		PriorityQueue<SavedPath> allSaved = null;
+		if(enableLoadPath)
+			allSaved = known.loadCompatiblePath(sp);
+			
+		if(allSaved != null && allSaved.isEmpty())
 			log.write("Aucun chemin connu pour : "+sp, Subject.TRAJECTORY);
 		
 		if(modeDegrade)
@@ -297,24 +301,25 @@ public class Robot extends RobotState
 		
 		List<ItineraryPoint> path = null;
 
-		while(!allSaved.isEmpty())
-		{
-			SavedPath saved = allSaved.poll();
-			try
+		if(allSaved != null)
+			while(!allSaved.isEmpty())
 			{
-				if(kraken.checkPath(saved.path))
+				SavedPath saved = allSaved.poll();
+				try
 				{
-					if(!modeDegrade)
-						kraken.startContinuousSearchWithInitialPath(sp, saved.path);
-					path = saved.path;
-					break;
+					if(kraken.checkPath(saved.path))
+					{
+						if(!modeDegrade)
+							kraken.startContinuousSearchWithInitialPath(sp, saved.path);
+						path = saved.path;
+						break;
+					}
+				}
+				catch(PathfindingException e)
+				{
+					log.write("Chemin inadapté : "+e.getMessage(), Subject.TRAJECTORY);
 				}
 			}
-			catch(PathfindingException e)
-			{
-				log.write("Chemin inadapté : "+e.getMessage(), Subject.TRAJECTORY);
-			}
-		}
 
 		if(modeDegrade)
 		{
