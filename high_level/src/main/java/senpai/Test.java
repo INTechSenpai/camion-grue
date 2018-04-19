@@ -90,30 +90,38 @@ public class Test {
 			ObstacleProximity obs = new ObstacleProximity(new XY(-150.84,1543.50), 100, 100, 0, 0, null, 0);
 //			buffer.addPrintable(obs, Color.RED, Layer.FOREGROUND.layer);
 //			mem.add(obs);
-			DataTicket dt = robot.goTo(destination);
-				
-			Cinematique c = robot.getCinematique();//.clone();
-		
-			// Ceci ne fonctionne qu'avec la simulation du LL !
-			@SuppressWarnings("unchecked")
-			List<ItineraryPoint> path = (List<ItineraryPoint>) dt.data;
-			for(ItineraryPoint p : path)
-				buffer.addPrintable(p, p.stop ? Color.BLUE : Color.BLACK, Layer.FOREGROUND.layer);
-
-			for(ItineraryPoint p : path)
-			{
-				System.out.println(p);
-				c.enMarcheAvant = p.goingForward;
-				c.updateReel(p.x, p.y, p.orientation, p.curvature);
-//				robot.setCinematique(c);
-				buffer.refresh();
-				if(p.stop)
-					Thread.sleep(150);
-				else
-					Thread.sleep(Math.min(150, Math.round(50./p.possibleSpeed)));
-			}
+			Cinematique init = robot.getCinematique().clone();
 			
-			Thread.sleep(1000);
+			for(int i = 0; i < 2; i++)
+			{
+				init.copy(robot.getCinematique());
+				DataTicket dt = robot.goTo(destination);
+					
+				Cinematique c = robot.getCinematique();//.clone();
+			
+				// Ceci ne fonctionne qu'avec la simulation du LL !
+				@SuppressWarnings("unchecked")
+				List<ItineraryPoint> path = (List<ItineraryPoint>) dt.data;
+				for(ItineraryPoint p : path)
+					buffer.addPrintable(p, p.stop ? Color.BLUE : Color.BLACK, Layer.FOREGROUND.layer);
+	
+				for(ItineraryPoint p : path)
+				{
+					System.out.println(p);
+					c.enMarcheAvant = p.goingForward;
+					c.updateReel(p.x, p.y, p.orientation, p.curvature);
+	//				robot.setCinematique(c);
+					buffer.refresh();
+					if(p.stop)
+						Thread.sleep(150);
+					else
+						Thread.sleep(Math.min(150, Math.round(50./p.possibleSpeed)));
+				}
+				
+				Thread.sleep(1000);
+				if(i == 0)
+					robot.setDegrade();
+			}
 		}
 		catch(Exception e)
 		{

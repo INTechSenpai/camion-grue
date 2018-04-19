@@ -307,10 +307,19 @@ public class Robot extends RobotState
 				SavedPath saved = allSaved.poll();
 				try
 				{
-					if(kraken.checkPath(saved.path))
+					if(modeDegrade)
 					{
-						if(!modeDegrade)
-							kraken.startContinuousSearchWithInitialPath(sp, saved.path);
+						if(kraken.checkPath(saved.path))
+						{
+							path = saved.path;
+							break;
+						}
+						else
+							log.write("Chemin inadapté", Subject.TRAJECTORY);
+					}
+					else
+					{
+						kraken.startContinuousSearchWithInitialPath(sp, saved.path);
 						path = saved.path;
 						break;
 					}
@@ -327,6 +336,8 @@ public class Robot extends RobotState
 			// On cherche et on envoie
 			if(path == null)
 				path = kraken.search();
+			else
+				log.write("On réutilise un chemin déjà connu !", Subject.TRAJECTORY);
 			if(!simuleLL)
 			{
 				out.destroyPointsTrajectoires(0);
