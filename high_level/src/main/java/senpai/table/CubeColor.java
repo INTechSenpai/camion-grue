@@ -46,4 +46,9 @@ public enum CubeColor
 			return placeDroite;
 		return placeGauche;
 	}
+
+	public CubePlace getPlace(Croix croix)
+	{
+		return getPlace(croix.center.getX() > 0);
+	}
 }

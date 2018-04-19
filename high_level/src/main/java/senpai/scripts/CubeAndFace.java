@@ -12,28 +12,32 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package senpai.table;
+
+package senpai.scripts;
+
+import senpai.table.Cube;
+import senpai.table.CubeFace;
 
 /**
- * La place d'un cube dans une croix
+ * Un cube. Et une face. Unis, pour la vie.
  * @author pf
  *
  */
 
-public enum CubePlace
+public class CubeAndFace
 {
-	// L'ordre est important
-	DROITE(58,0),
-	HAUT(0,58),
-	GAUCHE(-58,0),
-	BAS(0,-58),
-	CENTRE(0,0);
+	public final Cube c;
+	public final CubeFace f;
 	
-	public final int deltaX, deltaY;
-	
-	private CubePlace(int deltaX, int deltaY)
+	public CubeAndFace(Cube c, CubeFace f)
 	{
-		this.deltaX = deltaX;
-		this.deltaY = deltaY;
+		this.c = c;
+		this.f = f;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return c+"/"+f;
 	}
 }

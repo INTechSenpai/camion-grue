@@ -18,13 +18,19 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
+import pfg.kraken.utils.XY;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol.Id;
+import senpai.obstacles.ObstacleProximity;
 import senpai.robot.Robot;
 import senpai.robot.Speed;
+import senpai.scripts.ScriptPriseCube;
+import senpai.table.Croix;
+import senpai.table.CubeColor;
+import senpai.table.CubeFace;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Subject;
 
@@ -49,6 +55,18 @@ public class Test_Robot extends JUnit_Test
 	private Speed v;
 	private double last;
 
+	@Test
+	public void test_cube() throws Exception
+	{
+		for(Croix croix : Croix.values())
+			for(CubeColor couleur : CubeColor.values())
+				for(CubeFace face : CubeFace.values())
+				{
+					new ScriptPriseCube(croix, couleur, face, true);
+					new ScriptPriseCube(croix, couleur, face, false);
+				}
+	}
+	
 	/**
 	 * Génère un fichier qui présente les tests
 	 * 
@@ -93,7 +111,7 @@ public class Test_Robot extends JUnit_Test
 		setUp("default");
 		
 		// il est nécessaire que les communications ne soient pas simulées
-		assert !config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
+//		assert !config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 
 //		state = container.getService(RealGameState.class);
 		robot = container.getService(Robot.class);

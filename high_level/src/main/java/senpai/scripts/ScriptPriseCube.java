@@ -39,6 +39,13 @@ public class ScriptPriseCube extends Script
 	private Cube cube;
 	private boolean coteDroit;
 	
+	public ScriptPriseCube(Cube cube, CubeFace face, boolean coteDroit)
+	{
+		this.cube = cube;
+		this.face = face;
+		this.coteDroit = coteDroit;
+	}
+	
 	public ScriptPriseCube(Croix croix, CubeColor couleur, CubeFace face, boolean coteDroit)
 	{
 		this.face = face;

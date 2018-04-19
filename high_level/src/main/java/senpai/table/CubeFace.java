@@ -23,6 +23,7 @@ package senpai.table;
 
 public enum CubeFace
 {
+	// L'ordre est important
 	GAUCHE(Math.PI),
 	BAS(- Math.PI / 2),
 	DROITE(0),
@@ -35,7 +36,23 @@ public enum CubeFace
 		this.angleAttaque = angleAttaque;
 	}
 	
-	public CubePlace getVoisin(CubePlace c)
+	public CubeFace getOrthogonal(boolean cote)
+	{
+		if(cote)
+			return values()[(ordinal() + 1) % 4];
+		else
+			return values()[(ordinal() + 3) % 4];
+	}
+	
+	public Cube getVoisin(Cube c)
+	{
+		CubePlace p = getFaceVoisin(c.place);
+		if(p == null)
+			return null;
+		return Cube.getCube(c.croix, p);
+	}
+	
+	private CubePlace getFaceVoisin(CubePlace c)
 	{
 		if(c == CubePlace.CENTRE)
 			return CubePlace.values()[(c.ordinal() + 2) % 4];
