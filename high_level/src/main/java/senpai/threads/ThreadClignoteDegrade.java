@@ -15,9 +15,9 @@
 package senpai.threads;
 
 import pfg.log.Log;
-import senpai.GPIO;
-import senpai.Subject;
 import senpai.robot.Robot;
+import senpai.utils.GPIO;
+import senpai.utils.Subject;
 
 /**
  * Thread qui clignote en dégradé

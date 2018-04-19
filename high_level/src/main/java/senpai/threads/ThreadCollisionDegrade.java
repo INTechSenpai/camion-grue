@@ -6,11 +6,10 @@
 package senpai.threads;
 
 import pfg.log.Log;
-import senpai.Subject;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.obstacles.ObstaclesDynamiques;
 import senpai.robot.Robot;
-
+import senpai.utils.Subject;
 import java.util.ArrayList;
 import java.util.List;
 
