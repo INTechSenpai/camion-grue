@@ -73,18 +73,7 @@ public final class ThreadCollisionDegrade extends Thread
 						o.update(new XY(ip.x, ip.y), ip.orientation);
 						initialObstacles.add(o);
 					}
-				}
-				log.write("Activation du mode dégradé : gestion des collisions démarré.", Subject.STATUS);
-				
-				
-				/*
-				 * On attend que la vérification de collision soit nécessaire
-				 */
-				synchronized(robot)
-				{
-					while(!robot.needCollisionCheck())
-						robot.wait();
-				}
+				}				
 				
 				/*
 				 * On attend d'avoir des obstacles à vérifier

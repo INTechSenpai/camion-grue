@@ -117,22 +117,23 @@ public class KnownPathManager {
 		File[] files = new File("paths/").listFiles();
 		int nb = 0;
 		int nbErreurs = 0;
-		for(File f : files)
-		{
-			ObjectInputStream ois = null;
-			try
+		if(files != null)
+			for(File f : files)
 			{
-				ois = new ObjectInputStream(new FileInputStream(f));
-				paths.put(f.getName(), (SavedPath) ois.readObject());
-				ois.close();
-				nb++;
+				ObjectInputStream ois = null;
+				try
+				{
+					ois = new ObjectInputStream(new FileInputStream(f));
+					paths.put(f.getName(), (SavedPath) ois.readObject());
+					ois.close();
+					nb++;
+				}
+				catch(IOException | ClassNotFoundException | ClassCastException e)
+				{
+					nbErreurs++;
+					System.out.println("Erreur avec le fichier : "+f.getName());
+				}
 			}
-			catch(IOException | ClassNotFoundException | ClassCastException e)
-			{
-				nbErreurs++;
-				System.out.println("Erreur avec le fichier : "+f.getName());
-			}
-		}
 		log.write(nb+" chemins chargés"+(nbErreurs == 0 ? "." : ", "+nbErreurs+" erreurs."), Subject.STATUS);
 	}
 	

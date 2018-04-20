@@ -374,9 +374,9 @@ public class VideoReader
 	private static String getNextLine(BufferedReader br) throws IOException
 	{
 		String line;
-		while((line = br.readLine()) != null)
+		if((line = br.readLine()) != null)
 //			if(Verbose.shouldPrint(extractMasque(line)))
-				return line.substring(line.indexOf(" ") + 1);
+			return line.substring(line.indexOf(" ") + 1);
 
 		return null;
 	}

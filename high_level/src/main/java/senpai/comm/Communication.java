@@ -81,7 +81,7 @@ public class Communication implements Closeable
 
 	public synchronized void waitForInitialization() throws InterruptedException
 	{
-		if(!initialized)
+		while(!initialized)
 			wait();
 		assert initialized;
 	}

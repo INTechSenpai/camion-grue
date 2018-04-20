@@ -48,7 +48,7 @@ public class ObstaclesMemory
 	private volatile int firstNotDeadNow = 0;
 	private volatile long nextDeathDate = Long.MAX_VALUE;
 	private boolean printProx;
-	private final int tempsAvantSuppression = 2000;
+	private static final int tempsAvantSuppression = 2000;
 
 	protected Log log;
 	private GraphicDisplay buffer;

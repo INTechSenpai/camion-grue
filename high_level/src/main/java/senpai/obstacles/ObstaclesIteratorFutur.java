@@ -26,6 +26,7 @@ import pfg.log.Log;
 
 public class ObstaclesIteratorFutur extends ObstaclesIterator
 {
+	// TODO : inutilisé
 	private int firstNotDead = 0;
 	private long dateInit = -1;
 

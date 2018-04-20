@@ -18,9 +18,15 @@ public class SavedPath implements Serializable
 	}
 	
 	@Override
+	public int hashCode()
+	{
+		return path.size();
+	}
+	
+	@Override
 	public boolean equals(Object o)
 	{
-		if(!(o instanceof SavedPath))
+		if(o == null || !(o instanceof SavedPath))
 			return false;
 		return ((SavedPath)o).path.equals(path);
 	}

@@ -30,7 +30,7 @@ public abstract class ObstaclesIterator implements Iterator<Obstacle>
 	protected Log log;
 	protected ObstaclesMemory memory;
 
-	protected volatile int nbTmp; // TODO : volatile nécessaire ?
+	protected int nbTmp; // TODO : volatile nécessaire ?
 	protected boolean initialized = false;
 
 	public ObstaclesIterator(Log log, ObstaclesMemory memory)

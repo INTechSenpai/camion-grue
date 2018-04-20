@@ -121,8 +121,8 @@ public class RobotPrintable implements Printable
 		coinBasDroiteRotate.copy(centreGeometrique);
 		centreGeometrique = centreGeometrique.plus(coinHautGaucheRotate).scalar(0.5);
 		
-		if(coinBasDroiteRotate == null)
-			return;
+//		if(coinBasDroiteRotate == null)
+//			return;
 
 /*		int[] X = new int[4];
 		X[0] = (int) coinBasDroiteRotate.getX();

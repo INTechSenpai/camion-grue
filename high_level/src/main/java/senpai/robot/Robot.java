@@ -187,7 +187,7 @@ public class Robot extends RobotState
 			String s = "";
 			for(Object o : param)
 			{
-				if(s != "")
+				if(!s.isEmpty())
 					s += ", ";
 				s += o;
 			}
@@ -214,6 +214,7 @@ public class Robot extends RobotState
 		catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e)
 		{
 			e.printStackTrace();
+			throw new ActionneurException("Méthode inconnue : " + nom);
 		}
 		etat = t.attendStatus().status;
 		if(etat == CommProtocol.State.KO)

@@ -61,7 +61,7 @@ public abstract class Script
 	@Override
 	public boolean equals(Object o)
 	{
-		return o.toString().equals(toString());
+		return o != null && o.toString().equals(toString());
 	}
 
 }
