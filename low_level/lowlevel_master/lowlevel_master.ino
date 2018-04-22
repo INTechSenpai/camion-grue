@@ -53,7 +53,7 @@ void loop()
         Serializer::writeInt(0, longRangeSensorsValues); // provisoire, à termes il faudra attendre de recevoir la première trame pour initialiser avec
     }
 
-    slaveSensorLed.setLightningMode(32);
+    slaveSensorLed.setLightningMode(68);
 
     uint32_t delTimer = 0;
     bool delState = true;

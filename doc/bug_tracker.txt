@@ -1,0 +1,6 @@
+# Bug tracker
+
+
+
+# Fixed
+ArmController : initial position incorrect

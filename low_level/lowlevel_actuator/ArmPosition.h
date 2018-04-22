@@ -21,6 +21,8 @@
 #define ARM_MAX_HEAD_ANGLE  4.974   // max(headLocalAngle)
 #define ARM_MIN_PLIER_POS   0       // [mm]
 #define ARM_MAX_PLIER_POS   49      // [mm]
+#define ARM_MIN_PLIER_ANGLE_DEG 70  // [deg]
+#define ARM_MAX_PLIER_ANGLE_DEG 230 // [deg]
 
 #define ARM_H_ANGLE_CABIN           0.8     // [rad] Angle horizontal en dessous duquel on peut se manger la cabine
 #define ARM_HEAD_SCAN_ANGLE         -1.3    // [rad] Angle global permettant de voir le cube à prendre

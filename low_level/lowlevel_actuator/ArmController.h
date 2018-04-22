@@ -46,6 +46,7 @@ public:
         currentPosition.resetAXToOrigin();
         stopFromInterrupt();
         status = ARM_STATUS_OK;
+        manualMode = false;
 
         serialAX.begin(SERIAL_AX12_BAUDRATE);
     }
@@ -96,38 +97,47 @@ public:
 
         hMotorBlockingMgr.compute();
         vMotorBlockingMgr.compute();
-        if (hMotorBlockingMgr.isBlocked())
-        {
-            status |= ARM_STATUS_HBLOCKED;
-            stopFromInterrupt();
-            Serial.println("H-Motor blocked !"); // debug
-        }
-        if (vMotorBlockingMgr.isBlocked())
-        {
-            status |= ARM_STATUS_VBLOCKED;
-            stopFromInterrupt();
-            Serial.println("V-Motor blocked !"); // debug
-        }
 
-        if (moving && currentPosition.closeEnoughTo(aimPosition))
+        if (manualMode)
         {
-            stopFromInterrupt();
-            Serial.println("End of move"); // debug
-        }
-
-        if (moving)
-        {
-            hMotor.run((int16_t)hMotorPWM);
-            vMotor.run((int16_t)vMotorPWM);
+            hMotor.run(manualHPWM);
+            vMotor.run(manualVPWM);
         }
         else
         {
-            hMotor.breakMotor();
-            vMotor.breakMotor();
-            hMotorSpeedPID.resetDerivativeError();
-            hMotorSpeedPID.resetIntegralError();
-            vMotorSpeedPID.resetDerivativeError();
-            vMotorSpeedPID.resetIntegralError();
+            if (hMotorBlockingMgr.isBlocked())
+            {
+                status |= ARM_STATUS_HBLOCKED;
+                stopFromInterrupt();
+                Serial.println("H-Motor blocked !"); // debug
+            }
+            if (vMotorBlockingMgr.isBlocked())
+            {
+                status |= ARM_STATUS_VBLOCKED;
+                stopFromInterrupt();
+                Serial.println("V-Motor blocked !"); // debug
+            }
+
+            if (moving && currentPosition.closeEnoughTo(aimPosition))
+            {
+                stopFromInterrupt();
+                Serial.println("End of move"); // debug
+            }
+
+            if (moving)
+            {
+                hMotor.run((int16_t)hMotorPWM);
+                vMotor.run((int16_t)vMotorPWM);
+            }
+            else
+            {
+                hMotor.breakMotor();
+                vMotor.breakMotor();
+                hMotorSpeedPID.resetDerivativeError();
+                hMotorSpeedPID.resetIntegralError();
+                vMotorSpeedPID.resetDerivativeError();
+                vMotorSpeedPID.resetIntegralError();
+            }
         }
     }
 
@@ -143,17 +153,33 @@ public:
             DynamixelStatus lastStatus = DYN_STATUS_OK;
             if (counter == 0)
             { // Set position AX12 head
-                noInterrupts();
-                uint16_t p = (uint16_t)aimPosition.getHeadLocalAngleDeg();
-                interrupts();
+                uint16_t p;
+                if (manualMode)
+                {
+                    p = manualHeadAngle;
+                }
+                else
+                {
+                    noInterrupts();
+                    p = (uint16_t)aimPosition.getHeadLocalAngleDeg();
+                    interrupts();
+                }
                 lastStatus = headAX12.goalPositionDegree(p);
                 counter = 1;
             }
             else if (counter == 1)
             { // Set position AX12 plier
-                noInterrupts();
-                uint16_t p = (uint16_t)aimPosition.getPlierAngleDeg();
-                interrupts();
+                uint16_t p;
+                if (manualMode)
+                {
+                    p = manualPlierAngle;
+                }
+                else
+                {
+                    noInterrupts();
+                    p = (uint16_t)aimPosition.getPlierAngleDeg();
+                    interrupts();
+                }
                 lastStatus = plierAX12.goalPositionDegree(p);
                 counter = 2;
             }
@@ -267,6 +293,56 @@ public:
         interrupts();
     }
 
+    void setManualMode(bool enable)
+    {
+        noInterrupts();
+        manualMode = enable;
+        interrupts();
+        if (!manualMode)
+        {
+            hMotorSpeedPID.resetDerivativeError();
+            hMotorSpeedPID.resetIntegralError();
+            vMotorSpeedPID.resetDerivativeError();
+            vMotorSpeedPID.resetIntegralError();
+        }
+        manualHPWM = 0;
+        manualVPWM = 0;
+        manualHeadAngle = (uint16_t)currentPosition.getHeadLocalAngleDeg();
+        manualPlierAngle = (uint16_t)currentPosition.getPlierAngleDeg();
+    }
+
+    void setHPWM(int16_t pwm)
+    {
+        noInterrupts();
+        manualHPWM = pwm;
+        interrupts();
+    }
+
+    void setVPWM(int16_t pwm)
+    {
+        noInterrupts();
+        manualVPWM = pwm;
+        interrupts();
+    }
+
+    void incrManualHeadAngle(int16_t inc)
+    {
+        float res = ((float)manualHeadAngle + (float)inc) * M_PI / 180;
+        if (res < ARM_MAX_HEAD_ANGLE && res > ARM_MIN_HEAD_ANGLE)
+        {
+            manualHeadAngle += inc;
+        }
+    }
+
+    void incrManualPlierAngle(int16_t inc)
+    {
+        uint16_t res = manualPlierAngle + inc;
+        if (res < ARM_MAX_PLIER_ANGLE_DEG && res > ARM_MIN_PLIER_ANGLE_DEG)
+        {
+            manualPlierAngle = res;
+        }
+    }
+
 private:
     void stopFromInterrupt()
     {
@@ -280,12 +356,22 @@ private:
         aimVSpeed = 0;
         vMotorPWM = 0;
         moving = false;
+        manualHPWM = 0;
+        manualVPWM = 0;
+        manualHeadAngle = (uint16_t)currentPosition.getHeadLocalAngleDeg();
+        manualPlierAngle = (uint16_t)currentPosition.getPlierAngleDeg();
     }
 
     ArmPosition aimPosition;
     ArmPosition currentPosition;
     bool moving;
     ArmStatus status;
+
+    bool manualMode;
+    int16_t manualHPWM;
+    int16_t manualVPWM;
+    uint16_t manualHeadAngle;   // deg
+    uint16_t manualPlierAngle;  // deg
 
     /* Contrôle du mouvement horizontal */
     Motor hMotor;

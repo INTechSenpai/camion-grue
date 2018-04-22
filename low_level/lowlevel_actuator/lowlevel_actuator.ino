@@ -3,89 +3,78 @@
 #include "MotorSensor.h"
 #include "ArmController.h"
 #include "ArmPosition.h"
+#include "Communication.h"
 #include <Wire.h>
 
 
 void setup()
 {
+}
+
+void errorLoop()
+{
     pinMode(PIN_DEL_GYRO_G, OUTPUT);
     pinMode(PIN_DEL_GYRO_D, OUTPUT);
+    while (true)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            digitalWrite(PIN_DEL_GYRO_G, HIGH);
+            digitalWrite(PIN_DEL_GYRO_D, HIGH);
+            delay(100);
+            digitalWrite(PIN_DEL_GYRO_G, LOW);
+            digitalWrite(PIN_DEL_GYRO_D, LOW);
+            delay(100);
+        }
+        delay(400);
+    }
 }
 
 void loop()
 {
     Serial.println("Coucou");
+    pinMode(PIN_DEL_GYRO_G, OUTPUT);
+    pinMode(PIN_DEL_GYRO_D, OUTPUT);
     digitalWrite(PIN_DEL_GYRO_G, HIGH);
     digitalWrite(PIN_DEL_GYRO_D, LOW);
     Wire.begin();
     delay(200);
 
-    digitalWrite(PIN_DEL_GYRO_G, LOW);
-    digitalWrite(PIN_DEL_GYRO_D, HIGH);
-    delay(200);
+    Communication communication;
 
-    ArmController & armController = ArmController::Instance();
-    armController.init();
+    if (communication.init() != 0)
+    {
+        errorLoop();
+    }
+
     IntervalTimer timer;
     timer.priority(253);
     timer.begin(armControllerInterrupt, PERIOD_ASSERV);
 
-    delay(1000);
-    Serial.println("Abwabwa");
-    ArmPosition p;
-    Serial.println(p);
-    armController.getCurrentPosition(p);
-    Serial.println(p);
-    p.setHAngle(0);
-    p.setVAngle(0);
-    p.setHeadGlobalAngle(0);
-    p.setPlierPos(25);
-    armController.setAimPosition(p);
-    Serial.println(p);
-    Serial.println();
-    while (armController.isMoving())
-    {
-        armController.controlServos();
-
-        static uint32_t lastTime = 0;
-        static bool state = false;
-        if (millis() - lastTime > 500)
-        {
-            lastTime = millis();
-            state = !state;
-            digitalWrite(PIN_DEL_GYRO_D, state);
-        }
-    }
-
-    //p.setHAngle(0);
-    //p.setVAngle(0);
-    //armController.setAimPosition(p);
-    //Serial.println(p);
-    //Serial.println();
-    //while (armController.isMoving())
-    //{
-    //    armController.controlServos();
-
-    //    static uint32_t lastTime = 0;
-    //    static bool state = false;
-    //    if (millis() - lastTime > 500)
-    //    {
-    //        lastTime = millis();
-    //        state = !state;
-    //        digitalWrite(PIN_DEL_GYRO_D, state);
-    //    }
-    //}
-    Serial.println("The end");
-
+    uint32_t reportTimer = 0;
     while (true)
     {
-        digitalWrite(PIN_DEL_GYRO_G, HIGH);
-        digitalWrite(PIN_DEL_GYRO_D, LOW);
-        delay(200);
+        communication.listenAndExecute();
 
-        digitalWrite(PIN_DEL_GYRO_G, LOW);
-        digitalWrite(PIN_DEL_GYRO_D, HIGH);
-        delay(200);
+        if (communication.newScoreAvailable())
+        {
+            // todo: update score
+        }
+
+        if (communication.newSensorsAngle())
+        {
+            // todo: update sensors aim angle
+        }
+
+        if (millis() - reportTimer > REPORT_PERIOD)
+        {
+            reportTimer = millis();
+            communication.sendReport(0, 0, 0, 0); // todo: send real sensors data
+        }
+
+        // todo: SensorsMgr.updateServos();
+
+        // todo: UserInputControler.control();
     }
 }
 

@@ -1,6 +1,9 @@
 #ifndef _CONFIG_h
 #define _CONFIG_h
 
+/* Report period */
+#define REPORT_PERIOD   20  // ms
+
 /* Master serial */
 #define MASTER_SERIAL  Serial1
 #define BAUDRATE_SERIAL 115200

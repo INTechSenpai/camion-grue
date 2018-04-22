@@ -99,14 +99,19 @@ public:
         }
     }
 
-    bool isMoving()
+    bool isMoving() const
     {
         return currentCommand != ACTUATOR_NO_COMMAND;
     }
 
-    ArmStatus getStatus()
+    ArmStatus getStatus() const
     {
         return status | armControler.getStatus();
+    }
+
+    void getArmPosition(ArmPosition & position) const
+    {
+        armControler.getCurrentPosition(position);
     }
 
     void executeCommand(CommandId id, float angle = 0, int32_t height = 0)
@@ -144,7 +149,7 @@ public:
         stopCommand();
     }
 
-    bool isCubeInPlier()
+    bool isCubeInPlier() const
     {
         if (intSensorValue == (SensorValue)SENSOR_DEAD)
         {
@@ -190,6 +195,7 @@ private:
         switch (currentCommandStep)
         {
         case 0:
+        {
             // Dégagement du bras pour éviter la cabine si nécessaire
             armControler.getCurrentPosition(armPosition);
             float hAngle = armPosition.getHAngle();
@@ -211,6 +217,7 @@ private:
                 currentCommandStep += 2;
             }
             break;
+        }
         case 1:
             waitForMoveCompletion();
             break;
@@ -268,6 +275,7 @@ private:
             }
             break;
         case 1:
+        {
             armControler.getCurrentPosition(armPosition);
             float hAngle = armPosition.getHAngle();
             if (abs(hAngle) > ARM_H_ANGLE_CABIN)
@@ -287,6 +295,7 @@ private:
                 armControler.setAimPosition(armPosition);
             }
             break;
+        }
         case 2:
             waitForMoveCompletion();
             break;

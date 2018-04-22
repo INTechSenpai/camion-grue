@@ -47,7 +47,7 @@ uint8_t[38]
 (float)angle_t_d
 (float)angle_h_grue
 (float)angle_v_grue
-(float)angle_head_grue
+(float)angle_head_grue_local
 (float)pos_pince_grue
 
 ### [0x04] Go to home position
@@ -92,4 +92,8 @@ uint8_t[16]
 uint8_t[8]
 (float)angle_t_g
 (float)angle_t_d
+
+### [0x0E] Set displayed score
+uint8_t[4]
+(int)score
 
