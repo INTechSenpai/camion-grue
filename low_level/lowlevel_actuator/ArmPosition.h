@@ -92,7 +92,7 @@ public:
     {
         posMotV = pos;
         pos += ARM_POS_VMOT_ORIGIN;
-        vAngle = acosf(constrain(ARM_K3 - (pos * pos / ARM_K2), -1, 1));
+        vAngle = acosf(constrain(ARM_K3 - (pos * pos / ARM_K2), -1, 1)) - HALF_PI;
         updateHeadGlobalAngle();
     }
 

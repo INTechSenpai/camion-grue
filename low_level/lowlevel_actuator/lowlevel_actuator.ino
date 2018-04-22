@@ -3,6 +3,7 @@
 #include "MotorSensor.h"
 #include "ArmController.h"
 #include "ArmPosition.h"
+#include <Wire.h>
 
 
 void setup()
@@ -16,6 +17,7 @@ void loop()
     Serial.println("Coucou");
     digitalWrite(PIN_DEL_GYRO_G, HIGH);
     digitalWrite(PIN_DEL_GYRO_D, LOW);
+    Wire.begin();
     delay(200);
 
     digitalWrite(PIN_DEL_GYRO_G, LOW);
@@ -34,27 +36,10 @@ void loop()
     Serial.println(p);
     armController.getCurrentPosition(p);
     Serial.println(p);
-    p.setHAngle(1.2);
-    p.setVAngle(0.17);
-    armController.setAimPosition(p);
-    Serial.println(p);
-    Serial.println();
-    while (armController.isMoving())
-    {
-        armController.controlServos();
-
-        static uint32_t lastTime = 0;
-        static bool state = false;
-        if (millis() - lastTime > 500)
-        {
-            lastTime = millis();
-            state = !state;
-            digitalWrite(PIN_DEL_GYRO_D, state);
-        }
-    }
-
     p.setHAngle(0);
     p.setVAngle(0);
+    p.setHeadGlobalAngle(0);
+    p.setPlierPos(25);
     armController.setAimPosition(p);
     Serial.println(p);
     Serial.println();
@@ -71,6 +56,25 @@ void loop()
             digitalWrite(PIN_DEL_GYRO_D, state);
         }
     }
+
+    //p.setHAngle(0);
+    //p.setVAngle(0);
+    //armController.setAimPosition(p);
+    //Serial.println(p);
+    //Serial.println();
+    //while (armController.isMoving())
+    //{
+    //    armController.controlServos();
+
+    //    static uint32_t lastTime = 0;
+    //    static bool state = false;
+    //    if (millis() - lastTime > 500)
+    //    {
+    //        lastTime = millis();
+    //        state = !state;
+    //        digitalWrite(PIN_DEL_GYRO_D, state);
+    //    }
+    //}
     Serial.println("The end");
 
     while (true)

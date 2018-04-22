@@ -81,3 +81,15 @@ uint8_t[8]
 (float) angle (h) de dépose (exact)
 (int)floor (0=sur le sol; étage max: 4)
 
+### [0x0C] Put arm at given position
+uint8_t[16]
+(float)angle_h_grue
+(float)angle_v_grue
+(float)angle_head_grue
+(float)pos_pince_grue
+
+### [0x0D] Set sensors angles
+uint8_t[8]
+(float)angle_t_g
+(float)angle_t_d
+

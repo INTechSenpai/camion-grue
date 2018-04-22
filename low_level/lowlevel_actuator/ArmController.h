@@ -44,7 +44,7 @@ public:
         resetToOrigin();
         aimPosition.resetAXToOrigin();
         currentPosition.resetAXToOrigin();
-        stop();
+        stopFromInterrupt();
         status = ARM_STATUS_OK;
 
         serialAX.begin(SERIAL_AX12_BAUDRATE);
@@ -262,9 +262,8 @@ public:
         noInterrupts();
         aimPosition.resetCCToOrigin();
         currentPosition.resetCCToOrigin();
-        currentHPos = currentPosition.getHAngle();
-        hMotorSensor.setPosition(currentHPos);
-        vMotorSensor.setPosition(currentPosition.getVAngle());
+        hMotorSensor.setPosition(currentPosition.getHAngle());
+        vMotorSensor.setPosition(currentPosition.getPosMotV());
         interrupts();
     }
 

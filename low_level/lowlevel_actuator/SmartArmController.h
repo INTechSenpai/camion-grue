@@ -88,6 +88,9 @@ public:
             case ACTUATOR_PUT_CUBE_FIXED:
                 put_cube_smart(false);
                 break;
+            case ACTUATOR_SET_ARM_POSITION:
+                set_arm_position();
+                break;
             default:
                 Serial.println("SmartArmController: unknown command");
                 stopCommand();
@@ -118,6 +121,21 @@ public:
         currentCommandStep = 0;
         commandArgAngle = angle;
         commandArgHeight = height;
+    }
+
+    void setArmPosition(ArmPosition position)
+    {
+        if (currentCommand != ACTUATOR_NO_COMMAND)
+        {
+            Serial.println("SmartArmController: command already running");
+            return;
+        }
+        status = ARM_STATUS_OK;
+        currentCommand = ACTUATOR_SET_ARM_POSITION;
+        currentCommandStep = 0;
+        commandArgAngle = 0;
+        commandArgHeight = 0;
+        armControler.setAimPosition(position);
     }
 
     void emergencyStop()
@@ -541,6 +559,23 @@ private:
             currentCommandStep++;
             break;
         case 1:
+            break;
+        default:
+            Serial.println("Err unhandled command step");
+            stopCommand();
+            break;
+        }
+    }
+
+    void set_arm_position()
+    {
+        switch (currentCommandStep)
+        {
+        case 0:
+            waitForMoveCompletion();
+            break;
+        case 1:
+            stopCommand();
             break;
         default:
             Serial.println("Err unhandled command step");
