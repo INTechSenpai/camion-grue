@@ -35,7 +35,156 @@ public:
         if (internalCom.available())
         {
             InternalMessage message = internalCom.getMessage();
-            // todo: handle message
+            size_t index = 0;
+            switch ((CommandId)message.getInstruction())
+            {
+            case ACTUATOR_ACK:
+                Serial.println("Error: received ACK");
+                break;
+            case ACTUATOR_BOARD_REPORT:
+                Serial.println("Error: received actuator report");
+                break;
+            case ACTUATOR_GO_TO_HOME:
+                if (message.size() == 0)
+                {
+                    smartArmControler.executeCommand(ACTUATOR_GO_TO_HOME);
+                    sendAck();
+                }
+                else
+                {
+                    Serial.println("ACTUATOR_GO_TO_HOME wrong args size");
+                }
+                break;
+            case ACTUATOR_TAKE_CUBE_SMART:
+                if (message.size() == 4)
+                {
+                    float angle = Serializer::readFloat(message.getPayload(), index);
+                    smartArmControler.executeCommand(ACTUATOR_TAKE_CUBE_SMART, angle);
+                    sendAck();
+                }
+                else
+                {
+                    Serial.println("ACTUATOR_TAKE_CUBE_SMART wrong args size");
+                }
+                break;
+            case ACTUATOR_TAKE_CUBE_FIXED:
+                if (message.size() == 4)
+                {
+                    float angle = Serializer::readFloat(message.getPayload(), index);
+                    smartArmControler.executeCommand(ACTUATOR_TAKE_CUBE_FIXED, angle);
+                    sendAck();
+                }
+                else
+                {
+                    Serial.println("ACTUATOR_TAKE_CUBE_FIXED wrong args size");
+                }
+                break;
+            case ACTUATOR_STORE_CUBE_INSIDE:
+                if (message.size() == 0)
+                {
+                    smartArmControler.executeCommand(ACTUATOR_STORE_CUBE_INSIDE);
+                    sendAck();
+                }
+                else
+                {
+                    Serial.println("ACTUATOR_STORE_CUBE_INSIDE wrong args size");
+                }
+                break;
+            case ACTUATOR_STORE_CUBE_TOP:
+                if (message.size() == 0)
+                {
+                    smartArmControler.executeCommand(ACTUATOR_STORE_CUBE_TOP);
+                    sendAck();
+                }
+                else
+                {
+                    Serial.println("ACTUATOR_STORE_CUBE_TOP wrong args size");
+                }
+                break;
+            case ACTUATOR_TAKE_CUBE_STORAGE:
+                if (message.size() == 0)
+                {
+                    smartArmControler.executeCommand(ACTUATOR_TAKE_CUBE_STORAGE);
+                    sendAck();
+                }
+                else
+                {
+                    Serial.println("ACTUATOR_TAKE_CUBE_STORAGE wrong args size");
+                }
+                break;
+            case ACTUATOR_PUT_CUBE_SMART:
+                if (message.size() == 8)
+                {
+                    float angle = Serializer::readFloat(message.getPayload(), index);
+                    int32_t floor = Serializer::readInt(message.getPayload(), index);
+                    smartArmControler.executeCommand(ACTUATOR_PUT_CUBE_SMART, angle, floor);
+                    sendAck();
+                }
+                else
+                {
+                    Serial.println("ACTUATOR_PUT_CUBE_SMART wrong args size");
+                }
+                break;
+            case ACTUATOR_PUT_CUBE_FIXED:
+                if (message.size() == 8)
+                {
+                    float angle = Serializer::readFloat(message.getPayload(), index);
+                    int32_t floor = Serializer::readInt(message.getPayload(), index);
+                    smartArmControler.executeCommand(ACTUATOR_PUT_CUBE_FIXED, angle, floor);
+                    sendAck();
+                }
+                else
+                {
+                    Serial.println("ACTUATOR_PUT_CUBE_FIXED wrong args size");
+                }
+                break;
+            case ACTUATOR_SET_ARM_POSITION:
+                if (message.size() == 16)
+                {
+                    ArmPosition position;
+                    float angleH = Serializer::readFloat(message.getPayload(), index);
+                    float angleV = Serializer::readFloat(message.getPayload(), index);
+                    float angleHead = Serializer::readFloat(message.getPayload(), index);
+                    float plierPos = Serializer::readFloat(message.getPayload(), index);
+                    position.setHAngle(angleH);
+                    position.setVAngle(angleV);
+                    position.setHeadLocalAngle(angleHead);
+                    position.setPlierPos(plierPos);
+                    smartArmControler.setArmPosition(position);
+                    sendAck();
+                }
+                else
+                {
+                    Serial.println("ACTUATOR_SET_ARM_POSITION wrong args size");
+                }
+                break;
+            case ACTUATOR_SET_SENSORS_ANGLES:
+                if (message.size() == 8)
+                {
+                    leftSensorAngle = Serializer::readFloat(message.getPayload(), index);
+                    rightSensorAngle = Serializer::readFloat(message.getPayload(), index);
+                    anglesAvailable = true;
+                }
+                else
+                {
+                    Serial.println("ACTUATOR_SET_SENSORS_ANGLES wrong args size");
+                }
+                break;
+            case ACTUATOR_SET_SCORE:
+                if (message.size() == 4)
+                {
+                    score = Serializer::readInt(message.getPayload(), index);
+                    scoreAvailable = true;
+                }
+                else
+                {
+                    Serial.println("ACTUATOR_SET_SCORE wrong args size");
+                }
+                break;
+            default:
+                Serial.println("Unknown command received");
+                break;
+            }
         }
     }
 
@@ -63,11 +212,17 @@ public:
         internalCom.sendMessage(message);
     }
 
+    void sendAck()
+    {
+        InternalMessage message(ACTUATOR_ACK, 0, nullptr);
+        internalCom.sendMessage(message);
+    }
+
     bool newSensorsAngle() const { return anglesAvailable; }
-    float getLeftSensorAngle() const { return leftSensorAngle; }
-    float getRightSensorAngle() const { return rightSensorAngle; }
+    float getLeftSensorAngle() { anglesAvailable = false; return leftSensorAngle; }
+    float getRightSensorAngle() { anglesAvailable = false; return rightSensorAngle; }
     bool newScoreAvailable() const { return scoreAvailable; }
-    int32_t getScore() const { return score; }
+    int32_t getScore() { scoreAvailable = false; return score; }
 
 private:
     SmartArmControler smartArmControler;

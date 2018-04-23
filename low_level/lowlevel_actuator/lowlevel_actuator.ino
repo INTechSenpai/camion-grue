@@ -4,6 +4,8 @@
 #include "ArmController.h"
 #include "ArmPosition.h"
 #include "Communication.h"
+#include "SensorsMgr.h"
+#include "UserInputControler.h"
 #include <Wire.h>
 
 
@@ -41,11 +43,20 @@ void loop()
     delay(200);
 
     Communication communication;
+    SensorsMgr sensorsMgr;
+    UserInputControler userInputControler;
 
     if (communication.init() != 0)
     {
-        errorLoop();
+        //errorLoop();
     }
+
+    if (sensorsMgr.init() != 0)
+    {
+        //errorLoop();
+    }
+
+    userInputControler.init();
 
     IntervalTimer timer;
     timer.priority(253);
@@ -58,23 +69,26 @@ void loop()
 
         if (communication.newScoreAvailable())
         {
-            // todo: update score
+            userInputControler.setScore(communication.getScore());
         }
 
         if (communication.newSensorsAngle())
         {
-            // todo: update sensors aim angle
+            sensorsMgr.setAimAngles(communication.getLeftSensorAngle(), communication.getRightSensorAngle());
         }
 
         if (millis() - reportTimer > REPORT_PERIOD)
         {
             reportTimer = millis();
-            communication.sendReport(0, 0, 0, 0); // todo: send real sensors data
+            int32_t tofG = 0, tofD = 0;
+            float angleG = 0, angleD = 0;
+            sensorsMgr.getSensorsData(tofG, tofD, angleG, angleD);
+            communication.sendReport(tofG, tofD, angleG, angleD);
         }
 
-        // todo: SensorsMgr.updateServos();
+        sensorsMgr.updateServos();
 
-        // todo: UserInputControler.control();
+        userInputControler.control();
     }
 }
 

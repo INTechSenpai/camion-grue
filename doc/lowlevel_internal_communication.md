@@ -85,7 +85,7 @@ uint8_t[8]
 uint8_t[16]
 (float)angle_h_grue
 (float)angle_v_grue
-(float)angle_head_grue
+(float)angle_head_grue_local
 (float)pos_pince_grue
 
 ### [0x0D] Set sensors angles
