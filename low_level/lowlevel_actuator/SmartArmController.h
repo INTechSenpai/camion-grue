@@ -33,15 +33,32 @@ public:
 
     int init()
     {
-        int ret = armControler.init();
-        if (intSensor.powerON() == 0 && extSensor.powerON() == 0)
+        int ret = -1;
+        while (ret != 0)
         {
-            return ret;
+            ret = armControler.init();
         }
-        else
+        int failCount = 0;
+        while (intSensor.powerON() != 0)
         {
-            return -1;
+            failCount++;
+            if (failCount >= 10)
+            {
+                return -1;
+            }
+            Serial.println("intSensor retry");
         }
+        failCount = 0;
+        while (extSensor.powerON() != 0)
+        {
+            failCount++;
+            if (failCount >= 10)
+            {
+                return -1;
+            }
+            Serial.println("extSensor retry");
+        }
+        return ret;
     }
 
     void control()

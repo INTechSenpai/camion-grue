@@ -1,6 +1,10 @@
 # Bug tracker
 
-
+Manual AX12 movement
 
 # Fixed
 ArmController : initial position incorrect
+
+
+# Known issues
+Overclock on teensy 3.2 (to 96MHz) cause i2c bus to fail

@@ -63,7 +63,7 @@ public:
                 standby();
                 Serial.print("Sensor ");
                 Serial.print(name);
-                Serial.println("timed out, RIP");
+                Serial.println(" timed out, RIP");
 			}
             else if (distance > maxRange)
             {

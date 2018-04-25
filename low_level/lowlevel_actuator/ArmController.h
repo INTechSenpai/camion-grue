@@ -295,20 +295,20 @@ public:
 
     void setManualMode(bool enable)
     {
-        noInterrupts();
-        manualMode = enable;
-        interrupts();
-        if (!manualMode)
-        {
-            hMotorSpeedPID.resetDerivativeError();
-            hMotorSpeedPID.resetIntegralError();
-            vMotorSpeedPID.resetDerivativeError();
-            vMotorSpeedPID.resetIntegralError();
+        if (enable != manualMode)
+        { 
+            if (!enable)
+            {
+                hMotorSpeedPID.resetDerivativeError();
+                hMotorSpeedPID.resetIntegralError();
+                vMotorSpeedPID.resetDerivativeError();
+                vMotorSpeedPID.resetIntegralError();
+            }
+            noInterrupts();
+            manualMode = enable;
+            interrupts();
         }
-        manualHPWM = 0;
-        manualVPWM = 0;
-        manualHeadAngle = (uint16_t)currentPosition.getHeadLocalAngleDeg();
-        manualPlierAngle = (uint16_t)currentPosition.getPlierAngleDeg();
+        stop();
     }
 
     void setHPWM(int16_t pwm)

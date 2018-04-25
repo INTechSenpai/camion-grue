@@ -11,6 +11,11 @@
 
 void setup()
 {
+    pinMode(PIN_EN_TOF_G, OUTPUT);
+    digitalWrite(PIN_EN_TOF_G, LOW);
+    pinMode(PIN_EN_TOF_D, OUTPUT);
+    digitalWrite(PIN_EN_TOF_D, LOW);
+    delay(1000);
 }
 
 void errorLoop()
@@ -40,7 +45,7 @@ void loop()
     digitalWrite(PIN_DEL_GYRO_G, HIGH);
     digitalWrite(PIN_DEL_GYRO_D, LOW);
     Wire.begin();
-    delay(200);
+    delay(500);
 
     Communication communication;
     SensorsMgr sensorsMgr;
@@ -48,12 +53,14 @@ void loop()
 
     if (communication.init() != 0)
     {
-        //errorLoop();
+        Serial.println("Communication init failed");
+        errorLoop();
     }
 
     if (sensorsMgr.init() != 0)
     {
-        //errorLoop();
+        Serial.println("Sensors init failed");
+        errorLoop();
     }
 
     userInputControler.init();
