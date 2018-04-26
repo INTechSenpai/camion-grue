@@ -33,11 +33,11 @@ public:
 
     int init()
     {
-        int ret = -1;
-        while (ret != 0)
-        {
-            ret = armControler.init();
-        }
+        int ret = armControler.init();
+        //while (ret != 0)
+        //{
+        //    ret = armControler.init();
+        //}
         int failCount = 0;
         while (intSensor.powerON() != 0)
         {

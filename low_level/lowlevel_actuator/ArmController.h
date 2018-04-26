@@ -153,33 +153,17 @@ public:
             DynamixelStatus lastStatus = DYN_STATUS_OK;
             if (counter == 0)
             { // Set position AX12 head
-                uint16_t p;
-                if (manualMode)
-                {
-                    p = manualHeadAngle;
-                }
-                else
-                {
-                    noInterrupts();
-                    p = (uint16_t)aimPosition.getHeadLocalAngleDeg();
-                    interrupts();
-                }
+                noInterrupts();
+                uint16_t p = (uint16_t)aimPosition.getHeadLocalAngleDeg();
+                interrupts();
                 lastStatus = headAX12.goalPositionDegree(p);
                 counter = 1;
             }
             else if (counter == 1)
             { // Set position AX12 plier
-                uint16_t p;
-                if (manualMode)
-                {
-                    p = manualPlierAngle;
-                }
-                else
-                {
-                    noInterrupts();
-                    p = (uint16_t)aimPosition.getPlierAngleDeg();
-                    interrupts();
-                }
+                noInterrupts();
+                uint16_t p = (uint16_t)aimPosition.getPlierAngleDeg();
+                interrupts();
                 lastStatus = plierAX12.goalPositionDegree(p);
                 counter = 2;
             }
@@ -308,7 +292,9 @@ public:
             manualMode = enable;
             interrupts();
         }
-        stop();
+		noInterrupts();
+        stopFromInterrupt();
+		interrupts();
     }
 
     void setHPWM(int16_t pwm)
@@ -325,28 +311,31 @@ public:
         interrupts();
     }
 
-    void incrManualHeadAngle(int16_t inc)
+    void incrManualHeadAngle(float inc)
     {
-        float res = ((float)manualHeadAngle + (float)inc) * M_PI / 180;
-        if (res < ARM_MAX_HEAD_ANGLE && res > ARM_MIN_HEAD_ANGLE)
-        {
-            manualHeadAngle += inc;
-        }
+		aimPosition.setHeadLocalAngleDeg(aimPosition.getHeadLocalAngleDeg() + inc);
     }
 
-    void incrManualPlierAngle(int16_t inc)
+    void incrManualPlierAngle(float inc)
     {
-        uint16_t res = manualPlierAngle + inc;
-        if (res < ARM_MAX_PLIER_ANGLE_DEG && res > ARM_MIN_PLIER_ANGLE_DEG)
-        {
-            manualPlierAngle = res;
-        }
+		aimPosition.setPlierAngleDeg(constrain(aimPosition.getPlierAngleDeg() + inc, 
+			ARM_MIN_PLIER_ANGLE_DEG, ARM_MAX_PLIER_ANGLE_DEG));
     }
 
 private:
     void stopFromInterrupt()
     {
-        aimPosition = currentPosition;
+		aimPosition.setHAngle(currentPosition.getHAngle());
+		aimPosition.setVAngle(currentPosition.getVAngle());
+		if (abs(aimPosition.getHeadLocalAngle() - currentPosition.getHeadLocalAngle()) > ARM_AX12_TOLERANCE)
+		{
+			aimPosition.setHeadLocalAngle(currentPosition.getHeadLocalAngle());
+		}
+		if (abs(aimPosition.getPlierAngle() - currentPosition.getPlierAngle()) > ARM_AX12_TOLERANCE)
+		{
+			aimPosition.setPlierAngle(currentPosition.getPlierAngle());
+		}
+
         currentHSpeed = 0;
         aimHSpeed = 0;
         hMotorPWM = 0;
@@ -358,8 +347,6 @@ private:
         moving = false;
         manualHPWM = 0;
         manualVPWM = 0;
-        manualHeadAngle = (uint16_t)currentPosition.getHeadLocalAngleDeg();
-        manualPlierAngle = (uint16_t)currentPosition.getPlierAngleDeg();
     }
 
     ArmPosition aimPosition;
@@ -370,8 +357,6 @@ private:
     bool manualMode;
     int16_t manualHPWM;
     int16_t manualVPWM;
-    uint16_t manualHeadAngle;   // deg
-    uint16_t manualPlierAngle;  // deg
 
     /* Contrôle du mouvement horizontal */
     Motor hMotor;
