@@ -41,6 +41,9 @@ public:
         immediateOrderList[0x03] = &SetPosition::Instance();
         immediateOrderList[0x04] = &AppendToTraj::Instance();
         immediateOrderList[0x05] = &EditTraj::Instance();
+        immediateOrderList[0x06] = &DeleteTrajPts::Instance();
+        immediateOrderList[0x07] = &SetSensorsAngles::Instance();
+        immediateOrderList[0x08] = &SetScore::Instance();
 
         immediateOrderList[0x10] = &Display::Instance();
         immediateOrderList[0x11] = &Save::Instance();
@@ -68,6 +71,16 @@ public:
         longOrderList[0x01] = &Stop::Instance();
         longOrderList[0x02] = &WaitForJumper::Instance();
         longOrderList[0x03] = &StartChrono::Instance();
+        longOrderList[0x04] = &ActGoToHome::Instance();
+        longOrderList[0x05] = &ActTakeCubeUsingSensor::Instance();
+        longOrderList[0x06] = &ActTakeCubeFixed::Instance();
+        longOrderList[0x07] = &ActStoreInside::Instance();
+        longOrderList[0x08] = &ActStoreOnTop::Instance();
+        longOrderList[0x09] = &ActTakeFromStorage::Instance();
+        longOrderList[0x0A] = &ActPutOnPileUsingSensor::Instance();
+        longOrderList[0x0B] = &ActPutOnPileFixed::Instance();
+        longOrderList[0x0C] = &ActGoToPosition::Instance();
+        longOrderList[0x0D] = &ActStop::Instance();
     }
 
     void execute()

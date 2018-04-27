@@ -1,9 +1,13 @@
-# Bug tracker
+# TODO
 
-Manual AX12 movement
+Mettre à jour la documentation des ordres HL
+Implémenter les scripts de dépose de cube
+
+# Bug tracker
 
 # Fixed
 ArmController : initial position incorrect
+Manual AX12 movement
 
 
 # Known issues

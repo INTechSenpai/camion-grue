@@ -6,6 +6,7 @@
 #include "../Locomotion/MotionControlSystem.h"
 #include "../Locomotion/MoveState.h"
 #include "../CommunicationServer/CommunicationServer.h"
+#include "../SlaveCommunication/SlaveActuator.h"
 #include "../Tools/Singleton.h"
 
 class OrderLong
@@ -13,6 +14,7 @@ class OrderLong
 public:
     OrderLong() :
         motionControlSystem(MotionControlSystem::Instance()),
+        slaveActuator(SlaveActuator::Instance()),
         finished(true)
     {}
 
@@ -39,6 +41,7 @@ public:
 
 protected:
     MotionControlSystem & motionControlSystem;
+    SlaveActuator & slaveActuator;
     bool finished;
 };
 
@@ -183,6 +186,286 @@ public:
 
 private:
     uint32_t chrono;
+};
+
+
+/*
+    Contrôle de l'actionneur
+*/
+
+
+class ActGoToHome : public OrderLong, public Singleton<ActGoToHome>
+{
+public:
+    ActGoToHome() {}
+    void _launch(const std::vector<uint8_t> & input)
+    {
+        if (input.size() == 0)
+        {
+            slaveActuator.goToHome();
+        }
+        else
+        {
+            Server.printf_err("ActGoToHome: wrong number of arguments\n");
+        }
+    }
+    void onExecute()
+    {
+        finished = !slaveActuator.isMoving();
+    }
+    void terminate(std::vector<uint8_t> & output)
+    {
+        Serializer::writeInt(slaveActuator.getStatus(), output);
+    }
+};
+
+
+class ActTakeCubeUsingSensor : public OrderLong, public Singleton<ActTakeCubeUsingSensor>
+{
+public:
+    ActTakeCubeUsingSensor() {}
+    void _launch(const std::vector<uint8_t> & input)
+    {
+        if (input.size() == 4)
+        {
+            size_t index = 0;
+            float angle = Serializer::readFloat(input, index);
+            slaveActuator.takeCubeUsingSensor(angle);
+        }
+        else
+        {
+            Server.printf_err("ActTakeCubeUsingSensor: wrong number of arguments\n");
+        }
+    }
+    void onExecute()
+    {
+        finished = !slaveActuator.isMoving();
+    }
+    void terminate(std::vector<uint8_t> & output)
+    {
+        int32_t ret = slaveActuator.getStatus();
+        if (!slaveActuator.isCubeInPlier())
+        {
+            ret |= ACTUATOR_STATUS_CUBE_MISSED;
+        }
+        Serializer::writeInt(ret, output);
+    }
+};
+
+
+class ActTakeCubeFixed : public OrderLong, public Singleton<ActTakeCubeFixed>
+{
+public:
+    ActTakeCubeFixed() {}
+    void _launch(const std::vector<uint8_t> & input)
+    {
+        if (input.size() == 4)
+        {
+            size_t index = 0;
+            float angle = Serializer::readFloat(input, index);
+            slaveActuator.takeCubeFixed(angle);
+        }
+        else
+        {
+            Server.printf_err("ActTakeCubeFixed: wrong number of arguments\n");
+        }
+    }
+    void onExecute()
+    {
+        finished = !slaveActuator.isMoving();
+    }
+    void terminate(std::vector<uint8_t> & output)
+    {
+        int32_t ret = slaveActuator.getStatus();
+        if (!slaveActuator.isCubeInPlier())
+        {
+            ret |= ACTUATOR_STATUS_CUBE_MISSED;
+        }
+        Serializer::writeInt(ret, output);
+    }
+};
+
+
+class ActStoreInside : public OrderLong, public Singleton<ActStoreInside>
+{
+public:
+    ActStoreInside() {}
+    void _launch(const std::vector<uint8_t> & input)
+    {
+        if (input.size() == 0)
+        {
+            slaveActuator.storeCubeInside();
+        }
+        else
+        {
+            Server.printf_err("ActStoreInside: wrong number of arguments\n");
+        }
+    }
+    void onExecute()
+    {
+        finished = !slaveActuator.isMoving();
+    }
+    void terminate(std::vector<uint8_t> & output)
+    {
+        Serializer::writeInt(slaveActuator.getStatus(), output);
+    }
+};
+
+
+class ActStoreOnTop : public OrderLong, public Singleton<ActStoreOnTop>
+{
+public:
+    ActStoreOnTop() {}
+    void _launch(const std::vector<uint8_t> & input)
+    {
+        if (input.size() == 0)
+        {
+            slaveActuator.storeCubeOnTop();
+        }
+        else
+        {
+            Server.printf_err("ActStoreOnTop: wrong number of arguments\n");
+        }
+    }
+    void onExecute()
+    {
+        finished = !slaveActuator.isMoving();
+    }
+    void terminate(std::vector<uint8_t> & output)
+    {
+        Serializer::writeInt(slaveActuator.getStatus(), output);
+    }
+};
+
+
+class ActTakeFromStorage : public OrderLong, public Singleton<ActTakeFromStorage>
+{
+public:
+    ActTakeFromStorage() {}
+    void _launch(const std::vector<uint8_t> & input)
+    {
+        if (input.size() == 0)
+        {
+            slaveActuator.takeCubeFromStorage();
+        }
+        else
+        {
+            Server.printf_err("ActTakeFromStorage: wrong number of arguments\n");
+        }
+    }
+    void onExecute()
+    {
+        finished = !slaveActuator.isMoving();
+    }
+    void terminate(std::vector<uint8_t> & output)
+    {
+        Serializer::writeInt(slaveActuator.getStatus(), output);
+    }
+};
+
+
+class ActPutOnPileUsingSensor : public OrderLong, public Singleton<ActPutOnPileUsingSensor>
+{
+public:
+    ActPutOnPileUsingSensor() {}
+    void _launch(const std::vector<uint8_t> & input)
+    {
+        if (input.size() == 8)
+        {
+            size_t index = 0;
+            float angle = Serializer::readFloat(input, index);
+            int32_t floor = Serializer::readInt(input, index);
+            slaveActuator.putCubeUsingSensor(angle, floor);
+        }
+        else
+        {
+            Server.printf_err("ActPutOnPileUsingSensor: wrong number of arguments\n");
+        }
+    }
+    void onExecute()
+    {
+        finished = !slaveActuator.isMoving();
+    }
+    void terminate(std::vector<uint8_t> & output)
+    {
+        Serializer::writeInt(slaveActuator.getStatus(), output);
+    }
+};
+
+
+class ActPutOnPileFixed : public OrderLong, public Singleton<ActPutOnPileFixed>
+{
+public:
+    ActPutOnPileFixed() {}
+    void _launch(const std::vector<uint8_t> & input)
+    {
+        if (input.size() == 8)
+        {
+            size_t index = 0;
+            float angle = Serializer::readFloat(input, index);
+            int32_t floor = Serializer::readInt(input, index);
+            slaveActuator.putCubeFixed(angle, floor);
+        }
+        else
+        {
+            Server.printf_err("ActPutOnPileFixed: wrong number of arguments\n");
+        }
+    }
+    void onExecute()
+    {
+        finished = !slaveActuator.isMoving();
+    }
+    void terminate(std::vector<uint8_t> & output)
+    {
+        Serializer::writeInt(slaveActuator.getStatus(), output);
+    }
+};
+
+
+class ActGoToPosition : public OrderLong, public Singleton<ActGoToPosition>
+{
+public:
+    ActGoToPosition() {}
+    void _launch(const std::vector<uint8_t> & input)
+    {
+        if (input.size() == 16)
+        {
+            size_t index = 0;
+            float angleH = Serializer::readFloat(input, index);
+            float angleV = Serializer::readFloat(input, index);
+            float angleHead = Serializer::readFloat(input, index);
+            float posPlier = Serializer::readFloat(input, index);
+            slaveActuator.goToPosition(angleH, angleV, angleHead, posPlier);
+        }
+        else
+        {
+            Server.printf_err("ActGoToPosition: wrong number of arguments\n");
+        }
+    }
+    void onExecute()
+    {
+        finished = !slaveActuator.isMoving();
+    }
+    void terminate(std::vector<uint8_t> & output)
+    {
+        Serializer::writeInt(slaveActuator.getStatus(), output);
+    }
+};
+
+
+class ActStop : public OrderLong, public Singleton<ActStop>
+{
+public:
+    ActStop() {}
+    void _launch(const std::vector<uint8_t> & input)
+    {
+        slaveActuator.stop();
+    }
+    void onExecute()
+    {
+        finished = !slaveActuator.isMoving();
+    }
+    void terminate(std::vector<uint8_t> & output) {}
 };
 
 

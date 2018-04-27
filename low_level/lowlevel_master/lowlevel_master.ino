@@ -8,6 +8,7 @@
 #include "CommunicationServer/OrderMgr.h"
 #include "Locomotion/MotionControlSystem.h"
 #include "SlaveCommunication/SlaveSensorLed.h"
+#include "SlaveCommunication/SlaveActuator.h"
 #include "CommunicationServer/Serializer.h"
 
 #define ODOMETRY_REPORT_PERIOD  20  // ms
@@ -33,8 +34,8 @@ void loop()
     MotionControlSystem &motionControlSystem = MotionControlSystem::Instance();
     DirectionController &directionController = DirectionController::Instance();
     SlaveSensorLed &slaveSensorLed = SlaveSensorLed::Instance();
-    slaveSensorLed.setLightningMode(0); // Trigger init of slave Teensy
-
+    SlaveActuator &slaveActuator = SlaveActuator::Instance();
+    
     IntervalTimer motionControlTimer;
     motionControlTimer.priority(253);
     motionControlTimer.begin(motionControlInterrupt, PERIOD_ASSERV);
@@ -43,16 +44,25 @@ void loop()
     std::vector<uint8_t> odometryReport;
     std::vector<uint8_t> shortRangeSensorsValues;
     std::vector<uint8_t> longRangeSensorsValues;
+
+    // Attente du démarrage de la grue
+    while (!slaveActuator.sensorDataAvailable())
+    {
+        slaveActuator.listen();
+    }
+    slaveActuator.getSensorsValues(longRangeSensorsValues);
+
+    // Lancement de la carte capteurs
+    slaveSensorLed.setLightningMode(0);
+
+    // Attente du démarrage de la carte capteurs
     while (!slaveSensorLed.available())
     {
         slaveSensorLed.listen();
     }
     slaveSensorLed.getSensorsValues(shortRangeSensorsValues);
-    for (size_t i = 0; i < 5; i++)
-    {
-        Serializer::writeInt(0, longRangeSensorsValues); // provisoire, à termes il faudra attendre de recevoir la première trame pour initialiser avec
-    }
 
+    // Affichage du succès du démarrage
     slaveSensorLed.setLightningMode(68);
 
     uint32_t delTimer = 0;
@@ -62,6 +72,12 @@ void loop()
     {
         orderManager.execute();
         directionController.control();
+
+        slaveActuator.listen();
+        if (slaveActuator.sensorDataAvailable())
+        {
+            slaveActuator.getSensorsValues(longRangeSensorsValues);
+        }
 
         slaveSensorLed.listen();
         if (slaveSensorLed.available())

@@ -11,6 +11,7 @@
 #include "../Locomotion/TrajectoryPoint.h"
 #include "../Locomotion/MotionControlTunings.h"
 #include "../CommunicationServer/CommunicationServer.h"
+#include "../SlaveCommunication/SlaveActuator.h"
 #include "../Tools/Singleton.h"
 
 
@@ -19,7 +20,8 @@ class OrderImmediate
 public:
     OrderImmediate() : 
         motionControlSystem(MotionControlSystem::Instance()),
-        directionController(DirectionController::Instance())
+        directionController(DirectionController::Instance()),
+        slaveActuator(SlaveActuator::Instance())
     {}
 
     /*
@@ -31,6 +33,7 @@ public:
 protected:
     MotionControlSystem & motionControlSystem;
     DirectionController & directionController;
+    SlaveActuator & slaveActuator;
 };
 
 
@@ -245,6 +248,74 @@ public:
         }
         io.clear();
         Serializer::writeEnum(ret, io);
+    }
+};
+
+
+class DeleteTrajPts : public OrderImmediate, public Singleton<DeleteTrajPts>
+{
+public:
+    DeleteTrajPts() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        uint8_t ret = TRAJECTORY_EDITION_FAILURE;
+        if (io.size() == 4)
+        {
+            size_t index = 0;
+            size_t trajIndex = Serializer::readUInt(io, index);
+            ret = motionControlSystem.deleteTrajectoryPoints(trajIndex);
+        }
+        else
+        {
+            Server.printf_err("DeleteTrajPts: wrong number of arguments\n");
+        }
+        io.clear();
+        Serializer::writeEnum(ret, io);
+    }
+};
+
+
+class SetSensorsAngles : public OrderImmediate, public Singleton<SetSensorsAngles>
+{
+public:
+    SetSensorsAngles() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 8)
+        {
+            size_t index = 0;
+            float angleG = Serializer::readFloat(io, index);
+            float angleD = Serializer::readFloat(io, index);
+            slaveActuator.setSensorsAngles(angleG, angleD);
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("SetSensorsAngles: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
+
+class SetScore : public OrderImmediate, public Singleton<SetScore>
+{
+public:
+    SetScore() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 4)
+        {
+            size_t index = 0;
+            int32_t score = Serializer::readInt(io, index);
+            slaveActuator.setDisplayedScore(score);
+            io.clear();
+        }
+        else
+        {
+            Server.printf_err("SetScore: wrong number of arguments\n");
+            io.clear();
+        }
     }
 };
 

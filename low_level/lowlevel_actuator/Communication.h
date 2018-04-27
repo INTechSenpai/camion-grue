@@ -181,6 +181,9 @@ public:
                     Serial.println("ACTUATOR_SET_SCORE wrong args size");
                 }
                 break;
+            case ACTUATOR_STOP:
+                smartArmControler.emergencyStop();
+                break;
             default:
                 Serial.println("Unknown command received");
                 break;

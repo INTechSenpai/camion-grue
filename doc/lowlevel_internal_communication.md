@@ -97,3 +97,6 @@ uint8_t[8]
 uint8_t[4]
 (int)score
 
+### [0x0F] Stop arm
+uint8_t[0]
+

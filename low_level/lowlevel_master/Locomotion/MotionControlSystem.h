@@ -256,6 +256,29 @@ private:
 		}
 	}
 
+    uint8_t deleteTrajectoryPoints(size_t index)
+    {
+        if (index < currentTrajectory.size() && index >= trajectoryIndex)
+        {
+            if (index == trajectoryIndex && travellingToDestination)
+            {
+                return TRAJECTORY_EDITION_FAILURE;
+            }
+            else
+            {
+                noInterrupts();
+                trajectoryComplete = false;
+                currentTrajectory.erase(currentTrajectory.begin() + index, currentTrajectory.end());
+                interrupts();
+                return TRAJECTORY_EDITION_SUCCESS;
+            }
+        }
+        else
+        {
+            return TRAJECTORY_EDITION_FAILURE;
+        }
+    }
+
 	Position getPosition() const
 	{
 		static Position p; 
