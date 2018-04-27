@@ -360,7 +360,7 @@ private:
         case 6:
             // Abaissement du bras
             armControler.getCurrentPosition(armPosition);
-            armPosition.setVAngle(ARM_V_ANGLE_STAGE_0);
+            armPosition.setVAngle(ARM_V_ANGLE_STAGE_0_DOWN);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
             break;
@@ -580,11 +580,173 @@ private:
         switch (currentCommandStep)
         {
         case 0:
+            if ((abs(commandArgAngle) < ARM_H_ANGLE_CABIN && commandArgHeight < 2) ||
+                (abs(commandArgAngle) >= ARM_H_ANGLE_CABIN && commandArgHeight > 2) ||
+                (abs(commandArgAngle) > ARM_MAX_H_ANGLE))
+            {
+                Serial.println("put_cube_smart: Invalid arguments");
+                status |= ARM_STATUS_UNREACHABLE;
+                stopCommand();
+            }
             armControler.getCurrentPosition(armPosition);
+            switch (commandArgHeight)
+            {
+            case 0:
+                armPosition.setVAngle(ARM_V_ANGLE_STAGE_0_UP);
+                break;
+            case 1:
+                armPosition.setVAngle(ARM_V_ANGLE_STAGE_1_UP);
+                break;
+            case 2:
+                if (abs(commandArgAngle) > ARM_H_ANGLE_CABIN)
+                {
+                    armPosition.setVAngle(ARM_V_ANGLE_STAGE_2_SIDE_UP);
+                }
+                else
+                {
+                    armPosition.setVAngle(ARM_V_ANGLE_STAGE_2_FRONT_UP);
+                }
+                break;
+            case 3:
+                armPosition.setVAngle(ARM_V_ANGLE_STAGE_3_UP);
+                break;
+            case 4:
+                armPosition.setVAngle(ARM_V_ANGLE_STAGE_4_UP);
+                break;
+            default:
+                armPosition.setVAngle(ARM_V_ANGLE_STAGE_2_SIDE_UP);
+                break;
+            }
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
             break;
         case 1:
+            waitForMoveCompletion();
+            break;
+        case 2:
+            armControler.getCurrentPosition(armPosition);
+            if (abs(commandArgAngle) > ARM_H_ANGLE_CABIN)
+            {
+                armPosition.setHAngle(commandArgAngle);
+                currentCommandStep = 7;
+            }
+            else if (armPosition.getHeadGlobalAngle() > 0)
+            {
+                armPosition.setHAngle(commandArgAngle);
+                armPosition.setHeadGlobalAngle(HALF_PI);
+                currentCommandStep++;
+            }
+            else if (commandArgAngle >= 0)
+            {
+                armPosition.setHAngle(ARM_H_ANGLE_CABIN + 0.17); // +10° pour être sûr
+                currentCommandStep++;
+            }
+            else
+            {
+                armPosition.setHAngle(-ARM_H_ANGLE_CABIN - 0.17); // +10° pour être sûr
+                currentCommandStep++;
+            }
+            armControler.setAimPosition(armPosition);
+            break;
+        case 3:
+            waitForMoveCompletion();
+            break;
+        case 4:
+            armControler.getCurrentPosition(armPosition);
+            armPosition.setHeadGlobalAngle(HALF_PI);
+            armControler.setAimPosition(armPosition);
+            currentCommandStep++;
+            break;
+        case 5:
+            waitForMoveCompletion();
+            break;
+        case 6:
+            armControler.getCurrentPosition(armPosition);
+            armPosition.setHAngle(commandArgAngle);
+            armControler.setAimPosition(armPosition);
+            currentCommandStep = 8;
+            break;
+        case 7:
+            armControler.getCurrentPosition(armPosition);
+            if (abs(armPosition.getHAngle()) > ARM_H_ANGLE_CABIN)
+            {
+                armControler.getAimPosition(armPosition);
+                armPosition.setHeadGlobalAngle(0);
+                armControler.setAimPosition(armPosition);
+                currentCommandStep++;
+            }
+            break;
+        case 8:
+            waitForMoveCompletion();
+            break;
+        case 9:
+            armControler.getCurrentPosition(armPosition);
+            switch (commandArgHeight)
+            {
+            case 0:
+                armPosition.setVAngle(ARM_V_ANGLE_STAGE_0_DOWN);
+                break;
+            case 1:
+                armPosition.setVAngle(ARM_V_ANGLE_STAGE_1_DOWN);
+                break;
+            case 2:
+                if (abs(commandArgAngle) > ARM_H_ANGLE_CABIN)
+                {
+                    armPosition.setVAngle(ARM_V_ANGLE_STAGE_2_SIDE_DOWN);
+                }
+                else
+                {
+                    armPosition.setVAngle(ARM_V_ANGLE_STAGE_2_FRONT_DOWN);
+                }
+                break;
+            case 3:
+                armPosition.setVAngle(ARM_V_ANGLE_STAGE_3_DOWN);
+                break;
+            case 4:
+                armPosition.setVAngle(ARM_V_ANGLE_STAGE_4_DOWN);
+                break;
+            default:
+                break;
+            }
+            if (abs(commandArgAngle) > ARM_H_ANGLE_CABIN)
+            {
+                armPosition.setHeadGlobalAngle(0);
+            }
+            else
+            {
+                armPosition.setHeadGlobalAngle(HALF_PI);
+            }
+            armControler.setAimPosition(armPosition);
+            currentCommandStep++;
+            break;
+        case 10:
+            waitForMoveCompletion();
+            break;
+        case 11:
+            armControler.getCurrentPosition(armPosition);
+            armPosition.setPlierPos(ARM_MAX_PLIER_POS);
+            armControler.setAimPosition(armPosition);
+            break;
+        case 12:
+            waitForMoveCompletion();
+            break;
+        case 13:
+            armControler.getCurrentPosition(armPosition);
+            if (abs(commandArgAngle) > ARM_H_ANGLE_CABIN)
+            {
+                armPosition.setHeadLocalAngle(ARM_MAX_HEAD_ANGLE);
+            }
+            else
+            {
+                armPosition.setHeadLocalAngle(ARM_MIN_HEAD_ANGLE);
+            }
+            armControler.setAimPosition(armPosition);
+            break;
+        case 14:
+            waitForMoveCompletion();
+            break;
+        case 15:
+            stopCommand();
             break;
         default:
             Serial.println("Err unhandled command step");
