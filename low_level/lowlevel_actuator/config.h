@@ -74,10 +74,13 @@
 #define V_SPEED_KD    3
 
 #define HMOTOR_KP   10
-#define HMOTOR_KD   0
+#define HMOTOR_KD   0.5
 
 #define HMOTOR_MAX_SPEED    3   // rad/s
+#define HMOTOR_MIN_SPEED    0.3 // rad/s
 #define VMOTOR_MAX_SPEED    30  // mm/s
+
+#define ARM_MOVE_TIMEOUT    6000    // ms
 
 
 #endif

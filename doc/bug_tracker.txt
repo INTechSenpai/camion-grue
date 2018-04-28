@@ -1,7 +1,7 @@
 # TODO
 
 Mettre à jour la documentation des ordres HL
-Implémenter les scripts de dépose de cube
+Limiter le couple de l'AX12 de la pince
 
 # Bug tracker
 

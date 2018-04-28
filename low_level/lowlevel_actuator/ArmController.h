@@ -23,8 +23,8 @@ public:
         hMotorBlockingMgr(aimHSpeed, currentHSpeed),
         hMotorSpeedPID(currentHSpeed, hMotorPWM, aimHSpeed, FREQ_ASSERV),
         hMotorPosPID(currentHPos, aimHSpeed, aimHPos, FREQ_ASSERV),
-        vMotor(PIN_EN_MOT_V, PIN_B_MOT_V, PIN_A_MOT_V),
-        vMotorSensor(FREQ_ASSERV, VMOTOR_TICK_TO_MM, PIN_ENC_MOT_V_A, PIN_ENC_MOT_V_B, currentVSpeed),
+        vMotor(PIN_EN_MOT_V, PIN_A_MOT_V, PIN_B_MOT_V),
+        vMotorSensor(FREQ_ASSERV, VMOTOR_TICK_TO_MM, PIN_ENC_MOT_V_B, PIN_ENC_MOT_V_A, currentVSpeed),
         vMotorBlockingMgr(aimVSpeed, currentVSpeed),
         vMotorSpeedPID(currentVSpeed, vMotorPWM, aimVSpeed, FREQ_ASSERV),
         serialAX(SERIAL_AX12),
@@ -46,6 +46,7 @@ public:
         currentPosition.resetAXToOrigin();
         stopFromInterrupt();
         status = ARM_STATUS_OK;
+        moveTimer = 0;
         manualMode = false;
 
         serialAX.begin(SERIAL_AX12_BAUDRATE);
@@ -118,10 +119,22 @@ public:
                 Serial.println("V-Motor blocked !"); // debug
             }
 
-            if (moving && currentPosition.closeEnoughTo(aimPosition))
+            if (moving && currentPosition.closeEnoughTo(aimPosition) && abs(currentHSpeed) < HMOTOR_MIN_SPEED)
             {
                 stopFromInterrupt();
                 Serial.println("End of move"); // debug
+            }
+
+            if (moving && millis() - moveTimer > ARM_MOVE_TIMEOUT)
+            {
+                Serial.println("End of move by timeout"); // debug
+                Serial.print("Aim= ");
+                Serial.println(aimPosition);
+                Serial.print("Real= ");
+                Serial.println(currentPosition);
+                Serial.print("H-speed= ");
+                Serial.println(currentHSpeed);
+                stopFromInterrupt();
             }
 
             if (moving)
@@ -224,6 +237,7 @@ public:
         noInterrupts();
         aimPosition = position;
         moving = true;
+        moveTimer = millis();
         status = ARM_STATUS_OK;
         interrupts();
         Serial.println("Start moving");
@@ -240,6 +254,15 @@ public:
     {
         noInterrupts();
         position = currentPosition;
+        interrupts();
+    }
+
+    void getCurrentPositionSpecial(ArmPosition & position) const
+    {
+        noInterrupts();
+        position = currentPosition;
+        position.setHeadLocalAngle(aimPosition.getHeadLocalAngle());
+        position.setPlierAngle(aimPosition.getPlierAngle());
         interrupts();
     }
 
@@ -353,6 +376,7 @@ private:
     ArmPosition currentPosition;
     bool moving;
     ArmStatus status;
+    uint32_t moveTimer;
 
     bool manualMode;
     int16_t manualHPWM;

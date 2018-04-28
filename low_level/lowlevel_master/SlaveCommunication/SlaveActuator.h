@@ -27,6 +27,7 @@
 #define ACTUATOR_STATUS_CUBE_MISSED             0x0200
 
 #define ACTUATOR_COM_TIMEOUT                    20      // ms
+#define MOVING_LOCK_DURATION                    100     // ms
 
 
 class SlaveActuator : public Singleton<SlaveActuator>
@@ -44,6 +45,7 @@ public:
         angleHead = 0;
         posPlier = 0;
         ackReceived = false;
+        movingLockTimer = 0;
     }
 
     void listen()
@@ -67,7 +69,12 @@ public:
             }
 
             size_t index = 0;
-            moving = Serializer::readBool(lastMessage.getPayload(), index);
+            bool newMovingState = Serializer::readBool(lastMessage.getPayload(), index);
+            if (millis() - movingLockTimer > MOVING_LOCK_DURATION)
+            {
+                moving = newMovingState;
+            }
+
             status = Serializer::readInt(lastMessage.getPayload(), index);
             cubeInPlier = Serializer::readBool(lastMessage.getPayload(), index);
             int32_t tof_g = Serializer::readInt(lastMessage.getPayload(), index);
@@ -99,6 +106,14 @@ public:
     {
         output = sensorsData;
         dataAvailable = false;
+    }
+
+    void getArmPosition(float &hAngle, float &vAngle, float &headAngle, float &plierPos) const
+    {
+        hAngle = angleH;
+        vAngle = angleV;
+        headAngle = angleHead;
+        plierPos = posPlier;
     }
 
     bool isMoving()
@@ -215,6 +230,7 @@ private:
             }
         }
         moving = true;
+        movingLockTimer = millis();
     }
 
     void sendMoveCommand(uint8_t commandId, const std::vector<uint8_t> & payload)
@@ -246,6 +262,9 @@ private:
 
     /* Acquittement */
     bool ackReceived;
+
+    /* This is not a hack */
+    uint32_t movingLockTimer;
 };
 
 

@@ -214,7 +214,7 @@ private:
         case 0:
         {
             // Dégagement du bras pour éviter la cabine si nécessaire
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             float hAngle = armPosition.getHAngle();
             if (abs(hAngle) < ARM_H_ANGLE_CABIN && armPosition.getHeadGlobalAngle() > 0)
             {
@@ -240,7 +240,7 @@ private:
             break;
         case 2:
             // Repli du bras avec angleH constant
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setVAngle(0);
             armPosition.setHeadLocalAngle(ARM_MAX_HEAD_ANGLE);
             armPosition.setPlierPos(25);
@@ -252,7 +252,7 @@ private:
             break;
         case 4:
             // Alignement du bras au dessus de la cabine
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHAngle(0);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
@@ -283,7 +283,7 @@ private:
             }
             else
             {
-                armControler.getCurrentPosition(armPosition);
+                armControler.getCurrentPositionSpecial(armPosition);
                 armPosition.setHAngle(commandArgAngle);
                 armPosition.setVAngle(0);
                 armPosition.setPlierPos(ARM_MAX_PLIER_POS);
@@ -293,7 +293,7 @@ private:
             break;
         case 1:
         {
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             float hAngle = armPosition.getHAngle();
             if (abs(hAngle) > ARM_H_ANGLE_CABIN)
             {
@@ -318,7 +318,7 @@ private:
             break;
         case 3:
             // Rotation horizontale
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHAngle(commandArgAngle);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
@@ -336,7 +336,7 @@ private:
             }
             else if (extSensorValue > CUBE_DETECT_MIN && extSensorValue < CUBE_DETECT_MAX)
             {
-                armControler.getCurrentPosition(armPosition);
+                armControler.getCurrentPositionSpecial(armPosition);
                 float hAngle = armPosition.getHAngle();
                 if (hAngle > 0) {
                     hAngle += 0.1;
@@ -359,7 +359,7 @@ private:
             break;
         case 6:
             // Abaissement du bras
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setVAngle(ARM_V_ANGLE_STAGE_0_DOWN);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
@@ -369,7 +369,7 @@ private:
             break;
         case 8:
             // Positionnement de la tête du bras
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHeadGlobalAngle(0);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
@@ -379,7 +379,7 @@ private:
             break;
         case 10:
             // Fermeture de la pince
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setPlierPos(ARM_MIN_PLIER_POS);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
@@ -389,7 +389,7 @@ private:
             break;
         case 12:
             // Levée du cube
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHeadLocalAngle(ARM_HEAD_L_ANGLE_TRANSPORT);
             armPosition.setVAngle(0);
             armControler.setAimPosition(armPosition);
@@ -415,42 +415,47 @@ private:
         {
         case 0:
             // Levée du cube
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHeadLocalAngle(ARM_HEAD_L_ANGLE_TRANSPORT);
             armPosition.setVAngle(ARM_V_ANGLE_STORAGE);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
+            Serial.println("CASE 0");
             break;
         case 1:
             waitForMoveCompletion();
             break;
         case 2:
             // Placement au dessus de la zone de stockage
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHAngle(0);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
+            Serial.println("CASE 2");
             break;
         case 3:
             waitForMoveCompletion();
+            break;
         case 4:
             // Dépose du cube
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHeadGlobalAngle(ARM_HEAD_G_ANGLE_STORAGE);
             armPosition.setPlierPos(25);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
+            Serial.println("CASE 4");
             break;
         case 5:
             waitForMoveCompletion();
             break;
         case 6:
             // Rangement du bras
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHeadLocalAngle(ARM_MAX_HEAD_ANGLE);
             armPosition.setVAngle(0);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
+            Serial.println("CASE 6");
             break;
         case 7:
             waitForMoveCompletion();
@@ -471,7 +476,7 @@ private:
         {
         case 0:
             // Position initiale
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHAngle(ARM_H_ANGLE_CABIN);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
@@ -481,7 +486,7 @@ private:
             break;
         case 2:
             // Levée du cube
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHeadLocalAngle(ARM_MIN_HEAD_ANGLE);
             armPosition.setVAngle(0);
             armControler.setAimPosition(armPosition);
@@ -492,7 +497,7 @@ private:
             break;
         case 4:
             // Alignement du bras
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHAngle(0);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
@@ -516,7 +521,7 @@ private:
         {
         case 0:
             // Levée du bras
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHeadLocalAngle(ARM_MAX_HEAD_ANGLE);
             armPosition.setPlierPos(ARM_MAX_PLIER_POS);
             armPosition.setVAngle(ARM_V_ANGLE_STORAGE);
@@ -528,7 +533,7 @@ private:
             break;
         case 2:
             // Alignement du bras
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHAngle(0);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
@@ -538,7 +543,7 @@ private:
             break;
         case 4:
             // Abaissement de la tête du bras
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHeadGlobalAngle(ARM_HEAD_G_ANGLE_STORAGE);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
@@ -548,7 +553,7 @@ private:
             break;
         case 6:
             // Préhension du cube
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setPlierPos(ARM_MIN_PLIER_POS);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
@@ -557,7 +562,7 @@ private:
             waitForMoveCompletion();
             break;
         case 8:
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHeadLocalAngle(ARM_HEAD_L_ANGLE_TRANSPORT);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
@@ -588,7 +593,7 @@ private:
                 status |= ARM_STATUS_UNREACHABLE;
                 stopCommand();
             }
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             switch (commandArgHeight)
             {
             case 0:
@@ -624,7 +629,7 @@ private:
             waitForMoveCompletion();
             break;
         case 2:
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             if (abs(commandArgAngle) > ARM_H_ANGLE_CABIN)
             {
                 armPosition.setHAngle(commandArgAngle);
@@ -652,7 +657,7 @@ private:
             waitForMoveCompletion();
             break;
         case 4:
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHeadGlobalAngle(HALF_PI);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
@@ -661,13 +666,13 @@ private:
             waitForMoveCompletion();
             break;
         case 6:
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHAngle(commandArgAngle);
             armControler.setAimPosition(armPosition);
             currentCommandStep = 8;
             break;
         case 7:
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             if (abs(armPosition.getHAngle()) > ARM_H_ANGLE_CABIN)
             {
                 armControler.getAimPosition(armPosition);
@@ -680,7 +685,7 @@ private:
             waitForMoveCompletion();
             break;
         case 9:
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             switch (commandArgHeight)
             {
             case 0:
@@ -723,7 +728,7 @@ private:
             waitForMoveCompletion();
             break;
         case 11:
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setPlierPos(ARM_MAX_PLIER_POS);
             armControler.setAimPosition(armPosition);
             break;
@@ -731,7 +736,7 @@ private:
             waitForMoveCompletion();
             break;
         case 13:
-            armControler.getCurrentPosition(armPosition);
+            armControler.getCurrentPositionSpecial(armPosition);
             if (abs(commandArgAngle) > ARM_H_ANGLE_CABIN)
             {
                 armPosition.setHeadLocalAngle(ARM_MAX_HEAD_ANGLE);

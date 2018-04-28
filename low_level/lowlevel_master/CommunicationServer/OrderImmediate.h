@@ -320,6 +320,30 @@ public:
 };
 
 
+class GetArmPosition : public OrderImmediate, public Singleton<GetArmPosition>
+{
+public:
+    GetArmPosition() {}
+    virtual void execute(std::vector<uint8_t> & io)
+    {
+        if (io.size() == 0)
+        {
+            io.clear();
+            float hAngle, vAngle, headAngle, plierPos;
+            slaveActuator.getArmPosition(hAngle, vAngle, headAngle, plierPos);
+            Serializer::writeFloat(hAngle, io);
+            Serializer::writeFloat(vAngle, io);
+            Serializer::writeFloat(headAngle, io);
+            Serializer::writeFloat(plierPos, io);
+        }
+        else
+        {
+            Server.printf_err("GetArmPosition: wrong number of arguments\n");
+            io.clear();
+        }
+    }
+};
+
 
 /********************
     DEBUG COMMANDS

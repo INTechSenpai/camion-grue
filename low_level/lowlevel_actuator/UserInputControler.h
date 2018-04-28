@@ -63,7 +63,7 @@ public:
                     armControler.setHPWM(-SLOW_MOVE_PWM);
                     break;
                 case UserInputControler::VERTICAL:
-                    armControler.setVPWM(-SLOW_MOVE_PWM);
+                    armControler.setVPWM(SLOW_MOVE_PWM);
                     break;
                 case UserInputControler::HEAD:
                     armControler.incrManualHeadAngle(-SLOW_MOVE_INC);
@@ -88,7 +88,7 @@ public:
                     armControler.setHPWM(-FAST_MOVE_PWM);
                     break;
                 case UserInputControler::VERTICAL:
-                    armControler.setVPWM(-FAST_MOVE_PWM);
+                    armControler.setVPWM(FAST_MOVE_PWM);
                     break;
                 case UserInputControler::HEAD:
 					headContinuousInc = -FAST_MOVE_INC;
@@ -111,7 +111,7 @@ public:
                     armControler.setHPWM(SLOW_MOVE_PWM);
                     break;
                 case UserInputControler::VERTICAL:
-                    armControler.setVPWM(SLOW_MOVE_PWM);
+                    armControler.setVPWM(-SLOW_MOVE_PWM);
                     break;
                 case UserInputControler::HEAD:
                     armControler.incrManualHeadAngle(SLOW_MOVE_INC);
@@ -136,7 +136,7 @@ public:
                     armControler.setHPWM(FAST_MOVE_PWM);
                     break;
                 case UserInputControler::VERTICAL:
-                    armControler.setVPWM(FAST_MOVE_PWM);
+                    armControler.setVPWM(-FAST_MOVE_PWM);
                     break;
                 case UserInputControler::HEAD:
 					headContinuousInc = FAST_MOVE_INC;

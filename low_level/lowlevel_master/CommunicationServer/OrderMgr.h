@@ -44,6 +44,7 @@ public:
         immediateOrderList[0x06] = &DeleteTrajPts::Instance();
         immediateOrderList[0x07] = &SetSensorsAngles::Instance();
         immediateOrderList[0x08] = &SetScore::Instance();
+        immediateOrderList[0x09] = &GetArmPosition::Instance();
 
         immediateOrderList[0x10] = &Display::Instance();
         immediateOrderList[0x11] = &Save::Instance();
