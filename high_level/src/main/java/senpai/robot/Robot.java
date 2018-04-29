@@ -59,10 +59,6 @@ public class Robot extends RobotState
 		MOVING; // le robot se déplace
 	}
 	
-	/*
-	 * DÉPLACEMENT HAUT NIVEAU
-	 */
-
 	private Cube cubeTop = null;
 	private Cube cubeInside = null;
 	protected volatile boolean symetrie;
@@ -71,17 +67,6 @@ public class Robot extends RobotState
 	private DynamicPath dpath;
 	private volatile boolean modeDegrade = false;
 	private List<ItineraryPoint> pathDegrade;
-	
-/*	public Robot(Log log)
-	{
-		this.log = log;
-		cinematique = new Cinematique();
-	}*/
-/*
-	public int codeForPFCache()
-	{
-		return cinematique.codeForPFCache();
-	}*/
 
 	@Override
 	public String toString()
@@ -98,7 +83,6 @@ public class Robot extends RobotState
 	private RobotPrintable printable = null;
 	private volatile boolean cinematiqueInitialised = false;
 	private boolean enableLoadPath;
-
 	
 	// Constructeur
 	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, DynamicPath dpath, KnownPathManager known)
@@ -130,13 +114,6 @@ public class Robot extends RobotState
 	{
 		cinematique.enMarcheAvant = enMarcheAvant;
 	}
-
-/*	public long getTempsDepuisDebutMatch()
-	{
-		if(!matchDemarre)
-			return 0;
-		return System.currentTimeMillis() - dateDebutMatch;
-	}*/
 
 	public boolean isCinematiqueInitialised()
 	{

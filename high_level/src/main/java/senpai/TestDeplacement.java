@@ -82,7 +82,7 @@ public class TestDeplacement {
 
 			//XYO destination = new XYO(0, 1000, Math.PI);
 //			Script script = new ScriptPriseCube(Croix.CROIX_HAUT_DROITE, CubeColor.ORANGE, CubeFace.GAUCHE, false);
-			Script script = scripts.getAllPossible(CubeColor.ORANGE, false).poll();
+			Script script = scripts.getAllPossible(true, CubeColor.ORANGE, false).poll();
 //			XYO destination = new ScriptPriseCube(0, ElementColor.BLEU, ScriptPriseCube.Face.BAS, false).getPointEntree();
 			XYO destination = script.getPointEntree();
 			buffer.addPrintable(new Cinematique(destination), Color.BLUE, Layer.FOREGROUND.layer);

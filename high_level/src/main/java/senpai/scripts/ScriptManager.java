@@ -63,7 +63,7 @@ public class ScriptManager
 		
 	}
 	
-	public PriorityQueue<ScriptPriseCube> getAllPossible(CubeColor couleur, boolean bourrine)
+	public PriorityQueue<ScriptPriseCube> getAllPossible(boolean symetrie, CubeColor couleur, boolean bourrine)
 	{
 		PriorityQueue<ScriptPriseCube> out = new PriorityQueue<ScriptPriseCube>(new CubeComparator(robot.getCinematique().getPosition()));
 		
@@ -74,6 +74,9 @@ public class ScriptManager
 			return out;
 		
 		for(Croix croix : Croix.values())
+		{
+			if(symetrie == croix.center.getX() > 0)
+				continue;
 			for(CubeFace f : CubeFace.values())
 			{
 				Cube c = Cube.getCube(croix, couleur);
@@ -83,17 +86,22 @@ public class ScriptManager
 					out.add(new ScriptPriseCube(log,c,f,false));
 				}
 			}
+		}
 
 		return out;
 	}
 	
-	public List<CubeAndFace> getAllPossible(boolean bourrine)
+	public List<CubeAndFace> getAllPossible(boolean symetrie, boolean bourrine)
 	{
 		List<CubeAndFace> out = new ArrayList<CubeAndFace>();
 		for(Cube c : Cube.values())
+		{
+			if(symetrie == c.position.getX() > 0)
+				continue;
 			for(CubeFace f : CubeFace.values())
 				if(isFacePossible(c, f, bourrine))
 					out.add(new CubeAndFace(c,f));
+		}
 		return out;
 	}
 	

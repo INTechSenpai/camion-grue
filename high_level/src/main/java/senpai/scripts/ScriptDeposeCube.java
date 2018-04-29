@@ -1,13 +1,13 @@
 package senpai.scripts;
 
-import pfg.kraken.utils.XY;
+import pfg.config.Config;
 import pfg.kraken.utils.XYO;
-import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.table.Table;
+import senpai.utils.ConfigInfoSenpai;
 
 /**
  * Script de dépose
@@ -17,9 +17,16 @@ import senpai.table.Table;
 
 public class ScriptDeposeCube extends Script
 {
-	public ScriptDeposeCube(Log log) {
+	private final boolean usePattern;
+	private final String pattern;
+	private int taillePile1 = 0, taillePile2 = 0;
+
+	public ScriptDeposeCube(Log log, Config config)
+	{
 		super(log);
-		// TODO Auto-generated constructor stub
+
+		pattern = config.getString(ConfigInfoSenpai.COLOR_PATTERN);
+		usePattern = pattern.isEmpty();
 	}
 
 	private double[] longueurGrue = new double[]{300, 300, 290, 365, 365}; // longueur de la grue en fonction du nombre de cube déjà posés
