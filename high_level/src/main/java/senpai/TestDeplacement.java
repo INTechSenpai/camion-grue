@@ -23,7 +23,6 @@ import pfg.kraken.robot.Cinematique;
 import pfg.kraken.robot.ItineraryPoint;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
-import pfg.log.Log;
 import senpai.Senpai.ErrorCode;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
@@ -33,13 +32,11 @@ import senpai.obstacles.ObstacleProximity;
 import senpai.obstacles.ObstaclesMemory;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
+import senpai.scripts.Script;
 import senpai.scripts.ScriptManager;
-import senpai.scripts.ScriptPriseCube;
-import senpai.table.Croix;
 import senpai.table.CubeColor;
-import senpai.table.CubeFace;
+import senpai.table.Table;
 import senpai.utils.ConfigInfoSenpai;
-import senpai.utils.Subject;
 
 /**
  * Test rapide
@@ -55,10 +52,11 @@ public class TestDeplacement {
 		Senpai senpai = new Senpai();
 		try {
 			senpai.initialize("match.conf", "default", "graphic", "test", "noLL");
-			Log log = senpai.getService(Log.class);
+//			Log log = senpai.getService(Log.class);
 			Config config = senpai.getService(Config.class);
 			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
 			Robot robot = senpai.getService(Robot.class);
+			Table table = senpai.getService(Table.class);
 			GraphicDisplay buffer = senpai.getService(GraphicDisplay.class);
 			ObstaclesMemory mem = senpai.getService(ObstaclesMemory.class);
 			ScriptManager scripts = senpai.getService(ScriptManager.class);
@@ -81,13 +79,18 @@ public class TestDeplacement {
 				couleur = RobotColor.VERT;
 			
 			robot.updateColorAndSendPosition(couleur);
+
 			//XYO destination = new XYO(0, 1000, Math.PI);
+//			Script script = new ScriptPriseCube(Croix.CROIX_HAUT_DROITE, CubeColor.ORANGE, CubeFace.GAUCHE, false);
+			Script script = scripts.getAllPossible(CubeColor.ORANGE, false).poll();
 //			XYO destination = new ScriptPriseCube(0, ElementColor.BLEU, ScriptPriseCube.Face.BAS, false).getPointEntree();
-			XYO destination = new ScriptPriseCube(Croix.CROIX_HAUT_DROITE, CubeColor.ORANGE, CubeFace.GAUCHE, false).getPointEntree();
+			XYO destination = script.getPointEntree();
 			buffer.addPrintable(new Cinematique(destination), Color.BLUE, Layer.FOREGROUND.layer);
+
 			ObstacleProximity obs = new ObstacleProximity(new XY(-150.84,1543.50), 100, 100, 0, 0, null, 0);
-//			buffer.addPrintable(obs, Color.RED, Layer.FOREGROUND.layer);
-//			mem.add(obs);
+			buffer.addPrintable(obs, Color.RED, Layer.FOREGROUND.layer);
+			mem.add(obs);
+			
 			Cinematique init = robot.getCinematique().clone();
 			
 			for(int i = 0; i < 1; i++)
@@ -117,8 +120,9 @@ public class TestDeplacement {
 				}
 				
 				Thread.sleep(1000);
-				if(i == 0)
-					robot.setDegrade();
+				script.execute(robot, table);
+//				if(i == 0)
+//					robot.setDegrade();
 			}
 		}
 		catch(Exception e)

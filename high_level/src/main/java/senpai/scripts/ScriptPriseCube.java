@@ -17,6 +17,7 @@ package senpai.scripts;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
+import pfg.log.Log;
 import senpai.comm.CommProtocol.Id;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
@@ -36,19 +37,21 @@ import senpai.table.Table;
 
 public class ScriptPriseCube extends Script
 {
-	private final CubeFace face;
-	private Cube cube;
-	private boolean coteDroit;
+	public final CubeFace face;
+	public final Cube cube;
+	public final boolean coteDroit;
 	
-	public ScriptPriseCube(Cube cube, CubeFace face, boolean coteDroit)
+	public ScriptPriseCube(Log log, Cube cube, CubeFace face, boolean coteDroit)
 	{
+		super(log);
 		this.cube = cube;
 		this.face = face;
 		this.coteDroit = coteDroit;
 	}
 	
-	public ScriptPriseCube(Croix croix, CubeColor couleur, CubeFace face, boolean coteDroit)
+	public ScriptPriseCube(Log log, Croix croix, CubeColor couleur, CubeFace face, boolean coteDroit)
 	{
+		super(log);
 		this.face = face;
 		cube = Cube.getCube(croix, couleur);
 		assert cube.couleur == couleur : cube.couleur+" "+couleur;

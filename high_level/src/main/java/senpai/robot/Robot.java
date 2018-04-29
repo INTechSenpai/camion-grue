@@ -240,7 +240,7 @@ public class Robot extends RobotState
 
 	public boolean canTakeCube()
 	{
-		return cubeTop != null;
+		return cubeTop == null;
 	}
 	
 /*	public boolean isThereCubeInside()

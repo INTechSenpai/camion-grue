@@ -35,6 +35,11 @@ public abstract class Script
 {
 	protected Log log;
 	
+	public Script(Log log)
+	{
+		this.log = log;
+	}
+	
 	public abstract XYO getPointEntree();
 
 	protected abstract void run(Robot robot, Table table) throws InterruptedException, UnableToMoveException, ActionneurException;

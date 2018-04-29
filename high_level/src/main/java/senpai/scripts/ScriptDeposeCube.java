@@ -3,6 +3,7 @@ package senpai.scripts;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
+import pfg.log.Log;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
@@ -16,8 +17,13 @@ import senpai.table.Table;
 
 public class ScriptDeposeCube extends Script
 {
+	public ScriptDeposeCube(Log log) {
+		super(log);
+		// TODO Auto-generated constructor stub
+	}
+
 	private double[] longueurGrue = new double[]{300, 300, 290, 365, 365}; // longueur de la grue en fonction du nombre de cube déjà posés
-	
+
 	@Override
 	public XYO getPointEntree()
 	{

@@ -15,7 +15,10 @@
 package senpai.scripts;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
+
 import pfg.log.Log;
 import senpai.robot.Robot;
 import senpai.table.Croix;
@@ -23,6 +26,7 @@ import senpai.table.Cube;
 import senpai.table.CubeColor;
 import senpai.table.CubeFace;
 import senpai.table.Table;
+import pfg.kraken.utils.XY;
 
 /**
  * Script manager
@@ -43,9 +47,25 @@ public class ScriptManager
 		this.robot = robot;
 	}
 	
-	public List<CubeAndFace> getAllPossible(CubeColor couleur, boolean bourrine)
+	public class CubeComparator implements Comparator<ScriptPriseCube>
 	{
-		List<CubeAndFace> out = new ArrayList<CubeAndFace>();
+		private XY position;
+		
+		public CubeComparator(XY position)
+		{
+			this.position = position;
+		}
+		
+		@Override
+		public int compare(ScriptPriseCube arg0, ScriptPriseCube arg1) {
+			return (int) (arg0.cube.position.squaredDistance(position) - arg1.cube.position.squaredDistance(position));
+		}
+		
+	}
+	
+	public PriorityQueue<ScriptPriseCube> getAllPossible(CubeColor couleur, boolean bourrine)
+	{
+		PriorityQueue<ScriptPriseCube> out = new PriorityQueue<ScriptPriseCube>(new CubeComparator(robot.getCinematique().getPosition()));
 		
 		/*
 		 * On n'a plus de place !
@@ -58,8 +78,12 @@ public class ScriptManager
 			{
 				Cube c = Cube.getCube(croix, couleur);
 				if(isFacePossible(c, f, bourrine))
-					out.add(new CubeAndFace(c,f));
+				{
+					out.add(new ScriptPriseCube(log,c,f,true));
+					out.add(new ScriptPriseCube(log,c,f,false));
+				}
 			}
+
 		return out;
 	}
 	
