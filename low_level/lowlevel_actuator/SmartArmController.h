@@ -216,15 +216,15 @@ private:
             // Dégagement du bras pour éviter la cabine si nécessaire
             armControler.getCurrentPositionSpecial(armPosition);
             float hAngle = armPosition.getHAngle();
-            if (abs(hAngle) < ARM_H_ANGLE_CABIN && armPosition.getHeadGlobalAngle() > 0)
+            if (abs(hAngle) < ARM_H_ANGLE_MANIP && armPosition.getHeadGlobalAngle() > 0)
             {
                 if (hAngle > 0)
                 {
-                    armPosition.setHAngle(ARM_H_ANGLE_CABIN);
+                    armPosition.setHAngle(ARM_H_ANGLE_MANIP);
                 }
                 else
                 {
-                    armPosition.setHAngle(-ARM_H_ANGLE_CABIN);
+                    armPosition.setHAngle(-ARM_H_ANGLE_MANIP);
                 }
                 armControler.setAimPosition(armPosition);
                 currentCommandStep++;
@@ -275,7 +275,7 @@ private:
         switch (currentCommandStep)
         {
         case 0:
-            if (abs(commandArgAngle) < ARM_H_ANGLE_CABIN || abs(commandArgAngle) > ARM_MAX_H_ANGLE)
+            if (abs(commandArgAngle) < ARM_H_ANGLE_MANIP || abs(commandArgAngle) > ARM_MAX_H_ANGLE)
             {
                 Serial.println("take_cube_smart: Invalid horizontal angle");
                 status |= ARM_STATUS_UNREACHABLE;
@@ -477,7 +477,7 @@ private:
         case 0:
             // Position initiale
             armControler.getCurrentPositionSpecial(armPosition);
-            armPosition.setHAngle(ARM_H_ANGLE_CABIN);
+            armPosition.setHAngle(ARM_H_ANGLE_MANIP);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
             break;
@@ -585,8 +585,8 @@ private:
         switch (currentCommandStep)
         {
         case 0:
-            if ((abs(commandArgAngle) < ARM_H_ANGLE_CABIN && commandArgHeight < 2) ||
-                (abs(commandArgAngle) >= ARM_H_ANGLE_CABIN && commandArgHeight > 2) ||
+            if ((abs(commandArgAngle) < ARM_H_ANGLE_MANIP && commandArgHeight < 2) ||
+                (abs(commandArgAngle) >= ARM_H_ANGLE_MANIP && commandArgHeight > 2) ||
                 (abs(commandArgAngle) > ARM_MAX_H_ANGLE))
             {
                 Serial.println("put_cube_smart: Invalid arguments");
@@ -603,14 +603,7 @@ private:
                 armPosition.setVAngle(ARM_V_ANGLE_STAGE_1_UP);
                 break;
             case 2:
-                if (abs(commandArgAngle) > ARM_H_ANGLE_CABIN)
-                {
-                    armPosition.setVAngle(ARM_V_ANGLE_STAGE_2_SIDE_UP);
-                }
-                else
-                {
-                    armPosition.setVAngle(ARM_V_ANGLE_STAGE_2_FRONT_UP);
-                }
+                armPosition.setVAngle(ARM_V_ANGLE_STAGE_2_UP);
                 break;
             case 3:
                 armPosition.setVAngle(ARM_V_ANGLE_STAGE_3_UP);
@@ -619,7 +612,7 @@ private:
                 armPosition.setVAngle(ARM_V_ANGLE_STAGE_4_UP);
                 break;
             default:
-                armPosition.setVAngle(ARM_V_ANGLE_STAGE_2_SIDE_UP);
+                armPosition.setVAngle(ARM_V_ANGLE_STAGE_2_UP);
                 break;
             }
             armControler.setAimPosition(armPosition);
@@ -630,7 +623,7 @@ private:
             break;
         case 2:
             armControler.getCurrentPositionSpecial(armPosition);
-            if (abs(commandArgAngle) > ARM_H_ANGLE_CABIN)
+            if (abs(commandArgAngle) > ARM_H_ANGLE_MANIP)
             {
                 armPosition.setHAngle(commandArgAngle);
                 currentCommandStep = 7;
@@ -643,12 +636,12 @@ private:
             }
             else if (commandArgAngle >= 0)
             {
-                armPosition.setHAngle(ARM_H_ANGLE_CABIN + 0.17); // +10° pour être sûr
+                armPosition.setHAngle(ARM_H_ANGLE_MANIP + 0.17); // +10° pour être sûr
                 currentCommandStep++;
             }
             else
             {
-                armPosition.setHAngle(-ARM_H_ANGLE_CABIN - 0.17); // +10° pour être sûr
+                armPosition.setHAngle(-ARM_H_ANGLE_MANIP - 0.17); // +10° pour être sûr
                 currentCommandStep++;
             }
             armControler.setAimPosition(armPosition);
@@ -673,7 +666,7 @@ private:
             break;
         case 7:
             armControler.getCurrentPositionSpecial(armPosition);
-            if (abs(armPosition.getHAngle()) > ARM_H_ANGLE_CABIN)
+            if (abs(armPosition.getHAngle()) > ARM_H_ANGLE_MANIP)
             {
                 armControler.getAimPosition(armPosition);
                 armPosition.setHeadGlobalAngle(0);
@@ -695,14 +688,7 @@ private:
                 armPosition.setVAngle(ARM_V_ANGLE_STAGE_1_DOWN);
                 break;
             case 2:
-                if (abs(commandArgAngle) > ARM_H_ANGLE_CABIN)
-                {
-                    armPosition.setVAngle(ARM_V_ANGLE_STAGE_2_SIDE_DOWN);
-                }
-                else
-                {
-                    armPosition.setVAngle(ARM_V_ANGLE_STAGE_2_FRONT_DOWN);
-                }
+                armPosition.setVAngle(ARM_V_ANGLE_STAGE_2_DOWN);
                 break;
             case 3:
                 armPosition.setVAngle(ARM_V_ANGLE_STAGE_3_DOWN);
@@ -713,7 +699,7 @@ private:
             default:
                 break;
             }
-            if (abs(commandArgAngle) > ARM_H_ANGLE_CABIN)
+            if (abs(commandArgAngle) > ARM_H_ANGLE_MANIP)
             {
                 armPosition.setHeadGlobalAngle(0);
             }
@@ -737,7 +723,7 @@ private:
             break;
         case 13:
             armControler.getCurrentPositionSpecial(armPosition);
-            if (abs(commandArgAngle) > ARM_H_ANGLE_CABIN)
+            if (abs(commandArgAngle) > ARM_H_ANGLE_MANIP)
             {
                 armPosition.setHeadLocalAngle(ARM_MAX_HEAD_ANGLE);
             }
