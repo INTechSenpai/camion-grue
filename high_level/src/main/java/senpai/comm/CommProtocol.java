@@ -74,6 +74,17 @@ public class CommProtocol
 		STOP(0x21, -20),
 		WAIT_FOR_JUMPER(0x22),
 		START_MATCH_CHRONO(0x23),
+		ARM_GO_HOME(0x24),
+		ARM_TAKE_CUBE_S(0x25),
+		ARM_TAKE_CUBE(0x26),
+		ARM_STORE_CUBE_INSIDE(0x27),
+		ARM_STORE_CUBE_TOP(0x28),
+		ARM_TAKE_FROM_STORAGE(0x29),
+		ARM_PUT_ON_PILE_S(0x2A),
+		ARM_PUT_ON_PILE(0x2B),
+		ARM_GO_TO(0x2C),
+		ARM_STOP(0x2D),
+		
 		
 		EXEMPLE_ACTIONNEUR(0x24, "exempleAct"), // TODO virer
 		
@@ -83,8 +94,13 @@ public class CommProtocol
 		EDIT_POSITION(0x82, false),
 		SET_POSITION(0x83, false),
 		ADD_POINTS(0x84, true, -10),
-		DESTROY_POINTS(0x85, true, -10),
-		GET_BATTERY(0x93, true);
+		EDIT_POINTS(0x85, true, -10),
+		DESTROY_POINTS(0x86, true, -10),
+		SET_SENSORS_ANGLE(0x87, false),
+		SET_SCORE(0x87, false),
+		GET_ARM_POSITION(0x88, true),
+		GET_BATTERY(0x94, true);
+		
 
 		// Paramètres constants
 		public final byte code;
@@ -210,6 +226,41 @@ public class CommProtocol
 		}
 	}
 
+	public enum ActionneurMask
+	{
+		H_MOTOR_BLOCKED,
+		V_MOTOR_BLOCKED,
+		AX12_BLOCKED,
+		AX12_ERR,
+		MANUAL_STOP,
+		UNREACHABLE,
+		SENSOR_ERR,
+		NO_DETECTION,
+		COMMUNICATION_ERR,
+		CUBE_MISSED,
+		MOVE_TIMED_OUT;
+
+		private final int masque = (1 << ordinal());
+		
+		public static String describe(int valeur)
+		{
+			if(valeur == 0)
+				return "";
+			StringBuilder out = new StringBuilder();
+			out.append("Codes erreurs : ");
+			for(ActionneurMask m : values())
+			{
+				if((valeur & m.masque) != 0)
+				{
+					out.append(m.toString());
+					out.append(" ");
+				}
+			}
+			return out.toString();
+		}
+
+	}
+	
 	public enum TrajEndMask
 	{
 		STOP_REQUIRED,

@@ -166,6 +166,109 @@ public class OutgoingOrderBuffer implements Plottable
 		return Id.START_MATCH_CHRONO.ticket;
 	}
 
+	public void setTourellesAngles(double angleTourelleGauche, double angleTourelleDroite)
+	{
+		ByteBuffer data = ByteBuffer.allocate(8);
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.putFloat((float) angleTourelleGauche);
+		data.putFloat((float) angleTourelleDroite);
+		addToBuffer(new Order(data, Id.SET_SENSORS_ANGLE));
+	}
+	
+	public Ticket getArmPosition()
+	{
+		addToBuffer(new Order(Id.GET_ARM_POSITION));
+		return Id.GET_ARM_POSITION.ticket;
+	}
+	
+	public Ticket armGoHome()
+	{
+		addToBuffer(new Order(Id.ARM_GO_HOME));
+		return Id.ARM_GO_HOME.ticket;
+	}
+	
+	public Ticket armTakeCubeS(double angle)
+	{
+		ByteBuffer data = ByteBuffer.allocate(4);
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.putFloat((float) angle);
+		addToBuffer(new Order(data, Id.ARM_TAKE_CUBE_S));
+		return Id.ARM_TAKE_CUBE_S.ticket;
+	}
+
+	public Ticket armTakeCube(double angle)
+	{
+		ByteBuffer data = ByteBuffer.allocate(4);
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.putFloat((float) angle);
+		addToBuffer(new Order(data, Id.ARM_TAKE_CUBE));
+		return Id.ARM_TAKE_CUBE.ticket;
+	}
+	
+	public Ticket armStoreCubeInside()
+	{
+		addToBuffer(new Order(Id.ARM_STORE_CUBE_INSIDE));
+		return Id.ARM_STORE_CUBE_INSIDE.ticket;
+	}
+	
+	public Ticket armStoreCubeTop()
+	{
+		addToBuffer(new Order(Id.ARM_STORE_CUBE_TOP));
+		return Id.ARM_STORE_CUBE_TOP.ticket;
+	}
+	
+	public Ticket armTakeFromStorage()
+	{
+		addToBuffer(new Order(Id.ARM_TAKE_FROM_STORAGE));
+		return Id.ARM_TAKE_FROM_STORAGE.ticket;
+	}
+	
+	public Ticket armPutOnPileS(double angle, int etage)
+	{
+		ByteBuffer data = ByteBuffer.allocate(8);
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.putFloat((float) angle);
+		data.putInt(etage);
+		addToBuffer(new Order(data, Id.ARM_PUT_ON_PILE_S));
+		return Id.ARM_PUT_ON_PILE_S.ticket;
+	}
+	
+	public Ticket armPutOnPile(double angle, int etage)
+	{
+		ByteBuffer data = ByteBuffer.allocate(8);
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.putFloat((float) angle);
+		data.putInt(etage);
+		addToBuffer(new Order(data, Id.ARM_PUT_ON_PILE));
+		return Id.ARM_PUT_ON_PILE.ticket;
+	}
+
+	public Ticket armGoTo(double angleH, double angleV, double angleTete, double posPlier)
+	{
+		ByteBuffer data = ByteBuffer.allocate(16);
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.putFloat((float) angleH);
+		data.putFloat((float) angleV);
+		data.putFloat((float) angleTete);
+		data.putFloat((float) posPlier);
+		addToBuffer(new Order(data, Id.ARM_GO_TO));
+		return Id.ARM_GO_TO.ticket;
+	}
+
+	public Ticket armStop()
+	{
+		addToBuffer(new Order(Id.ARM_STOP));
+		return Id.ARM_STOP.ticket;
+	}
+
+	public void setScore(int score)
+	{
+		ByteBuffer data = ByteBuffer.allocate(4);
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.putInt(score);
+		addToBuffer(new Order(data, Id.SET_SCORE));		
+	}
+	
 	/**
 	 * Demande la couleur au bas niveau
 	 */
