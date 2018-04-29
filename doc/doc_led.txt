@@ -1,0 +1,15 @@
+Lorsque la raspi est allumée, par défaut, la led est éteinte.
+
+Quand on appuie sur le bouton d'arrêt, la led émet un bref clignotement (300ms)
+
+Si le HL est en mode dégradé (plus de replanification), la led clignote brièvement une fois par seconde (100ms allumée, 900ms éteinte)
+
+Lorsque le HL s'arrête, la led clignote (500ms allumée, 500ms éteinte).
+
+Lorsque la LED est continuellement allumée, c'est que la raspi est éteinte et peut être mise hors tension.
+
+== Scénario classique ==
+La raspi est allumée avec le HL qui tourne. On appuie sur le bouton d'arrêt. Il se passe :
+- un clignotement bref pour signaler l'arrêt
+- un clignotement d'arrêt de HL pendant 3s maximum
+- l'allumage de la LED car la raspi est éteinte
