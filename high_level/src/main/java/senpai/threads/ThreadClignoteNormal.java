@@ -20,17 +20,17 @@ import senpai.utils.GPIO;
 import senpai.utils.Subject;
 
 /**
- * Thread qui clignote en dégradé
+ * Thread qui clignote en mode normal
  * @author pf
  *
  */
 
-public class ThreadClignoteDegrade extends Thread
+public class ThreadClignoteNormal extends Thread
 {
 	private Log log;
 	private Robot robot;
 	
-	public ThreadClignoteDegrade(Log log, Robot robot)
+	public ThreadClignoteNormal(Log log, Robot robot)
 	{
 		this.log = log;
 		this.robot = robot;
@@ -43,19 +43,22 @@ public class ThreadClignoteDegrade extends Thread
 		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.STATUS);
 		try
 		{
-			synchronized(robot)
-			{
-				while(!robot.isDegrade())
-					robot.wait();
-			}
-			log.write("Activation du mode dégradé : clignotement rapide démarré", Subject.STATUS);
 			while(true)
 			{
 				GPIO.allumeDiode();
 				Thread.sleep(100);
 				GPIO.eteintDiode();
-				Thread.sleep(900);
+				Thread.sleep(4900);
+				synchronized(robot)
+				{
+					// On vérifie régulièrement si le robot est entré en mode dégradé
+					if(robot.isDegrade())
+						break;
+				}
 			}
+			log.write("Activation du mode dégradé : clignotement lent arrêté", Subject.STATUS);
+			while(true)
+				Thread.sleep(Integer.MAX_VALUE);
 		}
 		catch(InterruptedException e)
 		{
