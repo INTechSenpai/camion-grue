@@ -234,14 +234,59 @@ public class Robot extends RobotState
 		bloque(ordre.getMethodName(), param);
 	}
 	
-	// TODO remove
-	private void exempleAct()
+	public Ticket armGoHome()
 	{
+		return out.armGoHome();
+	}
+	
+	public Ticket armTakeCubeS(double angle)
+	{
+		return out.armTakeCubeS(angle);
 	}
 
-	public void initActionneurs()
+	public Ticket armTakeCube(double angle)
 	{
-		// TODO Auto-generated method stub		
+		return out.armTakeCube(angle);
+	}
+	
+	public Ticket armStoreCubeInside()
+	{
+		return out.armStoreCubeInside();
+	}
+	
+	public Ticket armStoreCubeTop()
+	{
+		return out.armStoreCubeTop();
+	}
+	
+	public Ticket armTakeFromStorage()
+	{
+		return out.armTakeFromStorage();
+	}
+	
+	public Ticket armPutOnPileS(double angle, int etage)
+	{
+		return out.armPutOnPileS(angle, etage);
+	}
+	
+	public Ticket armPutOnPile(double angle, int etage)
+	{
+		return out.armPutOnPile(angle, etage);
+	}
+
+	public Ticket armGoTo(double angleH, double angleV, double angleTete, double posPlier)
+	{
+		return out.armGoTo(angleH, angleV, angleTete, posPlier);
+	}
+
+	public Ticket armStop()
+	{
+		return out.armStop();
+	}
+
+	public void setScore(int score)
+	{
+		out.setScore(score);
 	}
 
 	public void updateColorAndSendPosition(RobotColor c)

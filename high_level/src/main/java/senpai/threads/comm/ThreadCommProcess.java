@@ -160,6 +160,29 @@ public class ThreadCommProcess extends Thread
 					int pourcentage = data.getInt();
 					paquet.origine.ticket.set(CommProtocol.State.OK, pourcentage);
 				}
+				
+				else if(paquet.origine.name().startsWith("ARM_"))
+				{
+					int code = data.getInt();
+					if(code == 0)
+					{
+						paquet.origine.ticket.set(CommProtocol.State.OK);
+					}
+					else
+					{
+						log.write(CommProtocol.ActionneurMask.describe(code), Subject.TRAJECTORY);
+						paquet.origine.ticket.set(CommProtocol.State.KO, CommProtocol.ActionneurMask.describe(code));
+					}
+				}				
+				
+				else if(paquet.origine == Id.GET_ARM_POSITION)
+				{
+					double angleH = data.getFloat();
+					double angleV = data.getFloat();
+					double angleTete = data.getFloat();
+					double posPlier = data.getFloat();
+					paquet.origine.ticket.set(CommProtocol.State.OK, new double[]{angleH, angleV, angleTete, posPlier});
+				}
 
 				/**
 				 * Fin du match, on coupe la série et on arrête ce thread
@@ -179,7 +202,7 @@ public class ThreadCommProcess extends Thread
 				 */
 				else if(paquet.origine == Id.FOLLOW_TRAJECTORY)
 				{
-					byte code = data.get();
+					int code = data.getInt();
 					if(code == 0)
 					{
 						chemin.endContinuousSearch();

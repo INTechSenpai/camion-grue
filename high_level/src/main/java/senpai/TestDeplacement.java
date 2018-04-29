@@ -63,9 +63,6 @@ public class TestDeplacement {
 			ObstaclesMemory mem = senpai.getService(ObstaclesMemory.class);
 			ScriptManager scripts = senpai.getService(ScriptManager.class);
 			
-			log.write("Initialisation des actionneurs…", Subject.STATUS);
-			robot.initActionneurs();
-			
 			boolean simuleComm = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 			RobotColor couleur;
 			if(!simuleComm)

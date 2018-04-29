@@ -240,7 +240,7 @@ public class CommProtocol
 		CUBE_MISSED,
 		MOVE_TIMED_OUT;
 
-		private final int masque = (1 << ordinal());
+		private final int masque = 1 << ordinal();
 		
 		public static String describe(int valeur)
 		{
@@ -269,9 +269,9 @@ public class CommProtocol
 		PLUS_DE_POINTS,
 		TROP_LOIN;
 		
-		private final byte masque = (byte) (1 << ordinal());
+		private final int masque = 1 << ordinal();
 		
-		public static String describe(byte valeur)
+		public static String describe(int valeur)
 		{
 			if(valeur == 0)
 				return "";

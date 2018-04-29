@@ -47,10 +47,6 @@ public class Match {
 			
 			Ticket t = data.waitForJumper();
 			
-			log.write("Initialisation des actionneurs…", Subject.STATUS);
-			robot.initActionneurs();
-			
-	
 			log.write("Attente de la couleur…", Subject.STATUS);
 	
 			
