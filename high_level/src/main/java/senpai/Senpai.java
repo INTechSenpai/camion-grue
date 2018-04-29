@@ -122,6 +122,10 @@ public class Senpai
 		if(errorCode.e != null)
 			errorCode.e.printStackTrace();
 		
+		OutgoingOrderBuffer buffer = injector.getExistingService(OutgoingOrderBuffer.class);
+		if(buffer != null)
+			buffer.armGoHome();
+		
 		/*
 		 * Il ne faut pas appeler deux fois le destructeur
 		 */

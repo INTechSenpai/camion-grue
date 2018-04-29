@@ -17,6 +17,7 @@ package senpai.scripts;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
+import senpai.comm.CommProtocol.Id;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
@@ -74,11 +75,15 @@ public class ScriptPriseCube extends Script
 		}
 	}
 
-
 	@Override
 	protected void run(Robot robot, Table table) throws InterruptedException, UnableToMoveException, ActionneurException
 	{
-		// TODO
+		// exemple classique :
+		// take cube, store cube inside
+		// take cube, store cube top
+		// put cube, table cube inside, put cube, go to home 
+		robot.execute(Id.ARM_TAKE_CUBE, coteDroit ? 75 : -75);
+		robot.storeCube(cube);
 		table.setDone(cube);
 	}
 }

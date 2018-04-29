@@ -16,6 +16,7 @@ package senpai.scripts;
 
 import pfg.kraken.utils.XYO;
 import pfg.log.Log;
+import senpai.comm.CommProtocol.Id;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
@@ -49,6 +50,12 @@ public abstract class Script
 		catch(UnableToMoveException | ActionneurException e)
 		{
 			log.write("Erreur lors de l'exécution du script " + getClass().getSimpleName() + " : " + e, Severity.CRITICAL, Subject.SCRIPT);
+			try {
+				// lâche tout (s'il y a) et rentre le bras
+				robot.execute(Id.ARM_GO_HOME);
+			} catch (ActionneurException e1) {
+				log.write("Erreur lors de l'exécution du script " + getClass().getSimpleName() + " : " + e, Severity.CRITICAL, Subject.SCRIPT);
+			}
 		}
 	}
 

@@ -17,6 +17,7 @@ package senpai.scripts;
 import java.util.ArrayList;
 import java.util.List;
 import pfg.log.Log;
+import senpai.robot.Robot;
 import senpai.table.Croix;
 import senpai.table.Cube;
 import senpai.table.CubeColor;
@@ -33,16 +34,25 @@ public class ScriptManager
 {
 	protected Log log;
 	private Table table;
+	private Robot robot;
 	
-	public ScriptManager(Log log, Table table)
+	public ScriptManager(Log log, Table table, Robot robot)
 	{
 		this.log = log;
 		this.table = table;
+		this.robot = robot;
 	}
 	
 	public List<CubeAndFace> getAllPossible(CubeColor couleur, boolean bourrine)
 	{
 		List<CubeAndFace> out = new ArrayList<CubeAndFace>();
+		
+		/*
+		 * On n'a plus de place !
+		 */
+		if(!robot.canTakeCube())
+			return out;
+		
 		for(Croix croix : Croix.values())
 			for(CubeFace f : CubeFace.values())
 			{

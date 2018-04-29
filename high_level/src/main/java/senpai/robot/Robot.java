@@ -36,8 +36,10 @@ import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
 import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
+import senpai.comm.CommProtocol.Id;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
+import senpai.table.Cube;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
@@ -61,6 +63,8 @@ public class Robot extends RobotState
 	 * DÉPLACEMENT HAUT NIVEAU
 	 */
 
+	private Cube cubeTop = null;
+	private Cube cubeInside = null;
 	protected volatile boolean symetrie;
 	protected Log log;
 	protected Kraken kraken;
@@ -233,55 +237,43 @@ public class Robot extends RobotState
 	{
 		bloque(ordre.getMethodName(), param);
 	}
-	
-	public Ticket armGoHome()
+
+	public boolean canTakeCube()
 	{
-		return out.armGoHome();
+		return cubeTop != null;
 	}
 	
-	public Ticket armTakeCubeS(double angle)
+/*	public boolean isThereCubeInside()
 	{
-		return out.armTakeCubeS(angle);
+		return cubeInside != null;
 	}
 
-	public Ticket armTakeCube(double angle)
+	public boolean isThereCubeTop()
 	{
-		return out.armTakeCube(angle);
-	}
-	
-	public Ticket armStoreCubeInside()
+		return cubeTop != null;
+	}*/
+
+	private void setCubeInside(Cube c)
 	{
-		return out.armStoreCubeInside();
-	}
-	
-	public Ticket armStoreCubeTop()
-	{
-		return out.armStoreCubeTop();
-	}
-	
-	public Ticket armTakeFromStorage()
-	{
-		return out.armTakeFromStorage();
-	}
-	
-	public Ticket armPutOnPileS(double angle, int etage)
-	{
-		return out.armPutOnPileS(angle, etage);
-	}
-	
-	public Ticket armPutOnPile(double angle, int etage)
-	{
-		return out.armPutOnPile(angle, etage);
+		assert cubeInside == null;
+		cubeInside = c;
 	}
 
-	public Ticket armGoTo(double angleH, double angleV, double angleTete, double posPlier)
+	private void setCubeTop(Cube c)
 	{
-		return out.armGoTo(angleH, angleV, angleTete, posPlier);
+		assert cubeTop == null;
+		cubeTop = c;
 	}
-
-	public Ticket armStop()
+	
+	public void storeCube(Cube c) throws InterruptedException, ActionneurException
 	{
-		return out.armStop();
+		if(cubeInside == null)
+		{
+			execute(Id.ARM_STORE_CUBE_INSIDE);
+			setCubeInside(c);
+		}
+		execute(Id.ARM_STORE_CUBE_TOP);
+		setCubeTop(c);
 	}
 
 	public void setScore(int score)
