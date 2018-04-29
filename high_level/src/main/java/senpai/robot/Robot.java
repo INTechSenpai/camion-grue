@@ -215,12 +215,27 @@ public class Robot extends RobotState
 		bloque(ordre.getMethodName(), param);
 	}
 
+	public void poseCube(double angle, int etage) throws InterruptedException, ActionneurException
+	{
+		if(cubeTop != null)
+		{
+			execute(Id.ARM_PUT_ON_PILE_S, angle, etage);
+			cubeTop = null;
+		}
+		else if(cubeInside != null)
+		{
+			execute(Id.ARM_TAKE_FROM_STORAGE);
+			execute(Id.ARM_PUT_ON_PILE_S, angle, etage);
+			cubeInside = null;
+		}
+	}
+	
 	public boolean canTakeCube()
 	{
 		return cubeTop == null;
 	}
 	
-/*	public boolean isThereCubeInside()
+	public boolean isThereCubeInside()
 	{
 		return cubeInside != null;
 	}
@@ -228,7 +243,7 @@ public class Robot extends RobotState
 	public boolean isThereCubeTop()
 	{
 		return cubeTop != null;
-	}*/
+	}
 
 	private void setCubeInside(Cube c)
 	{

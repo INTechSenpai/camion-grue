@@ -14,9 +14,7 @@
 
 package senpai.scripts;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.PriorityQueue;
 
 import pfg.log.Log;
@@ -26,6 +24,8 @@ import senpai.table.Cube;
 import senpai.table.CubeColor;
 import senpai.table.CubeFace;
 import senpai.table.Table;
+import senpai.utils.ConfigInfoSenpai;
+import pfg.config.Config;
 import pfg.kraken.utils.XY;
 
 /**
@@ -40,13 +40,38 @@ public class ScriptManager
 	private Table table;
 	private Robot robot;
 	
-	public ScriptManager(Log log, Table table, Robot robot)
+	private final boolean usePattern;
+	private final String pattern;
+	private int[] taillePile = new int[]{0,0};
+	private XY[] pilePosition = new XY[] {new XY(0,0), new XY(0,0)};
+	private CubeFace faceDepose;
+	private boolean coteDroit;
+	private double[] longueurGrue = new double[]{300, 300, 290, 365, 365}; // longueur de la grue en fonction du nombre de cube déjà posés
+
+	
+	public ScriptManager(Log log, Table table, Robot robot, Config config)
 	{
 		this.log = log;
 		this.table = table;
 		this.robot = robot;
+		
+		pattern = config.getString(ConfigInfoSenpai.COLOR_PATTERN);
+		usePattern = pattern.isEmpty();
 	}
 	
+	public ScriptDeposeCube getDeposeScript()
+	{
+		int nbPile = getNbPile();
+		return new ScriptDeposeCube(log, taillePile[nbPile], pilePosition[nbPile], faceDepose, coteDroit, longueurGrue[taillePile[nbPile]]);
+	}
+	
+	private int getNbPile()
+	{
+		if(usePattern && taillePile[0] >= 3)
+			return 1;
+		return 0;
+	}
+
 	public class CubeComparator implements Comparator<ScriptPriseCube>
 	{
 		private XY position;
@@ -91,16 +116,19 @@ public class ScriptManager
 		return out;
 	}
 	
-	public List<CubeAndFace> getAllPossible(boolean symetrie, boolean bourrine)
+	public PriorityQueue<ScriptPriseCube> getAllPossible(boolean symetrie, boolean bourrine)
 	{
-		List<CubeAndFace> out = new ArrayList<CubeAndFace>();
+		PriorityQueue<ScriptPriseCube> out = new PriorityQueue<ScriptPriseCube>(new CubeComparator(robot.getCinematique().getPosition()));
 		for(Cube c : Cube.values())
 		{
 			if(symetrie == c.position.getX() > 0)
 				continue;
 			for(CubeFace f : CubeFace.values())
 				if(isFacePossible(c, f, bourrine))
-					out.add(new CubeAndFace(c,f));
+				{
+					out.add(new ScriptPriseCube(log,c,f,true));
+					out.add(new ScriptPriseCube(log,c,f,false));
+				}
 		}
 		return out;
 	}
