@@ -118,7 +118,8 @@ public class ThreadCommProcess extends Thread
 					for(CapteursRobot c : CapteursRobot.values())
 					{
 						mesures[c.ordinal()] = data.getInt();
-						log.write("Capteur " + c.name() + " : " + mesures[c.ordinal()], Subject.CAPTEURS);
+						int m = mesures[c.ordinal()];
+						log.write("Capteur " + c.name() + " : " + (m < CommProtocol.EtatCapteur.values().length ? CommProtocol.EtatCapteur.values()[m] : m), Subject.CAPTEURS);
 					}
 					double angleTourelleGauche = data.getFloat();
 					double angleTourelleDroite = data.getFloat();

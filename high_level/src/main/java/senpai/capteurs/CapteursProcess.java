@@ -241,10 +241,6 @@ public class CapteursProcess
 				index2 = CapteursRobot.ToF_LATERAL_ARRIERE_DROIT.ordinal();
 			}
 			
-			// on serait pas assez précis
-			if(data.mesures[index1] <= 4 || data.mesures[index2] <= 4)
-				continue;
-			
 			XY_RW pointVu1 = getPositionVue(capteurs[index1], data.mesures[index1], data.cinematique, data.angleTourelleGauche, data.angleTourelleDroite, data.angleGrue);
 			if(pointVu1 == null)
 				continue;
@@ -377,9 +373,9 @@ public class CapteursProcess
 		
 		assert mesure >= 0 : "Mesure de capteur négative ! "+c+" "+mesure;
 		
-		if(mesure <= 3)
+		if(mesure < CommProtocol.EtatCapteur.values().length)
 		{
-			log.write("Capteur "+c+" : "+CommProtocol.EtatCapteur.values()[mesure], Subject.CAPTEURS);
+//			log.write("Capteur "+c+" : "+CommProtocol.EtatCapteur.values()[mesure], Subject.CAPTEURS);
 			return null;
 		}
 		
