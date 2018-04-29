@@ -127,6 +127,7 @@ public:
 
             if (moving && millis() - moveTimer > ARM_MOVE_TIMEOUT)
             {
+                status |= ARM_STATUS_TIMEOUT;
                 Serial.println("End of move by timeout"); // debug
                 Serial.print("Aim= ");
                 Serial.println(aimPosition);
