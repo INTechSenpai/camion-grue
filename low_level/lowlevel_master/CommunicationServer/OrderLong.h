@@ -144,20 +144,55 @@ public:
     WaitForJumper() {}
     void _launch(const std::vector<uint8_t> & input)
     {
-        if (input.size() == 0)
-        {
-            // TODO
-        }
-        else
-        {
-            Server.printf_err("WaitForJumper: wrong number of arguments\n");
-        }
+        Server.printf(SPY_ORDER, "WaitForJumper\n");
+        pinMode(PIN_GET_JUMPER, INPUT_PULLUP);
+        state = WAIT_FOR_INSERTION;
+        debounceTimer = 0;
     }
     void onExecute()
     {
-        finished = true; // TODO
+        uint8_t jumperDetected = digitalRead(PIN_GET_JUMPER);
+        switch (state)
+        {
+        case WaitForJumper::WAIT_FOR_INSERTION:
+            if (jumperDetected)
+            {
+                state = WAIT_FOR_REMOVAL;
+            }
+            break;
+        case WaitForJumper::WAIT_FOR_REMOVAL:
+            if (!jumperDetected)
+            {
+                state = WAIT_FOR_DEBOUNCE_TIMER;
+                debounceTimer = millis();
+            }
+            break;
+        case WaitForJumper::WAIT_FOR_DEBOUNCE_TIMER:
+            if (jumperDetected)
+            {
+                state = WAIT_FOR_REMOVAL;
+            }
+            else if (millis() - debounceTimer > 100)
+            {
+                finished = true;
+            }
+            break;
+        default:
+            break;
+        }
     }
     void terminate(std::vector<uint8_t> & output) {}
+
+private:
+    enum JumperState
+    {
+        WAIT_FOR_INSERTION,
+        WAIT_FOR_REMOVAL,
+        WAIT_FOR_DEBOUNCE_TIMER
+    };
+
+    JumperState state;
+    uint32_t debounceTimer;
 };
 
 

@@ -13,6 +13,8 @@
 #define CUBE_DETECT_MAX             160 // mm
 #define CUBE_INSIDE_THRESHOLD       60  // mm
 
+#define FULL_MOVE_TIMEOUT           15000   // ms
+
 
 class SmartArmControler
 {
@@ -29,6 +31,7 @@ public:
         currentCommandStep = 0;
         commandArgAngle = 0;
         commandArgHeight = 0;
+        fullMoveTimer = 0;
     }
 
     int init()
@@ -113,6 +116,12 @@ public:
                 stopCommand();
                 break;
             }
+
+            if (millis() - fullMoveTimer > FULL_MOVE_TIMEOUT)
+            {
+                status |= ARM_STATUS_TIMEOUT;
+                stopCommand();
+            }
         }
     }
 
@@ -131,6 +140,11 @@ public:
         armControler.getCurrentPosition(position);
     }
 
+    uint8_t getCommandStep() const
+    {
+        return currentCommandStep;
+    }
+
     void executeCommand(CommandId id, float angle = 0, int32_t height = 0)
     {
         if (currentCommand != ACTUATOR_NO_COMMAND)
@@ -143,6 +157,7 @@ public:
         currentCommandStep = 0;
         commandArgAngle = angle;
         commandArgHeight = height;
+        fullMoveTimer = millis();
     }
 
     void setArmPosition(ArmPosition position)
@@ -158,6 +173,7 @@ public:
         commandArgAngle = 0;
         commandArgHeight = 0;
         armControler.setAimPosition(position);
+        fullMoveTimer = millis();
     }
 
     void emergencyStop()
@@ -477,7 +493,14 @@ private:
         case 0:
             // Position initiale
             armControler.getCurrentPositionSpecial(armPosition);
-            armPosition.setHAngle(ARM_H_ANGLE_MANIP);
+            if (armPosition.getHAngle() >= 0)
+            {
+                armPosition.setHAngle(ARM_H_ANGLE_MANIP);
+            }
+            else
+            {
+                armPosition.setHAngle(-ARM_H_ANGLE_MANIP);
+            }
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
             break;
@@ -592,6 +615,7 @@ private:
                 Serial.println("put_cube_smart: Invalid arguments");
                 status |= ARM_STATUS_UNREACHABLE;
                 stopCommand();
+                return;
             }
             armControler.getCurrentPositionSpecial(armPosition);
             if (abs(commandArgAngle) > ARM_H_ANGLE_MANIP)
@@ -614,7 +638,14 @@ private:
                 if (floorAngle > armPosition.getVAngle())
                 {
                     armPosition.setVAngle(floorAngle);
-                    armPosition.setHAngle(ARM_H_ANGLE_MANIP);
+                    if (commandArgAngle >= 0)
+                    {
+                        armPosition.setHAngle(ARM_H_ANGLE_MANIP);
+                    }
+                    else
+                    {
+                        armPosition.setHAngle(-ARM_H_ANGLE_MANIP);
+                    }
                     currentCommandStep = 3;
                 }
                 else
@@ -746,6 +777,7 @@ private:
             armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setPlierPos(ARM_MAX_PLIER_POS);
             armControler.setAimPosition(armPosition);
+            currentCommandStep++;
             break;
         case 10:
             waitForMoveCompletion();
@@ -762,6 +794,7 @@ private:
                 armPosition.setHeadLocalAngle(ARM_MIN_HEAD_ANGLE);
             }
             armControler.setAimPosition(armPosition);
+            currentCommandStep++;
             break;
         case 12:
             waitForMoveCompletion();
@@ -804,6 +837,7 @@ private:
     float commandArgAngle;
     int32_t commandArgHeight;
     ArmPosition armPosition;
+    uint32_t fullMoveTimer;
 };
 
 

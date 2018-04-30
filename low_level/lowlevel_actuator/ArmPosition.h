@@ -26,7 +26,7 @@
 
 /* Angles utiles */
 #define ARM_H_ANGLE_CABIN           0.8     // [rad] Angle horizontal en dessous duquel on peut se manger la cabine
-#define ARM_H_ANGLE_MANIP           1.05    // [rad] Angke horizontal au dessus duquel on peut manipuler librement un cube
+#define ARM_H_ANGLE_MANIP           1.10    // [rad] Angke horizontal au dessus duquel on peut manipuler librement un cube
 #define ARM_HEAD_SCAN_ANGLE         -1.3    // [rad] Angle global permettant de voir le cube à prendre
 #define ARM_HEAD_L_ANGLE_TRANSPORT  4.721   // [rad] Angle local de la tête de bras pour transporter un cube
 #define ARM_HEAD_G_ANGLE_STORAGE    -0.785  // [rad] Angle de premettant la prise et la dépose dans la zone de stockage interne
