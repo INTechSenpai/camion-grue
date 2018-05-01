@@ -95,8 +95,22 @@ public:
         if (io.size() == 0)
         {
             io.clear();
-            // TODO Write output
-            Serializer::writeEnum(2, io);
+            pinMode(PIN_GET_JUMPER, INPUT_PULLUP);
+            uint8_t jumperDetected = digitalRead(PIN_GET_JUMPER);
+            int32_t colorAnalog = analogRead(PIN_GET_COLOR);
+            Color color = UNKNOWN;
+            if (jumperDetected)
+            {
+                if (colorAnalog > 512)
+                {
+                    color = VERT;
+                }
+                else
+                {
+                    color = ORANGE;
+                }
+            }
+            Serializer::writeEnum((uint8_t)color, io);
         }
         else
         {
@@ -104,6 +118,14 @@ public:
             io.clear();
         }
     }
+
+private:
+    enum Color
+    {
+        ORANGE = 0x00,
+        VERT = 0x01,
+        UNKNOWN = 0x02
+    };
 };
 
 

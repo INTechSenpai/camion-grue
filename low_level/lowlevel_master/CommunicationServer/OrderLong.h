@@ -215,8 +215,8 @@ public:
     void terminate(std::vector<uint8_t> & output)
     {
         motionControlSystem.stop_and_clear_trajectory();
-        // TODO: stop actuators
-        // Maybe: prevent HL from giving orders
+        slaveActuator.stop();
+        // todo Maybe: prevent HL from giving orders
     }
 
 private:

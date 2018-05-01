@@ -131,6 +131,7 @@ private:
         trajectoryFollower.emergency_stop_from_interrupt();
         trajectoryIndex = 0;
         currentTrajectory.clear();
+        trajectoryComplete = false;
     }
 
     void updateDistanceToTravel()
