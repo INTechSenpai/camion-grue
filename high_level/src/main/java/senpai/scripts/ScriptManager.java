@@ -14,7 +14,9 @@
 
 package senpai.scripts;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.PriorityQueue;
 
 import pfg.log.Log;
@@ -42,18 +44,20 @@ public class ScriptManager
 	
 	private final boolean usePattern;
 	private final String pattern;
-	private int[] taillePile = new int[]{0,0};
+	@SuppressWarnings("unchecked")
+	private List<Cube>[] piles = (List<Cube>[]) new List[2];
 	private XY[] pilePosition = new XY[] {new XY(0,0), new XY(0,0)};
 	private CubeFace faceDepose;
 	private boolean coteDroit;
 	private double[] longueurGrue = new double[]{300, 300, 290, 365, 365}; // longueur de la grue en fonction du nombre de cube déjà posés
-
 	
 	public ScriptManager(Log log, Table table, Robot robot, Config config)
 	{
 		this.log = log;
 		this.table = table;
 		this.robot = robot;
+		piles[0] = new ArrayList<Cube>();
+		piles[1] = new ArrayList<Cube>();
 		
 		pattern = config.getString(ConfigInfoSenpai.COLOR_PATTERN);
 		usePattern = pattern.isEmpty();
@@ -62,12 +66,12 @@ public class ScriptManager
 	public ScriptDeposeCube getDeposeScript()
 	{
 		int nbPile = getNbPile();
-		return new ScriptDeposeCube(log, taillePile[nbPile], pilePosition[nbPile], faceDepose, coteDroit, longueurGrue[taillePile[nbPile]]);
+		return new ScriptDeposeCube(log, piles[nbPile].size(), pilePosition[nbPile], faceDepose, coteDroit, longueurGrue[piles[nbPile].size()]);
 	}
 	
 	private int getNbPile()
 	{
-		if(usePattern && taillePile[0] >= 3)
+		if(usePattern && piles[0].size() >= 3)
 			return 1;
 		return 0;
 	}

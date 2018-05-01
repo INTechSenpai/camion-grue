@@ -32,6 +32,7 @@ public enum ThreadName
 	PEREMPTION(ThreadPeremption.class),
 	CLIGOTE_DEGRADE(ThreadClignoteDegrade.class),
 	CLIGNOTE_NORMAL(ThreadClignoteNormal.class),
+	UNDERVOLTAGE(ThreadUndervoltage.class),
 	COLLISION_DEGRADE(ThreadCollisionDegrade.class),
 	SERIAL_INPUT_ORDRE(ThreadCommProcess.class),
 	SERIAL_INPUT_TRAME(ThreadCommListener.class),
