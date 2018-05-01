@@ -21,7 +21,7 @@
 #define ARM_MAX_HEAD_ANGLE      4.974   // max(headLocalAngle)
 #define ARM_MIN_PLIER_POS       8       // [mm]
 #define ARM_MAX_PLIER_POS       49      // [mm]
-#define ARM_MIN_PLIER_ANGLE_DEG 70      // [deg]
+#define ARM_MIN_PLIER_ANGLE_DEG 108     // [deg]
 #define ARM_MAX_PLIER_ANGLE_DEG 230     // [deg]
 
 /* Angles utiles */

@@ -13,6 +13,8 @@
 #define CUBE_DETECT_MAX             160 // mm
 #define CUBE_INSIDE_THRESHOLD       60  // mm
 
+#define CUBE_MANIPULATION_SPEED     300 // [unité interne d'AX12]
+
 #define FULL_MOVE_TIMEOUT           15000   // ms
 
 
@@ -70,12 +72,23 @@ public:
         uint32_t now = millis();
         if (now - sensorLastUpdateTime > ARM_SENSORS_UPDATE_PERIOD)
         {
+            bool cubeWasInPlier = isCubeInPlier();
             sensorLastUpdateTime = now;
             intSensorValue = intSensor.getMesure();
             extSensorValue = extSensor.getMesure();
             if (intSensorValue == (SensorValue)SENSOR_DEAD || extSensorValue == (SensorValue)SENSOR_DEAD)
             {
                 status |= ARM_STATUS_SENSOR_ERR;
+            }
+            if (!cubeWasInPlier && isCubeInPlier())
+            {
+                Serial.println("CUBE DETECTED IN PLIER");
+                armControler.setHeadSpeed(CUBE_MANIPULATION_SPEED);
+            }
+            else if (cubeWasInPlier && !isCubeInPlier())
+            {
+                Serial.println("CUBE LEFT PLIER");
+                armControler.setHeadSpeed(0); // unlimited speed
             }
         }
         armControler.controlServos();

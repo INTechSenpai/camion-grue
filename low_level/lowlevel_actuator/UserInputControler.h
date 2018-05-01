@@ -164,6 +164,7 @@ public:
                 break;
             case RESET:
 				armControler.resetToOrigin();
+                currentMode = NONE;
 				scoreDisplay.println(8888);
 				scoreDisplay.writeDisplay();
 				digitalWrite(PIN_DEL_GYRO_G, HIGH);

@@ -13,6 +13,9 @@
 #include "dynamixel_teensy/src/DynamixelInterface.h"
 #include "dynamixel_teensy/src/DynamixelMotor.h"
 
+#define PLIER_MAX_TORQUE        1000    // [unité interne d'AX12]
+#define PLIER_OVERLOAD_TIMEOUT  500     // [ms]
+
 
 class ArmController : public Singleton<ArmController>
 {
@@ -48,6 +51,8 @@ public:
         status = ARM_STATUS_OK;
         moveTimer = 0;
         manualMode = false;
+        plierOverloadTimer = 0;
+        plierOverloadStarted = 0;
 
         serialAX.begin(SERIAL_AX12_BAUDRATE);
     }
@@ -169,8 +174,18 @@ public:
             { // Set position AX12 head
                 noInterrupts();
                 uint16_t p = (uint16_t)aimPosition.getHeadLocalAngleDeg();
+                float globalAim = aimPosition.getHeadGlobalAngle();
+                float globalReal = currentPosition.getHeadGlobalAngle();
+                float horizontalReal = currentPosition.getHAngle();
                 interrupts();
-                lastStatus = headAX12.goalPositionDegree(p);
+                if (globalAim > -0.2 || globalReal < -0.2 || abs(horizontalReal) > ARM_H_ANGLE_MANIP - 0.2)
+                {
+                    lastStatus = headAX12.goalPositionDegree(p);
+                }
+                else
+                {
+                    lastStatus = headAX12.goalPositionDegree(190);
+                }
                 counter = 1;
             }
             else if (counter == 1)
@@ -210,8 +225,27 @@ public:
                 uint16_t torque = 0;
                 lastStatus = plierAX12.read(0x28, torque);
                 torque &= 1023;
-                // todo
 
+                if (!plierOverloadStarted && torque > PLIER_MAX_TORQUE)
+                {
+                    plierOverloadStarted = true;
+                    plierOverloadTimer = millis();
+                }
+                else if (plierOverloadStarted && torque <= PLIER_MAX_TORQUE)
+                {
+                    plierOverloadStarted = false;
+                }
+                else if (plierOverloadStarted && millis() - plierOverloadTimer > PLIER_OVERLOAD_TIMEOUT)
+                {
+                    plierOverloadStarted = false;
+                    noInterrupts();
+                    aimPosition.setPlierAngle(currentPosition.getPlierAngle());
+                    uint16_t p = (uint16_t)aimPosition.getPlierAngleDeg();
+                    interrupts();
+                    lastStatus = plierAX12.goalPositionDegree(p);
+
+                    Serial.println("STOPPED PLIER ON POSITION");
+                }
                 counter = 0;
             }
 
@@ -281,6 +315,11 @@ public:
         ArmStatus ret = status;
         interrupts();
         return ret;
+    }
+
+    void setHeadSpeed(uint16_t speed)
+    {
+        headAX12.speed(speed);
     }
 
     void stop()
@@ -408,6 +447,8 @@ private:
     DynamixelInterface serialAX;
     DynamixelMotor headAX12;
     DynamixelMotor plierAX12;
+    uint32_t plierOverloadTimer;
+    bool plierOverloadStarted;
 
 };
 
