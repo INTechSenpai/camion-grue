@@ -7,6 +7,7 @@ gpio write 22 0 # diode éteinte par défaut
 nbBas=0
 # on s'arrête si la pin est à l'état bas cinq fois de suite
 while [ $nbBas -lt 5 ]; do
+    # TODO : utiliser gpio wfi
     if [ $(gpio read 21) -eq 0 ]; then
         let "nbBas += 1"
     else
