@@ -346,8 +346,8 @@ public class OutgoingOrderBuffer implements Plottable
 		log.write("Ajout de " + points.size() + " points.", Subject.COMM);
 
 		// on peut envoyer 11 arcs par trame au maximum
-		int nbEnvoi = (points.size() - 1) / 11 + 1;
-		int modulo = points.size() % 11; // pour le dernier envoi
+		int nbEnvoi = (points.size() + 10) / 11;
+		int modulo = (points.size() + 10) % 11 + 1; // pour le dernier envoi
 		for(int i = 0; i < nbEnvoi; i++)
 		{
 			int nbArc = 11;
@@ -377,9 +377,9 @@ public class OutgoingOrderBuffer implements Plottable
 		data.putFloat((float) point.orientation);
 		data.putFloat((float)point.curvature);
 		if(point.goingForward)
-			data.putFloat((float) (1000*point.possibleSpeed));
+			data.putFloat((float) (1000*point.maxSpeed));
 		else
-			data.putFloat((float) (-1000*point.possibleSpeed));
+			data.putFloat((float) (-1000*point.maxSpeed));
 		data.put((byte) (point.stop ? 1 : 0));
 		data.put((byte) (last ? 1 : 0));
 	}

@@ -3,12 +3,10 @@ package senpai;
 import pfg.log.Log;
 import senpai.Senpai.ErrorCode;
 import senpai.buffer.OutgoingOrderBuffer;
-import senpai.comm.DataTicket;
-import senpai.comm.Ticket;
 import senpai.robot.KnownPathManager;
+import senpai.robot.Robot;
 import senpai.robot.SavedPath;
 import senpai.utils.Severity;
-import senpai.utils.Subject;
 
 /*
  * Copyright (C) 2013-2018 Pierre-François Gimenez
@@ -60,11 +58,14 @@ public class FollowTrajectory
 			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
 
 			data.setPosition(s.sp.start.getPosition(), s.sp.start.orientationReelle);
+			Thread.sleep(1000);
+			Robot robot = senpai.getExistingService(Robot.class);
+			robot.goTo(s.sp);
 			
-			data.ajoutePointsTrajectoire(s.path, true);
-			Ticket t = data.followTrajectory();
-			DataTicket state = t.attendStatus();
-			log.write("Code de retour reçu : "+state, Subject.TRAJECTORY);
+//			data.ajoutePointsTrajectoire(s.path, true);
+//			Ticket t = data.followTrajectory();
+//			DataTicket state = t.attendStatus();
+//			log.write("Code de retour reçu : "+state, Subject.TRAJECTORY);
 		}
 		catch(Exception e)
 		{

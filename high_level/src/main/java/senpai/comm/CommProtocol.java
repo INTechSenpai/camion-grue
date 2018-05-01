@@ -247,7 +247,6 @@ public class CommProtocol
 			if(valeur == 0)
 				return "";
 			StringBuilder out = new StringBuilder();
-			out.append("Codes erreurs : ");
 			for(ActionneurMask m : values())
 			{
 				if((valeur & m.masque) != 0)
@@ -266,8 +265,8 @@ public class CommProtocol
 		STOP_REQUIRED,
 		ROBOT_BLOCAGE_EXTERIEUR,
 		ROBOT_BLOCAGE_INTERIEUR,
-		PLUS_DE_POINTS,
-		TROP_LOIN;
+		TROP_LOIN,
+		PLUS_DE_POINTS;
 		
 		private final int masque = 1 << ordinal();
 		
@@ -276,7 +275,6 @@ public class CommProtocol
 			if(valeur == 0)
 				return "";
 			StringBuilder out = new StringBuilder();
-			out.append("Codes erreurs : ");
 			for(TrajEndMask m : values())
 			{
 				if((valeur & m.masque) != 0)

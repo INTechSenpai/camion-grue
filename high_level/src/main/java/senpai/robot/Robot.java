@@ -122,7 +122,7 @@ public class Robot extends RobotState
 
 	private XY_RW oldPosition = new XY_RW();
 	
-	public synchronized void setCinematique(Cinematique cinematique)
+	public void setCinematique(Cinematique cinematique)
 	{
 		this.cinematique.getPosition().copy(oldPosition);
 		cinematique.copy(this.cinematique);
@@ -134,12 +134,13 @@ public class Robot extends RobotState
 			cinematiqueInitialised = true;
 //			notifyAll();
 		}
-		synchronized(buffer)
-		{
-			// affichage
-			if(printTrace && oldPosition.distanceFast(cinematique.getPosition()) < 100)
-				buffer.addPrintable(new Segment(oldPosition, cinematique.getPosition().clone()), Color.RED, Layer.MIDDLE.layer);
-		}
+		if(printTrace)
+			synchronized(buffer)
+			{
+				// affichage
+				if(oldPosition.distanceFast(cinematique.getPosition()) < 100)
+					buffer.addPrintable(new Segment(oldPosition, cinematique.getPosition().clone()), Color.RED, Layer.MIDDLE.layer);
+			}
 	}
 
 
@@ -312,12 +313,12 @@ public class Robot extends RobotState
 		notifyAll();
 	}
 	
-	public synchronized DataTicket goTo(XYO destination) throws PathfindingException, InterruptedException
+	public DataTicket goTo(XYO destination) throws PathfindingException, InterruptedException
 	{
 		return goTo(new SearchParameters(cinematique.getXYO(), destination));
 	}
 	
-	public synchronized DataTicket goTo(SearchParameters sp) throws PathfindingException, InterruptedException
+	public DataTicket goTo(SearchParameters sp) throws PathfindingException, InterruptedException
 	{
 		PriorityQueue<SavedPath> allSaved = null;
 		if(enableLoadPath)
@@ -341,6 +342,7 @@ public class Robot extends RobotState
 					{
 						if(kraken.checkPath(saved.path))
 						{
+							log.write("On réutilise un chemin en mode dégradé", Subject.TRAJECTORY);
 							path = saved.path;
 							break;
 						}
@@ -349,6 +351,7 @@ public class Robot extends RobotState
 					}
 					else
 					{
+						log.write("On démarre la recherche continue avec un chemin initial", Subject.TRAJECTORY);
 						kraken.startContinuousSearchWithInitialPath(sp, saved.path);
 						path = saved.path;
 						break;
@@ -362,10 +365,14 @@ public class Robot extends RobotState
 
 		if(modeDegrade)
 		{
-			System.out.println(path);
+
+//			System.out.println(path);
 			// On cherche et on envoie
 			if(path == null)
+			{
+				log.write("On cherche un chemin en mode dégradé", Subject.TRAJECTORY);
 				path = kraken.search();
+			}
 			else
 				log.write("On réutilise un chemin déjà connu !", Subject.TRAJECTORY);
 			if(!simuleLL)
@@ -379,7 +386,10 @@ public class Robot extends RobotState
 		else
 		{
 			if(path == null)
+			{
+				log.write("On cherche un chemin en mode continu", Subject.TRAJECTORY);
 				kraken.startContinuousSearch(sp);
+			}
 			else
 				log.write("On réutilise un chemin déjà connu !", Subject.TRAJECTORY);
 		}
@@ -390,15 +400,18 @@ public class Robot extends RobotState
 		return out;
 	}
 	
-	private synchronized DataTicket followTrajectory() throws InterruptedException
+	private DataTicket followTrajectory() throws InterruptedException
 	{
 		assert modeDegrade == (pathDegrade != null) : modeDegrade+" "+pathDegrade;
 		assert etat == State.READY_TO_GO || etat == State.STANDBY;
 
 		log.write("Attente de la trajectoire…", Subject.TRAJECTORY);
 
-		while(etat == State.STANDBY)
-			wait();
+		synchronized(this)
+		{
+			while(etat == State.STANDBY)
+				wait();
+		}
 
 		log.write("On commence à suivre la trajectoire", Subject.TRAJECTORY);
 		
@@ -421,7 +434,11 @@ public class Robot extends RobotState
 			dt = new DataTicket(modeDegrade ? pathDegrade : dpath.getPath(), CommProtocol.State.OK);
 		}
 		
-		log.write("Le robot ne bouge plus : "+etat, Subject.TRAJECTORY);
+		if(dt.data == null)
+			log.write("Le robot a fini correctement la trajectoire.", Subject.TRAJECTORY);
+		else
+			log.write("Le robot s'est arrêté suite à un problème : "+dt.data, Severity.CRITICAL, Subject.TRAJECTORY);
+
 		pathDegrade = null;
 		etat = State.STANDBY;
 		return dt;

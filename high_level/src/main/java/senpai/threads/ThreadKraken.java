@@ -27,6 +27,7 @@ import senpai.buffer.OutgoingOrderBuffer;
 import senpai.robot.KnownPathManager;
 import senpai.robot.Robot;
 import senpai.utils.ConfigInfoSenpai;
+import senpai.utils.Severity;
 import senpai.utils.Subject;
 
 /**
@@ -96,6 +97,7 @@ public class ThreadKraken extends Thread
 
 				} catch(PathfindingException e)
 				{
+					log.write("On s'arrête à cause d'une exception "+e, Severity.CRITICAL, Subject.TRAJECTORY);
 					data.immobilise();
 				}
 			}

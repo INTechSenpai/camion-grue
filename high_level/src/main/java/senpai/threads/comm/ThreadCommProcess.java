@@ -52,7 +52,7 @@ public class ThreadCommProcess extends Thread
 	private Cinematique current = new Cinematique();
 	private DynamicPath chemin;
 
-	private boolean capteursOn = false;
+	private boolean capteursOn = true; // TODO
 	private int nbCapteurs;
 
 	public ThreadCommProcess(Log log, Config config, IncomingOrderBuffer serie, SensorsDataBuffer buffer, Robot robot, Senpai container, DynamicPath chemin)
@@ -82,7 +82,8 @@ public class ThreadCommProcess extends Thread
 
 				Paquet paquet = serie.take();
 
-				log.write("Durée avant obtention du paquet : " + (System.currentTimeMillis() - avant) + ". Traitement de " + paquet, Subject.COMM);
+				long duree = (System.currentTimeMillis() - avant);
+				log.write("Durée avant obtention du paquet : " + duree + ". Traitement de " + paquet, Subject.COMM);
 
 //				avant = System.currentTimeMillis();
 				ByteBuffer data = paquet.message;
@@ -124,10 +125,9 @@ public class ThreadCommProcess extends Thread
 					double angleTourelleGauche = data.getFloat();
 					double angleTourelleDroite = data.getFloat();
 					double angleGrue = data.getFloat();
-						
+					
 					chemin.setCurrentTrajectoryIndex(indexTrajectory).copy(current);
 					current.updateReel(xRobot, yRobot, orientationRobot, courbure);
-
 					robot.setCinematique(current);
 
 					log.write("Le robot est en " + current.getPosition() + ", orientation : " + orientationRobot + ", index : " + indexTrajectory, Subject.CAPTEURS);
@@ -212,7 +212,7 @@ public class ThreadCommProcess extends Thread
 					else
 					{
 						chemin.endContinuousSearchWithException(new NotFastEnoughException("Erreur de suivi de trajectoire"));
-						log.write(CommProtocol.TrajEndMask.describe(code), Subject.TRAJECTORY);
+//						log.write(CommProtocol.TrajEndMask.describe(code), Subject.TRAJECTORY);
 						paquet.origine.ticket.set(CommProtocol.State.KO, CommProtocol.TrajEndMask.describe(code));
 					}
 				}
