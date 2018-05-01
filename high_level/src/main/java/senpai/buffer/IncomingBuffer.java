@@ -47,7 +47,7 @@ public class IncomingBuffer<T> implements Plottable
 	public void add(T elem)
 	{
 		try {
-			buffer.add(elem);
+			buffer.offer(elem);
 			if(buffer.size() > 20)
 			{
 				log.write("Buffer de "+elem.getClass().getSimpleName()+" traités trop lentement ! Taille buffer : " + buffer.size(), Severity.CRITICAL, Subject.COMM);

@@ -133,7 +133,8 @@ public class Communication implements Closeable
 	{
 		// série fermée définitivement
 		if(closed)
-			throw new InterruptedException("Série fermée normalement");
+			while(true)
+				Thread.sleep(Integer.MAX_VALUE);
 			
 		while(true)
 		{
@@ -183,7 +184,8 @@ public class Communication implements Closeable
 			{
 				// communication fermé
 				if(closed)
-					throw new InterruptedException("Série fermée normalement");
+					while(true)
+						Thread.sleep(Integer.MAX_VALUE);
 				log.write("Erreur de lecture de données : "+e, Subject.COMM);
 			}
 		}

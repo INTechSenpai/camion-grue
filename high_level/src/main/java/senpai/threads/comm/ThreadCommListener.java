@@ -55,6 +55,7 @@ public class ThreadCommListener extends Thread
 		catch(InterruptedException e)
 		{
 			log.write("Arrêt de " + Thread.currentThread().getName(), Subject.STATUS);
+			e.printStackTrace();
 			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)

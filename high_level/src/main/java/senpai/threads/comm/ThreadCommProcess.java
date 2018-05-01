@@ -78,15 +78,15 @@ public class ThreadCommProcess extends Thread
 		{
 			while(true)
 			{
-//				long avant = System.currentTimeMillis();
+				long avant = System.currentTimeMillis();
 
 				Paquet paquet = serie.take();
 
-//				log.write("Durée avant obtention du paquet : " + (System.currentTimeMillis() - avant) + ". Traitement de " + paquet, Subject.COMM);
+				log.write("Durée avant obtention du paquet : " + (System.currentTimeMillis() - avant) + ". Traitement de " + paquet, Subject.COMM);
 
 //				avant = System.currentTimeMillis();
 				ByteBuffer data = paquet.message;
-
+				
 				/**
 				 * Couleur du robot
 				 */

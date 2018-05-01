@@ -60,7 +60,7 @@ public class OutgoingOrderBuffer implements Plottable
 			print.addPlottable(this);
 	}
 	
-	private BlockingQueue<Order> buffer = new PriorityBlockingQueue<Order>(100, comparing(Order::getPriority, naturalOrder()));
+	private BlockingQueue<Order> buffer = new PriorityBlockingQueue<Order>(1000, comparing(Order::getPriority, naturalOrder()));
 
 	public Order take() throws InterruptedException
 	{
@@ -86,7 +86,7 @@ public class OutgoingOrderBuffer implements Plottable
 
 	private void addToBuffer(Order o)
 	{
-		buffer.add(o);
+		buffer.offer(o);
 	}
 	
 	public Ticket run()

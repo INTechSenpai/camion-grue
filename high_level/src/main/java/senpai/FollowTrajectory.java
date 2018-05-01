@@ -47,7 +47,7 @@ public class FollowTrajectory
 		ErrorCode error = ErrorCode.NO_ERROR;
 		try
 		{
-			Log log = new Log(Severity.INFO, configfile, "log");
+			Log log = new Log(Severity.INFO, configfile, "");
 			
 			KnownPathManager manager = new KnownPathManager(log);
 			SavedPath s = manager.loadPath(filename);

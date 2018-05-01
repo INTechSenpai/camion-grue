@@ -38,6 +38,7 @@ import pfg.kraken.utils.XY;
 import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.Communication;
+import senpai.comm.CommProtocol.Id;
 import senpai.obstacles.ObstaclesDynamiques;
 import senpai.obstacles.ObstaclesFixes;
 import senpai.robot.Robot;
@@ -122,9 +123,12 @@ public class Senpai
 		if(errorCode.e != null)
 			errorCode.e.printStackTrace();
 		
-		OutgoingOrderBuffer buffer = injector.getExistingService(OutgoingOrderBuffer.class);
-		if(buffer != null)
-			buffer.armGoHome();
+		OutgoingOrderBuffer outBuffer = injector.getExistingService(OutgoingOrderBuffer.class);
+		if(outBuffer != null)
+		{
+			outBuffer.armGoHome();
+			outBuffer.stopStream(Id.ODO_AND_SENSORS);
+		}
 		
 		/*
 		 * Il ne faut pas appeler deux fois le destructeur
@@ -140,7 +144,8 @@ public class Senpai
 		
 		// On appelle le destructeur graphique
 		debug.destructor();
-		
+
+		log.write("Arrêt des threads.", Subject.STATUS);
 		// arrêt des threads
 		if(threadsDemarres)
 			for(ThreadName n : ThreadName.values())
@@ -242,7 +247,8 @@ public class Senpai
 		/**
 		 * Affiche la version du programme (dernier commit et sa branche)
 		 */
-		try
+		// TODO gérer ça bien
+/*		try
 		{
 			Process p = Runtime.getRuntime().exec("git log -1 --oneline");
 			Process p2 = Runtime.getRuntime().exec("git branch");
@@ -261,7 +267,7 @@ public class Senpai
 			in2.close();
 		}
 		catch(IOException e1)
-		{}
+		{}*/
 
 		/**
 		 * Infos diverses
@@ -291,8 +297,11 @@ public class Senpai
 		/*
 		 * Warm-up without verbose
 		 */
-		ThreadWarmUp warmUp = new ThreadWarmUp(log, new Kraken(robotTemplate, obstaclesFixes, new XY(-1500, 0), new XY(1500, 2000), "warmup.conf", "default"), config);
-		warmUp.start();
+		if(config.getInt(ConfigInfoSenpai.WARM_UP_DURATION) > 0)
+		{
+			ThreadWarmUp warmUp = new ThreadWarmUp(log, new Kraken(robotTemplate, obstaclesFixes, new XY(-1500, 0), new XY(1500, 2000), "warmup.conf", "default"), config);
+			warmUp.start();
+		}
 
 		Kraken k = new Kraken(robotTemplate, obstaclesFixes, obsDyn, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles);
 		injector.addService(k);
@@ -329,14 +338,17 @@ public class Senpai
 			getService(Communication.class).initialize();
 			
 			OutgoingOrderBuffer outBuffer = getService(OutgoingOrderBuffer.class);
-			log.write("On attend la réponse du LL…", Subject.COMM);
+//			log.write("On attend la réponse du LL…", Subject.COMM);
 			boolean response;
 			do {
+				log.write("On attend la réponse du LL…", Subject.COMM);
 				response = outBuffer.ping().attendStatus(500) != null;
 			} while(!response);
 
 			if(config.getBoolean(ConfigInfoSenpai.CHECK_LATENCY))
-				getService(OutgoingOrderBuffer.class).checkLatence();
+				outBuffer.checkLatence();
+			outBuffer.destroyPointsTrajectoires(0);
+			outBuffer.startStream(Id.ODO_AND_SENSORS);
 		}
 		else
 			log.write("COMMUNICATION SIMULÉE !", Severity.CRITICAL, Subject.STATUS);

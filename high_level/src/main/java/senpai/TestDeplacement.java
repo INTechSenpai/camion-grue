@@ -87,10 +87,10 @@ public class TestDeplacement {
 			XYO destination = script.getPointEntree();
 			buffer.addPrintable(new Cinematique(destination), Color.BLUE, Layer.FOREGROUND.layer);
 
-			ObstacleProximity obs = new ObstacleProximity(new XY(-150.84,1543.50), 100, 100, 0, 0, null, 0);
+/*			ObstacleProximity obs = new ObstacleProximity(new XY(-150.84,1543.50), 100, 100, 0, 0, null, 0);
 			buffer.addPrintable(obs, Color.RED, Layer.FOREGROUND.layer);
 			mem.add(obs);
-			
+	*/		
 			Cinematique init = robot.getCinematique().clone();
 			
 			for(int i = 0; i < 1; i++)
