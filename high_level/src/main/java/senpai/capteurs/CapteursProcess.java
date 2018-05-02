@@ -17,8 +17,8 @@ package senpai.capteurs;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
 import senpai.obstacles.ObstacleProximity;
+import senpai.obstacles.ObstaclesDynamiques;
 import senpai.obstacles.ObstaclesFixes;
-import senpai.obstacles.ObstaclesMemory;
 import senpai.robot.Robot;
 import senpai.table.Cube;
 import senpai.table.Table;
@@ -64,16 +64,17 @@ public class CapteursProcess
 //	private boolean scan = false;
 	private Cinematique[] bufferCorrection;
 	private long dureeAvantPeremption;
-	private ObstaclesMemory obstacles;
+//	private ObstaclesMemory obstacles;
+	private ObstaclesDynamiques dynObs;
 
 //	private List<SensorsData> mesuresScan = new ArrayList<SensorsData>();
 
-	public CapteursProcess(Robot robot, Log log, RectangularObstacle obstacleRobot, Table table, OutgoingOrderBuffer serie, Config config, ObstaclesMemory obstacles, GraphicDisplay buffer)
+	public CapteursProcess(ObstaclesDynamiques dynObs, Robot robot, Log log, RectangularObstacle obstacleRobot, Table table, OutgoingOrderBuffer serie, Config config, GraphicDisplay buffer)
 	{
 		this.table = table;
 		this.log = log;
 		this.serie = serie;
-		this.obstacles = obstacles;
+		this.dynObs = dynObs;
 
 		dureeAvantPeremption = config.getInt(ConfigInfoSenpai.DUREE_PEREMPTION_OBSTACLES);
 		largeurEnnemi = config.getInt(ConfigInfoSenpai.LARGEUR_OBSTACLE_ENNEMI);
@@ -191,7 +192,7 @@ public class CapteursProcess
 	
 				log.write("Ajout d'un obstacle d'ennemi en " + positionEnnemi + " vu par " + c, Subject.CAPTEURS);
 	
-				obstacles.add(obs);
+				dynObs.add(obs);
 
 //				data.etats[i] = TraitementEtat.OBSTACLE_CREE;
 				

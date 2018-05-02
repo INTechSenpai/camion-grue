@@ -81,15 +81,24 @@ public class ThreadKraken extends Thread
 							display.addPrintable(p, p.stop ? Color.BLUE : Color.BLACK, Layer.FOREGROUND.layer);
 						}
 
+					if(robot.isDegrade())
+					{
+						log.write("Mode dégradé activé, "+Thread.currentThread().getName()+" entre en sommeil.", Subject.STATUS);
+						while(true)
+							Thread.sleep(Integer.MAX_VALUE);
+					}
+					
 					known.addPath(diff.diff);
 					if(!simuleLL)
 					{
 						data.destroyPointsTrajectoires(diff.firstDifferentPoint);
-						data.ajoutePointsTrajectoire(diff.diff.subList(diff.firstDifferentPoint, diff.diff.size()), diff.isComplete);
+						if(diff.firstDifferentPoint != diff.diff.size())
+							data.ajoutePointsTrajectoire(diff.diff.subList(diff.firstDifferentPoint, diff.diff.size()), diff.isComplete);
 					}
 					
 					if(robot.isStandby())
 					{
+						log.write("Robot en standby.", Subject.TRAJECTORY);
 						// chemin initial, il est complet
 						assert diff.isComplete;
 						robot.setReady();

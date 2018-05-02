@@ -322,10 +322,11 @@ public class Robot extends RobotState
 	{
 		PriorityQueue<SavedPath> allSaved = null;
 		if(enableLoadPath)
-			allSaved = known.loadCompatiblePath(sp);
-			
-		if(allSaved != null && allSaved.isEmpty())
-			log.write("Aucun chemin connu pour : "+sp, Subject.TRAJECTORY);
+		{
+			allSaved = known.loadCompatiblePath(sp);			
+			if(allSaved != null && allSaved.isEmpty())
+				log.write("Aucun chemin connu pour : "+sp, Subject.TRAJECTORY);
+		}
 		
 		if(modeDegrade)
 			kraken.initializeNewSearch(sp);
@@ -377,6 +378,7 @@ public class Robot extends RobotState
 				log.write("On réutilise un chemin déjà connu !", Subject.TRAJECTORY);
 			if(!simuleLL)
 			{
+				log.write("On envoie la trajectoire initiale en mode dégradé", Subject.TRAJECTORY);
 				out.destroyPointsTrajectoires(0);
 				out.ajoutePointsTrajectoire(path, true);
 			}
@@ -396,7 +398,10 @@ public class Robot extends RobotState
 
 		DataTicket out = followTrajectory();
 		if(!modeDegrade)
+		{
+			log.write("Fin de la recherche en mode continu", Subject.TRAJECTORY);
 			kraken.endContinuousSearch();
+		}
 		return out;
 	}
 	
@@ -416,7 +421,7 @@ public class Robot extends RobotState
 		log.write("On commence à suivre la trajectoire", Subject.TRAJECTORY);
 		
 		assert etat == State.READY_TO_GO;
-		etat = State.MOVING;
+		setMoving();
 		
 		DataTicket dt;
 		
@@ -442,6 +447,12 @@ public class Robot extends RobotState
 		pathDegrade = null;
 		etat = State.STANDBY;
 		return dt;
+	}
+
+	private synchronized void setMoving()
+	{
+		etat = State.MOVING;
+		notifyAll();
 	}
 
 	public synchronized boolean isStandby()

@@ -82,6 +82,7 @@ public class FindFollowTrajectory
 			data.setPosition(sp.start.getPosition(), sp.start.orientationReelle);
 			Thread.sleep(1000);
 			Robot robot = senpai.getExistingService(Robot.class);
+			robot.setDegrade();
 			robot.goTo(sp);
 		}
 		catch(Exception e)

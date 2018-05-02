@@ -329,6 +329,8 @@ public class OutgoingOrderBuffer implements Plottable
 	 */
 	public void destroyPointsTrajectoires(int firstDestroyIndex) throws InterruptedException
 	{
+		log.write("Destruction à partir de l'indice " + firstDestroyIndex, Subject.COMM);
+
 		ByteBuffer data = ByteBuffer.allocate(4);
 		data.order(ByteOrder.LITTLE_ENDIAN);
 		data.putInt(firstDestroyIndex);

@@ -120,7 +120,8 @@ public class ThreadCommProcess extends Thread
 					{
 						mesures[c.ordinal()] = data.getInt();
 						int m = mesures[c.ordinal()];
-						log.write("Capteur " + c.name() + " : " + (m < CommProtocol.EtatCapteur.values().length ? CommProtocol.EtatCapteur.values()[m] : m), Subject.CAPTEURS);
+						if(m != CommProtocol.EtatCapteur.TROP_LOIN.ordinal())
+							log.write("Capteur " + c.name() + " : " + (m < CommProtocol.EtatCapteur.values().length ? CommProtocol.EtatCapteur.values()[m] : m), Subject.CAPTEURS);
 					}
 					double angleTourelleGauche = data.getFloat();
 					double angleTourelleDroite = data.getFloat();
@@ -211,7 +212,7 @@ public class ThreadCommProcess extends Thread
 					}
 					else
 					{
-						chemin.endContinuousSearchWithException(new NotFastEnoughException("Erreur de suivi de trajectoire"));
+						chemin.endContinuousSearchWithException(new NotFastEnoughException("Follow trajectory terminé avec une erreur : "+CommProtocol.TrajEndMask.describe(code)));
 //						log.write(CommProtocol.TrajEndMask.describe(code), Subject.TRAJECTORY);
 						paquet.origine.ticket.set(CommProtocol.State.KO, CommProtocol.TrajEndMask.describe(code));
 					}
