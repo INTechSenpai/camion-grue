@@ -28,11 +28,13 @@ public class Paquet
 {
 	public Id origine;
 	public ByteBuffer message;
+	public long timestamp;
 
 	public Paquet(ByteBuffer message, Id origine)
 	{
 		this.origine = origine;
 		this.message = message;
+		this.timestamp = System.currentTimeMillis();
 	}
 
 	@Override

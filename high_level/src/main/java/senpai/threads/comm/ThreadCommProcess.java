@@ -53,7 +53,7 @@ public class ThreadCommProcess extends Thread
 	private Cinematique current = new Cinematique();
 	private DynamicPath chemin;
 
-	public volatile boolean capteursOn = true; // TODO
+	public volatile boolean capteursOn = false;
 	private int nbCapteurs;
 
 	public ThreadCommProcess(Log log, Config config, IncomingOrderBuffer serie, SensorsDataBuffer buffer, Robot robot, Senpai container, DynamicPath chemin)
@@ -163,7 +163,10 @@ public class ThreadCommProcess extends Thread
 					int pourcentage = data.getInt();
 					paquet.origine.ticket.set(CommProtocol.State.OK, pourcentage);
 				}
-				
+
+				/*
+				 * ACTIONNEURS
+				 */				
 				else if(paquet.origine.name().startsWith("ARM_"))
 				{
 					int code = data.getInt();
@@ -220,18 +223,17 @@ public class ThreadCommProcess extends Thread
 						paquet.origine.ticket.set(CommProtocol.State.KO, CommProtocol.TrajEndMask.describe(code));
 					}
 				}
-
-				/*
-				 * ACTIONNEURS
-				 */
-				// TODO
 				
 				else
 					assert false : "On a ignoré une réponse " + paquet.origine + " (taille : " + data.capacity() + ")";
 				
-				long duree = (System.currentTimeMillis() - avant);
+				long duree = System.currentTimeMillis() - avant;
 				if(duree >= 10)
 					log.write("Durée de traitement de " + paquet.origine + " : " + duree, duree >= 25 ? Severity.CRITICAL : Severity.WARNING, Subject.COMM);
+				
+				duree = System.currentTimeMillis() - paquet.timestamp;
+				if(duree >= 5)
+					log.write("Latence de traitement de " + paquet.origine + " : " + duree, duree >= 10 ? Severity.CRITICAL : Severity.WARNING, Subject.COMM);
 			}
 		}
 		catch(InterruptedException e)
