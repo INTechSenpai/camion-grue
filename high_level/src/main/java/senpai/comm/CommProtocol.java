@@ -97,8 +97,8 @@ public class CommProtocol
 		EDIT_POINTS(0x85, true, -10),
 		DESTROY_POINTS(0x86, true, -10),
 		SET_SENSORS_ANGLE(0x87, false),
-		SET_SCORE(0x87, false),
-		GET_ARM_POSITION(0x88, true),
+		SET_SCORE(0x88, false),
+		GET_ARM_POSITION(0x89, true),
 		GET_BATTERY(0x94, true);
 		
 

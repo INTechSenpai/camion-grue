@@ -6,8 +6,12 @@ import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import senpai.Senpai.ErrorCode;
 import senpai.buffer.OutgoingOrderBuffer;
+import senpai.comm.CommProtocol;
+import senpai.comm.DataTicket;
+import senpai.comm.Ticket;
 import senpai.robot.Robot;
 import senpai.threads.comm.ThreadCommProcess;
+import senpai.utils.Subject;
 
 /*
  * Copyright (C) 2013-2018 Pierre-François Gimenez
@@ -79,6 +83,20 @@ public class FindFollowTrajectory
 			senpai.getService(ThreadCommProcess.class).capteursOn = true;
 			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
 
+			
+//			data.setScore(1337);
+/*			DataTicket etat;
+			do
+			{
+				// Demande la couleur toute les 100ms et s'arrête dès qu'elle est connue
+				Ticket tc = data.demandeCouleur();
+				etat = tc.attendStatus();
+				Thread.sleep(100);
+			} while(etat.status != CommProtocol.State.OK);
+			
+			System.out.println("Couleur : "+etat.data);
+			data.waitForJumper().attendStatus();*/
+			
 			data.setPosition(sp.start.getPosition(), sp.start.orientationReelle);
 			Thread.sleep(1000);
 			Robot robot = senpai.getExistingService(Robot.class);
