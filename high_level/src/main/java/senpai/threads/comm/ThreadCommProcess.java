@@ -32,6 +32,7 @@ import senpai.comm.CommProtocol.Id;
 import senpai.comm.CommProtocol.LLStatus;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
+import senpai.utils.Severity;
 import senpai.utils.Subject;
 
 /**
@@ -78,14 +79,14 @@ public class ThreadCommProcess extends Thread
 		{
 			while(true)
 			{
-				long avant = System.currentTimeMillis();
+//				long avant = System.currentTimeMillis();
 
 				Paquet paquet = serie.take();
 
-				long duree = (System.currentTimeMillis() - avant);
-				log.write("Durée avant obtention du paquet : " + duree + ". Traitement de " + paquet, Subject.COMM);
+//				long duree = (System.currentTimeMillis() - avant);
+//				log.write("Durée avant obtention du paquet : " + duree + ". Traitement de " + paquet, Subject.COMM);
 
-//				avant = System.currentTimeMillis();
+				long avant = System.currentTimeMillis();
 				ByteBuffer data = paquet.message;
 				
 				/**
@@ -207,12 +208,14 @@ public class ThreadCommProcess extends Thread
 					int code = data.getInt();
 					if(code == 0)
 					{
-						chemin.endContinuousSearch();
+						if(!robot.isDegrade())
+							chemin.endContinuousSearch();
 						paquet.origine.ticket.set(CommProtocol.State.OK);
 					}
 					else
 					{
-						chemin.endContinuousSearchWithException(new NotFastEnoughException("Follow trajectory terminé avec une erreur : "+CommProtocol.TrajEndMask.describe(code)));
+						if(!robot.isDegrade())
+							chemin.endContinuousSearchWithException(new NotFastEnoughException("Follow trajectory terminé avec une erreur : "+CommProtocol.TrajEndMask.describe(code)));
 //						log.write(CommProtocol.TrajEndMask.describe(code), Subject.TRAJECTORY);
 						paquet.origine.ticket.set(CommProtocol.State.KO, CommProtocol.TrajEndMask.describe(code));
 					}
@@ -226,7 +229,9 @@ public class ThreadCommProcess extends Thread
 				else
 					assert false : "On a ignoré une réponse " + paquet.origine + " (taille : " + data.capacity() + ")";
 				
-//				log.write("Durée de traitement de " + paquet.origine + " : " + (System.currentTimeMillis() - avant), Subject.COMM);
+				long duree = (System.currentTimeMillis() - avant);
+				if(duree >= 10)
+					log.write("Durée de traitement de " + paquet.origine + " : " + duree, duree >= 25 ? Severity.CRITICAL : Severity.WARNING, Subject.COMM);
 			}
 		}
 		catch(InterruptedException e)

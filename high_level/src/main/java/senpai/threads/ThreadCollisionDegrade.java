@@ -9,6 +9,7 @@ import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.obstacles.ObstaclesDynamiques;
 import senpai.robot.Robot;
+import senpai.utils.Severity;
 import senpai.utils.Subject;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +66,7 @@ public final class ThreadCollisionDegrade extends Thread
 					while(!robot.needCollisionCheck())
 						robot.wait();
 					
-					log.write("Démarrage check collision.", Subject.STATUS);
+//					log.write("Démarrage check collision.", Subject.STATUS);
 
 					currentPath = robot.getPath();
 					
@@ -83,26 +84,27 @@ public final class ThreadCollisionDegrade extends Thread
 				 */
 				synchronized(dynObs)
 				{
-					log.write("Attente obstacles.", Subject.STATUS);
+//					log.write("Attente obstacles.", Subject.STATUS);
 
 					while(!dynObs.needCollisionCheck())
 						dynObs.wait();
 					
-					log.write("Obstacle !", Subject.STATUS);
+//					log.write("Obstacle !", Subject.STATUS);
 
 				}
 
 				synchronized(robot)
 				{
-					log.write("Vérification collision.", Subject.STATUS);
+//					log.write("Vérification collision.", Subject.STATUS);
 
 					if(robot.needCollisionCheck() && dynObs.isThereCollision(initialObstacles) != currentPath.size())
 					{
-						log.write("Arrêt nécessaire.", Subject.STATUS);
+						robot.setStopping();
+						log.write("Collision détectée : arrêt nécessaire.", Severity.CRITICAL, Subject.STATUS);
 						out.immobilise();
 					}
 					
-					log.write("Vérification finie.", Subject.STATUS);
+//					log.write("Vérification finie.", Subject.STATUS);
 
 				}
 			}

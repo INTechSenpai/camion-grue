@@ -33,7 +33,7 @@ public class IncomingOrderBuffer extends IncomingBuffer<Paquet>
 
 	public IncomingOrderBuffer(Log log, Config config, GraphicDisplay print)
 	{
-		super(log, "Buffer d'ordres");
+		super(log, "Buffer d'ordres", 200);
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_COMM_CHART))
 			print.addPlottable(this);
 	}

@@ -56,6 +56,7 @@ public class Robot extends RobotState
 	{
 		STANDBY, // le robot est à l'arrêt
 		READY_TO_GO, // une trajectoire a été envoyée
+		STOPPING, // une commande de stop a été envoyée
 		MOVING; // le robot se déplace
 	}
 	
@@ -449,6 +450,13 @@ public class Robot extends RobotState
 		return dt;
 	}
 
+	public synchronized void setStopping()
+	{
+		etat = State.STOPPING;
+		notifyAll();
+	}
+
+	
 	private synchronized void setMoving()
 	{
 		etat = State.MOVING;

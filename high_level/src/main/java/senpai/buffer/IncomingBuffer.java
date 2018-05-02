@@ -31,13 +31,14 @@ public class IncomingBuffer<T> implements Plottable
 	private boolean warning = false;
 	private String nom;
 	
-	public IncomingBuffer(Log log, String nom)
+	public IncomingBuffer(Log log, String nom, int size)
 	{
 		this.log = log;
 		this.nom = nom;
+		buffer = new ArrayBlockingQueue<T>(size);
 	}
 
-	private BlockingQueue<T> buffer = new ArrayBlockingQueue<T>(200);
+	private BlockingQueue<T> buffer;
 
 	/**
 	 * Ajout d'un élément dans le buffer
@@ -47,7 +48,15 @@ public class IncomingBuffer<T> implements Plottable
 	public void add(T elem)
 	{
 		try {
-			buffer.offer(elem);
+			synchronized(buffer)
+			{
+				if(!buffer.offer(elem))
+				{
+					log.write("Buffer de "+elem.getClass().getSimpleName()+" traités trop lentement !", Severity.CRITICAL, Subject.COMM);
+					buffer.poll();
+					buffer.offer(elem);
+				}
+			}
 			if(buffer.size() > 20)
 			{
 				log.write("Buffer de "+elem.getClass().getSimpleName()+" traités trop lentement ! Taille buffer : " + buffer.size(), Severity.CRITICAL, Subject.COMM);
