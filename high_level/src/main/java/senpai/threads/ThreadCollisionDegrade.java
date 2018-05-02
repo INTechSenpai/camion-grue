@@ -42,7 +42,6 @@ public final class ThreadCollisionDegrade extends Thread
 		this.out = out;
 		this.vehicleTemplate = vehicleTemplate;
 		setDaemon(true);
-		setPriority(Thread.MAX_PRIORITY);
 	}
 
 	@Override

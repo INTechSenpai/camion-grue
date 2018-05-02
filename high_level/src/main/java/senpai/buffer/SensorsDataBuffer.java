@@ -33,7 +33,7 @@ public class SensorsDataBuffer extends IncomingBuffer<SensorsData>
 
 	public SensorsDataBuffer(Log log, Config config, GraphicDisplay print)
 	{
-		super(log, "Buffer des capteurs", 3);
+		super(log, "Buffer des capteurs", 1);
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_CAPTEURS_CHART))
 			print.addPlottable(this);
 	}

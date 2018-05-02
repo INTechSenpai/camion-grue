@@ -320,6 +320,8 @@ public class Senpai
 		k.displayOverriddenConfigValues();
 		System.out.println("Configuration pour l'interface graphique");
 		debug.displayOverriddenConfigValues();
+		System.out.println("Configuration pour le log");
+		log.displayOverriddenConfigValues();
 		
 		startAllThreads();
 		

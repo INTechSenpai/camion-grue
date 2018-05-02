@@ -85,6 +85,7 @@ public class Ethernet implements CommMedium
 	{
 		if(isClosed())
 		{
+			log.write("Problème de déconnection !", Severity.WARNING, Subject.COMM);
 			open(10);
 			return true;
 		}
@@ -126,8 +127,8 @@ public class Ethernet implements CommMedium
 					socket.setTcpNoDelay(true);
 					// on essaye de garder la connexion
 					socket.setKeepAlive(true);
-					// faible latence > temps de connexion court > haut débit
-					socket.setPerformancePreferences(1, 2, 0);
+					// faible latence > haut débit > temps de connexion court
+					socket.setPerformancePreferences(0, 2, 1);
 					// reconnexion rapide
 					socket.setReuseAddress(true);
 					socket.connect(new InetSocketAddress(adresse, port), delayBetweenTries/2);

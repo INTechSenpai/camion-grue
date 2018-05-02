@@ -48,7 +48,8 @@ public class IncomingBuffer<T> implements Plottable
 	public void add(T elem)
 	{
 		try {
-			synchronized(buffer)
+			buffer.offer(elem);
+/*			synchronized(buffer)
 			{
 				if(!buffer.offer(elem))
 				{
@@ -56,15 +57,15 @@ public class IncomingBuffer<T> implements Plottable
 					buffer.poll();
 					buffer.offer(elem);
 				}
-			}
+			}*/
 			if(buffer.size() > 20)
 			{
-				log.write("Buffer de "+elem.getClass().getSimpleName()+" traités trop lentement ! Taille buffer : " + buffer.size(), Severity.CRITICAL, Subject.COMM);
+				log.write("Buffer de "+elem.getClass().getSimpleName()+" traités trop lentement ! Taille buffer : " + buffer.size()+", dernier : "+elem, Severity.CRITICAL, Subject.COMM);
 				warning = true;
 			}
 			else if(buffer.size() > 5)
 			{
-				log.write("Buffer de "+elem.getClass().getSimpleName()+" traités trop lentement ! Taille buffer : " + buffer.size(), Severity.WARNING, Subject.COMM);
+				log.write("Buffer de "+elem.getClass().getSimpleName()+" traités trop lentement ! Taille buffer : " + buffer.size()+", dernier : "+elem, Severity.WARNING, Subject.COMM);
 				warning = true;
 			}
 

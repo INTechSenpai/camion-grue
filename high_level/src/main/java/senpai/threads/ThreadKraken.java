@@ -59,7 +59,6 @@ public class ThreadKraken extends Thread
 		simuleLL = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 		graphic = config.getBoolean(ConfigInfoSenpai.GRAPHIC_PATH);
 		setDaemon(true);
-		setPriority(Thread.MAX_PRIORITY);
 	}
 
 	@Override

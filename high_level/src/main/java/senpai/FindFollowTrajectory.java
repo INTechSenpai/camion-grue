@@ -2,6 +2,7 @@ package senpai;
 
 import pfg.kraken.SearchParameters;
 import pfg.kraken.astar.DirectionStrategy;
+import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import senpai.Senpai.ErrorCode;
@@ -9,6 +10,7 @@ import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
 import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
+import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.threads.comm.ThreadCommProcess;
 import senpai.utils.Subject;
@@ -98,10 +100,22 @@ public class FindFollowTrajectory
 			data.waitForJumper().attendStatus();*/
 			
 			data.setPosition(sp.start.getPosition(), sp.start.orientationReelle);
-			Thread.sleep(1000);
+			Thread.sleep(5000);
 			Robot robot = senpai.getExistingService(Robot.class);
 			robot.setDegrade();
-			robot.goTo(sp);
+			boolean restart;
+			do {
+				try {
+					restart = false;
+					robot.goTo(sp.arrival.getXYO());
+					System.out.println("On est arrivé !");
+				}
+				catch(UnableToMoveException e)
+				{
+					System.out.println("On a eu un problème : "+e);
+					restart = true;
+				}
+			} while(restart);
 		}
 		catch(Exception e)
 		{

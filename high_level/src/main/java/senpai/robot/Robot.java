@@ -75,6 +75,7 @@ public class Robot extends RobotState
 		return cinematique.toString();
 	}
 
+	private volatile boolean jumperOK = true;
 	private volatile State etat = State.STANDBY;
 	private boolean simuleLL;
 	private boolean printTrace;
@@ -314,12 +315,12 @@ public class Robot extends RobotState
 		notifyAll();
 	}
 	
-	public DataTicket goTo(XYO destination) throws PathfindingException, InterruptedException
+	public DataTicket goTo(XYO destination) throws PathfindingException, InterruptedException, UnableToMoveException
 	{
 		return goTo(new SearchParameters(cinematique.getXYO(), destination));
 	}
 	
-	public DataTicket goTo(SearchParameters sp) throws PathfindingException, InterruptedException
+	public DataTicket goTo(SearchParameters sp) throws PathfindingException, InterruptedException, UnableToMoveException
 	{
 		PriorityQueue<SavedPath> allSaved = null;
 		if(enableLoadPath)
@@ -403,6 +404,8 @@ public class Robot extends RobotState
 			log.write("Fin de la recherche en mode continu", Subject.TRAJECTORY);
 			kraken.endContinuousSearch();
 		}
+		if(out.data != null)
+			throw new UnableToMoveException(out.data.toString());
 		return out;
 	}
 	
@@ -419,6 +422,13 @@ public class Robot extends RobotState
 				wait();
 		}
 
+		if(!jumperOK)
+		{
+			log.write("La trajectoire est prête : attente du jumper !", Subject.TRAJECTORY);
+			out.waitForJumper().attendStatus();
+			jumperOK = true;
+		}
+		
 		log.write("On commence à suivre la trajectoire", Subject.TRAJECTORY);
 		
 		assert etat == State.READY_TO_GO;

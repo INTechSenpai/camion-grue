@@ -66,6 +66,7 @@ public class ThreadCommProcess extends Thread
 		this.robot = robot;
 		this.chemin = chemin;
 		setDaemon(true);
+		setPriority(Thread.MAX_PRIORITY);
 	}
 
 	@Override
@@ -128,7 +129,8 @@ public class ThreadCommProcess extends Thread
 					double angleTourelleDroite = data.getFloat();
 					double angleGrue = data.getFloat();
 					
-					chemin.setCurrentTrajectoryIndex(indexTrajectory).copy(current);
+					if(!robot.isDegrade())
+						chemin.setCurrentTrajectoryIndex(indexTrajectory).copy(current);
 					current.updateReel(xRobot, yRobot, orientationRobot, courbure);
 					robot.setCinematique(current);
 
@@ -229,11 +231,11 @@ public class ThreadCommProcess extends Thread
 				
 				long duree = System.currentTimeMillis() - avant;
 				if(duree >= 10)
-					log.write("Durée de traitement de " + paquet.origine + " : " + duree, duree >= 25 ? Severity.CRITICAL : Severity.WARNING, Subject.COMM);
+					log.write("Durée de traitement de " + paquet.origine.name() + " : " + duree, duree >= 25 ? Severity.CRITICAL : Severity.WARNING, Subject.COMM);
 				
 				duree = System.currentTimeMillis() - paquet.timestamp;
 				if(duree >= 5)
-					log.write("Latence de traitement de " + paquet.origine + " : " + duree, duree >= 10 ? Severity.CRITICAL : Severity.WARNING, Subject.COMM);
+					log.write("Latence de traitement de " + paquet.origine.name() + " : " + duree, duree >= 10 ? Severity.CRITICAL : Severity.WARNING, Subject.COMM);
 			}
 		}
 		catch(InterruptedException e)

@@ -139,10 +139,13 @@ public class Communication implements Closeable
 		while(true)
 		{
 			checkDisconnection();
+			
 			assert input != null && output != null;
 
 			try {
 				int k = read();
+
+				long avant = System.currentTimeMillis();
 				
 				assert k == 0xFF : "Mauvais entête de paquet : "+k;
 				if(k != 0xFF) // probablement pas un début de trame
@@ -153,8 +156,11 @@ public class Communication implements Closeable
 				int taille = read();
 				if(taille == 0xFF) // trame d'information !
 				{
-//					log.write("On ignore une trame d'information", Subject.COMM);
-					while(read() != 0x00); // on lit jusqu'à tomber sur un caractère de fin de chaîne 
+					StringBuilder str = new StringBuilder();
+					int a;
+					while((a = read()) != 0x00) // on lit jusqu'à tomber sur un caractère de fin de chaîne 
+						str.append((char)a);
+					log.write("Trame d'information : "+str.toString(), Subject.COMM);
 				}
 				
 				else
@@ -177,7 +183,10 @@ public class Communication implements Closeable
 					}
 
 					origine.answerReceived();
-
+					long duree = System.currentTimeMillis() - avant;
+					if(duree >= 8)
+						log.write("Durée création paquet "+origine+" : "+duree, Severity.WARNING, Subject.COMM);
+					
 					return new Paquet(message, origine);
 				}
 			} catch(IOException e)
