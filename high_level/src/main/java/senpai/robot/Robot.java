@@ -342,7 +342,7 @@ public class Robot extends RobotState
 					{
 						if(kraken.checkPath(saved.path))
 						{
-							log.write("On réutilise un chemin en mode dégradé", Subject.TRAJECTORY);
+							log.write("On réutilise un chemin en mode dégradé : "+saved.name, Subject.TRAJECTORY);
 							path = saved.path;
 							break;
 						}
@@ -351,7 +351,7 @@ public class Robot extends RobotState
 					}
 					else
 					{
-						log.write("On démarre la recherche continue avec un chemin initial", Subject.TRAJECTORY);
+						log.write("On démarre la recherche continue avec un chemin initial : "+saved.name, Subject.TRAJECTORY);
 						kraken.startContinuousSearchWithInitialPath(sp, saved.path);
 						path = saved.path;
 						break;
@@ -390,8 +390,8 @@ public class Robot extends RobotState
 				log.write("On cherche un chemin en mode continu", Subject.TRAJECTORY);
 				kraken.startContinuousSearch(sp);
 			}
-			else
-				log.write("On réutilise un chemin déjà connu !", Subject.TRAJECTORY);
+//			else
+//				log.write("On réutilise un chemin déjà connu !", Subject.TRAJECTORY);
 		}
 
 		DataTicket out = followTrajectory();

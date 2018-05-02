@@ -3,10 +3,14 @@ package senpai;
 import pfg.log.Log;
 import senpai.Senpai.ErrorCode;
 import senpai.buffer.OutgoingOrderBuffer;
+import senpai.comm.DataTicket;
+import senpai.comm.Ticket;
 import senpai.robot.KnownPathManager;
 import senpai.robot.Robot;
 import senpai.robot.SavedPath;
+import senpai.threads.comm.ThreadCommProcess;
 import senpai.utils.Severity;
+import senpai.utils.Subject;
 
 /*
  * Copyright (C) 2013-2018 Pierre-François Gimenez
@@ -47,25 +51,23 @@ public class FollowTrajectory
 		{
 			Log log = new Log(Severity.INFO, configfile, "");
 			
-			KnownPathManager manager = new KnownPathManager(log);
+			KnownPathManager manager = new KnownPathManager(log, null);
 			SavedPath s = manager.loadPath(filename);
 			if(args.length > 1)
 				s = manager.limitMaxSpeed(s, Double.parseDouble(args[1]) / 1000.);
 
 			senpai = new Senpai();
 			senpai.initialize(configfile, "default");
-
+			senpai.getService(ThreadCommProcess.class).capteursOn = true;
 			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
 
 			data.setPosition(s.sp.start.getPosition(), s.sp.start.orientationReelle);
 			Thread.sleep(1000);
-			Robot robot = senpai.getExistingService(Robot.class);
-			robot.goTo(s.sp);
 			
-//			data.ajoutePointsTrajectoire(s.path, true);
-//			Ticket t = data.followTrajectory();
-//			DataTicket state = t.attendStatus();
-//			log.write("Code de retour reçu : "+state, Subject.TRAJECTORY);
+			data.ajoutePointsTrajectoire(s.path, true);
+			Ticket t = data.followTrajectory();
+			DataTicket state = t.attendStatus();
+			log.write("Code de retour reçu : "+state, Subject.TRAJECTORY);
 		}
 		catch(Exception e)
 		{

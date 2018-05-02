@@ -27,10 +27,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+
+import pfg.config.Config;
 import pfg.kraken.SearchParameters;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.robot.ItineraryPoint;
 import pfg.log.Log;
+import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Subject;
 
 /**
@@ -45,21 +48,23 @@ public class KnownPathManager {
 	private SearchParameters currentSp;
 	private Log log;
 	
-	public KnownPathManager(Log log)
+	public KnownPathManager(Log log, Config config)
 	{
 		this.log = log;
-		loadAllPaths();
+		if(config != null && config.getBoolean(ConfigInfoSenpai.ALLOW_PRECOMPUTED_PATH))
+			loadAllPaths();
 	}
 	
-	public void savePath(String filename, SavedPath path)
+	public void savePath(SavedPath path)
 	{
+		
 //		log.write("Sauvegarde d'une trajectoire : "+filename, Subject.DUMMY);
 		FileOutputStream fichier = null;
 		ObjectOutputStream oos;
 		
 		try
 		{
-			fichier = new FileOutputStream("paths/" + filename);
+			fichier = new FileOutputStream("paths/" + path.name);
 		}
 		catch(IOException e)
 		{
@@ -81,7 +86,7 @@ public class KnownPathManager {
 			}
 			try
 			{
-				fichier = new FileOutputStream("paths/" + filename);
+				fichier = new FileOutputStream("paths/" + path.name);
 			}
 			catch(FileNotFoundException e1)
 			{
@@ -107,7 +112,7 @@ public class KnownPathManager {
 		List<ItineraryPoint> newPath = new ArrayList<ItineraryPoint>();
 		for(ItineraryPoint it : path.path)
 			newPath.add(new ItineraryPoint(it.x, it.y, it.orientation, it.curvature, it.goingForward, Math.min(maxSpeed, it.maxSpeed), Math.min(maxSpeed, it.possibleSpeed), it.stop));
-		SavedPath s = new SavedPath(newPath, path.sp);
+		SavedPath s = new SavedPath(newPath, path.sp, path.name+"-limited");
 		s.sp.maxSpeed = maxSpeed;
 		return s;
 	}
@@ -217,8 +222,8 @@ public class KnownPathManager {
 
 	private void addPathNoSym(List<ItineraryPoint> diff, SearchParameters sp)
 	{
-		SavedPath s = new SavedPath(diff, sp);
 		String name = getTrajectoryNamePrefix(sp);
+		SavedPath s = new SavedPath(diff, sp, name);
 		int biggest = 0;
 		for(String k : paths.keySet())
 			if(k.startsWith(name))
@@ -228,10 +233,11 @@ public class KnownPathManager {
 					return; // chemin déjà connu
 				biggest++;
 			}
-		log.write("Nouveau chemin enregistré.", Subject.STATUS);
 		name += biggest;
+		s.name = name;
 		paths.put(name, s);
-		savePath(name, s);
+		savePath(s);
+		log.write("Nouveau chemin enregistré : "+name, Subject.STATUS);
 	}
 
 	private String getTrajectoryNamePrefix(SearchParameters sp)

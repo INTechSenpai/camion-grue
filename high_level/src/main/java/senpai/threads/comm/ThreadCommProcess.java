@@ -52,7 +52,7 @@ public class ThreadCommProcess extends Thread
 	private Cinematique current = new Cinematique();
 	private DynamicPath chemin;
 
-	private boolean capteursOn = true; // TODO
+	public volatile boolean capteursOn = true; // TODO
 	private int nbCapteurs;
 
 	public ThreadCommProcess(Log log, Config config, IncomingOrderBuffer serie, SensorsDataBuffer buffer, Robot robot, Senpai container, DynamicPath chemin)

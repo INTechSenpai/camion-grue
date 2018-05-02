@@ -10,11 +10,13 @@ public class SavedPath implements Serializable
 	private static final long serialVersionUID = 1L;
 	public List<ItineraryPoint> path;
 	public SearchParameters sp;
+	public String name;
 	
-	public SavedPath(List<ItineraryPoint> path, SearchParameters sp)
+	public SavedPath(List<ItineraryPoint> path, SearchParameters sp, String name)
 	{
 		this.path = path;
 		this.sp = sp;
+		this.name = name;
 	}
 	
 	@Override
