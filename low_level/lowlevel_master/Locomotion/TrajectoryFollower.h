@@ -188,12 +188,12 @@ public:
 
 		if (speedControlled)
 		{
-			if (leftSpeedSetPoint == 0)
+			if (leftSpeedSetPoint == 0 && movePhase != BREAKING)
 			{
 				frontLeftSpeedPID.resetIntegralError();
 				backLeftSpeedPID.resetIntegralError();
 			}
-			if (rightSpeedSetPoint == 0)
+			if (rightSpeedSetPoint == 0 && movePhase != BREAKING)
 			{
 				frontRightSpeedPID.resetIntegralError();
 				backRightSpeedPID.resetIntegralError();
@@ -207,17 +207,10 @@ public:
 
 		if (pwmControlled)
 		{
-			if (movePhase == BREAKING)
-			{
-                motor.breakAll();
-			}
-			else
-			{
-				motor.runFrontLeft((int16_t)frontLeftPWM);
-				motor.runFrontRight((int16_t)frontRightPWM);
-                motor.runBackLeft((int16_t)backLeftPWM);
-                motor.runBackRight((int16_t)backRightPWM);
-			}
+            motor.runFrontLeft((int16_t)frontLeftPWM);
+            motor.runFrontRight((int16_t)frontRightPWM);
+            motor.runBackLeft((int16_t)backLeftPWM);
+            motor.runBackRight((int16_t)backRightPWM);
 		}
 	}
 
@@ -484,7 +477,6 @@ public:
         }
         interrupts();
     }
-
 
 private:
 	void finalise_stop()

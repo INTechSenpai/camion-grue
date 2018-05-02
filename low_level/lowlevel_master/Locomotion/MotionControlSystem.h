@@ -190,9 +190,14 @@ private:
 
 	void stop_and_clear_trajectory()
 	{
+        uint32_t t = millis();
+        Position p = getPosition();
         noInterrupts();
         stop_and_clear_trajectory_from_interrupt();
         interrupts();
+        Server.printf("Emergency stop started at: %u\n", t);
+        Server.printf("pos= ");
+        Server.println(p);
 	}
 
 	bool isMovingToDestination() const
