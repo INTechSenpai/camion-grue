@@ -51,12 +51,12 @@ public class ThreadCommProcess extends Thread
 	private Robot robot;
 	private Senpai container;
 	private Cinematique current = new Cinematique();
-	private DynamicPath chemin;
+//	private DynamicPath chemin;
 
 	public volatile boolean capteursOn = false;
 	private int nbCapteurs;
 
-	public ThreadCommProcess(Log log, Config config, IncomingOrderBuffer serie, SensorsDataBuffer buffer, Robot robot, Senpai container, DynamicPath chemin)
+	public ThreadCommProcess(Log log, Config config, IncomingOrderBuffer serie, SensorsDataBuffer buffer, Robot robot, Senpai container/*, DynamicPath chemin*/)
 	{
 		this.container = container;
 		this.log = log;
@@ -64,7 +64,7 @@ public class ThreadCommProcess extends Thread
 		this.serie = serie;
 		this.buffer = buffer;
 		this.robot = robot;
-		this.chemin = chemin;
+//		this.chemin = chemin;
 		setDaemon(true);
 		setPriority(Thread.MAX_PRIORITY);
 	}
@@ -129,8 +129,8 @@ public class ThreadCommProcess extends Thread
 					double angleTourelleDroite = data.getFloat();
 					double angleGrue = data.getFloat();
 					
-					if(!robot.isDegrade())
-						chemin.setCurrentTrajectoryIndex(indexTrajectory).copy(current);
+//					if(!robot.isDegrade())
+//						chemin.setCurrentTrajectoryIndex(indexTrajectory).copy(current);
 					current.updateReel(xRobot, yRobot, orientationRobot, courbure);
 					robot.setCinematique(current);
 
@@ -213,14 +213,14 @@ public class ThreadCommProcess extends Thread
 					int code = data.getInt();
 					if(code == 0)
 					{
-						if(!robot.isDegrade())
-							chemin.endContinuousSearch();
+//						if(!robot.isDegrade())
+//							chemin.endContinuousSearch();
 						paquet.origine.ticket.set(CommProtocol.State.OK);
 					}
 					else
 					{
-						if(!robot.isDegrade())
-							chemin.endContinuousSearchWithException(new NotFastEnoughException("Follow trajectory terminé avec une erreur : "+CommProtocol.TrajEndMask.describe(code)));
+//						if(!robot.isDegrade())
+//							chemin.endContinuousSearchWithException(new NotFastEnoughException("Follow trajectory terminé avec une erreur : "+CommProtocol.TrajEndMask.describe(code)));
 //						log.write(CommProtocol.TrajEndMask.describe(code), Subject.TRAJECTORY);
 						paquet.origine.ticket.set(CommProtocol.State.KO, CommProtocol.TrajEndMask.describe(code));
 					}
@@ -231,11 +231,11 @@ public class ThreadCommProcess extends Thread
 				
 				long duree = System.currentTimeMillis() - avant;
 				if(duree >= 10)
-					log.write("Durée de traitement de " + paquet.origine.name() + " : " + duree, duree >= 25 ? Severity.CRITICAL : Severity.WARNING, Subject.COMM);
+					log.write("Durée de traitement de " + paquet.origine.name() + " : " + duree, duree >= 1000 ? Severity.CRITICAL : Severity.WARNING, Subject.COMM);
 				
 				duree = System.currentTimeMillis() - paquet.timestamp;
 				if(duree >= 5)
-					log.write("Latence de traitement de " + paquet.origine.name() + " : " + duree, duree >= 10 ? Severity.CRITICAL : Severity.WARNING, Subject.COMM);
+					log.write("Latence de traitement de " + paquet.origine.name() + " : " + duree, duree >= 1000 ? Severity.CRITICAL : Severity.WARNING, Subject.COMM);
 			}
 		}
 		catch(InterruptedException e)

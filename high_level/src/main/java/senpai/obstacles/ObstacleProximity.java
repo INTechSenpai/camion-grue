@@ -28,7 +28,7 @@ public class ObstacleProximity extends RectangularObstacle
 {
 	private static final long serialVersionUID = -3518004359091355796L;
 	private long death_date;
-	public final SensorsData mesureOrigine;
+	public transient final SensorsData mesureOrigine;
 	public final int nbCapteurOrigine;
 
 	public ObstacleProximity(XY position, int sizeX, int sizeY, double angle, long death_date, SensorsData mesureOrigine, int nbCapteurOrigine)

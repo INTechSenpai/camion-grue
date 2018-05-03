@@ -23,6 +23,7 @@ import senpai.robot.Robot;
 import senpai.table.Cube;
 import senpai.table.Table;
 import senpai.utils.ConfigInfoSenpai;
+import senpai.utils.Severity;
 import senpai.utils.Subject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -116,6 +117,10 @@ public class CapteursProcess
 	 */
 	public synchronized void updateObstaclesMobiles(SensorsData data)
 	{
+		log.write("Traitement capteurs", Subject.CAPTEURS);
+
+		long avant = System.currentTimeMillis();
+
 		double orientationRobot = data.cinematique.orientationReelle;
 		XY positionRobot = data.cinematique.getPosition();
 
@@ -218,6 +223,10 @@ public class CapteursProcess
 		{
 			assert data.checkTraitementEtat();
 		}*/
+		double duree = System.currentTimeMillis() - avant;
+		if(duree > 10)
+			log.write("Durée traitement capteurs : "+duree, duree > 1000 ? Severity.CRITICAL : Severity.WARNING, Subject.CAPTEURS);
+
 	}
 
 	/**

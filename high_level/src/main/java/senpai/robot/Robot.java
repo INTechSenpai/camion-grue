@@ -87,13 +87,13 @@ public class Robot extends RobotState
 	private boolean enableLoadPath;
 	
 	// Constructeur
-	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, DynamicPath dpath, KnownPathManager known)
+	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, /*DynamicPath dpath,*/ KnownPathManager known)
 	{
 		this.log = log;
 		this.out = out;
 		this.buffer = buffer;
 		this.kraken = kraken;
-		this.dpath = dpath;
+		this.dpath = null; //dpath;
 		this.known = known;
 		
 		// On ajoute une fois pour toute l'image du robot
@@ -480,7 +480,7 @@ public class Robot extends RobotState
 
 	public synchronized void setDegrade()
 	{
-		log.write("Le robot entre en mode dégradé !", Severity.CRITICAL, Subject.STATUS);
+		log.write("Le robot entre en mode dégradé !", Severity.WARNING, Subject.STATUS);
 		kraken.endAutoReplanning();
 		modeDegrade = true;
 		notifyAll();

@@ -96,7 +96,7 @@ public class Serie implements CommMedium, SerialPortEventListener
 			}
 			while(!searchPort())
 			{
-				log.write("Port série non trouvé, réessaie dans "+delayBetweenTries+" ms", Severity.CRITICAL, Subject.COMM);
+				log.write("Port série non trouvé, réessaie dans "+delayBetweenTries+" ms", Severity.WARNING, Subject.COMM);
 				Thread.sleep(delayBetweenTries);
 			}
 		}

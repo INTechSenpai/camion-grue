@@ -17,10 +17,12 @@ package senpai.obstacles;
 import java.util.Iterator;
 import java.util.List;
 
+import pfg.config.Config;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.obstacles.container.SmartDynamicObstacles;
 import senpai.table.Table;
+import senpai.utils.ConfigInfoSenpai;
 
 /**
  * Regroupe les obstacles de capteurs et de table
@@ -34,9 +36,11 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 	private ObstaclesMemory memory;
 	private Iterator<Obstacle> iteratorMemory;
 	private Iterator<Obstacle> iteratorTable;
+	private boolean obsTable;
 	
-	public ObstaclesDynamiques(Table table, ObstaclesMemory memory)
+	public ObstaclesDynamiques(Table table, ObstaclesMemory memory, Config config)
 	{
+		obsTable = !config.getBoolean(ConfigInfoSenpai.NO_OBSTACLES);
 		this.table = table;
 		this.memory = memory;
 	}
@@ -54,7 +58,7 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 	{
 		if(iteratorMemory.hasNext())
 			return true;
-		return iteratorTable.hasNext();
+		return obsTable && iteratorTable.hasNext();
 	}
 
 	@Override

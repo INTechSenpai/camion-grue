@@ -28,7 +28,7 @@ import senpai.threads.comm.ThreadCommProcess;
 public enum ThreadName
 {
 	CAPTEURS(ThreadCapteurs.class),
-	KRAKEN(ThreadKraken.class),
+//	KRAKEN(ThreadKraken.class),
 	PEREMPTION(ThreadPeremption.class),
 	CLIGOTE_DEGRADE(ThreadClignoteDegrade.class),
 	CLIGNOTE_NORMAL(ThreadClignoteNormal.class),

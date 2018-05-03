@@ -48,7 +48,6 @@ public class IncomingBuffer<T> implements Plottable
 	public void add(T elem)
 	{
 		try {
-			buffer.offer(elem);
 /*			synchronized(buffer)
 			{
 				if(!buffer.offer(elem))
@@ -58,16 +57,17 @@ public class IncomingBuffer<T> implements Plottable
 					buffer.offer(elem);
 				}
 			}*/
-			if(buffer.size() > 20)
+			if(buffer.remainingCapacity() == 0)
 			{
-				log.write("Buffer de "+elem.getClass().getSimpleName()+" traités trop lentement ! Taille buffer : " + buffer.size()+", dernier : "+elem, Severity.CRITICAL, Subject.COMM);
+				log.write("Buffer de "+elem.getClass().getSimpleName()+" traités trop lentement ! Plus aucune place !", Severity.CRITICAL, Subject.COMM);
 				warning = true;
 			}
 			else if(buffer.size() > 5)
 			{
-				log.write("Buffer de "+elem.getClass().getSimpleName()+" traités trop lentement ! Taille buffer : " + buffer.size()+", dernier : "+elem, Severity.WARNING, Subject.COMM);
+				log.write("Buffer de "+elem.getClass().getSimpleName()+" traités trop lentement ! Taille buffer : " + buffer.size(), Severity.WARNING, Subject.COMM);
 				warning = true;
 			}
+			buffer.offer(elem);
 
 		} catch(IllegalStateException e)
 		{

@@ -166,6 +166,8 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	PRINT_TRAJECTORY(true),
 	PRINT_SCRIPT(true),
 	
+	NO_OBSTACLES(false),
+	
 	/**
 	 * Interface graphique
 	 */

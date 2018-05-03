@@ -279,8 +279,9 @@ public class Senpai
 		assert checkAssert();
 		
 		List<Obstacle> obstaclesFixes = new ArrayList<Obstacle>();
-		for(ObstaclesFixes o : ObstaclesFixes.values())
-			obstaclesFixes.add(o.obstacle);
+		if(config.getBoolean(ConfigInfoSenpai.NO_OBSTACLES))
+			for(ObstaclesFixes o : ObstaclesFixes.values())
+				obstaclesFixes.add(o.obstacle);
 		ObstaclesDynamiques obsDyn = getService(ObstaclesDynamiques.class);
 
 		int marge = config.getInt(ConfigInfoSenpai.MARGE_PATHFINDING);
@@ -306,7 +307,7 @@ public class Senpai
 		Kraken k = new Kraken(robotTemplate, obstaclesFixes, obsDyn, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles);
 		injector.addService(k);
 
-		injector.addService(k.enableAutoReplanning());
+//		injector.addService(k.enableAutoReplanning());
 
 		Robot robot = getService(Robot.class);
 		robot.initPositionObject(positionRobot);
