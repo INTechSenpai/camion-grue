@@ -36,7 +36,8 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	ANGLE_MIN_TOURELLE(5), // en degré
 	ANGLE_MAX_TOURELLE(180),
 	ANTICIPATION_TOURELLE(300), // distance où vise la tourelle sur la trajectoire, en mm
-	
+	MARGE_IGNORE_TOURELLE(100), // distance en mm autour du robot où sont ignorés les obstacles vus par les tourelles
+
 	/**
 	 * Position initiale du robot
 	 */
@@ -162,7 +163,6 @@ public enum ConfigInfoSenpai implements ConfigInfo
 //	ENABLE_SCAN(true), // scan-t-on autour du robot s'il est coincé ?
 
 	ENABLE_KNOWN_PATHS(true), // active les chemins enregistrés ?
-	MARGE_IGNORE_TOURELLE(50), // distance en mm autour du robot où sont ignorés les obstacles vus par les tourelles
 	/**
 	 * Log
 	 */

@@ -141,8 +141,7 @@ public class Ethernet implements CommMedium
 				catch(IOException e)
 				{
 					socket = null;
-					if(e != null)
-						log.write("Erreur lors de la connexion au LL : "+(e.getMessage().isEmpty() ? e : e.getMessage()), Severity.WARNING, Subject.COMM);
+					log.write("Erreur lors de la connexion au LL : "+(e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage()), Severity.WARNING, Subject.COMM);
 					Thread.sleep(delayBetweenTries/2);
 				}
 			} while(socket == null);

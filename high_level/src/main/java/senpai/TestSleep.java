@@ -1,11 +1,7 @@
 package senpai;
 
-import pfg.kraken.utils.XY;
 import senpai.Senpai.ErrorCode;
-import senpai.buffer.OutgoingOrderBuffer;
 import senpai.robot.Robot;
-import senpai.robot.RobotColor;
-import senpai.threads.comm.ThreadCommProcess;
 
 /*
  * Copyright (C) 2013-2018 Pierre-François Gimenez
@@ -27,7 +23,7 @@ import senpai.threads.comm.ThreadCommProcess;
  *
  */
 
-public class TestAvance
+public class TestSleep
 {
 	public static void main(String[] args)
 	{
@@ -38,16 +34,12 @@ public class TestAvance
 		ErrorCode error = ErrorCode.NO_ERROR;
 		try
 		{			
-			int distance = Integer.parseInt(args[0]);
 			senpai = new Senpai();
 			senpai.initialize(configfile, "default", "graphic");
-			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
-			data.setPosition(new XY(0, 1000), 0);
-			Thread.sleep(1000);
-			senpai.getService(ThreadCommProcess.class).capteursOn = true;
+//			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
 			Robot robot = senpai.getService(Robot.class);
-			robot.updateColorAndSendPosition(RobotColor.ORANGE);
-			robot.avance(distance, 0.8);
+			robot.setEnMarcheAvance(false);
+			Thread.sleep(100000);
 		}
 		catch(Exception e)
 		{

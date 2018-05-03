@@ -127,6 +127,7 @@ public class Robot extends RobotState
 		cinematique.enMarcheAvant = true;
 
 		simuleLL = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);		
+		setDegrade();
 	}
 	
 	public void setEnMarcheAvance(boolean enMarcheAvant)
@@ -250,10 +251,15 @@ public class Robot extends RobotState
 
 			for(int i = 0; i < nbPoint; i++)
 				ch.addFirst(new ItineraryPoint(xFinal - i * deltaX, yFinal - i * deltaY, cinematique.orientationReelle, 0, marcheAvant, vitesseMax, vitesseMax, i == 0));
-			out.destroyPointsTrajectoires(0);
-			out.ajoutePointsTrajectoire(ch, true);
+			System.out.println("Trajectoire : "+ch);
 		}
-	
+
+		out.destroyPointsTrajectoires(0);
+		out.ajoutePointsTrajectoire(ch, true);
+
+		pathDegrade = ch;
+		setReady();
+
 		DataTicket dt = followTrajectory();
 		if(dt.data != null)
 			throw new UnableToMoveException(dt.data.toString());
@@ -458,6 +464,7 @@ public class Robot extends RobotState
 	
 	private DataTicket followTrajectory() throws InterruptedException
 	{
+		// TODO : non, avec avancer et reculer
 		assert modeDegrade == (pathDegrade != null) : modeDegrade+" "+pathDegrade;
 		assert etat == State.READY_TO_GO || etat == State.STANDBY;
 
