@@ -74,20 +74,17 @@ public class CommProtocol
 		STOP(0x21, -20),
 		WAIT_FOR_JUMPER(0x22),
 		START_MATCH_CHRONO(0x23),
-		ARM_GO_HOME(0x24),
-		ARM_TAKE_CUBE_S(0x25),
-		ARM_TAKE_CUBE(0x26),
-		ARM_STORE_CUBE_INSIDE(0x27),
-		ARM_STORE_CUBE_TOP(0x28),
-		ARM_TAKE_FROM_STORAGE(0x29),
-		ARM_PUT_ON_PILE_S(0x2A),
-		ARM_PUT_ON_PILE(0x2B),
-		ARM_GO_TO(0x2C),
-		ARM_STOP(0x2D),
-		
-		
-		EXEMPLE_ACTIONNEUR(0x24, "exempleAct"), // TODO virer
-		
+		ARM_GO_HOME(0x24, "armGoHome"),
+		ARM_TAKE_CUBE_S(0x25, "armTakeCubeS"),
+		ARM_TAKE_CUBE(0x26, "armTakeCube"),
+		ARM_STORE_CUBE_INSIDE(0x27, "armStoreCubeInside"),
+		ARM_STORE_CUBE_TOP(0x28, "armStoreCubeTop"),
+		ARM_TAKE_FROM_STORAGE(0x29, "armTakeFromStorage"),
+		ARM_PUT_ON_PILE_S(0x2A, "armPutOnPileS"),
+		ARM_PUT_ON_PILE(0x2B, "armPutOnPile"),
+		ARM_GO_TO(0x2C, "armGoTo"),
+		ARM_STOP(0x2D, "armStop"),
+				
 		// Ordres immédiats (0x80 à 0xFF)
 		PING(0x80, true),
 		ASK_COLOR(0x81, true),
