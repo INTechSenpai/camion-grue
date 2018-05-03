@@ -335,12 +335,12 @@ public:
 		}
 	}
 
-	MovePhase getMovePhase()
+	MovePhase getMovePhase() const
 	{
 		return movePhase;
 	}
 
-    bool isMovingForward()
+    bool isMovingForward() const
     {
         return maxMovingSpeed >= 0;
     }

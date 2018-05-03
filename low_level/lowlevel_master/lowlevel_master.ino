@@ -96,6 +96,7 @@ void loop()
             Serializer::writeFloat(p.orientation, odometryReport);
             Serializer::writeFloat(motionControlSystem.getCurvature(), odometryReport);
             Serializer::writeUInt(motionControlSystem.getTrajectoryIndex(), odometryReport);
+            Serializer::writeBool(motionControlSystem.isMovingForward(), odometryReport);
             odometryReport.insert(odometryReport.end(), shortRangeSensorsValues.begin(), shortRangeSensorsValues.end());
             odometryReport.insert(odometryReport.end(), longRangeSensorsValues.begin(), longRangeSensorsValues.end());
             Server.sendData(ODOMETRY_AND_SENSORS, odometryReport);

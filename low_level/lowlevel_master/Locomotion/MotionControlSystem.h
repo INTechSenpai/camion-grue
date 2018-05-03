@@ -384,6 +384,14 @@ private:
         trajectoryFollower.sendLogs();
     }
 
+    bool isMovingForward() const
+    {
+        noInterrupts();
+        bool ret = trajectoryFollower.isMovingForward();
+        interrupts();
+        return ret;
+    }
+
 private:
 	TrajectoryFollower trajectoryFollower;
 	volatile Position position;
