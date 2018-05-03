@@ -11,11 +11,6 @@
 
 void setup()
 {
-    pinMode(PIN_EN_TOF_G, OUTPUT);
-    digitalWrite(PIN_EN_TOF_G, LOW);
-    pinMode(PIN_EN_TOF_D, OUTPUT);
-    digitalWrite(PIN_EN_TOF_D, LOW);
-    delay(1000);
 }
 
 void errorLoop()
@@ -91,6 +86,10 @@ void loop()
             float angleG = 0, angleD = 0;
             sensorsMgr.getSensorsData(tofG, tofD, angleG, angleD);
             communication.sendReport(tofG, tofD, angleG, angleD);
+            //Serial.print("left=");
+            //Serial.print(tofG);
+            //Serial.print("  right=");
+            //Serial.println(tofD);
         }
 
         sensorsMgr.updateServos();

@@ -16,6 +16,9 @@
 #define SERIAL_XL320            Serial3
 #define SERIAL_XL320_BAUDRATE   1000000
 
+#define ID_XL320_LEFT           1
+#define ID_XL320_RIGHT          2
+
 
 /* DELs */
 #define PIN_DEL_GYRO_G  6

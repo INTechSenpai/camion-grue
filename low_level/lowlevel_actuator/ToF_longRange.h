@@ -8,34 +8,51 @@
 #endif
 
 #include "VL53L0X.h"
+#include "ToF_shortRange.h"
+
 
 class ToF_longRange
 {
 public:
-	ToF_longRange(uint8_t id, uint8_t pinStandby)
+	ToF_longRange(uint8_t id, uint8_t pinStandby, uint16_t minDist = 30, uint16_t maxDist = 1000)
 	{
 		i2cAddress = id;
 		this->pinStandby = pinStandby;
+        minRange = minDist;
+        maxRange = maxDist;
+        sensorValue = (int32_t)SENSOR_DEAD;
 		standby();
 		vlSensor.setTimeout(500);
 	}
 
-	uint32_t getMesure()
+    int32_t getMesure()
 	{
 		if (isON)
 		{
-			distance = vlSensor.readRangeContinuousMillimeters();
+			uint16_t distance = vlSensor.readRangeContinuousMillimeters();
 			if (vlSensor.timeoutOccurred())
 			{
-				distance = 0;
+				sensorValue = (int32_t)SENSOR_DEAD;
 			}
+            else if (distance < minRange)
+            {
+                sensorValue = (int32_t)OBSTACLE_TOO_CLOSE;
+            }
+            else if (distance > maxRange)
+            {
+                sensorValue = (int32_t)NO_OBSTACLE;
+            }
+            else
+            {
+                sensorValue = (int32_t)distance;
+            }
 		}
 		else
 		{
-			distance = 0;
+			sensorValue = (int32_t)SENSOR_DEAD;
 		}
 
-		return distance; /* en mm */
+		return sensorValue; /* en mm */
 	}
 
 	void standby()
@@ -70,7 +87,9 @@ public:
 
 private:
 	uint8_t i2cAddress, pinStandby;
-	uint32_t distance;
+	int32_t sensorValue;
+    uint16_t maxRange;
+    uint16_t minRange;
 	bool isON;
 	VL53L0X vlSensor;
 };

@@ -6,7 +6,7 @@
 #include "config.h"
 
 #define STD_MIN_RANGE   18
-#define STD_MAX_RANGE   150
+#define STD_MAX_RANGE   200
 #define MAX_POWERON_ATTEMPTS    10
 
 
