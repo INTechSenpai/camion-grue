@@ -173,14 +173,9 @@ public class ThreadCommProcess extends Thread
 				{
 					int code = data.getInt();
 					if(code == 0)
-					{
 						paquet.origine.ticket.set(CommProtocol.State.OK);
-					}
 					else
-					{
-						log.write(CommProtocol.ActionneurMask.describe(code), Severity.WARNING, Subject.TRAJECTORY);
 						paquet.origine.ticket.set(CommProtocol.State.KO, CommProtocol.ActionneurMask.describe(code));
-					}
 				}				
 				
 				else if(paquet.origine == Id.GET_ARM_POSITION)

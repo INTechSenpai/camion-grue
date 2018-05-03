@@ -1,9 +1,12 @@
 package senpai;
 
+import java.util.PriorityQueue;
+
 import senpai.Senpai.ErrorCode;
 import senpai.robot.Robot;
 import senpai.scripts.Script;
 import senpai.scripts.ScriptManager;
+import senpai.scripts.ScriptPriseCube;
 import senpai.table.CubeColor;
 import senpai.table.Table;
 import senpai.threads.comm.ThreadCommProcess;
@@ -46,7 +49,10 @@ public class TestScript
 			Robot robot = senpai.getService(Robot.class);
 			Table table = senpai.getService(Table.class);
 
-			Script script = scripts.getAllPossible(true, CubeColor.ORANGE, false).poll();
+			PriorityQueue<ScriptPriseCube> all = scripts.getAllPossible(true, CubeColor.ORANGE, false);
+			Script script = all.poll();
+			script.execute(robot, table);
+			script = all.poll();
 			script.execute(robot, table);
 		}
 		catch(Exception e)

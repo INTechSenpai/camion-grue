@@ -121,6 +121,7 @@ public class Robot extends RobotState
 				config.getDouble(ConfigInfoSenpai.INITIAL_X),
 				config.getDouble(ConfigInfoSenpai.INITIAL_Y),
 				config.getDouble(ConfigInfoSenpai.INITIAL_O)));
+		cinematique.enMarcheAvant = true;
 		simuleLL = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);		
 	}
 	
@@ -194,7 +195,6 @@ public class Robot extends RobotState
 		if(simuleLL)
 			return;
 
-		CommProtocol.State etat;
 		Ticket t = null;
 		Class<?>[] paramClasses = null;
 		if(param.length > 0)
@@ -213,9 +213,9 @@ public class Robot extends RobotState
 			e.printStackTrace();
 			throw new ActionneurException("Méthode inconnue : " + nom);
 		}
-		etat = t.attendStatus().status;
-		if(etat == CommProtocol.State.KO)
-			throw new ActionneurException("Problème pour l'actionneur " + nom);
+		DataTicket dt = t.attendStatus();
+		if(dt.status == CommProtocol.State.KO)
+			throw new ActionneurException("Problème pour l'actionneur " + nom+" : "+dt.data);
 
 		log.write("Temps d'exécution de " + nom + " : " + (System.currentTimeMillis() - avant), Subject.SCRIPT);
 	}
