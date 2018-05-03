@@ -31,6 +31,13 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	CHECK_LATENCY(false), // estime la latence de la communication
 	
 	/**
+	 * Tourelles
+	 */
+	ANGLE_MIN_TOURELLE(5), // en degré
+	ANGLE_MAX_TOURELLE(180),
+	ANTICIPATION_TOURELLE(300), // distance où vise la tourelle sur la trajectoire, en mm
+	
+	/**
 	 * Position initiale du robot
 	 */
 	INITIAL_X(1200),

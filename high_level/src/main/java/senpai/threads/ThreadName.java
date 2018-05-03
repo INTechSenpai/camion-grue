@@ -29,6 +29,7 @@ public enum ThreadName
 {
 	CAPTEURS(ThreadCapteurs.class),
 //	KRAKEN(ThreadKraken.class),
+	TOURELLE(ThreadTourelles.class),
 	PEREMPTION(ThreadPeremption.class),
 	CLIGOTE_DEGRADE(ThreadClignoteDegrade.class),
 	CLIGNOTE_NORMAL(ThreadClignoteNormal.class),

@@ -35,6 +35,7 @@ import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
+import senpai.capteurs.CapteursRobot;
 import senpai.comm.CommProtocol;
 import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
@@ -59,7 +60,8 @@ public class Robot extends RobotState
 		STANDBY, // le robot est à l'arrêt
 		READY_TO_GO, // une trajectoire a été envoyée
 		STOPPING, // une commande de stop a été envoyée
-		MOVING; // le robot se déplace
+		MOVING, // le robot se déplace
+		SCRIPT; // le robot est en plein script
 	}
 	
 	private Cube cubeTop = null;
@@ -71,7 +73,9 @@ public class Robot extends RobotState
 	private volatile boolean modeDegrade = false;
 	private List<ItineraryPoint> pathDegrade;
 	private RectangularObstacle obstacle;
-	
+	private double angleMin, angleMax;
+	private List<ItineraryPoint> path = null;
+
 	@Override
 	public String toString()
 	{
@@ -88,6 +92,7 @@ public class Robot extends RobotState
 	private RobotPrintable printable = null;
 	private volatile boolean cinematiqueInitialised = false;
 	private boolean enableLoadPath;
+	private int currentIndexTrajectory = 0, anticipationTourelle;
 	
 	// Constructeur
 	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, /*DynamicPath dpath,*/ KnownPathManager known, RectangularObstacle obstacle)
@@ -100,6 +105,9 @@ public class Robot extends RobotState
 		this.known = known;
 		this.obstacle = obstacle;
 		
+		angleMin = config.getInt(ConfigInfoSenpai.ANGLE_MIN_TOURELLE) * Math.PI / 180;
+		angleMax = config.getInt(ConfigInfoSenpai.ANGLE_MAX_TOURELLE) * Math.PI / 180;
+		anticipationTourelle = (int) Math.round(config.getInt(ConfigInfoSenpai.ANTICIPATION_TOURELLE) / 20.);
 		// On ajoute une fois pour toute l'image du robot
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS))
 		{
@@ -115,7 +123,7 @@ public class Robot extends RobotState
 				config.getDouble(ConfigInfoSenpai.INITIAL_X),
 				config.getDouble(ConfigInfoSenpai.INITIAL_Y),
 				config.getDouble(ConfigInfoSenpai.INITIAL_O)));
-		simuleLL = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
+		simuleLL = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);		
 	}
 	
 	public void setEnMarcheAvance(boolean enMarcheAvant)
@@ -339,8 +347,6 @@ public class Robot extends RobotState
 		
 		if(modeDegrade)
 			kraken.initializeNewSearch(sp);
-		
-		List<ItineraryPoint> path = null;
 
 		if(allSaved != null)
 			while(!allSaved.isEmpty())
@@ -511,5 +517,58 @@ public class Robot extends RobotState
 	public boolean isProcheRobot(XY positionVue, int distance)
 	{
 		return obstacle.isProcheObstacle(positionVue, distance);
+	}
+	
+	XY_RW objTourelle = new XY_RW();
+	XY tourelleGauche = CapteursRobot.TOURELLE_GAUCHE.pos;
+	XY tourelleDroite = CapteursRobot.TOURELLE_DROITE.pos;
+
+	public void updateTourelles()
+	{
+		double angleDefautGauche, angleDefautDroite;
+		if(cinematique.enMarcheAvant)
+		{
+			angleDefautGauche = angleMin;
+			angleDefautDroite = -angleMin;
+		}
+		else
+		{
+			angleDefautGauche = angleMax;
+			angleDefautDroite = -angleMax;
+		}
+		
+		if(path == null)
+			out.setTourellesAngles(angleDefautGauche, -angleDefautDroite);
+/*		else if(etat == State.SCRIPT)
+		{
+			out.setTourellesAngles(Math.PI / 2, -Math.PI / 2);			
+		}*/
+		else// if(etat == State.MOVING)
+		{
+			int pointVise = Math.min(currentIndexTrajectory + anticipationTourelle, path.size() - 1);
+			ItineraryPoint ip = path.get(pointVise);
+			objTourelle.setX(ip.x);
+			objTourelle.setY(ip.y);
+			double angleGauche = objTourelle.minus(tourelleGauche).minus(cinematique.getPosition()).getArgument() - cinematique.orientationReelle;
+			if(angleGauche > angleMin && angleGauche < angleMax)
+				out.setTourellesAngles(angleGauche, -angleDefautDroite);
+			else
+			{
+				objTourelle.setX(ip.x);
+				objTourelle.setY(ip.y);
+				double angleDroite = objTourelle.minus(tourelleDroite).minus(cinematique.getPosition()).getArgument() - cinematique.orientationReelle;
+				if(angleDroite < -angleMin && angleDroite > -angleMax)
+					out.setTourellesAngles(angleDefautGauche, angleDroite);
+				else
+					out.setTourellesAngles(angleDefautGauche, -angleDefautDroite);
+			}
+		}
+	}
+
+	public void setCurrentTrajectoryIndex(Cinematique current, int indexTrajectory)
+	{	
+		currentIndexTrajectory = indexTrajectory;
+//		chemin.setCurrentTrajectoryIndex(indexTrajectory);
+		setCinematique(current);
 	}
 }

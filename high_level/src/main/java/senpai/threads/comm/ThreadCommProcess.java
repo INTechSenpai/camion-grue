@@ -117,6 +117,7 @@ public class ThreadCommProcess extends Thread
 					double orientationRobot = data.getFloat();
 					double courbure = data.getFloat();
 					int indexTrajectory = data.getInt();
+					boolean enMarcheAvant = data.get() != 0;
 					int[] mesures = new int[nbCapteurs];
 					for(CapteursRobot c : CapteursRobot.values())
 					{
@@ -129,10 +130,9 @@ public class ThreadCommProcess extends Thread
 					double angleTourelleDroite = data.getFloat();
 					double angleGrue = data.getFloat();
 					
-//					if(!robot.isDegrade())
-//						chemin.setCurrentTrajectoryIndex(indexTrajectory).copy(current);
+					current.enMarcheAvant = enMarcheAvant;
 					current.updateReel(xRobot, yRobot, orientationRobot, courbure);
-					robot.setCinematique(current);
+					robot.setCurrentTrajectoryIndex(current, indexTrajectory);
 
 					log.write("Le robot est en " + current.getPosition() + ", orientation : " + orientationRobot + ", index : " + indexTrajectory, Subject.CAPTEURS);
 
@@ -178,7 +178,7 @@ public class ThreadCommProcess extends Thread
 					}
 					else
 					{
-						log.write(CommProtocol.ActionneurMask.describe(code), Subject.TRAJECTORY);
+						log.write(CommProtocol.ActionneurMask.describe(code), Severity.WARNING, Subject.TRAJECTORY);
 						paquet.origine.ticket.set(CommProtocol.State.KO, CommProtocol.ActionneurMask.describe(code));
 					}
 				}				
