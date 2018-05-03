@@ -16,8 +16,10 @@ package senpai.robot;
 
 import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
+
 import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
@@ -220,10 +222,39 @@ public class Robot extends RobotState
 		log.write("Temps d'exécution de " + nom + " : " + (System.currentTimeMillis() - avant), Subject.SCRIPT);
 	}
 
-	public void avance(double distance, Speed speed)
-			throws UnableToMoveException, InterruptedException {
-		// TODO Auto-generated method stub
-		
+	public void avance(double distance, double vitesseMax) throws InterruptedException, UnableToMoveException
+	{
+		LinkedList<ItineraryPoint> ch = new LinkedList<ItineraryPoint>();
+		double cos = Math.cos(cinematique.orientationReelle);
+		double sin = Math.sin(cinematique.orientationReelle);
+		int nbPoint = (int) Math.round(Math.abs(distance) / 20);
+		double xFinal = cinematique.getPosition().getX() + distance * cos;
+		double yFinal = cinematique.getPosition().getY() + distance * sin;
+		boolean marcheAvant = distance > 0;
+		if(nbPoint == 0)
+		{
+			// Le point est vraiment tout proche
+			ch.add(new ItineraryPoint(xFinal, yFinal, cinematique.orientationReelle, 0, marcheAvant, vitesseMax, vitesseMax, true));
+		}
+		else
+		{
+			double deltaX = 20 * cos;
+			double deltaY = 20 * sin;
+			if(distance < 0)
+			{
+				deltaX = -deltaX;
+				deltaY = -deltaY;
+			}
+
+			for(int i = 0; i < nbPoint; i++)
+				ch.addFirst(new ItineraryPoint(xFinal - i * deltaX, yFinal - i * deltaY, cinematique.orientationReelle, 0, marcheAvant, vitesseMax, vitesseMax, i == 0));
+			out.destroyPointsTrajectoires(0);
+			out.ajoutePointsTrajectoire(ch, true);
+		}
+	
+		DataTicket dt = followTrajectory();
+		if(dt.data != null)
+			throw new UnableToMoveException(dt.data.toString());
 	}
 	
 	public void execute(CommProtocol.Id ordre, Object... param) throws InterruptedException, ActionneurException
@@ -280,8 +311,11 @@ public class Robot extends RobotState
 			execute(Id.ARM_STORE_CUBE_INSIDE);
 			setCubeInside(c);
 		}
-		execute(Id.ARM_STORE_CUBE_TOP);
-		setCubeTop(c);
+		else
+		{
+			execute(Id.ARM_STORE_CUBE_TOP);
+			setCubeTop(c);
+		}
 	}
 
 	public void setScore(int score)
