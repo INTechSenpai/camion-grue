@@ -49,11 +49,11 @@ public enum CapteursRobot
 
 	ToF_ARRIERE_GAUCHE(CapteurImmobile.class, new XY(-164, 80), -Math.PI, TypeCapteur.ToF_COURT),
 
-	ToF_ARRIERE_DROITE(CapteurImmobile.class, new XY(-164, -80), -Math.PI, TypeCapteur.ToF_COURT);
+	ToF_ARRIERE_DROITE(CapteurImmobile.class, new XY(-164, -80), -Math.PI, TypeCapteur.ToF_COURT),
 	
-//	TOURELLE_GAUCHE(CapteurMobile.class, new XY(40,52), 0, TypeCapteur.ToF_LONG),
+	TOURELLE_GAUCHE(CapteurMobile.class, new XY(40,52), 0, TypeCapteur.ToF_LONG),
 
-//	TOURELLE_DROITE(CapteurMobile.class, new XY(40,-52), 0, TypeCapteur.ToF_LONG);
+	TOURELLE_DROITE(CapteurMobile.class, new XY(40,-52), 0, TypeCapteur.ToF_LONG);
 
 	
 	public final Class<? extends Capteur> classe;
@@ -61,15 +61,16 @@ public enum CapteursRobot
 	public final double angle;
 	public final TypeCapteur type;
 	public final boolean sureleve;
+	public final boolean isTourelle;
 	public final static CapteursRobot[] values = values();
 
 	private <S extends Capteur> CapteursRobot(Class<S> classe, XY pos, double angle, TypeCapteur type)
 	{
-		sureleve = name().startsWith("TOURELLE_"); // les tourelles sont surélevées
+		isTourelle = name().startsWith("TOURELLE_"); // les tourelles sont surélevées
+		sureleve = isTourelle;
 		this.classe = classe;
 		this.pos = pos;
 		this.angle = angle;
 		this.type = type;
 	}
-
 }

@@ -67,7 +67,9 @@ public class CapteursProcess
 	private long dureeAvantPeremption;
 //	private ObstaclesMemory obstacles;
 	private ObstaclesDynamiques dynObs;
-
+	private Robot robot;
+	private int margeIgnoreTourelle;
+	
 //	private List<SensorsData> mesuresScan = new ArrayList<SensorsData>();
 
 	public CapteursProcess(ObstaclesDynamiques dynObs, Robot robot, Log log, RectangularObstacle obstacleRobot, Table table, OutgoingOrderBuffer serie, Config config, GraphicDisplay buffer)
@@ -76,6 +78,7 @@ public class CapteursProcess
 		this.log = log;
 		this.serie = serie;
 		this.dynObs = dynObs;
+		this.robot = robot;
 
 		dureeAvantPeremption = config.getInt(ConfigInfoSenpai.DUREE_PEREMPTION_OBSTACLES);
 		largeurEnnemi = config.getInt(ConfigInfoSenpai.LARGEUR_OBSTACLE_ENNEMI);
@@ -87,6 +90,7 @@ public class CapteursProcess
 		bufferCorrection = new Cinematique[config.getInt(ConfigInfoSenpai.TAILLE_BUFFER_RECALAGE)];
 		peremptionCorrection = config.getInt(ConfigInfoSenpai.PEREMPTION_CORRECTION);
 		enableCorrection = config.getBoolean(ConfigInfoSenpai.ENABLE_CORRECTION);
+		margeIgnoreTourelle = config.getInt(ConfigInfoSenpai.MARGE_IGNORE_TOURELLE);
 
 		this.obstacleRobot = obstacleRobot;
 		
@@ -152,6 +156,12 @@ public class CapteursProcess
 	
 				boolean stop = false;
 	
+				if(c.isTourelle && robot.isProcheRobot(positionVue, margeIgnoreTourelle))
+				{
+					log.write("Une tourelle voit quelque chose dans le robot", Subject.CAPTEURS);
+					continue;
+				}
+				
 				/**
 				 * Si ce qu'on voit est un obstacle de table, on l'ignore
 				 */

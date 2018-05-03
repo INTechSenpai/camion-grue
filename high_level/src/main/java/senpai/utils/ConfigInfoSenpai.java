@@ -155,7 +155,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 //	ENABLE_SCAN(true), // scan-t-on autour du robot s'il est coincé ?
 
 	ENABLE_KNOWN_PATHS(true), // active les chemins enregistrés ?
-	
+	MARGE_IGNORE_TOURELLE(50), // distance en mm autour du robot où sont ignorés les obstacles vus par les tourelles
 	/**
 	 * Log
 	 */

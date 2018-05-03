@@ -26,9 +26,11 @@ import pfg.kraken.Kraken;
 import pfg.kraken.SearchParameters;
 import pfg.kraken.astar.autoreplanning.DynamicPath;
 import pfg.kraken.exceptions.PathfindingException;
+import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.robot.ItineraryPoint;
 import pfg.kraken.robot.RobotState;
+import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
@@ -68,7 +70,8 @@ public class Robot extends RobotState
 	private DynamicPath dpath;
 	private volatile boolean modeDegrade = false;
 	private List<ItineraryPoint> pathDegrade;
-
+	private RectangularObstacle obstacle;
+	
 	@Override
 	public String toString()
 	{
@@ -87,7 +90,7 @@ public class Robot extends RobotState
 	private boolean enableLoadPath;
 	
 	// Constructeur
-	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, /*DynamicPath dpath,*/ KnownPathManager known)
+	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, /*DynamicPath dpath,*/ KnownPathManager known, RectangularObstacle obstacle)
 	{
 		this.log = log;
 		this.out = out;
@@ -95,6 +98,7 @@ public class Robot extends RobotState
 		this.kraken = kraken;
 		this.dpath = null; //dpath;
 		this.known = known;
+		this.obstacle = obstacle;
 		
 		// On ajoute une fois pour toute l'image du robot
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS))
@@ -102,6 +106,8 @@ public class Robot extends RobotState
 			printable = new RobotPrintable(config);
 			buffer.addPrintable(printable, Color.BLACK, Layer.MIDDLE.layer);
 		}
+		
+		out.setTourellesAngles(0, 0);
 		
 		enableLoadPath = config.getBoolean(ConfigInfoSenpai.ENABLE_KNOWN_PATHS);
 		printTrace = config.getBoolean(ConfigInfoSenpai.GRAPHIC_TRACE_ROBOT);
@@ -128,6 +134,7 @@ public class Robot extends RobotState
 	{
 		this.cinematique.getPosition().copy(oldPosition);
 		cinematique.copy(this.cinematique);
+		obstacle.update(cinematique.getPosition(), cinematique.orientationReelle);
 		/*
 		 * On vient juste de récupérer la position initiale
 		 */
@@ -499,5 +506,10 @@ public class Robot extends RobotState
 	{
 		assert etat == State.READY_TO_GO || etat == State.MOVING;
 		return pathDegrade;
+	}
+
+	public boolean isProcheRobot(XY positionVue, int distance)
+	{
+		return obstacle.isProcheObstacle(positionVue, distance);
 	}
 }
