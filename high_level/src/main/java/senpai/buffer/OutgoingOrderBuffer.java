@@ -188,20 +188,20 @@ public class OutgoingOrderBuffer implements Plottable
 		return Id.ARM_GO_HOME.ticket;
 	}
 	
-	public Ticket armTakeCubeS(double angle)
+	public Ticket armTakeCubeS(Double angle)
 	{
 		ByteBuffer data = ByteBuffer.allocate(4);
 		data.order(ByteOrder.LITTLE_ENDIAN);
-		data.putFloat((float) angle);
+		data.putFloat(new Float(angle));
 		addToBuffer(new Order(data, Id.ARM_TAKE_CUBE_S));
 		return Id.ARM_TAKE_CUBE_S.ticket;
 	}
 
-	public Ticket armTakeCube(double angle)
+	public Ticket armTakeCube(Double angle)
 	{
 		ByteBuffer data = ByteBuffer.allocate(4);
 		data.order(ByteOrder.LITTLE_ENDIAN);
-		data.putFloat((float) angle);
+		data.putFloat(new Float(angle));
 		addToBuffer(new Order(data, Id.ARM_TAKE_CUBE));
 		return Id.ARM_TAKE_CUBE.ticket;
 	}
@@ -224,34 +224,34 @@ public class OutgoingOrderBuffer implements Plottable
 		return Id.ARM_TAKE_FROM_STORAGE.ticket;
 	}
 	
-	public Ticket armPutOnPileS(double angle, int etage)
+	public Ticket armPutOnPileS(Double angle, Integer etage)
 	{
 		ByteBuffer data = ByteBuffer.allocate(8);
 		data.order(ByteOrder.LITTLE_ENDIAN);
-		data.putFloat((float) angle);
+		data.putFloat(new Float(angle));
 		data.putInt(etage);
 		addToBuffer(new Order(data, Id.ARM_PUT_ON_PILE_S));
 		return Id.ARM_PUT_ON_PILE_S.ticket;
 	}
 	
-	public Ticket armPutOnPile(double angle, int etage)
+	public Ticket armPutOnPile(Double angle, Integer etage)
 	{
 		ByteBuffer data = ByteBuffer.allocate(8);
 		data.order(ByteOrder.LITTLE_ENDIAN);
-		data.putFloat((float) angle);
+		data.putFloat(new Float(angle));
 		data.putInt(etage);
 		addToBuffer(new Order(data, Id.ARM_PUT_ON_PILE));
 		return Id.ARM_PUT_ON_PILE.ticket;
 	}
 
-	public Ticket armGoTo(double angleH, double angleV, double angleTete, double posPlier)
+	public Ticket armGoTo(Double angleH, Double angleV, Double angleTete, Double posPlier)
 	{
 		ByteBuffer data = ByteBuffer.allocate(16);
 		data.order(ByteOrder.LITTLE_ENDIAN);
-		data.putFloat((float) angleH);
-		data.putFloat((float) angleV);
-		data.putFloat((float) angleTete);
-		data.putFloat((float) posPlier);
+		data.putFloat(new Float(angleH));
+		data.putFloat(new Float(angleV));
+		data.putFloat(new Float(angleTete));
+		data.putFloat(new Float(posPlier));
 		addToBuffer(new Order(data, Id.ARM_GO_TO));
 		return Id.ARM_GO_TO.ticket;
 	}
