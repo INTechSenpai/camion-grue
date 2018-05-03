@@ -77,7 +77,8 @@ public class Robot extends RobotState
 	private RectangularObstacle obstacle;
 	private double angleMin, angleMax;
 	private List<ItineraryPoint> path = null;
-
+	private double angleTourelleGaucheOld = Double.MAX_VALUE, angleTourelleDroiteOld = Double.MAX_VALUE;
+	
 	@Override
 	public String toString()
 	{
@@ -124,6 +125,7 @@ public class Robot extends RobotState
 				config.getDouble(ConfigInfoSenpai.INITIAL_Y),
 				config.getDouble(ConfigInfoSenpai.INITIAL_O)));
 		cinematique.enMarcheAvant = true;
+
 		simuleLL = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);		
 	}
 	
@@ -570,7 +572,7 @@ public class Robot extends RobotState
 		}
 		
 		if(path == null)
-			out.setTourellesAngles(angleDefautGauche, angleDefautDroite);
+			envoieAnglesTourelles(angleDefautGauche, angleDefautDroite);
 /*		else if(etat == State.SCRIPT)
 		{
 			out.setTourellesAngles(Math.PI / 2, -Math.PI / 2);			
@@ -582,18 +584,30 @@ public class Robot extends RobotState
 			objTourelle.setX(ip.x);
 			objTourelle.setY(ip.y);
 			double angleGauche = objTourelle.minus(tourelleGauche).minus(cinematique.getPosition()).getArgument() - cinematique.orientationReelle;
+			angleGauche = XYO.angleDifference(angleGauche, 0);
 			if(angleGauche > angleMin && angleGauche < angleMax)
-				out.setTourellesAngles(angleGauche, angleDefautDroite);
+				envoieAnglesTourelles(angleGauche, angleDefautDroite);
 			else
 			{
 				objTourelle.setX(ip.x);
 				objTourelle.setY(ip.y);
 				double angleDroite = objTourelle.minus(tourelleDroite).minus(cinematique.getPosition()).getArgument() - cinematique.orientationReelle;
+				angleDroite = XYO.angleDifference(angleDroite, 0);
 				if(angleDroite < -angleMin && angleDroite > -angleMax)
-					out.setTourellesAngles(angleDefautGauche, angleDroite);
+					envoieAnglesTourelles(angleDefautGauche, angleDroite);
 				else
-					out.setTourellesAngles(angleDefautGauche, angleDefautDroite);
+					envoieAnglesTourelles(angleDefautGauche, angleDefautDroite);
 			}
+		}
+	}
+	
+	private void envoieAnglesTourelles(double angleTourelleGauche, double angleTourelleDroite)
+	{
+		if(Math.abs(angleTourelleGauche - angleTourelleGaucheOld) > 0.1 || Math.abs(angleTourelleDroite - angleTourelleDroiteOld) > 0.1)
+		{
+			angleTourelleGaucheOld = angleTourelleGauche;
+			angleTourelleDroiteOld = angleTourelleDroite;
+			out.setTourellesAngles(angleTourelleGauche, angleTourelleDroite);
 		}
 	}
 
