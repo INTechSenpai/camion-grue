@@ -115,8 +115,6 @@ public class Robot extends RobotState
 			buffer.addPrintable(printable, Color.BLACK, Layer.MIDDLE.layer);
 		}
 		
-		out.setTourellesAngles(0, 0);
-		
 		enableLoadPath = config.getBoolean(ConfigInfoSenpai.ENABLE_KNOWN_PATHS);
 		printTrace = config.getBoolean(ConfigInfoSenpai.GRAPHIC_TRACE_ROBOT);
 		cinematique = new Cinematique(new XYO(
@@ -538,7 +536,7 @@ public class Robot extends RobotState
 		}
 		
 		if(path == null)
-			out.setTourellesAngles(angleDefautGauche, -angleDefautDroite);
+			out.setTourellesAngles(angleDefautGauche, angleDefautDroite);
 /*		else if(etat == State.SCRIPT)
 		{
 			out.setTourellesAngles(Math.PI / 2, -Math.PI / 2);			
@@ -551,7 +549,7 @@ public class Robot extends RobotState
 			objTourelle.setY(ip.y);
 			double angleGauche = objTourelle.minus(tourelleGauche).minus(cinematique.getPosition()).getArgument() - cinematique.orientationReelle;
 			if(angleGauche > angleMin && angleGauche < angleMax)
-				out.setTourellesAngles(angleGauche, -angleDefautDroite);
+				out.setTourellesAngles(angleGauche, angleDefautDroite);
 			else
 			{
 				objTourelle.setX(ip.x);
@@ -560,7 +558,7 @@ public class Robot extends RobotState
 				if(angleDroite < -angleMin && angleDroite > -angleMax)
 					out.setTourellesAngles(angleDefautGauche, angleDroite);
 				else
-					out.setTourellesAngles(angleDefautGauche, -angleDefautDroite);
+					out.setTourellesAngles(angleDefautGauche, angleDefautDroite);
 			}
 		}
 	}
