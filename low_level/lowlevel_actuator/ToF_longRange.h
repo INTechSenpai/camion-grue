@@ -9,6 +9,7 @@
 
 #include "VL53L0X.h"
 #include "ToF_shortRange.h"
+#include "Median.h"
 
 
 class ToF_longRange
@@ -29,7 +30,8 @@ public:
 	{
 		if (isON)
 		{
-			uint16_t distance = vlSensor.readRangeContinuousMillimeters();
+            medianDistance.add(vlSensor.readRangeContinuousMillimeters());
+			uint16_t distance = medianDistance.value();
 			if (vlSensor.timeoutOccurred())
 			{
 				sensorValue = (int32_t)SENSOR_DEAD;
@@ -92,9 +94,8 @@ private:
     uint16_t minRange;
 	bool isON;
 	VL53L0X vlSensor;
+    Median<uint16_t, 3> medianDistance;
 };
 
 
-
 #endif
-

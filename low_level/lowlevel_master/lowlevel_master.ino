@@ -7,6 +7,7 @@
 #include "Config/pin_mapping.h"
 #include "CommunicationServer/OrderMgr.h"
 #include "Locomotion/MotionControlSystem.h"
+#include "Locomotion/ContextualLightning.h"
 #include "SlaveCommunication/SlaveSensorLed.h"
 #include "SlaveCommunication/SlaveActuator.h"
 #include "CommunicationServer/Serializer.h"
@@ -35,6 +36,7 @@ void loop()
     DirectionController &directionController = DirectionController::Instance();
     SlaveSensorLed &slaveSensorLed = SlaveSensorLed::Instance();
     SlaveActuator &slaveActuator = SlaveActuator::Instance();
+    ContextualLightning contextualLightning;
     
     IntervalTimer motionControlTimer;
     motionControlTimer.priority(253);
@@ -53,7 +55,7 @@ void loop()
     slaveActuator.getSensorsValues(longRangeSensorsValues);
 
     // Lancement de la carte capteurs
-    slaveSensorLed.setLightningMode(0);
+    slaveSensorLed.setLightningMode((uint8_t)SlaveSensorLed::ALL_OFF);
 
     // Attente du démarrage de la carte capteurs
     while (!slaveSensorLed.available())
@@ -63,7 +65,7 @@ void loop()
     slaveSensorLed.getSensorsValues(shortRangeSensorsValues);
 
     // Affichage du succès du démarrage
-    slaveSensorLed.setLightningMode(68);
+    slaveSensorLed.setLightningMode((uint8_t)SlaveSensorLed::NIGHT_LIGHT_HIGH);
 
     uint32_t delTimer = 0;
     bool delState = true;
@@ -84,6 +86,8 @@ void loop()
         {
             slaveSensorLed.getSensorsValues(shortRangeSensorsValues);
         }
+
+        contextualLightning.update();
 
         if (millis() - odometryReportTimer > ODOMETRY_REPORT_PERIOD)
         {

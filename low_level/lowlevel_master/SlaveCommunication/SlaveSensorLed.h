@@ -17,7 +17,21 @@ public:
     SlaveSensorLed() :
         internalCom(SERIAL_SENSORS, SERIAL_SENSORS_BAUDRATE)
     {
+        lightningMode = (uint8_t)ALL_OFF;
     }
+
+    enum LightId
+    {
+        ALL_OFF = 0,
+        TURN_LEFT = 1,
+        TURN_RIGHT = 2,
+        FLASHING = 4,
+        STOP_LIGHT = 8,
+        REVERSE_LIGHT = 16,
+        NIGHT_LIGHT_LOW = 32,
+        NIGHT_LIGHT_HIGH = 64,
+        ALARM_LIGHT = 128
+    };
 
     void listen()
     {
@@ -49,14 +63,33 @@ public:
 
     void setLightningMode(uint8_t mode)
     {
-        uint8_t payload[1] = { mode };
+        lightningMode = mode;
+        sendLightningMode();
+    }
+
+    void setLightOn(uint8_t mode)
+    {
+        lightningMode |= mode;
+        sendLightningMode();
+    }
+
+    void setLightOff(uint8_t mode)
+    {
+        lightningMode &= ~mode;
+        sendLightningMode();
+    }
+
+private:
+    void sendLightningMode()
+    {
+        uint8_t payload[1] = { lightningMode };
         InternalMessage message(ID_FRAME_LED_MODE, 1, payload);
         internalCom.sendMessage(message);
     }
 
-private:
     InternalCom internalCom;
     InternalMessage lastMessage;
+    uint8_t lightningMode;
 };
 
 #endif

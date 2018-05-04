@@ -392,6 +392,14 @@ private:
         return ret;
     }
 
+    bool isBreaking() const
+    {
+        noInterrupts();
+        bool ret = trajectoryFollower.isBreaking();
+        interrupts();
+        return ret;
+    }
+
 private:
 	TrajectoryFollower trajectoryFollower;
 	volatile Position position;

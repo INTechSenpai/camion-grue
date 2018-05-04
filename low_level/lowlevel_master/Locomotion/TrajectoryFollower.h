@@ -345,6 +345,11 @@ public:
         return maxMovingSpeed >= 0;
     }
 
+    bool isBreaking() const
+    {
+        return movePhase == BREAKING || endOfMoveMgr.isBreaking();
+    }
+
     void emergency_stop_from_interrupt()
     {
         if (movePhase != MOVE_ENDED)

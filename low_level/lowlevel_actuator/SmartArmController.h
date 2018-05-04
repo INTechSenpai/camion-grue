@@ -11,7 +11,8 @@
 #define ARM_SENSORS_UPDATE_PERIOD   20  // ms
 #define CUBE_DETECT_MIN             60  // mm
 #define CUBE_DETECT_MAX             160 // mm
-#define CUBE_INSIDE_THRESHOLD       60  // mm
+#define CUBE_INSIDE_THRESHOLD_LOW   60  // mm
+#define CUBE_INSIDE_THRESHOLD_HIGH  75  // mm
 
 #define CUBE_MANIPULATION_SPEED     300 // [unité interne d'AX12]
 
@@ -197,26 +198,31 @@ public:
 
     bool isCubeInPlier() const
     {
+        static bool wasInPlier = false;
+        bool ret = wasInPlier;
         if (intSensorValue == (SensorValue)SENSOR_DEAD)
         {
-            return true;
-        }
-        else if (intSensorValue == (SensorValue)SENSOR_NOT_UPDATED)
-        {
-            return false;
+            ret = true;
         }
         else if (intSensorValue == (SensorValue)OBSTACLE_TOO_CLOSE)
         {
-            return true;
+            ret = true;
         }
         else if (intSensorValue == (SensorValue)NO_OBSTACLE)
         {
-            return false;
+            ret = false;
         }
-        else
+        else if (wasInPlier && intSensorValue > CUBE_INSIDE_THRESHOLD_HIGH)
         {
-            return intSensorValue < CUBE_INSIDE_THRESHOLD;
+            ret = false;
         }
+        else if (!wasInPlier && intSensorValue < CUBE_INSIDE_THRESHOLD_LOW)
+        {
+            ret = true;
+        }
+
+        wasInPlier = ret;
+        return ret;
     }
 
 private:

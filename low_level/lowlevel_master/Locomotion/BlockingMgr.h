@@ -9,6 +9,8 @@
 #include "../Tools/utils.h"
 #include "Position.h"
 
+#define BREAKING_THRESHOLD  (0.2)   // BREAKING_THRESHOLD * FREQ_ASSERV s'exprimme en mm*s^-2
+
 
 class BlockingMgr : public Printable
 {
@@ -86,6 +88,8 @@ public:
 		moveBegin = false;
 		beginTime = 0;
 		breaking = false;
+        abs_speed = 0;
+        last_abs_speed = 0;
 	}
 
 	inline void compute()
@@ -146,7 +150,7 @@ public:
 	/* Indique si on est en train de ralentir */
 	bool isBreaking() const
 	{
-		return averageAcceleration.value() < 0;
+		return averageAcceleration.value() < -BREAKING_THRESHOLD;
 	}
 
 	size_t printTo(Print& p) const
@@ -166,7 +170,7 @@ private:
 	float abs_speed;
 	float last_abs_speed;
 	bool breaking;
-	Average<float, 25> averageAcceleration;
+	Average<float, 50> averageAcceleration;
 };
 
 #endif

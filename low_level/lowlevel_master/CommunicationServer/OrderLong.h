@@ -7,6 +7,7 @@
 #include "../Locomotion/MoveState.h"
 #include "../CommunicationServer/CommunicationServer.h"
 #include "../SlaveCommunication/SlaveActuator.h"
+#include "../SlaveCommunication/SlaveSensorLed.h"
 #include "../Tools/Singleton.h"
 
 class OrderLong
@@ -15,6 +16,7 @@ public:
     OrderLong() :
         motionControlSystem(MotionControlSystem::Instance()),
         slaveActuator(SlaveActuator::Instance()),
+        slaveSensorLed(SlaveSensorLed::Instance()),
         finished(true)
     {}
 
@@ -42,6 +44,7 @@ public:
 protected:
     MotionControlSystem & motionControlSystem;
     SlaveActuator & slaveActuator;
+    SlaveSensorLed & slaveSensorLed;
     bool finished;
 };
 
@@ -158,6 +161,7 @@ public:
             if (jumperDetected)
             {
                 state = WAIT_FOR_REMOVAL;
+                slaveSensorLed.setLightOn((uint8_t)SlaveSensorLed::FLASHING);
             }
             break;
         case WaitForJumper::WAIT_FOR_REMOVAL:
@@ -217,6 +221,7 @@ public:
         motionControlSystem.stop_and_clear_trajectory();
         slaveActuator.stop();
         // todo Maybe: prevent HL from giving orders
+        slaveSensorLed.setLightOn((uint8_t)(SlaveSensorLed::TURN_LEFT | SlaveSensorLed::TURN_RIGHT));
     }
 
 private:

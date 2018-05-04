@@ -6,6 +6,7 @@
 #include "Communication.h"
 #include "SensorsMgr.h"
 #include "UserInputControler.h"
+#include "FlashingLights.h"
 #include <Wire.h>
 
 
@@ -38,13 +39,14 @@ void loop()
     pinMode(PIN_DEL_GYRO_G, OUTPUT);
     pinMode(PIN_DEL_GYRO_D, OUTPUT);
     digitalWrite(PIN_DEL_GYRO_G, HIGH);
-    digitalWrite(PIN_DEL_GYRO_D, LOW);
+    digitalWrite(PIN_DEL_GYRO_D, HIGH);
     Wire.begin();
     delay(500);
 
     Communication communication;
     SensorsMgr sensorsMgr;
     UserInputControler userInputControler;
+    FlashingLights flashingLights(40, 800, 815);
 
     if (communication.init() != 0)
     {
@@ -95,6 +97,8 @@ void loop()
         sensorsMgr.updateServos();
 
         userInputControler.control();
+
+        flashingLights.update();
     }
 }
 
