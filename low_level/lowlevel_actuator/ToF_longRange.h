@@ -14,7 +14,7 @@
 class ToF_longRange
 {
 public:
-	ToF_longRange(uint8_t id, uint8_t pinStandby, uint16_t minDist = 30, uint16_t maxDist = 1000)
+	ToF_longRange(uint8_t id, uint8_t pinStandby, uint16_t minDist = 30, uint16_t maxDist = 700)
 	{
 		i2cAddress = id;
 		this->pinStandby = pinStandby;

@@ -449,7 +449,6 @@ private:
             armPosition.setVAngle(ARM_V_ANGLE_STORAGE);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
-            Serial.println("CASE 0");
             break;
         case 1:
             waitForMoveCompletion();
@@ -460,7 +459,6 @@ private:
             armPosition.setHAngle(0);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
-            Serial.println("CASE 2");
             break;
         case 3:
             waitForMoveCompletion();
@@ -472,7 +470,6 @@ private:
             armPosition.setPlierPos(25);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
-            Serial.println("CASE 4");
             break;
         case 5:
             waitForMoveCompletion();
@@ -481,10 +478,9 @@ private:
             // Rangement du bras
             armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHeadLocalAngle(ARM_MAX_HEAD_ANGLE);
-            armPosition.setVAngle(0);
+            //armPosition.setVAngle(0); On va taper le cube en descendant si on fait ça
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
-            Serial.println("CASE 6");
             break;
         case 7:
             waitForMoveCompletion();

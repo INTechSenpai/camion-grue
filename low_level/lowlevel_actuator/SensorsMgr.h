@@ -5,8 +5,8 @@
 #include "XL320.h"
 #include "config.h"
 
-#define SERVO_LEFT_ORIGIN   (1.0472)
-#define SERVO_RIGHT_ORIGIN  (4.1888)
+#define SERVO_LEFT_ORIGIN   (1.4)
+#define SERVO_RIGHT_ORIGIN  (4.3)
 
 #define SERVO_UPDATE_PERIOD 50  // ms
 
