@@ -429,7 +429,9 @@ public class Robot extends RobotState
 			if(path == null)
 			{
 				log.write("On cherche un chemin en mode dégradé", Subject.TRAJECTORY);
+				avant = System.currentTimeMillis();
 				path = kraken.search();
+				log.write("Durée de la recherche : "+(System.currentTimeMillis() - avant), Subject.TRAJECTORY);
 			}
 			else
 				log.write("On réutilise un chemin déjà connu !", Subject.TRAJECTORY);
@@ -459,7 +461,7 @@ public class Robot extends RobotState
 			log.write("Fin de la recherche en mode continu", Subject.TRAJECTORY);
 			kraken.endContinuousSearch();
 		}*/
-		if(out.data != null)
+		if(!simuleLL && out.data != null)
 			throw new UnableToMoveException(out.data.toString());
 		return out;
 	}
@@ -502,16 +504,16 @@ public class Robot extends RobotState
 //			assert etat != State.MOVING : etat;
 //			while(etat == State.MOVING)
 //				wait();
+			if(dt.data == null)
+				log.write("Le robot a fini correctement la trajectoire.", Subject.TRAJECTORY);
+			else
+				log.write("Le robot s'est arrêté suite à un problème : "+dt.data, Severity.CRITICAL, Subject.TRAJECTORY);
 		}
 		else
 		{
 			dt = new DataTicket(/*modeDegrade ?*/ pathDegrade /*: dpath.getPath()*/, CommProtocol.State.OK);
 		}
 		
-		if(dt.data == null)
-			log.write("Le robot a fini correctement la trajectoire.", Subject.TRAJECTORY);
-		else
-			log.write("Le robot s'est arrêté suite à un problème : "+dt.data, Severity.CRITICAL, Subject.TRAJECTORY);
 
 		pathDegrade = null;
 		path = null;

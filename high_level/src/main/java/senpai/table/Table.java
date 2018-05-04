@@ -55,6 +55,13 @@ public class Table implements Printable
 			etat.put(n, false);
 	}
 
+	public void updateCote(boolean symetrie)
+	{
+		for(Cube c : Cube.values())
+			if(c.position.getX() > 0 == symetrie)
+				setDone(c);
+	}
+	
 	/**
 	 * On a pris l'objet, on est passé dessus, le robot ennemi est passé
 	 * dessus...

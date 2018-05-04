@@ -16,6 +16,8 @@ package senpai;
 
 import java.awt.Color;
 import java.util.List;
+import java.util.PriorityQueue;
+
 import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
@@ -34,6 +36,7 @@ import senpai.robot.Robot;
 import senpai.robot.RobotColor;
 import senpai.scripts.Script;
 import senpai.scripts.ScriptManager;
+import senpai.scripts.ScriptPriseCube;
 import senpai.table.CubeColor;
 import senpai.table.Table;
 import senpai.utils.ConfigInfoSenpai;
@@ -54,6 +57,7 @@ public class TestDeplacement {
 			senpai.initialize("match.conf", "default", "graphic", "test", "noLL");
 //			Log log = senpai.getService(Log.class);
 			Config config = senpai.getService(Config.class);
+			Thread.sleep(config.getInt(ConfigInfoSenpai.WARM_UP_DURATION));
 			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
 			Robot robot = senpai.getService(Robot.class);
 			Table table = senpai.getService(Table.class);
@@ -79,13 +83,11 @@ public class TestDeplacement {
 				couleur = RobotColor.VERT;
 			
 			robot.updateColorAndSendPosition(couleur);
-
+			table.updateCote(couleur.symmetry);
 			//XYO destination = new XYO(0, 1000, Math.PI);
 //			Script script = new ScriptPriseCube(Croix.CROIX_HAUT_DROITE, CubeColor.ORANGE, CubeFace.GAUCHE, false);
-			Script script = scripts.getAllPossible(true, CubeColor.ORANGE, false).poll();
+			PriorityQueue<ScriptPriseCube> all = scripts.getAllPossible(true, CubeColor.ORANGE, false);
 //			XYO destination = new ScriptPriseCube(0, ElementColor.BLEU, ScriptPriseCube.Face.BAS, false).getPointEntree();
-			XYO destination = script.getPointEntree();
-			buffer.addPrintable(new Cinematique(destination), Color.BLUE, Layer.FOREGROUND.layer);
 
 /*			ObstacleProximity obs = new ObstacleProximity(new XY(-150.84,1543.50), 100, 100, 0, 0, null, 0);
 			buffer.addPrintable(obs, Color.RED, Layer.FOREGROUND.layer);
@@ -93,8 +95,11 @@ public class TestDeplacement {
 	*/		
 			Cinematique init = robot.getCinematique().clone();
 			
-			for(int i = 0; i < 1; i++)
+			for(int i = 0; i < 5; i++)
 			{
+				Script script = all.poll();
+				XYO destination = script.getPointEntree();
+				buffer.addPrintable(new Cinematique(destination), Color.BLUE, Layer.FOREGROUND.layer);
 				init.copy(robot.getCinematique());
 				DataTicket dt = robot.goTo(destination);
 					
@@ -105,7 +110,7 @@ public class TestDeplacement {
 				List<ItineraryPoint> path = (List<ItineraryPoint>) dt.data;
 				for(ItineraryPoint p : path)
 					buffer.addPrintable(p, p.stop ? Color.BLUE : Color.BLACK, Layer.FOREGROUND.layer);
-	
+/*	
 				for(ItineraryPoint p : path)
 				{
 					System.out.println(p);
@@ -122,7 +127,7 @@ public class TestDeplacement {
 				Thread.sleep(1000);
 				script.execute(robot, table);
 //				if(i == 0)
-//					robot.setDegrade();
+//					robot.setDegrade();*/
 			}
 		}
 		catch(Exception e)
