@@ -204,6 +204,9 @@ public class CapteursProcess
 //					data.etats[i] = TraitementEtat.HORS_TABLE;
 					continue; // hors table
 				}
+				
+				if(dynObs.isKnown(obs))
+					continue;
 	
 				log.write("Ajout d'un obstacle d'ennemi en " + positionEnnemi + " vu par " + c, Subject.CAPTEURS);
 	

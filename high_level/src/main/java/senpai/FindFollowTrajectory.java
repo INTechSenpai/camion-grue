@@ -81,7 +81,7 @@ public class FindFollowTrajectory
 //			Log log = new Log(Severity.INFO, configfile, "");
 			
 			senpai = new Senpai();
-			senpai.initialize(configfile, "default", "graphic");
+			senpai.initialize(configfile, "default");
 			senpai.getService(ThreadCommProcess.class).capteursOn = true;
 			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
 

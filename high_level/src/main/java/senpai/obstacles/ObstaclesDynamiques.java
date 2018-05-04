@@ -92,4 +92,9 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 		newObs.clear();
 		return i;
 	}
+
+	public boolean isKnown(ObstacleProximity obs)
+	{
+		return memory.isKnown(obs);
+	}
 }

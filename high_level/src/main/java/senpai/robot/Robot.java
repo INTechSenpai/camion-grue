@@ -386,7 +386,9 @@ public class Robot extends RobotState
 		}
 		
 //		if(modeDegrade)
-			kraken.initializeNewSearch(sp);
+		long avant = System.currentTimeMillis();
+		kraken.initializeNewSearch(sp);
+		log.write("Durée d'initialisation de Kraken : "+(System.currentTimeMillis() - avant), Subject.TRAJECTORY);
 
 		if(allSaved != null)
 			while(!allSaved.isEmpty())
@@ -464,12 +466,13 @@ public class Robot extends RobotState
 	
 	private DataTicket followTrajectory() throws InterruptedException
 	{
-		// TODO : non, avec avancer et reculer
+		// non, marche pas avec avancer et reculer
 //		assert modeDegrade == (pathDegrade != null) : modeDegrade+" "+pathDegrade;
 		assert etat == State.READY_TO_GO || etat == State.STANDBY;
 
 		log.write("Attente de la trajectoire…", Subject.TRAJECTORY);
 
+		assert etat == State.READY_TO_GO; // parce que mode dégradé
 		synchronized(this)
 		{
 			while(etat == State.STANDBY)
@@ -496,7 +499,7 @@ public class Robot extends RobotState
 			Ticket t = out.followTrajectory();
 		
 			dt = t.attendStatus();
-			assert etat != State.MOVING : etat;
+//			assert etat != State.MOVING : etat;
 //			while(etat == State.MOVING)
 //				wait();
 		}

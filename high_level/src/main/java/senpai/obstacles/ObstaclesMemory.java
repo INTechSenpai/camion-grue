@@ -245,4 +245,13 @@ public class ObstaclesMemory
 		return iter;
 	}
 
+	public boolean isKnown(ObstacleProximity obs)
+	{
+		ObstaclesIteratorPresent iter = new ObstaclesIteratorPresent(log, this);
+		while(iter.hasNext())
+			if(obs.isColliding(iter.next()))
+				return true;
+		return false;
+	}
+
 }

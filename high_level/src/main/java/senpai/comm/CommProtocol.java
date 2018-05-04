@@ -134,7 +134,7 @@ public class CommProtocol
 		public void changeStreamState(Channel newState)
 		{
 			assert isStream : "changeStreamState sur "+this+" qui n'est pas un canal de données (code = "+code+")";
-			assert waitingForAnswer != newState.started : newState.started ? "Canal déjà ouvert !" : "Canal déjà fermé !";
+//			assert waitingForAnswer != newState.started : newState.started ? "Canal déjà ouvert !" : "Canal déjà fermé !";
 			waitingForAnswer = newState.started;
 			if(!waitingForAnswer) // on vient de fermer le canal
 				dateLastClose = System.currentTimeMillis();
