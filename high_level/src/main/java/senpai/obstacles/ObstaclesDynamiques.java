@@ -114,4 +114,9 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 			if(c.isThereObstacle)
 				c.current.print(g, f);		
 	}
+
+	public void clearNew()
+	{
+		newObs.clear();
+	}
 }

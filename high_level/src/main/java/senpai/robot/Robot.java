@@ -26,7 +26,6 @@ import pfg.graphic.printable.Layer;
 import pfg.graphic.printable.Segment;
 import pfg.kraken.Kraken;
 import pfg.kraken.SearchParameters;
-import pfg.kraken.astar.autoreplanning.DynamicPath;
 import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.robot.Cinematique;
@@ -71,7 +70,6 @@ public class Robot extends RobotState
 	protected volatile boolean symetrie;
 	protected Log log;
 	protected Kraken kraken;
-	private DynamicPath dpath;
 //	private volatile boolean modeDegrade = false;
 	private List<ItineraryPoint> pathDegrade;
 	private RectangularObstacle obstacle;
@@ -104,7 +102,6 @@ public class Robot extends RobotState
 		this.out = out;
 		this.buffer = buffer;
 		this.kraken = kraken;
-		this.dpath = null; //dpath;
 		this.known = known;
 		this.obstacle = obstacle;
 		

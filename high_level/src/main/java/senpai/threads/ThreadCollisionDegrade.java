@@ -16,7 +16,6 @@ import java.util.List;
 
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.robot.ItineraryPoint;
-import pfg.kraken.utils.XY;
 
 /**
  * Thread qui s'occupe de la détection de collisions
@@ -71,17 +70,19 @@ public final class ThreadCollisionDegrade extends Thread
 //					log.write("Démarrage check collision.", Subject.STATUS);
 
 					currentPath = robot.getPath();
-					
-					initialObstacles.clear();
-					int i = 0;
-					for(ItineraryPoint ip : currentPath)
-					{
-						memory[i].update(ip.x, ip.y, ip.orientation);
-						initialObstacles.add(memory[i]);
-						i++;
-					}
 				}				
+
+				initialObstacles.clear();
+				int i = 0;
+				for(ItineraryPoint ip : currentPath)
+				{
+					memory[i].update(ip.x, ip.y, ip.orientation);
+					initialObstacles.add(memory[i]);
+					i++;
+				}
 				
+				dynObs.clearNew();
+
 				/*
 				 * On attend d'avoir des obstacles à vérifier
 				 */
