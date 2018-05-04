@@ -121,7 +121,8 @@ public class ThreadCommProcess extends Thread
 					int[] mesures = new int[nbCapteurs];
 					for(CapteursRobot c : CapteursRobot.values())
 					{
-						mesures[c.ordinal()] = data.getInt();
+						if(!c.isTourelle)
+							mesures[c.ordinal()] = data.getInt();
 						int m = mesures[c.ordinal()];
 						if(m != CommProtocol.EtatCapteur.TROP_LOIN.ordinal())
 							log.write("Capteur " + c.name() + " : " + (m < CommProtocol.EtatCapteur.values().length ? CommProtocol.EtatCapteur.values()[m] : m), Subject.CAPTEURS);

@@ -484,7 +484,8 @@ public class Robot extends RobotState
 		}
 		
 		log.write("On commence à suivre la trajectoire", Subject.TRAJECTORY);
-		
+		log.write("Trajectoire de "+pathDegrade.size()+" points", Subject.TRAJECTORY);
+
 		assert etat == State.READY_TO_GO;
 		setMoving();
 		
@@ -510,6 +511,7 @@ public class Robot extends RobotState
 			log.write("Le robot s'est arrêté suite à un problème : "+dt.data, Severity.CRITICAL, Subject.TRAJECTORY);
 
 		pathDegrade = null;
+		path = null;
 		etat = State.STANDBY;
 		return dt;
 	}
@@ -534,10 +536,13 @@ public class Robot extends RobotState
 
 	public synchronized void setDegrade()
 	{
-		log.write("Le robot entre en mode dégradé !", Severity.WARNING, Subject.STATUS);
-		kraken.endAutoReplanning();
-		modeDegrade = true;
-		notifyAll();
+		if(!modeDegrade)
+		{
+			log.write("Le robot entre en mode dégradé !", Severity.WARNING, Subject.STATUS);
+			kraken.endAutoReplanning();
+			modeDegrade = true;
+			notifyAll();
+		}
 	}
 	
 	public boolean isDegrade() {

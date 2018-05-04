@@ -393,7 +393,10 @@ public class CapteursProcess
 		
 		assert mesure >= 0 : "Mesure de capteur négative ! "+c+" "+mesure;
 		
-		if(mesure < CommProtocol.EtatCapteur.values().length)
+		if(mesure == CommProtocol.EtatCapteur.TROP_PROCHE.ordinal())
+			mesure = 5;
+		
+		else if(mesure < CommProtocol.EtatCapteur.values().length)
 		{
 //			log.write("Capteur "+c+" : "+CommProtocol.EtatCapteur.values()[mesure], Subject.CAPTEURS);
 			return null;

@@ -224,6 +224,8 @@ public class Senpai
 		Subject.COMM.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_COMM));
 		Subject.TRAJECTORY.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_TRAJECTORY));
 		Subject.SCRIPT.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_SCRIPT));
+		Severity.WARNING.setPrint(config.getBoolean(ConfigInfoSenpai.PRINT_WARNING));
+		Severity.CRITICAL.setPrint(config.getBoolean(ConfigInfoSenpai.PRINT_CRITICAL));
 		
 		injector.addService(this);
 		injector.addService(log);

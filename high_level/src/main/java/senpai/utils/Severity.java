@@ -24,7 +24,7 @@ public enum Severity implements pfg.log.Severity
 {
 	INFO(false), WARNING(true), CRITICAL(true);
 
-	public final boolean always;
+	private boolean always;
 	
 	private Severity(boolean always)
 	{
@@ -34,5 +34,10 @@ public enum Severity implements pfg.log.Severity
 	@Override
 	public boolean alwaysPrint() {
 		return always;
+	}
+	
+	public void setPrint(boolean print)
+	{
+		this.always = print;
 	}
 }

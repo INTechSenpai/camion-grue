@@ -205,7 +205,11 @@ public class KnownPathManager {
 		PriorityQueue<SavedPath> out = new PriorityQueue<SavedPath>(new SavedPathComparator());
 		for(String k : paths.keySet())
 			if(k.startsWith(prefix))
-				out.add(paths.get(k));
+			{
+				SavedPath saved = paths.get(k);
+				if(saved.sp.start.getPosition().squaredDistance(sp.start.getPosition()) < 40*40)
+					out.add(saved);
+			}
 		return out;
 	}
 

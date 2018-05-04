@@ -33,8 +33,8 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	/**
 	 * Tourelles
 	 */
-	ANGLE_MIN_TOURELLE(5), // en degré
-	ANGLE_MAX_TOURELLE(180),
+	ANGLE_MIN_TOURELLE(10), // en degré
+	ANGLE_MAX_TOURELLE(160),
 	ANTICIPATION_TOURELLE(300), // distance où vise la tourelle sur la trajectoire, en mm
 	MARGE_IGNORE_TOURELLE(100), // distance en mm autour du robot où sont ignorés les obstacles vus par les tourelles
 
@@ -85,7 +85,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	/**
 	 * Infos sur l'ennemi
 	 */
-	LARGEUR_OBSTACLE_ENNEMI(100), // largeur du robot vu
+	LARGEUR_OBSTACLE_ENNEMI(60), // largeur du robot vu
 	LONGUEUR_OBSTACLE_ENNEMI(200), // longueur / profondeur du robot vu
 
 	/**
@@ -172,6 +172,8 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	PRINT_COMM(false),
 	PRINT_TRAJECTORY(true),
 	PRINT_SCRIPT(true),
+	PRINT_WARNING(true),
+	PRINT_CRITICAL(true),
 	
 	NO_OBSTACLES(false),
 	
