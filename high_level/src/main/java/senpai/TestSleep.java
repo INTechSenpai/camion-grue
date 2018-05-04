@@ -2,6 +2,8 @@ package senpai;
 
 import senpai.Senpai.ErrorCode;
 import senpai.robot.Robot;
+import senpai.robot.RobotColor;
+import senpai.threads.comm.ThreadCommProcess;
 
 /*
  * Copyright (C) 2013-2018 Pierre-François Gimenez
@@ -38,6 +40,8 @@ public class TestSleep
 			senpai.initialize(configfile, "default", "graphic");
 //			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
 			Robot robot = senpai.getService(Robot.class);
+			senpai.getService(ThreadCommProcess.class).capteursOn = true;
+			robot.updateColorAndSendPosition(RobotColor.ORANGE);
 			robot.setEnMarcheAvance(false);
 			Thread.sleep(100000);
 		}

@@ -28,11 +28,7 @@ import senpai.threads.comm.ThreadCommProcess;
 public enum ThreadName
 {
 	CAPTEURS(ThreadCapteurs.class),
-//	KRAKEN(ThreadKraken.class),
 	TOURELLE(ThreadTourelles.class),
-	PEREMPTION(ThreadPeremption.class),
-//	CLIGOTE_DEGRADE(ThreadClignoteDegrade.class),
-//	CLIGNOTE_NORMAL(ThreadClignoteNormal.class),
 	COLLISION_DEGRADE(ThreadCollisionDegrade.class),
 	SERIAL_INPUT_ORDRE(ThreadCommProcess.class),
 	SERIAL_INPUT_TRAME(ThreadCommListener.class),

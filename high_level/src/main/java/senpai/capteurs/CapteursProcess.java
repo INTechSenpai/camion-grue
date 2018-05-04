@@ -16,7 +16,6 @@ package senpai.capteurs;
 
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
-import senpai.obstacles.ObstacleProximity;
 import senpai.obstacles.ObstaclesDynamiques;
 import senpai.obstacles.ObstaclesFixes;
 import senpai.robot.Robot;
@@ -51,7 +50,6 @@ public class CapteursProcess
 	private OutgoingOrderBuffer serie;
 
 	private int nbCapteurs;
-	private int largeurEnnemi, longueurEnnemi;
 	private int distanceApproximation;
 	private RectangularObstacle obstacleRobot;
 	private Capteur[] capteurs;
@@ -64,7 +62,6 @@ public class CapteursProcess
 	private int indexCorrection = 0;
 //	private boolean scan = false;
 	private Cinematique[] bufferCorrection;
-	private long dureeAvantPeremption;
 //	private ObstaclesMemory obstacles;
 	private ObstaclesDynamiques dynObs;
 	private Robot robot;
@@ -80,9 +77,6 @@ public class CapteursProcess
 		this.dynObs = dynObs;
 		this.robot = robot;
 
-		dureeAvantPeremption = config.getInt(ConfigInfoSenpai.DUREE_PEREMPTION_OBSTACLES);
-		largeurEnnemi = config.getInt(ConfigInfoSenpai.LARGEUR_OBSTACLE_ENNEMI);
-		longueurEnnemi = config.getInt(ConfigInfoSenpai.LONGUEUR_OBSTACLE_ENNEMI);
 		distanceApproximation = config.getInt(ConfigInfoSenpai.DISTANCE_MAX_ENTRE_MESURE_ET_OBJET);
 		nbCapteurs = CapteursRobot.values().length;
 		imprecisionMaxPos = config.getDouble(ConfigInfoSenpai.IMPRECISION_MAX_POSITION);
@@ -140,102 +134,105 @@ public class CapteursProcess
 				table.setDone(g);
 			}
 
-/*		try
-		{*/
-			/**
-			 * Suppression des mesures qui sont hors-table ou qui voient un obstacle
-			 * de table
-			 */
-			for(int i = 0; i < nbCapteurs; i++)
+		/**
+		 * Suppression des mesures qui sont hors-table ou qui voient un obstacle
+		 * de table
+		 */
+		for(int i = 0; i < nbCapteurs; i++)
+		{
+			CapteursRobot c = CapteursRobot.values[i];
+
+			XY positionVue = getPositionVue(capteurs[i], data.mesures[i], data.cinematique, data.angleTourelleGauche, data.angleTourelleDroite, data.angleGrue);
+			if(positionVue == null)
 			{
-				CapteursRobot c = CapteursRobot.values[i];
-	
-				XY positionVue = getPositionVue(capteurs[i], data.mesures[i], data.cinematique, data.angleTourelleGauche, data.angleTourelleDroite, data.angleGrue);
-				if(positionVue == null)
-					continue;
-	
-				boolean stop = false;
-	
-				if(c.isTourelle && robot.isProcheRobot(positionVue, margeIgnoreTourelle))
+				c.isThereObstacle = false;
+				continue;
+			}
+
+			boolean stop = false;
+
+			if(c.isTourelle && robot.isProcheRobot(positionVue, margeIgnoreTourelle))
+			{
+				log.write("Une tourelle voit quelque chose dans le robot", Subject.CAPTEURS);
+				c.isThereObstacle = false;
+				continue;
+			}
+			
+			/**
+			 * Si ce qu'on voit est un obstacle de table, on l'ignore
+			 */
+			for(ObstaclesFixes o : ObstaclesFixes.values())
+				if(o.isVisible(capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
 				{
-					log.write("Une tourelle voit quelque chose dans le robot", Subject.CAPTEURS);
-					continue;
-				}
-				
-				/**
-				 * Si ce qu'on voit est un obstacle de table, on l'ignore
-				 */
-				for(ObstaclesFixes o : ObstaclesFixes.values())
-					if(o.isVisible(capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
-					{
-						log.write("Obstacle de table vu : " + o, Subject.CAPTEURS);
+					log.write("Obstacle de table vu : " + o, Subject.CAPTEURS);
 //						data.etats[i] = TraitementEtat.DANS_OBSTACLE_FIXE;
-						stop = true;
-						break;
-					}
-	
-				if(stop)
-					continue;
-	
-				for(Cube o : Cube.values())
-					if(!table.isDone(o) && o.isVisible(capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
-					{
-						log.write("Élément de jeu vu : " + o, Subject.CAPTEURS);
-						stop = true;
-						break;
-					}
-	
-				if(stop)
-					continue;
-	
-				/**
-				 * Sinon, on ajoute
-				 */
-				XY_RW positionEnnemi = new XY_RW(data.mesures[i] + longueurEnnemi / 2, capteurs[i].orientationRelativeRotate, true);
-				positionEnnemi.plus(capteurs[i].positionRelativeRotate);
-				positionEnnemi.rotate(orientationRobot);
-				positionEnnemi.plus(positionRobot);
-	
-				ObstacleProximity obs = new ObstacleProximity(positionEnnemi, longueurEnnemi, largeurEnnemi, orientationRobot + capteurs[i].orientationRelativeRotate, System.currentTimeMillis() + dureeAvantPeremption, data, i);
-	
-				if(obs.isHorsTable())
+					stop = true;
+					break;
+				}
+
+			if(stop)
+			{
+				c.isThereObstacle = false;
+				continue;
+			}
+
+			for(Cube o : Cube.values())
+				if(!table.isDone(o) && o.isVisible(capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
+				{
+					log.write("Élément de jeu vu : " + o, Subject.CAPTEURS);
+					stop = true;
+					break;
+				}
+
+			if(stop)
+			{
+				c.isThereObstacle = false;
+				continue;
+			}	
+			
+			/**
+			 * Sinon, on ajoute
+			 */
+			XY_RW positionEnnemi = new XY_RW(data.mesures[i] + CapteursRobot.profondeur / 2, capteurs[i].orientationRelativeRotate, true);
+			positionEnnemi.plus(capteurs[i].positionRelativeRotate);
+			positionEnnemi.rotate(orientationRobot);
+			positionEnnemi.plus(positionRobot);
+			c.updateObstacle(positionEnnemi, orientationRobot + capteurs[i].orientationRelativeRotate);
+
+//				ObstacleProximity obs = new ObstacleProximity(positionEnnemi, c.profondeurEnnemi, c.largeurEnnemi, orientationRobot + capteurs[i].orientationRelativeRotate, System.currentTimeMillis() + dureeAvantPeremption, data, i);
+
+/*				if(c.current.isHorsTable())
 				{
 					log.write(c+" voit quelque chose hors table.", Subject.CAPTEURS);
 //					data.etats[i] = TraitementEtat.HORS_TABLE;
+					c.isThereObstacle = false;
 					continue; // hors table
-				}
-				
-				if(dynObs.isKnown(obs))
-					continue;
-	
-				log.write("Ajout d'un obstacle d'ennemi en " + positionEnnemi + " vu par " + c, Subject.CAPTEURS);
-	
-				dynObs.add(obs);
+				}*/
+			
+			c.isThereObstacle = true;
+			log.write("Ajout d'un obstacle d'ennemi en " + positionEnnemi + " vu par " + c, Subject.CAPTEURS);
+
+			dynObs.update(c);
 
 //				data.etats[i] = TraitementEtat.OBSTACLE_CREE;
-				
-				// ObstacleProximity o =
-	//			gridspace.addObstacleAndRemoveNearbyObstacles(obs);
-	
-				/**
-				 * Mise à jour de l'état de la table : un ennemi est passé
-				 */
-	/*			for(GameElementNames g : GameElementNames.values())
-					if(table.isDone(g) == EtatElement.INDEMNE && g.obstacle.isColliding(obs))
-						table.setDone(g, EtatElement.PRIS_PAR_ENNEMI);
-	*/
-			}
 			
-	//		if(chemin.checkColliding(false))
-	//			obsbuffer.notify();
-	
-			if(enableCorrection)
-				correctXYO(data);
-/*		}
-		finally
-		{
-			assert data.checkTraitementEtat();
-		}*/
+			// ObstacleProximity o =
+//			gridspace.addObstacleAndRemoveNearbyObstacles(obs);
+
+			/**
+			 * Mise à jour de l'état de la table : un ennemi est passé
+			 */
+/*			for(GameElementNames g : GameElementNames.values())
+				if(table.isDone(g) == EtatElement.INDEMNE && g.obstacle.isColliding(obs))
+					table.setDone(g, EtatElement.PRIS_PAR_ENNEMI);
+*/
+		}
+		
+//		if(chemin.checkColliding(false))
+//			obsbuffer.notify();
+
+		if(enableCorrection)
+			correctXYO(data);
 		double duree = System.currentTimeMillis() - avant;
 		if(duree > 10)
 			log.write("Durée traitement capteurs : "+duree, duree > 1000 ? Severity.CRITICAL : Severity.WARNING, Subject.CAPTEURS);

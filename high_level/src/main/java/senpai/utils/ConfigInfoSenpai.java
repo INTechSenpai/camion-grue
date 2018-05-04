@@ -83,12 +83,6 @@ public enum ConfigInfoSenpai implements ConfigInfo
 //	COLORED_LOG(false), // de la couleur dans les sauvegardes de logs !
 
 	/**
-	 * Infos sur l'ennemi
-	 */
-	LARGEUR_OBSTACLE_ENNEMI(60), // largeur du robot vu
-	LONGUEUR_OBSTACLE_ENNEMI(200), // longueur / profondeur du robot vu
-
-	/**
 	 * Paramètres du pathfinding
 	 */
 //	COURBURE_MAX(3), // quelle courbure maximale la trajectoire du robot
@@ -133,8 +127,6 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	/**
 	 * Paramètres du traitement des capteurs
 	 */
-	DUREE_PEREMPTION_OBSTACLES(1000), // pendant combien de temps va-t-on garder
-										// un obstacle de proximité
 	DISTANCE_MAX_ENTRE_MESURE_ET_OBJET(50), // quelle marge d'erreur
 											// autorise-t-on entre un objet et
 											// sa détection

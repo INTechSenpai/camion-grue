@@ -1,5 +1,6 @@
 package senpai.capteurs;
 
+import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.utils.XY;
 
 /*
@@ -33,27 +34,27 @@ public enum CapteursRobot
 	// ToF Avant Droit
 
 	
-	ToF_AVANT(CapteurImmobile.class, new XY(243, 0), 0, TypeCapteur.ToF_COURT),
+	ToF_AVANT(CapteurImmobile.class, new XY(243, 0), 0, TypeCapteur.ToF_COURT, 166),
 	
-	ToF_COIN_AVANT_GAUCHE(CapteurImmobile.class, new XY(243, 80), Math.PI / 4, TypeCapteur.ToF_COURT),
+	ToF_COIN_AVANT_GAUCHE(CapteurImmobile.class, new XY(243, 80), Math.PI / 4, TypeCapteur.ToF_COURT, 166),
 
-	ToF_COIN_AVANT_DROIT(CapteurImmobile.class, new XY(243, -80), -Math.PI / 4, TypeCapteur.ToF_COURT),
+	ToF_COIN_AVANT_DROIT(CapteurImmobile.class, new XY(243, -80), -Math.PI / 4, TypeCapteur.ToF_COURT, 166),
 
-	ToF_LATERAL_AVANT_GAUCHE(CapteurImmobile.class, new XY(139, 88), Math.PI / 2, TypeCapteur.ToF_COURT),
+	ToF_LATERAL_AVANT_GAUCHE(CapteurImmobile.class, new XY(139, 88), Math.PI / 2, TypeCapteur.ToF_COURT, 206),
 
-	ToF_LATERAL_AVANT_DROIT(CapteurImmobile.class, new XY(139, -88), -Math.PI / 2, TypeCapteur.ToF_COURT),
+	ToF_LATERAL_AVANT_DROIT(CapteurImmobile.class, new XY(139, -88), -Math.PI / 2, TypeCapteur.ToF_COURT, 206),
 
-	ToF_LATERAL_ARRIERE_GAUCHE(CapteurImmobile.class, new XY(-139, 88), Math.PI / 2, TypeCapteur.ToF_COURT),
+	ToF_LATERAL_ARRIERE_GAUCHE(CapteurImmobile.class, new XY(-139, 88), Math.PI / 2, TypeCapteur.ToF_COURT, 206),
 
-	ToF_LATERAL_ARRIERE_DROIT(CapteurImmobile.class, new XY(-139, -88), -Math.PI / 2, TypeCapteur.ToF_COURT),
+	ToF_LATERAL_ARRIERE_DROIT(CapteurImmobile.class, new XY(-139, -88), -Math.PI / 2, TypeCapteur.ToF_COURT, 206),
 
-	ToF_ARRIERE_GAUCHE(CapteurImmobile.class, new XY(-164, 80), -Math.PI, TypeCapteur.ToF_COURT),
+	ToF_ARRIERE_GAUCHE(CapteurImmobile.class, new XY(-164, 80), -Math.PI, TypeCapteur.ToF_COURT, 206),
 
-	ToF_ARRIERE_DROITE(CapteurImmobile.class, new XY(-164, -80), -Math.PI, TypeCapteur.ToF_COURT),
+	ToF_ARRIERE_DROITE(CapteurImmobile.class, new XY(-164, -80), -Math.PI, TypeCapteur.ToF_COURT, 206),
 	
-	TOURELLE_GAUCHE(CapteurMobile.class, new XY(40,52), 0, TypeCapteur.ToF_LONG),
+	TOURELLE_GAUCHE(CapteurMobile.class, new XY(40,52), 0, TypeCapteur.ToF_LONG, 200),
 
-	TOURELLE_DROITE(CapteurMobile.class, new XY(40,-52), 0, TypeCapteur.ToF_LONG);
+	TOURELLE_DROITE(CapteurMobile.class, new XY(40,-52), 0, TypeCapteur.ToF_LONG, 200);
 
 	
 	public final Class<? extends Capteur> classe;
@@ -62,10 +63,14 @@ public enum CapteursRobot
 	public final TypeCapteur type;
 	public final boolean sureleve;
 	public final boolean isTourelle;
+	public RectangularObstacle current;
+	public volatile boolean isThereObstacle = false;
+	public static final int profondeur = 200;
 	public final static CapteursRobot[] values = values();
 
-	private <S extends Capteur> CapteursRobot(Class<S> classe, XY pos, double angle, TypeCapteur type)
+	private <S extends Capteur> CapteursRobot(Class<S> classe, XY pos, double angle, TypeCapteur type, int largeur)
 	{
+		current = new RectangularObstacle(new XY(0,0), profondeur, largeur, 0);
 		isTourelle = name().startsWith("TOURELLE_"); // les tourelles sont surélevées
 		sureleve = isTourelle;
 		this.classe = classe;
@@ -73,4 +78,11 @@ public enum CapteursRobot
 		this.angle = angle;
 		this.type = type;
 	}
+
+	public void updateObstacle(XY positionEnnemi, double orientation)
+	{
+		current.update(positionEnnemi, orientation);
+	}
+	
+	
 }

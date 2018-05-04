@@ -32,7 +32,8 @@ public final class ThreadCollisionDegrade extends Thread
 	private Robot robot;
 	private OutgoingOrderBuffer out;
 	private List<RectangularObstacle> initialObstacles = new ArrayList<RectangularObstacle>();
-	private RectangularObstacle vehicleTemplate;
+	private RectangularObstacle[] memory;
+
 
 	public ThreadCollisionDegrade(Log log, ObstaclesDynamiques dynObs, Robot robot, OutgoingOrderBuffer out, RectangularObstacle vehicleTemplate)
 	{
@@ -40,7 +41,9 @@ public final class ThreadCollisionDegrade extends Thread
 		this.log = log;
 		this.robot = robot;
 		this.out = out;
-		this.vehicleTemplate = vehicleTemplate;
+		memory = new RectangularObstacle[2000];
+		for(int i = 0; i < memory.length; i++)
+			memory[i] = vehicleTemplate.clone();
 		setDaemon(true);
 	}
 
@@ -70,11 +73,12 @@ public final class ThreadCollisionDegrade extends Thread
 					currentPath = robot.getPath();
 					
 					initialObstacles.clear();
+					int i = 0;
 					for(ItineraryPoint ip : currentPath)
 					{
-						RectangularObstacle o = vehicleTemplate.clone();
-						o.update(new XY(ip.x, ip.y), ip.orientation);
-						initialObstacles.add(o);
+						memory[i].update(ip.x, ip.y, ip.orientation);
+						initialObstacles.add(memory[i]);
+						i++;
 					}
 				}				
 				

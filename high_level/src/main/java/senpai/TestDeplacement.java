@@ -27,11 +27,11 @@ import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import senpai.Senpai.ErrorCode;
 import senpai.buffer.OutgoingOrderBuffer;
+import senpai.capteurs.CapteursRobot;
 import senpai.comm.CommProtocol;
 import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
-import senpai.obstacles.ObstacleProximity;
-import senpai.obstacles.ObstaclesMemory;
+import senpai.obstacles.ObstaclesDynamiques;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
 import senpai.scripts.Script;
@@ -62,8 +62,8 @@ public class TestDeplacement {
 			Robot robot = senpai.getService(Robot.class);
 			Table table = senpai.getService(Table.class);
 			GraphicDisplay buffer = senpai.getService(GraphicDisplay.class);
-			ObstaclesMemory mem = senpai.getService(ObstaclesMemory.class);
 			ScriptManager scripts = senpai.getService(ScriptManager.class);
+			ObstaclesDynamiques od = senpai.getService(ObstaclesDynamiques.class);
 			
 			boolean simuleComm = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 			RobotColor couleur;
@@ -89,10 +89,13 @@ public class TestDeplacement {
 			PriorityQueue<ScriptPriseCube> all = scripts.getAllPossible(true, CubeColor.ORANGE, false);
 //			XYO destination = new ScriptPriseCube(0, ElementColor.BLEU, ScriptPriseCube.Face.BAS, false).getPointEntree();
 
-/*			ObstacleProximity obs = new ObstacleProximity(new XY(-150.84,1543.50), 100, 100, 0, 0, null, 0);
-			buffer.addPrintable(obs, Color.RED, Layer.FOREGROUND.layer);
-			mem.add(obs);
-	*/		
+			CapteursRobot.ToF_COIN_AVANT_DROIT.updateObstacle(new XY(-150.84,1543.50), 0);
+			od.update(CapteursRobot.ToF_COIN_AVANT_DROIT);
+			
+//			ObstacleProximity obs = new ObstacleProximity(new XY(-150.84,1543.50), 100, 100, 0, 0, null, 0);
+			buffer.addPrintable(CapteursRobot.ToF_COIN_AVANT_DROIT.current, Color.RED, Layer.FOREGROUND.layer);
+//			mem.add(obs);
+
 			Cinematique init = robot.getCinematique().clone();
 			
 			for(int i = 0; i < 5; i++)

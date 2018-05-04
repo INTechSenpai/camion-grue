@@ -14,13 +14,21 @@
 
 package senpai.obstacles;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import pfg.config.Config;
+import pfg.graphic.GraphicDisplay;
+import pfg.graphic.GraphicPanel;
+import pfg.graphic.printable.Layer;
+import pfg.graphic.printable.Printable;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.obstacles.container.SmartDynamicObstacles;
+import senpai.capteurs.CapteursRobot;
 import senpai.table.Table;
 import senpai.utils.ConfigInfoSenpai;
 
@@ -30,25 +38,30 @@ import senpai.utils.ConfigInfoSenpai;
  *
  */
 
-public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterator<Obstacle>
+public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterator<Obstacle>, Printable
 {
-	private Table table;
-	private ObstaclesMemory memory;
-	private Iterator<Obstacle> iteratorMemory;
-	private Iterator<Obstacle> iteratorTable;
-	private boolean obsTable;
+	private static final long serialVersionUID = 1L;
+	private transient Table table;
+	private transient Iterator<Obstacle> iteratorMemory;
+	private transient Iterator<Obstacle> iteratorTable;
+	private transient boolean obsTable;
 	
-	public ObstaclesDynamiques(Table table, ObstaclesMemory memory, Config config)
+	public ObstaclesDynamiques(Table table, Config config, GraphicDisplay buffer)
 	{
 		obsTable = !config.getBoolean(ConfigInfoSenpai.NO_OBSTACLES);
 		this.table = table;
-		this.memory = memory;
+		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_SEEN_OBSTACLES))
+			buffer.addPrintable(this, Color.BLACK, Layer.FOREGROUND.layer);
 	}
 
 	@Override
 	public Iterator<Obstacle> getCurrentDynamicObstacles()
 	{
-		iteratorMemory = memory.getCurrentDynamicObstacles();
+		List<Obstacle> capt = new ArrayList<Obstacle>();
+		for(CapteursRobot c : CapteursRobot.values)
+			if(c.isThereObstacle)
+				capt.add(c.current);
+		iteratorMemory =  capt.iterator();
 		iteratorTable = table.getCurrentObstaclesIterator();
 		return this;
 	}
@@ -71,10 +84,7 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 
 	@Override
 	protected void addObstacle(Obstacle obs)
-	{
-		assert obs instanceof ObstacleProximity;
-		memory.add((ObstacleProximity)obs);
-	}
+	{}
 
 	public synchronized int isThereCollision(List<RectangularObstacle> currentPath)
 	{
@@ -93,8 +103,15 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 		return i;
 	}
 
-	public boolean isKnown(ObstacleProximity obs)
+	public void update(CapteursRobot c) {
+		super.add(c.current);
+	}
+
+	@Override
+	public void print(Graphics g, GraphicPanel f)
 	{
-		return memory.isKnown(obs);
+		for(CapteursRobot c : CapteursRobot.values)
+			if(c.isThereObstacle)
+				c.current.print(g, f);		
 	}
 }

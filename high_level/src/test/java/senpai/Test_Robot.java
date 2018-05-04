@@ -24,7 +24,6 @@ import org.junit.Test;
 import pfg.kraken.utils.XY;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol.Id;
-import senpai.obstacles.ObstacleProximity;
 import senpai.robot.Robot;
 import senpai.robot.Speed;
 import senpai.scripts.ScriptPriseCube;
