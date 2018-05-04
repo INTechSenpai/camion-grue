@@ -52,7 +52,7 @@ public class ThreadClignoteNormal extends Thread
 				synchronized(robot)
 				{
 					// On vérifie régulièrement si le robot est entré en mode dégradé
-					if(robot.isDegrade())
+//					if(robot.isDegrade())
 						break;
 				}
 			}

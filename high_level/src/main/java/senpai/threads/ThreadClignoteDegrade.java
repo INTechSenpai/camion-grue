@@ -45,7 +45,7 @@ public class ThreadClignoteDegrade extends Thread
 		{
 			synchronized(robot)
 			{
-				while(!robot.isDegrade())
+//				while(!robot.isDegrade())
 					robot.wait();
 			}
 			log.write("Activation du mode dégradé : clignotement rapide démarré", Subject.STATUS);

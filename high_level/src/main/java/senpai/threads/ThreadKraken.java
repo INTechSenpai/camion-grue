@@ -80,12 +80,12 @@ public class ThreadKraken extends Thread
 							display.addPrintable(p, p.stop ? Color.BLUE : Color.BLACK, Layer.FOREGROUND.layer);
 						}
 
-					if(robot.isDegrade())
+/*					if(robot.isDegrade())
 					{
 						log.write("Mode dégradé activé, "+Thread.currentThread().getName()+" entre en sommeil.", Subject.STATUS);
 						while(true)
 							Thread.sleep(Integer.MAX_VALUE);
-					}
+					}*/
 					
 					known.addPath(diff.diff);
 					if(!simuleLL)

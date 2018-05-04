@@ -72,7 +72,7 @@ public class Robot extends RobotState
 	protected Log log;
 	protected Kraken kraken;
 	private DynamicPath dpath;
-	private volatile boolean modeDegrade = false;
+//	private volatile boolean modeDegrade = false;
 	private List<ItineraryPoint> pathDegrade;
 	private RectangularObstacle obstacle;
 	private double angleMin, angleMax;
@@ -127,7 +127,7 @@ public class Robot extends RobotState
 		cinematique.enMarcheAvant = true;
 
 		simuleLL = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);		
-		setDegrade();
+//		setDegrade();
 	}
 	
 	public void setEnMarcheAvance(boolean enMarcheAvant)
@@ -385,17 +385,17 @@ public class Robot extends RobotState
 				log.write("Aucun chemin connu pour : "+sp, Subject.TRAJECTORY);
 		}
 		
-		if(modeDegrade)
+//		if(modeDegrade)
 			kraken.initializeNewSearch(sp);
 
 		if(allSaved != null)
 			while(!allSaved.isEmpty())
 			{
 				SavedPath saved = allSaved.poll();
-				try
-				{
-					if(modeDegrade)
-					{
+//				try
+//				{
+//					if(modeDegrade)
+//					{
 						if(kraken.checkPath(saved.path))
 						{
 							log.write("On réutilise un chemin en mode dégradé : "+saved.name, Subject.TRAJECTORY);
@@ -404,7 +404,7 @@ public class Robot extends RobotState
 						}
 						else
 							log.write("Chemin inadapté", Subject.TRAJECTORY);
-					}
+/*					}
 					else
 					{
 						log.write("On démarre la recherche continue avec un chemin initial : "+saved.name, Subject.TRAJECTORY);
@@ -416,11 +416,11 @@ public class Robot extends RobotState
 				catch(PathfindingException e)
 				{
 					log.write("Chemin inadapté : "+e.getMessage(), Subject.TRAJECTORY);
-				}
+				}*/
 			}
 
-		if(modeDegrade)
-		{
+//		if(modeDegrade)
+//		{
 
 //			System.out.println(path);
 			// On cherche et on envoie
@@ -439,7 +439,7 @@ public class Robot extends RobotState
 			}
 			setReady();
 			pathDegrade = path;
-		}
+/*		}
 		else
 		{
 			if(path == null)
@@ -449,14 +449,14 @@ public class Robot extends RobotState
 			}
 //			else
 //				log.write("On réutilise un chemin déjà connu !", Subject.TRAJECTORY);
-		}
+		}*/
 
 		DataTicket out = followTrajectory();
-		if(!modeDegrade)
+/*		if(!modeDegrade)
 		{
 			log.write("Fin de la recherche en mode continu", Subject.TRAJECTORY);
 			kraken.endContinuousSearch();
-		}
+		}*/
 		if(out.data != null)
 			throw new UnableToMoveException(out.data.toString());
 		return out;
@@ -465,7 +465,7 @@ public class Robot extends RobotState
 	private DataTicket followTrajectory() throws InterruptedException
 	{
 		// TODO : non, avec avancer et reculer
-		assert modeDegrade == (pathDegrade != null) : modeDegrade+" "+pathDegrade;
+//		assert modeDegrade == (pathDegrade != null) : modeDegrade+" "+pathDegrade;
 		assert etat == State.READY_TO_GO || etat == State.STANDBY;
 
 		log.write("Attente de la trajectoire…", Subject.TRAJECTORY);
@@ -502,7 +502,7 @@ public class Robot extends RobotState
 		}
 		else
 		{
-			dt = new DataTicket(modeDegrade ? pathDegrade : dpath.getPath(), CommProtocol.State.OK);
+			dt = new DataTicket(/*modeDegrade ?*/ pathDegrade /*: dpath.getPath()*/, CommProtocol.State.OK);
 		}
 		
 		if(dt.data == null)
@@ -534,7 +534,7 @@ public class Robot extends RobotState
 		return etat == State.STANDBY;
 	}
 
-	public synchronized void setDegrade()
+/*	public synchronized void setDegrade()
 	{
 		if(!modeDegrade)
 		{
@@ -547,7 +547,7 @@ public class Robot extends RobotState
 	
 	public boolean isDegrade() {
 		return modeDegrade;
-	}
+	}*/
 
 	public boolean needCollisionCheck()
 	{

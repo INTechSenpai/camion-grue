@@ -50,13 +50,13 @@ public final class ThreadCollisionDegrade extends Thread
 		Thread.currentThread().setName(getClass().getSimpleName());
 		try
 		{
-			synchronized(robot)
+/*			synchronized(robot)
 			{
 				while(!robot.isDegrade())
 					robot.wait();
 			}
 			log.write("Activation du mode dégradé : gestion des collisions démarré.", Subject.STATUS);
-			
+	*/		
 			List<ItineraryPoint> currentPath;
 			while(true)
 			{
