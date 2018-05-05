@@ -97,9 +97,12 @@ public final class ThreadCollisionDegrade extends Thread
 
 				synchronized(robot)
 				{
-//					log.write("Vérification collision.", Subject.STATUS);
+					int currentIndexTrajectory = robot.getIndexTrajectory();
+//					log.write("Vérification collision.", Subject.STATUS);					
 
-					if(robot.needCollisionCheck() && dynObs.isThereCollision(initialObstacles) != currentPath.size())
+					List<RectangularObstacle> subList = initialObstacles.subList(currentIndexTrajectory, Math.min(currentIndexTrajectory + 13, initialObstacles.size()));
+					
+					if(robot.needCollisionCheck() && dynObs.isThereCollision(subList) != subList.size())
 					{
 						robot.setStopping();
 						out.immobilise();

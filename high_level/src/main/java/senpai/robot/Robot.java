@@ -657,4 +657,9 @@ public class Robot extends RobotState
 	{
 		isInScript = false;
 	}
+
+	public int getIndexTrajectory()
+	{
+		return currentIndexTrajectory;
+	}
 }

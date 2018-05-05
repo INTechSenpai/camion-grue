@@ -132,7 +132,7 @@ public class ThreadCommProcess extends Thread
 						if(enableTourelle || !c.isTourelle)
 							sd.mesures[c.ordinal()] = data.getInt();
 						int m = sd.mesures[c.ordinal()];
-						if(m != CommProtocol.EtatCapteur.TROP_LOIN.ordinal())
+						if(m != CommProtocol.EtatCapteur.TROP_LOIN.ordinal() && (!c.isTourelle || m != CommProtocol.EtatCapteur.CAPTEUR_HS_BRULE_NOYE.ordinal()))
 							log.write("Capteur " + c.name() + " : " + (m < CommProtocol.EtatCapteur.values().length ? CommProtocol.EtatCapteur.values()[m] : m), Subject.CAPTEURS);
 					}
 					double angleTourelleGauche = data.getFloat();
