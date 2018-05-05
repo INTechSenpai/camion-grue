@@ -30,6 +30,7 @@ import senpai.comm.CommProtocol.Id;
 import senpai.comm.CommProtocol.LLStatus;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
+import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
 
@@ -43,7 +44,6 @@ import senpai.utils.Subject;
 public class ThreadCommProcess extends Thread
 {
 	protected Log log;
-	protected Config config;
 	private IncomingOrderBuffer serie;
 	private SensorsDataBuffer buffer;
 	private Robot robot;
@@ -53,15 +53,16 @@ public class ThreadCommProcess extends Thread
 
 	public volatile boolean capteursOn = false;
 	private int nbCapteurs;
+	private boolean enableTourelle;
 
 	public ThreadCommProcess(Log log, Config config, IncomingOrderBuffer serie, SensorsDataBuffer buffer, Robot robot, Senpai container/*, DynamicPath chemin*/)
 	{
 		this.container = container;
 		this.log = log;
-		this.config = config;
 		this.serie = serie;
 		this.buffer = buffer;
 		this.robot = robot;
+		enableTourelle = config.getBoolean(ConfigInfoSenpai.ENABLE_TOURELLE);
 //		this.chemin = chemin;
 		setDaemon(true);
 		setPriority(Thread.MAX_PRIORITY);
@@ -119,7 +120,7 @@ public class ThreadCommProcess extends Thread
 					int[] mesures = new int[nbCapteurs];
 					for(CapteursRobot c : CapteursRobot.values())
 					{
-						if(!c.isTourelle)
+						if(enableTourelle || !c.isTourelle)
 							mesures[c.ordinal()] = data.getInt();
 						int m = mesures[c.ordinal()];
 						if(m != CommProtocol.EtatCapteur.TROP_LOIN.ordinal())

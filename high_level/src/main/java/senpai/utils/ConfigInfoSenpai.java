@@ -37,7 +37,8 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	ANGLE_MAX_TOURELLE(160),
 	ANTICIPATION_TOURELLE(300), // distance où vise la tourelle sur la trajectoire, en mm
 	MARGE_IGNORE_TOURELLE(100), // distance en mm autour du robot où sont ignorés les obstacles vus par les tourelles
-
+	ENABLE_TOURELLE(true),
+	
 	/**
 	 * Position initiale du robot
 	 */
