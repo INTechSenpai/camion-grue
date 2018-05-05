@@ -16,6 +16,7 @@ package senpai.robot;
 
 import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 //import java.util.PriorityQueue;
@@ -69,6 +70,8 @@ public class Robot extends RobotState
 	
 	private Cube cubeTop = null;
 	private Cube cubeInside = null;
+	@SuppressWarnings("unchecked")
+	private List<Cube>[] piles = (List<Cube>[]) new List[2];
 	protected volatile boolean symetrie;
 	protected Log log;
 	protected Kraken kraken;
@@ -102,7 +105,9 @@ public class Robot extends RobotState
 		this.kraken = kraken;
 //		this.known = known;
 		this.obstacle = obstacle;
-		
+		piles[0] = new ArrayList<Cube>();
+		piles[1] = new ArrayList<Cube>();
+
 		jumperOK = config.getBoolean(ConfigInfoSenpai.DISABLE_JUMPER);
 		angleMin = config.getInt(ConfigInfoSenpai.ANGLE_MIN_TOURELLE) * Math.PI / 180;
 		angleMax = config.getInt(ConfigInfoSenpai.ANGLE_MAX_TOURELLE) * Math.PI / 180;
@@ -126,6 +131,18 @@ public class Robot extends RobotState
 		score = 5;
 		out.setScore(score);
 //		setDegrade();
+	}
+	
+	public int getNbPile(boolean usePattern)
+	{
+		if(usePattern && piles[0].size() >= 3)
+			return 1;
+		return 0;
+	}
+	
+	public int getHauteurPile(int nbPile)
+	{
+		return piles[nbPile].size();
 	}
 	
 	public void setEnMarcheAvance(boolean enMarcheAvant)

@@ -46,7 +46,6 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	INITIAL_X(1300),
 	INITIAL_Y(1700),
 	INITIAL_O(-Math.PI/2),
-	COLOR_PATTERN(""),
 	
 	/**
 	 * Infos sur le robot

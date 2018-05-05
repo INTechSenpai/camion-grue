@@ -16,6 +16,7 @@ import senpai.robot.RobotColor;
 import senpai.scripts.Script;
 import senpai.scripts.ScriptManager;
 import senpai.scripts.ScriptRecalage;
+import senpai.table.CubeColor;
 import senpai.table.Table;
 import senpai.threads.comm.ThreadCommProcess;
 import senpai.utils.ConfigInfoSenpai;
@@ -55,7 +56,14 @@ public class Match
 	{
 		ErrorCode error = ErrorCode.NO_ERROR;
 		try {
-			new Match().exec();
+			CubeColor[] pattern = null;
+			if(args.length == 3)
+			{
+				pattern = CubeColor.parsePattern(args);
+				if(pattern != null)
+					System.out.println("Pattern lu : "+pattern[0]+" "+pattern[1]+" "+pattern[2]);
+			}
+			new Match().exec(pattern);
 		}
 		catch(Exception e)
 		{
@@ -76,7 +84,7 @@ public class Match
 		}
 	}
 	
-	public void exec() throws InterruptedException
+	public void exec(CubeColor[] pattern) throws InterruptedException
 	{
 		String configfile = "match.conf";
 		

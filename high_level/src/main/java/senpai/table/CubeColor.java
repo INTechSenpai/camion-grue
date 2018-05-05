@@ -51,4 +51,24 @@ public enum CubeColor
 	{
 		return getPlace(croix.center.getX() > 0);
 	}
+	
+	public static CubeColor[] parsePattern(String[] pattern)
+	{
+		CubeColor[] couleurs = new CubeColor[3];
+		for(int i = 0; i < 3; i++)
+		{
+			for(CubeColor c : values())
+				if(c.name().toLowerCase().startsWith(pattern[i].toLowerCase()))
+				{
+					couleurs[i] = c;
+					break;
+				}
+			if(couleurs[i] == null)
+			{
+				System.out.println("Couleur non reconnue : "+pattern[i]);
+				return null;
+			}
+		}		
+		return couleurs;
+	}
 }

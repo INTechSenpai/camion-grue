@@ -65,14 +65,14 @@ public class ScriptPriseCube extends Script
 		if(coteDroit)
 		{
 			XY_RW position = new XY_RW(298, face.angleAttaque, true).plus(cube.position);
-			double angle = face.angleAttaque + Math.PI / 2 + 15. * Math.PI / 180.;
+			double angle = face.angleAttaque - Math.PI / 2 - 15. * Math.PI / 180.;
 			position.plus(new XY(50, angle, true));
 			return new XYO(position, angle);
 		}
 		else
 		{
 			XY_RW position = new XY_RW(298, face.angleAttaque, true).plus(cube.position);
-			double angle = face.angleAttaque - Math.PI / 2 - 15. * Math.PI / 180.;
+			double angle = face.angleAttaque + Math.PI / 2 + 15. * Math.PI / 180.;
 			position.plus(new XY(50, angle, true));
 			return new XYO(position, angle);
 		}
@@ -91,10 +91,10 @@ public class ScriptPriseCube extends Script
 		// take cube, store cube inside
 		// take cube, store cube top
 		// put cube, table cube inside, put cube, go to home 
-		table.setDone(cube); // dans tous les cas, le cas n'est plus là
+		table.setDone(cube); // dans tous les cas, le cas n'est plus là (soit il ne l'a jamais été, soit on l'a pris)
 		if(robot.canTakeCube())
 		{
-			robot.execute(Id.ARM_TAKE_CUBE, coteDroit ? Math.PI / 180 * 75 : - Math.PI / 180 * 75);
+			robot.execute(Id.ARM_TAKE_CUBE, coteDroit ? - Math.PI / 180 * 75 : Math.PI / 180 * 75);
 			robot.storeCube(cube);
 		}
 	}

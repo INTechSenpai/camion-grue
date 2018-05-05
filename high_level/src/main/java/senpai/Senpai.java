@@ -144,7 +144,8 @@ public class Senpai
 			s.close();
 		
 		// On appelle le destructeur graphique
-		debug.destructor();
+		if(debug != null)
+			debug.destructor();
 
 		log.write("Arrêt des threads.", Subject.STATUS);
 		// arrêt des threads

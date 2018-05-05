@@ -14,9 +14,7 @@
 
 package senpai.scripts;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.PriorityQueue;
 
 import pfg.log.Log;
@@ -28,7 +26,6 @@ import senpai.table.Cube;
 import senpai.table.CubeColor;
 import senpai.table.CubeFace;
 import senpai.table.Table;
-import senpai.utils.ConfigInfoSenpai;
 import pfg.config.Config;
 import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
@@ -57,13 +54,10 @@ public class ScriptManager
 		}
 	}
 	
-	private final boolean usePattern;
-	private final String pattern;
-	@SuppressWarnings("unchecked")
-	private List<Cube>[] piles = (List<Cube>[]) new List[2];
+	private boolean usePattern;
+	private String pattern;
 	private XY_RW[] pilePosition = new XY_RW[] {new XY_RW(0,0), new XY_RW(0,0)};
-	private CubeFace faceDepose;
-	private boolean coteDroit;
+	private CubeFace faceDepose = CubeFace.BAS;
 	private double[] longueurGrue = new double[]{300, 300, 290, 365, 365}; // longueur de la grue en fonction du nombre de cube déjà posés
 	
 	public ScriptManager(Log log, Table table, Robot robot, Config config, CapteursProcess cp)
@@ -72,13 +66,15 @@ public class ScriptManager
 		this.table = table;
 		this.robot = robot;
 		this.cp = cp;
-		piles[0] = new ArrayList<Cube>();
-		piles[1] = new ArrayList<Cube>();
-		
-		pattern = config.getString(ConfigInfoSenpai.COLOR_PATTERN);
-		usePattern = pattern.isEmpty();
+		usePattern = false;
 	}
 
+	public void setPattern(String pattern)
+	{
+		this.pattern = pattern;
+		usePattern = true;
+	}
+	
 	public ScriptRecalage getScriptRecalage(long dureeRecalage)
 	{
 		return new ScriptRecalage(log, robot, table, cp, couleur.symmetry, dureeRecalage);		
@@ -96,18 +92,16 @@ public class ScriptManager
 
 	public ScriptDeposeCube getDeposeScript()
 	{
-		int nbPile = getNbPile();
-		return new ScriptDeposeCube(log, robot, table, piles[nbPile].size(), pilePosition[nbPile], faceDepose, coteDroit, longueurGrue[piles[nbPile].size()]);
-	}
-	
-	private int getNbPile()
-	{
-		if(usePattern && piles[0].size() >= 3)
-			return 1;
-		return 0;
+		int nbPile = robot.getNbPile(usePattern);
+		ScriptDeposeCube s1 = new ScriptDeposeCube(log, robot, table, robot.getHauteurPile(nbPile), pilePosition[nbPile], faceDepose, false, longueurGrue[robot.getHauteurPile(nbPile)]);
+		ScriptDeposeCube s2 = new ScriptDeposeCube(log, robot, table, robot.getHauteurPile(nbPile), pilePosition[nbPile], faceDepose, true, longueurGrue[robot.getHauteurPile(nbPile)]);
+		CubeComparator compare = new CubeComparator(robot.getCinematique().getXYO());
+		if(compare.compare(s1, s2) < 0)
+			return s1;
+		return s2;
 	}
 
-	public class CubeComparator implements Comparator<ScriptPriseCube>
+	public class CubeComparator implements Comparator<Script>
 	{
 		private XYO position;
 		
@@ -117,13 +111,18 @@ public class ScriptManager
 		}
 		
 		@Override
-		public int compare(ScriptPriseCube arg0, ScriptPriseCube arg1) {
+		public int compare(Script arg0, Script arg1) {
 			XYO s1 = arg0.getPointEntree();
 			XYO s2 = arg1.getPointEntree();
 			return (int) (s1.position.squaredDistance(position.position) - s2.position.squaredDistance(position.position))
 					+ (int) (XYO.angleDifference(s1.orientation, s2.orientation));
 		}
 		
+	}
+	
+	public ScriptPriseCube getScriptPriseCube(CubeColor couleur, boolean bourrine)
+	{
+		return getAllPossible(couleur, bourrine).poll();
 	}
 	
 	public PriorityQueue<ScriptPriseCube> getAllPossible(CubeColor couleur, boolean bourrine)
@@ -153,7 +152,12 @@ public class ScriptManager
 
 		return out;
 	}
-	
+
+	public ScriptPriseCube getScriptPriseCube(boolean bourrine)
+	{
+		return getAllPossible(bourrine).poll();
+	}
+
 	public PriorityQueue<ScriptPriseCube> getAllPossible(boolean bourrine)
 	{
 		PriorityQueue<ScriptPriseCube> out = new PriorityQueue<ScriptPriseCube>(new CubeComparator(robot.getCinematique().getXYO()));
