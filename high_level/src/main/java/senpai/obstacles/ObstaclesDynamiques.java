@@ -28,9 +28,12 @@ import pfg.graphic.printable.Printable;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.obstacles.container.SmartDynamicObstacles;
+import pfg.log.Log;
 import senpai.capteurs.CapteursRobot;
 import senpai.table.Table;
 import senpai.utils.ConfigInfoSenpai;
+import senpai.utils.Severity;
+import senpai.utils.Subject;
 
 /**
  * Regroupe les obstacles de capteurs et de table
@@ -40,14 +43,16 @@ import senpai.utils.ConfigInfoSenpai;
 
 public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterator<Obstacle>, Printable
 {
+	private transient Log log;
 	private static final long serialVersionUID = 1L;
 	private transient Table table;
 	private transient Iterator<Obstacle> iteratorMemory;
 	private transient Iterator<Obstacle> iteratorTable;
 	private transient boolean obsTable;
 	
-	public ObstaclesDynamiques(Table table, Config config, GraphicDisplay buffer)
+	public ObstaclesDynamiques(Log log, Table table, Config config, GraphicDisplay buffer)
 	{
+		this.log = log;
 		obsTable = !config.getBoolean(ConfigInfoSenpai.NO_OBSTACLES);
 		this.table = table;
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_SEEN_OBSTACLES))
@@ -94,6 +99,7 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 			for(Obstacle o : newObs)
 				if(o.isColliding(ro))
 				{
+					log.write("Collision détectée avec "+o+" depuis "+ro+" : arrêt nécessaire.", Severity.CRITICAL, Subject.STATUS);
 					newObs.clear();
 					return i;
 				}

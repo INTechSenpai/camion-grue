@@ -104,7 +104,6 @@ public final class ThreadCollisionDegrade extends Thread
 					if(robot.needCollisionCheck() && dynObs.isThereCollision(initialObstacles) != currentPath.size())
 					{
 						robot.setStopping();
-						log.write("Collision détectée : arrêt nécessaire.", Severity.CRITICAL, Subject.STATUS);
 						out.immobilise();
 					}
 					

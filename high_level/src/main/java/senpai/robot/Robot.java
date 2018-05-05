@@ -94,6 +94,8 @@ public class Robot extends RobotState
 	private volatile boolean cinematiqueInitialised = false;
 	private boolean enableLoadPath;
 	private int currentIndexTrajectory = 0, anticipationTourelle;
+	private boolean domotiqueDone = false;
+	private int score;
 	
 	// Constructeur
 	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, /*DynamicPath dpath,*/ KnownPathManager known, RectangularObstacle obstacle)
@@ -124,6 +126,8 @@ public class Robot extends RobotState
 		cinematique.enMarcheAvant = true;
 
 		simuleLL = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);		
+		score = 5;
+		out.setScore(score);
 //		setDegrade();
 	}
 	
@@ -338,7 +342,7 @@ public class Robot extends RobotState
 		if(symetrie)
 			setCinematique(new Cinematique(-cinematique.getPosition().getX(),
 					cinematique.getPosition().getY(),
-					Math.PI + cinematique.orientationReelle,
+					Math.PI - cinematique.orientationReelle,
 					cinematique.enMarcheAvant,
 					cinematique.courbureReelle,
 					false));
@@ -502,7 +506,7 @@ public class Robot extends RobotState
 //			while(etat == State.MOVING)
 //				wait();
 			if(dt.data == null)
-				log.write("Le robot a fini correctement la trajectoire.", Subject.TRAJECTORY);
+				log.write("Le robot a fini correctement la trajectoire. Position finale : "+cinematique.getXYO(), Subject.TRAJECTORY);
 			else
 				log.write("Le robot s'est arrêté suite à un problème : "+dt.data, Severity.CRITICAL, Subject.TRAJECTORY);
 		}
@@ -630,5 +634,12 @@ public class Robot extends RobotState
 		currentIndexTrajectory = indexTrajectory;
 //		chemin.setCurrentTrajectoryIndex(indexTrajectory);
 		setCinematique(current);
+	}
+
+	public void setDomotiqueDone()
+	{
+		domotiqueDone = true;
+		score += 25;
+		out.setScore(score);
 	}
 }

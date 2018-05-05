@@ -3,6 +3,7 @@ package senpai;
 import pfg.kraken.SearchParameters;
 import pfg.kraken.astar.DirectionStrategy;
 import pfg.kraken.exceptions.PathfindingException;
+import pfg.kraken.exceptions.TimeoutException;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import senpai.Senpai.ErrorCode;
@@ -110,7 +111,7 @@ public class FindFollowTrajectory
 					robot.goTo(sp.arrival.getXYO());
 					System.out.println("On est arrivé !");
 				}
-				catch(UnableToMoveException e)
+				catch(UnableToMoveException | TimeoutException e)
 				{
 					System.out.println("On a eu un problème : "+e);
 					restart = true;

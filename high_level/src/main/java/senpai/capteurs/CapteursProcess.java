@@ -115,8 +115,6 @@ public class CapteursProcess
 	 */
 	public synchronized void updateObstaclesMobiles(SensorsData data)
 	{
-		log.write("Traitement capteurs", Subject.CAPTEURS);
-
 		long avant = System.currentTimeMillis();
 
 		double orientationRobot = data.cinematique.orientationReelle;
@@ -128,7 +126,7 @@ public class CapteursProcess
 		 * On update la table avec notre position
 		 */
 		for(Cube g : Cube.values())
-			if(g.obstacle.isColliding(obstacleRobot))
+			if(!table.isDone(g) && g.obstacle.isColliding(obstacleRobot))
 			{
 				log.write("Élément shooté", Subject.CAPTEURS);
 				table.setDone(g);
