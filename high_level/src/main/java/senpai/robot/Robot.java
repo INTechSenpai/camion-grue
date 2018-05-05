@@ -61,9 +61,11 @@ public class Robot extends RobotState
 		STANDBY, // le robot est à l'arrêt
 		READY_TO_GO, // une trajectoire a été envoyée
 		STOPPING, // une commande de stop a été envoyée
-		MOVING, // le robot se déplace
-		SCRIPT; // le robot est en plein script
+		MOVING; // le robot se déplace
+//		SCRIPT; // le robot est en plein script
 	}
+	
+	private boolean isInScript = false;
 	
 	private Cube cubeTop = null;
 	private Cube cubeInside = null;
@@ -591,13 +593,13 @@ public class Robot extends RobotState
 			angleDefautDroite = -angleMax;
 		}
 		
-		if(path == null)
+		if(isInScript)
+			out.setTourellesAngles(Math.PI / 2, -Math.PI / 2);
+			
+		else if(path == null)
 			envoieAnglesTourelles(angleDefautGauche, angleDefautDroite);
-/*		else if(etat == State.SCRIPT)
-		{
-			out.setTourellesAngles(Math.PI / 2, -Math.PI / 2);			
-		}*/
-		else// if(etat == State.MOVING)
+
+		else
 		{
 			int pointVise = Math.min(currentIndexTrajectory + anticipationTourelle, path.size() - 1);
 			ItineraryPoint ip = path.get(pointVise);
@@ -644,5 +646,15 @@ public class Robot extends RobotState
 //		domotiqueDone = true;
 		score += 25;
 		out.setScore(score);
+	}
+	
+	public void beginScript()
+	{
+		isInScript = true;
+	}
+	
+	public void endScript()
+	{
+		isInScript = false;
 	}
 }
