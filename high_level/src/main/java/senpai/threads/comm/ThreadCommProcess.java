@@ -49,12 +49,11 @@ public class ThreadCommProcess extends Thread
 	private Robot robot;
 	private Senpai container;
 	private Cinematique current = new Cinematique();
-	private int[][] memory;
+	private SensorsData[] memory;
 	private int indexMem = 0;
 //	private DynamicPath chemin;
 
 	public volatile boolean capteursOn = false;
-	private int nbCapteurs;
 	private boolean enableTourelle;
 
 	public ThreadCommProcess(Log log, Config config, IncomingOrderBuffer serie, SensorsDataBuffer buffer, Robot robot, Senpai container/*, DynamicPath chemin*/)
@@ -65,11 +64,10 @@ public class ThreadCommProcess extends Thread
 		this.buffer = buffer;
 		this.robot = robot;
 		enableTourelle = config.getBoolean(ConfigInfoSenpai.ENABLE_TOURELLE);
-		nbCapteurs = CapteursRobot.values().length;
 
-		memory = new int[100][];
+		memory = new SensorsData[100];
 		for(int i = 0; i < memory.length; i++)
-			memory[i] = new int[nbCapteurs];
+			memory[i] = new SensorsData();
 		
 //		this.chemin = chemin;
 		setDaemon(true);
@@ -124,15 +122,15 @@ public class ThreadCommProcess extends Thread
 					double courbure = data.getFloat();
 					int indexTrajectory = data.getInt();
 					boolean enMarcheAvant = data.get() != 0;
-					int[] mesures = memory[indexMem];
+					SensorsData sd = memory[indexMem]; 
 					indexMem++;
 					indexMem %= memory.length;
 					
 					for(CapteursRobot c : CapteursRobot.values())
 					{
 						if(enableTourelle || !c.isTourelle)
-							mesures[c.ordinal()] = data.getInt();
-						int m = mesures[c.ordinal()];
+							sd.mesures[c.ordinal()] = data.getInt();
+						int m = sd.mesures[c.ordinal()];
 						if(m != CommProtocol.EtatCapteur.TROP_LOIN.ordinal())
 							log.write("Capteur " + c.name() + " : " + (m < CommProtocol.EtatCapteur.values().length ? CommProtocol.EtatCapteur.values()[m] : m), Subject.CAPTEURS);
 					}
@@ -147,7 +145,13 @@ public class ThreadCommProcess extends Thread
 					log.write("Le robot est en " + current.getPosition() + ", orientation : " + orientationRobot + ", index : " + indexTrajectory, Subject.CAPTEURS);
 
 					if(capteursOn)
-						buffer.add(new SensorsData(angleTourelleGauche, angleTourelleDroite, angleGrue, mesures, current));
+					{
+						sd.angleGrue = angleGrue;
+						sd.angleTourelleDroite = angleTourelleDroite;
+						sd.angleTourelleGauche = angleTourelleGauche;
+						sd.cinematique = current;
+						buffer.add(sd);
+					}
 					else
 						log.write("Capteurs désactivés !", Subject.CAPTEURS);
 				}

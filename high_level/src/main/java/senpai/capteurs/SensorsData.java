@@ -37,14 +37,19 @@ public class SensorsData
 		OBSTACLE_CREE;
 	}*/
 	
-	public final Cinematique cinematique;
+	public Cinematique cinematique;
 	/* Ce que voit chacun des capteurs */
 	public final int[] mesures;
-	public final long dateCreation;
+	public long dateCreation;
 //	public TraitementEtat[] etats;
-	public final double angleTourelleGauche, angleTourelleDroite, angleGrue;
+	public double angleTourelleGauche, angleTourelleDroite, angleGrue;
 
-	public SensorsData(double angleRoueGauche, double angleRoueDroite, double angleGrue, int[] mesures, Cinematique cinematique)
+	public SensorsData()
+	{
+		mesures = new int[CapteursRobot.values().length];
+	}
+	
+/*	public SensorsData(double angleRoueGauche, double angleRoueDroite, double angleGrue, int[] mesures, Cinematique cinematique)
 	{
 		dateCreation = System.currentTimeMillis();
 		this.cinematique = cinematique;
@@ -53,7 +58,7 @@ public class SensorsData
 		this.angleGrue = angleGrue;
 		this.mesures = mesures;
 //		etats = new TraitementEtat[mesures.length];
-	}
+	}*/
 
 	
 	/**
