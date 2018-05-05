@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 import pfg.log.Log;
+import senpai.capteurs.CapteursProcess;
 import senpai.robot.Robot;
 import senpai.table.Croix;
 import senpai.table.Cube;
@@ -41,6 +42,7 @@ public class ScriptManager
 	protected Log log;
 	private Table table;
 	private Robot robot;
+	private CapteursProcess cp;
 	
 	private final boolean usePattern;
 	private final String pattern;
@@ -51,11 +53,12 @@ public class ScriptManager
 	private boolean coteDroit;
 	private double[] longueurGrue = new double[]{300, 300, 290, 365, 365}; // longueur de la grue en fonction du nombre de cube déjà posés
 	
-	public ScriptManager(Log log, Table table, Robot robot, Config config)
+	public ScriptManager(Log log, Table table, Robot robot, Config config, CapteursProcess cp)
 	{
 		this.log = log;
 		this.table = table;
 		this.robot = robot;
+		this.cp = cp;
 		piles[0] = new ArrayList<Cube>();
 		piles[1] = new ArrayList<Cube>();
 		
@@ -63,7 +66,12 @@ public class ScriptManager
 		usePattern = pattern.isEmpty();
 	}
 	
-	public ScriptDeposeCube getDeposeScript()
+	public ScriptRecalage getScriptRecalage(boolean symetrie)
+	{
+		return new ScriptRecalage(log, cp, symetrie);
+	}
+	
+	public ScriptDeposeCube getDeposeScript(boolean symetrie)
 	{
 		int nbPile = getNbPile();
 		return new ScriptDeposeCube(log, piles[nbPile].size(), pilePosition[nbPile], faceDepose, coteDroit, longueurGrue[piles[nbPile].size()]);
