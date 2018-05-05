@@ -17,6 +17,7 @@ package senpai.threads;
 import pfg.config.Config;
 import pfg.log.Log;
 import senpai.robot.Robot;
+import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Subject;
 
 /**
@@ -30,11 +31,13 @@ public class ThreadTourelles extends Thread
 {
 	private Robot robot;
 	private Log log;
+	private boolean enableTourelle;
 
 	public ThreadTourelles(Log log, Config config, Robot robot)
 	{
 		this.log = log;
 		this.robot = robot;
+		enableTourelle = config.getBoolean(ConfigInfoSenpai.ENABLE_TOURELLE);
 		setDaemon(true);
 	}
 
@@ -45,6 +48,12 @@ public class ThreadTourelles extends Thread
 		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.STATUS);
 		try
 		{
+			if(!enableTourelle)
+			{
+				log.write("Tourelles désactivées : " + Thread.currentThread().getName()+" va dormir.", Subject.STATUS);
+				while(true)
+					Thread.sleep(Integer.MAX_VALUE);
+			}
 			while(true)
 			{
 				robot.updateTourelles();
