@@ -1,3 +1,23 @@
+package senpai;
+
+import pfg.kraken.exceptions.TimeoutException;
+import pfg.kraken.utils.XYO;
+import pfg.log.Log;
+import senpai.Senpai.ErrorCode;
+import senpai.buffer.OutgoingOrderBuffer;
+import senpai.comm.CommProtocol;
+import senpai.comm.DataTicket;
+import senpai.comm.Ticket;
+import senpai.exceptions.UnableToMoveException;
+import senpai.robot.Robot;
+import senpai.robot.RobotColor;
+import senpai.scripts.Script;
+import senpai.scripts.ScriptManager;
+import senpai.scripts.ScriptRecalage;
+import senpai.table.Table;
+import senpai.threads.comm.ThreadCommProcess;
+import senpai.utils.Subject;
+
 /*
  * Copyright (C) 2013-2018 Pierre-François Gimenez
  * This program is free software: you can redistribute it and/or modify
@@ -12,72 +32,112 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package senpai;
-
-import pfg.config.Config;
-import pfg.kraken.Kraken;
-import pfg.log.Log;
-import senpai.Senpai.ErrorCode;
-import senpai.buffer.OutgoingOrderBuffer;
-import senpai.comm.CommProtocol;
-import senpai.comm.DataTicket;
-import senpai.comm.Ticket;
-import senpai.robot.Robot;
-import senpai.utils.Subject;
-
 /**
- * Code d'un match
+ * Match !
  * @author pf
  *
  */
 
-public class Match {
-
-	public static void main(String[] args) throws InterruptedException
+public class Match
+{
+	public static void main(String[] args)
 	{
+		String configfile = "senpai-trajectory.conf";
+		
+
 		Senpai senpai = new Senpai();
-		senpai.initialize("match.conf", args);
 		ErrorCode error = ErrorCode.NO_ERROR;
-		try {
-			Log log = senpai.getService(Log.class);
-			Config config = senpai.getService(Config.class);
-			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
+		try
+		{
+			senpai = new Senpai();
+			senpai.initialize(configfile, "default", "graphic");
+			OutgoingOrderBuffer ll = senpai.getService(OutgoingOrderBuffer.class);
 			Robot robot = senpai.getService(Robot.class);
-			Kraken kraken = senpai.getService(Kraken.class);
+			Table table = senpai.getService(Table.class);
+			ScriptManager scripts = senpai.getService(ScriptManager.class);
+			Log log = senpai.getService(Log.class);
+
+			RobotColor couleur;
 			
-			Ticket t = data.waitForJumper();
-			
-			log.write("Attente de la couleur…", Subject.STATUS);
-	
-			
+			/*
+			 * Attente de la couleur
+			 */
 			DataTicket etat;
 			do
 			{
 				// Demande la couleur toute les 100ms et s'arrête dès qu'elle est connue
-				Ticket tc = data.demandeCouleur();
+				Ticket tc = ll.demandeCouleur();
 				etat = tc.attendStatus();
 				Thread.sleep(100);
 			} while(etat.status != CommProtocol.State.OK);
+			couleur = (RobotColor) etat.data;			
+			robot.updateColorAndSendPosition(couleur);
+			table.updateCote(couleur.symmetry);
+			senpai.getService(ThreadCommProcess.class).capteursOn = true;
 			
 			
 			/*
-			 * Stratégie:
-			 * golden cube dans le coffre
-			 * on va prendre le cube du bas
-			 * on pose le cube qu'on tenait puis le golden cube
+			 * Recalage initial
 			 */
+			ScriptRecalage rec = scripts.getScriptRecalage(RobotColor.VERT.symmetry);
+			rec.execute(robot, table);
+			XYO initialCorrection = rec.getCorrection();
+			System.out.println(initialCorrection);
+			double deltaX = Math.round(initialCorrection.position.getX())/10.;
+			double deltaY = Math.round(initialCorrection.position.getY())/10.;
+			double orientation = initialCorrection.orientation * 180. / Math.PI;
+			log.write("Je suis "+Math.abs(deltaX)+"cm sur la "+(deltaX < 0 ? "droite" : "gauche"), Subject.STATUS);
+			log.write("Je suis "+Math.abs(deltaY)+"cm vers l'"+(deltaY < 0 ? "avant" : "arrière"), Subject.STATUS);
+			log.write("Je suis orienté vers la "+(orientation < 0 ? "droite" : "gauche")+" de "+Math.abs(orientation)+"°", Subject.STATUS);
 			
-			System.out.println("Code du match !");
+			Script script = scripts.getScriptDomotique(true);
+			boolean restart;
+			do {
+				try {
+					restart = false;
+					robot.goTo(script.getPointEntree());
+					System.out.println("On est arrivé !");
+				}
+				catch(UnableToMoveException | TimeoutException e)
+				{
+					System.out.println("On a eu un problème : "+e);
+					restart = true;
+				}
+			} while(restart);
+			
+			script.execute(robot, table);
+			
+			do {
+				try {
+					restart = false;
+					robot.goTo(rec.getPointEntree());
+					System.out.println("On est arrivé !");
+				}
+				catch(UnableToMoveException | TimeoutException e)
+				{
+					System.out.println("On a eu un problème : "+e);
+					restart = true;
+				}
+			} while(restart);
+			
+			rec.execute(robot, table);
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 			error = ErrorCode.EXCEPTION;
+			error.setException(e);
 		}
 		finally
 		{
-			senpai.destructor(error);
+			try
+			{
+				senpai.destructor(error);
+			}
+			catch(InterruptedException e)
+			{
+				e.printStackTrace();
+			}
 		}
 	}
-	
 }

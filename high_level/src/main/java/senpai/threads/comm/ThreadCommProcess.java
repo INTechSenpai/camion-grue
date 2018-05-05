@@ -166,7 +166,7 @@ public class ThreadCommProcess extends Thread
 				 */
 				else if(paquet.origine == Id.WAIT_FOR_JUMPER)
 				{
-					capteursOn = true;
+//					capteursOn = true;
 					paquet.origine.ticket.set(CommProtocol.State.OK);
 				}
 				

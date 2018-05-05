@@ -29,6 +29,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 {
 //	AFFICHAGE_TIMEOUT(5000), // timeout sur l'affichage (0 pour infini)
 	CHECK_LATENCY(false), // estime la latence de la communication
+	DISABLE_JUMPER(false),
 	
 	/**
 	 * Tourelles

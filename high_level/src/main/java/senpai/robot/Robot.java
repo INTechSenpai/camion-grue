@@ -85,7 +85,7 @@ public class Robot extends RobotState
 		return cinematique.toString();
 	}
 
-	private volatile boolean jumperOK = true;
+	private volatile boolean jumperOK = false;
 	private volatile State etat = State.STANDBY;
 	private boolean simuleLL;
 	private boolean printTrace;
@@ -99,7 +99,6 @@ public class Robot extends RobotState
 //	private boolean domotiqueDone = false;
 	private int score;
 	
-	// Constructeur
 	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, /*DynamicPath dpath,*/ KnownPathManager known, RectangularObstacle obstacle)
 	{
 		this.log = log;
@@ -109,6 +108,7 @@ public class Robot extends RobotState
 		this.known = known;
 		this.obstacle = obstacle;
 		
+		jumperOK = config.getBoolean(ConfigInfoSenpai.DISABLE_JUMPER);
 		angleMin = config.getInt(ConfigInfoSenpai.ANGLE_MIN_TOURELLE) * Math.PI / 180;
 		angleMax = config.getInt(ConfigInfoSenpai.ANGLE_MAX_TOURELLE) * Math.PI / 180;
 		anticipationTourelle = (int) Math.round(config.getInt(ConfigInfoSenpai.ANTICIPATION_TOURELLE) / 20.);

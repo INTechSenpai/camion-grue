@@ -36,6 +36,7 @@ import senpai.table.Table;
 public class ScriptRecalage extends Script
 {
 	private CapteursProcess cp;
+	private XYO correction;
 	private XY_RW positionEntree = new XY_RW(1300,1700);
 	private HashMap<CapteursCorrection, Mur> capteurs = new HashMap<CapteursCorrection, Mur>();
 	
@@ -68,7 +69,12 @@ public class ScriptRecalage extends Script
 	{
 		for(CapteursCorrection c : capteurs.keySet())
 			c.murVu = capteurs.get(c);
-		cp.doStaticCorrection(500);
+		correction = cp.doStaticCorrection(500);
+	}
+	
+	public XYO getCorrection()
+	{
+		return correction;
 	}
 
 }

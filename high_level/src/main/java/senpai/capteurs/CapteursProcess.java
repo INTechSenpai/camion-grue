@@ -484,13 +484,22 @@ public class CapteursProcess
 		return Mur.MUR_HAUT;
 	}
 	
+	public void startStaticCorrection()
+	{
+		ongoingStaticCorrection = true;
+		
+	}
+	
 	public XYO doStaticCorrection(long duree) throws InterruptedException
 	{
-		Cinematique cinem = robot.getCinematique();
-		ongoingStaticCorrection = true;
-
+		startStaticCorrection();
 		Thread.sleep(duree);
+		return endStaticCorrection();
+	}
 		
+	public XYO endStaticCorrection()
+	{
+		Cinematique cinem = robot.getCinematique();
 		ongoingStaticCorrection = false;
 		
 		XY_RW totalDeltaPos = new XY_RW();
