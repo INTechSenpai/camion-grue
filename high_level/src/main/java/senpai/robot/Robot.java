@@ -490,6 +490,7 @@ public class Robot extends RobotState
 		{
 			log.write("La trajectoire est prête : attente du jumper !", Subject.TRAJECTORY);
 			out.waitForJumper().attendStatus();
+			out.startMatchChrono();
 			jumperOK = true;
 		}
 		

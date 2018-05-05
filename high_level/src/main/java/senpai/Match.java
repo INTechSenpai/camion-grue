@@ -70,7 +70,7 @@ public class Match
 				etat = tc.attendStatus();
 				Thread.sleep(100);
 			} while(etat.status != CommProtocol.State.OK);
-			couleur = (RobotColor) etat.data;			
+			couleur = (RobotColor) etat.data;
 			robot.updateColorAndSendPosition(couleur);
 			table.updateCote(couleur.symmetry);
 			senpai.getService(ThreadCommProcess.class).capteursOn = true;
@@ -79,7 +79,7 @@ public class Match
 			/*
 			 * Recalage initial
 			 */
-			ScriptRecalage rec = scripts.getScriptRecalage(RobotColor.VERT.symmetry);
+			ScriptRecalage rec = scripts.getScriptRecalage(couleur.symmetry);
 			rec.execute(robot, table);
 			XYO initialCorrection = rec.getCorrection();
 			System.out.println(initialCorrection);
@@ -90,7 +90,7 @@ public class Match
 			log.write("Je suis "+Math.abs(deltaY)+"cm vers l'"+(deltaY < 0 ? "avant" : "arrière"), Subject.STATUS);
 			log.write("Je suis orienté vers la "+(orientation < 0 ? "droite" : "gauche")+" de "+Math.abs(orientation)+"°", Subject.STATUS);
 			
-			Script script = scripts.getScriptDomotique(true);
+			Script script = scripts.getScriptDomotique(couleur.symmetry);
 			boolean restart;
 			do {
 				try {
