@@ -55,6 +55,7 @@ public class ThreadCommProcess extends Thread
 
 	public volatile boolean capteursOn = false;
 	private boolean enableTourelle;
+	private long dernierAffichagePosition = System.currentTimeMillis();
 
 	public ThreadCommProcess(Log log, Config config, IncomingOrderBuffer serie, SensorsDataBuffer buffer, Robot robot, Senpai container/*, DynamicPath chemin*/)
 	{
@@ -142,7 +143,11 @@ public class ThreadCommProcess extends Thread
 					current.updateReel(xRobot, yRobot, orientationRobot, courbure);
 					robot.setCurrentTrajectoryIndex(current, indexTrajectory);
 
-					log.write("Le robot est en " + current.getPosition() + ", orientation : " + orientationRobot + ", index : " + indexTrajectory, Subject.CAPTEURS);
+					if(System.currentTimeMillis() - dernierAffichagePosition > 500)
+					{
+						dernierAffichagePosition = System.currentTimeMillis();
+						log.write("Le robot est en " + current.getPosition() + ", orientation : " + orientationRobot + ", index : " + indexTrajectory, Subject.CAPTEURS);
+					}
 
 					if(capteursOn)
 					{
