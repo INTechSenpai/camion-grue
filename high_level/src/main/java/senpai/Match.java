@@ -96,7 +96,10 @@ public class Match
 		 */
 
 		if(config.getBoolean(ConfigInfoSenpai.DISABLE_JUMPER))
+		{
 			couleur = RobotColor.VERT;
+			robot.setDateDebutMatch();
+		}
 		else
 		{
 			DataTicket etat;

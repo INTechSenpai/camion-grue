@@ -65,14 +65,14 @@ public class ScriptPriseCube extends Script
 		if(coteDroit)
 		{
 			XY_RW position = new XY_RW(298, face.angleAttaque, true).plus(cube.position);
-			double angle = face.angleAttaque - Math.PI / 2 - 15. * Math.PI / 180.;
+			double angle = face.angleAttaque + Math.PI / 2 + 15. * Math.PI / 180.;
 			position.plus(new XY(50, angle, true));
 			return new XYO(position, angle);
 		}
 		else
 		{
 			XY_RW position = new XY_RW(298, face.angleAttaque, true).plus(cube.position);
-			double angle = face.angleAttaque + Math.PI / 2 + 15. * Math.PI / 180.;
+			double angle = face.angleAttaque - Math.PI / 2 - 15. * Math.PI / 180.;
 			position.plus(new XY(50, angle, true));
 			return new XYO(position, angle);
 		}

@@ -30,7 +30,7 @@ import senpai.table.CubeFace;
 import senpai.table.Table;
 import senpai.utils.ConfigInfoSenpai;
 import pfg.config.Config;
-import pfg.kraken.utils.XY;
+import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 
 /**
@@ -109,23 +109,26 @@ public class ScriptManager
 
 	public class CubeComparator implements Comparator<ScriptPriseCube>
 	{
-		private XY position;
+		private XYO position;
 		
-		public CubeComparator(XY position)
+		public CubeComparator(XYO position)
 		{
 			this.position = position;
 		}
 		
 		@Override
 		public int compare(ScriptPriseCube arg0, ScriptPriseCube arg1) {
-			return (int) (arg0.cube.position.squaredDistance(position) - arg1.cube.position.squaredDistance(position));
+			XYO s1 = arg0.getPointEntree();
+			XYO s2 = arg1.getPointEntree();
+			return (int) (s1.position.squaredDistance(position.position) - s2.position.squaredDistance(position.position))
+					+ (int) (XYO.angleDifference(s1.orientation, s2.orientation));
 		}
 		
 	}
 	
 	public PriorityQueue<ScriptPriseCube> getAllPossible(CubeColor couleur, boolean bourrine)
 	{
-		PriorityQueue<ScriptPriseCube> out = new PriorityQueue<ScriptPriseCube>(new CubeComparator(robot.getCinematique().getPosition()));
+		PriorityQueue<ScriptPriseCube> out = new PriorityQueue<ScriptPriseCube>(new CubeComparator(robot.getCinematique().getXYO()));
 		
 		/*
 		 * On n'a plus de place !
@@ -153,7 +156,7 @@ public class ScriptManager
 	
 	public PriorityQueue<ScriptPriseCube> getAllPossible(boolean bourrine)
 	{
-		PriorityQueue<ScriptPriseCube> out = new PriorityQueue<ScriptPriseCube>(new CubeComparator(robot.getCinematique().getPosition()));
+		PriorityQueue<ScriptPriseCube> out = new PriorityQueue<ScriptPriseCube>(new CubeComparator(robot.getCinematique().getXYO()));
 		for(Cube c : Cube.values())
 		{
 			if(couleur.symmetry == c.position.getX() > 0)
