@@ -77,6 +77,12 @@ public class ScriptPriseCube extends Script
 			return new XYO(position, angle);
 		}
 	}
+	
+	@Override
+	public String toString()
+	{
+		return getClass().getSimpleName()+" du cube "+cube+", face "+face;
+	}
 
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException
@@ -85,11 +91,11 @@ public class ScriptPriseCube extends Script
 		// take cube, store cube inside
 		// take cube, store cube top
 		// put cube, table cube inside, put cube, go to home 
+		table.setDone(cube); // dans tous les cas, le cas n'est plus là
 		if(robot.canTakeCube())
 		{
 			robot.execute(Id.ARM_TAKE_CUBE, coteDroit ? Math.PI / 180 * 75 : - Math.PI / 180 * 75);
 			robot.storeCube(cube);
-			table.setDone(cube);
 		}
 	}
 }

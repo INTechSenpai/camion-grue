@@ -1,7 +1,7 @@
 package senpai;
 
+import pfg.config.Config;
 import pfg.kraken.exceptions.PathfindingException;
-import pfg.kraken.exceptions.TimeoutException;
 import pfg.kraken.utils.XYO;
 import pfg.log.Log;
 import senpai.Senpai.ErrorCode;
@@ -18,6 +18,7 @@ import senpai.scripts.ScriptManager;
 import senpai.scripts.ScriptRecalage;
 import senpai.table.Table;
 import senpai.threads.comm.ThreadCommProcess;
+import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Subject;
 
 /*
@@ -48,6 +49,7 @@ public class Match
 	private Table table;
 	private ScriptManager scripts;
 	private Log log;
+	private Config config;
 
 	public static void main(String[] args)
 	{
@@ -76,10 +78,11 @@ public class Match
 	
 	public void exec() throws InterruptedException
 	{
-		String configfile = "senpai-trajectory.conf";
+		String configfile = "match.conf";
 		
 		senpai = new Senpai();
 		senpai.initialize(configfile, "default", "graphic");
+		config = senpai.getService(Config.class);
 		ll = senpai.getService(OutgoingOrderBuffer.class);
 		robot = senpai.getService(Robot.class);
 		table = senpai.getService(Table.class);
@@ -87,29 +90,40 @@ public class Match
 		log = senpai.getService(Log.class);
 
 		RobotColor couleur;
-		
+
 		/*
 		 * Attente de la couleur
 		 */
-		DataTicket etat;
-		do
+
+		if(config.getBoolean(ConfigInfoSenpai.DISABLE_JUMPER))
+			couleur = RobotColor.VERT;
+		else
 		{
-			// Demande la couleur toute les 100ms et s'arrête dès qu'elle est connue
-			Ticket tc = ll.demandeCouleur();
-			etat = tc.attendStatus();
-			Thread.sleep(100);
-		} while(etat.status != CommProtocol.State.OK);
-		couleur = (RobotColor) etat.data;
+			DataTicket etat;
+			do
+			{
+				// Demande la couleur toute les 100ms et s'arrête dès qu'elle est connue
+				Ticket tc = ll.demandeCouleur();
+				etat = tc.attendStatus();
+				Thread.sleep(100);
+			} while(etat.status != CommProtocol.State.OK);
+			couleur = (RobotColor) etat.data;
+		}
+
 		robot.updateColorAndSendPosition(couleur);
 		table.updateCote(couleur.symmetry);
 		scripts.setCouleur(couleur);
+		
+		/*
+		 * Allumage des capteurs
+		 */
 		senpai.getService(ThreadCommProcess.class).capteursOn = true;
 		
 		
 		/*
 		 * Recalage initial
 		 */
-		ScriptRecalage rec = scripts.getScriptRecalage();
+		ScriptRecalage rec = scripts.getScriptRecalage(2000);
 		try {
 			rec.execute();
 		} catch (UnableToMoveException | ActionneurException e) {
@@ -127,13 +141,30 @@ public class Match
 		log.write("Je suis orienté vers la "+(orientation < 0 ? "droite" : "gauche")+" de "+Math.abs(orientation)+"°", Subject.STATUS);
 		
 		try {
-			doScript(scripts.getScriptDomotique(), 5, 2);
+			doScript(scripts.getScriptDomotique(), 5);
 		} catch (PathfindingException | UnableToMoveException | ActionneurException e) {
-			e.printStackTrace();
+			log.write("Erreur : "+e, Subject.SCRIPT);
 		}
+		
+		robot.printTemps();
+		
+		try {
+			doScript(scripts.getAllPossible(false).poll(), 5);
+		} catch (PathfindingException | UnableToMoveException | ActionneurException e) {
+			log.write("Erreur : "+e, Subject.SCRIPT);
+		}
+
+		robot.printTemps();
+
+		try {
+			doScript(scripts.getAllPossible(false).poll(), 5);
+		} catch (PathfindingException | UnableToMoveException | ActionneurException e) {
+			log.write("Erreur : "+e, Subject.SCRIPT);
+		}
+
 	}
 	
-	private void doScript(Script s, int nbEssaiChemin, int nbEssaiScript) throws PathfindingException, InterruptedException, UnableToMoveException, ActionneurException
+	private void doScript(Script s, int nbEssaiChemin) throws PathfindingException, InterruptedException, UnableToMoveException, ActionneurException
 	{
 		boolean restart;
 		do {
@@ -141,24 +172,13 @@ public class Match
 				restart = false;
 				robot.goTo(s.getPointEntree());
 			}
-			catch(UnableToMoveException | TimeoutException e)
+			catch(UnableToMoveException e)
 			{
 				restart = true;
 				nbEssaiChemin--;
 			}
 		} while(restart && nbEssaiChemin > 0);
 		
-		do {
-			try {
-				restart = false;
-				s.execute();
-			}
-			catch(UnableToMoveException | ActionneurException e)
-			{
-				restart = true;
-				nbEssaiScript--;
-			}
-		} while(restart && nbEssaiScript > 0);
-
+		s.execute();
 	}
 }

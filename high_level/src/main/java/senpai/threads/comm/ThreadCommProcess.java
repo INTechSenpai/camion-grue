@@ -168,6 +168,8 @@ public class ThreadCommProcess extends Thread
 				{
 //					capteursOn = true;
 					paquet.origine.ticket.set(CommProtocol.State.OK);
+					log.write("DÉMARRAGE DU MATCH !", Subject.STATUS);
+					robot.setDateDebutMatch();
 				}
 				
 				else if(paquet.origine == Id.STOP ||

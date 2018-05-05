@@ -35,6 +35,13 @@ public class ScriptDeposeCube extends Script
 	}
 
 	@Override
+	public String toString()
+	{
+		return getClass().getSimpleName()+" dans la pile positionnée en "+positionPile+", taille "+taillePile;
+	}
+
+	
+	@Override
 	public XYO getPointEntree()
 	{
 		/*

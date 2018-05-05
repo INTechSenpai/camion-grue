@@ -39,10 +39,12 @@ public class ScriptRecalage extends Script
 	private XYO correction;
 	private XY_RW positionEntree = new XY_RW(1300,1700);
 	private HashMap<CapteursCorrection, Mur> capteurs = new HashMap<CapteursCorrection, Mur>();
+	private long dureeRecalage;
 	
-	public ScriptRecalage(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie)
+	public ScriptRecalage(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie, long dureeRecalage)
 	{
 		super(log, robot, table);
+		this.dureeRecalage = dureeRecalage;
 		this.cp = cp;
 		if(symetrie)
 		{
@@ -59,6 +61,12 @@ public class ScriptRecalage extends Script
 	}
 
 	@Override
+	public String toString()
+	{
+		return getClass().getSimpleName();
+	}
+
+	@Override
 	public XYO getPointEntree()
 	{
 		return new XYO(positionEntree, -Math.PI / 2);
@@ -69,7 +77,7 @@ public class ScriptRecalage extends Script
 	{
 		for(CapteursCorrection c : capteurs.keySet())
 			c.murVu = capteurs.get(c);
-		correction = cp.doStaticCorrection(500);
+		correction = cp.doStaticCorrection(dureeRecalage);
 	}
 	
 	public XYO getCorrection()

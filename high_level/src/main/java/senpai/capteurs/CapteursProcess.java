@@ -168,7 +168,7 @@ public class CapteursProcess
 			for(ObstaclesFixes o : ObstaclesFixes.values())
 				if(o.isVisible(capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
 				{
-					log.write("Obstacle de table vu : " + o, Subject.CAPTEURS);
+//					log.write("Obstacle de table vu : " + o, Subject.CAPTEURS);
 //						data.etats[i] = TraitementEtat.DANS_OBSTACLE_FIXE;
 					stop = true;
 					break;
@@ -584,7 +584,7 @@ public class CapteursProcess
 			totalDeltaAngle /= nb;
 			XYO correction = new XYO(totalDeltaPos, totalDeltaAngle);
 			log.write("Envoi d'une correction XYO statique: " + correction, Subject.STATUS);
-			serie.correctPosition(correction.position, correction.orientation);
+			robot.correctPosition(correction.position, correction.orientation);
 			return correction;
 		}
 		return null;

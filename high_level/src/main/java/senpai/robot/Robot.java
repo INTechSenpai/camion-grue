@@ -18,7 +18,7 @@ import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.PriorityQueue;
+//import java.util.PriorityQueue;
 
 import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
@@ -78,23 +78,18 @@ public class Robot extends RobotState
 	private double angleMin, angleMax;
 	private List<ItineraryPoint> path = null;
 	private double angleTourelleGaucheOld = Double.MAX_VALUE, angleTourelleDroiteOld = Double.MAX_VALUE;
+	private long dateDebutMatch;
 	
-	@Override
-	public String toString()
-	{
-		return cinematique.toString();
-	}
-
-	private volatile boolean jumperOK = false;
+	private boolean jumperOK = false;
 	private volatile State etat = State.STANDBY;
-	private boolean simuleLL;
-	private boolean printTrace;
+	private final boolean simuleLL;
+	private final boolean printTrace;
 	private OutgoingOrderBuffer out;
 	private GraphicDisplay buffer;
-	private KnownPathManager known;
+//	private KnownPathManager known;
 	private RobotPrintable printable = null;
 	private volatile boolean cinematiqueInitialised = false;
-	private boolean enableLoadPath;
+//	private boolean enableLoadPath;
 	private int currentIndexTrajectory = 0, anticipationTourelle;
 //	private boolean domotiqueDone = false;
 	private int score;
@@ -105,7 +100,7 @@ public class Robot extends RobotState
 		this.out = out;
 		this.buffer = buffer;
 		this.kraken = kraken;
-		this.known = known;
+//		this.known = known;
 		this.obstacle = obstacle;
 		
 		jumperOK = config.getBoolean(ConfigInfoSenpai.DISABLE_JUMPER);
@@ -119,7 +114,7 @@ public class Robot extends RobotState
 			buffer.addPrintable(printable, Color.BLACK, Layer.MIDDLE.layer);
 		}
 		
-		enableLoadPath = config.getBoolean(ConfigInfoSenpai.ENABLE_KNOWN_PATHS);
+//		enableLoadPath = config.getBoolean(ConfigInfoSenpai.ENABLE_KNOWN_PATHS);
 		printTrace = config.getBoolean(ConfigInfoSenpai.GRAPHIC_TRACE_ROBOT);
 		cinematique = new Cinematique(new XYO(
 				config.getDouble(ConfigInfoSenpai.INITIAL_X),
@@ -141,6 +136,12 @@ public class Robot extends RobotState
 	public boolean isCinematiqueInitialised()
 	{
 		return cinematiqueInitialised;
+	}
+
+	@Override
+	public String toString()
+	{
+		return cinematique.toString();
 	}
 
 	private XY_RW oldPosition = new XY_RW();
@@ -382,20 +383,20 @@ public class Robot extends RobotState
 	
 	public DataTicket goTo(SearchParameters sp) throws PathfindingException, InterruptedException, UnableToMoveException
 	{
-		PriorityQueue<SavedPath> allSaved = null;
-		if(enableLoadPath)
+//		PriorityQueue<SavedPath> allSaved = null;
+/*		if(enableLoadPath)
 		{
 			allSaved = known.loadCompatiblePath(sp);			
 			if(allSaved != null && allSaved.isEmpty())
 				log.write("Aucun chemin connu pour : "+sp, Subject.TRAJECTORY);
-		}
+		}*/
 		
 //		if(modeDegrade)
 		long avant = System.currentTimeMillis();
 		kraken.initializeNewSearch(sp);
 		log.write("Durée d'initialisation de Kraken : "+(System.currentTimeMillis() - avant), Subject.TRAJECTORY);
 
-		if(allSaved != null)
+/*		if(allSaved != null)
 			while(!allSaved.isEmpty())
 			{
 				SavedPath saved = allSaved.poll();
@@ -424,22 +425,22 @@ public class Robot extends RobotState
 				{
 					log.write("Chemin inadapté : "+e.getMessage(), Subject.TRAJECTORY);
 				}*/
-			}
+//			}
 
 //		if(modeDegrade)
 //		{
 
 //			System.out.println(path);
 			// On cherche et on envoie
-			if(path == null)
-			{
+//			if(path == null)
+//			{
 				log.write("On cherche un chemin en mode dégradé", Subject.TRAJECTORY);
 				avant = System.currentTimeMillis();
 				path = kraken.search();
 				log.write("Durée de la recherche : "+(System.currentTimeMillis() - avant), Subject.TRAJECTORY);
-			}
-			else
-				log.write("On réutilise un chemin déjà connu !", Subject.TRAJECTORY);
+//			}
+//			else
+//				log.write("On réutilise un chemin déjà connu !", Subject.TRAJECTORY);
 			if(!simuleLL)
 			{
 				log.write("On envoie la trajectoire initiale en mode dégradé", Subject.TRAJECTORY);
@@ -494,8 +495,7 @@ public class Robot extends RobotState
 			jumperOK = true;
 		}
 		
-		log.write("On commence à suivre la trajectoire", Subject.TRAJECTORY);
-		log.write("Trajectoire de "+pathDegrade.size()+" points", Subject.TRAJECTORY);
+		log.write("On commence à suivre la trajectoire de "+pathDegrade.size()+" points", Subject.TRAJECTORY);
 
 		assert etat == State.READY_TO_GO;
 		setMoving();
@@ -662,5 +662,23 @@ public class Robot extends RobotState
 	public int getIndexTrajectory()
 	{
 		return currentIndexTrajectory;
+	}
+
+	public void printTemps()
+	{
+		log.write("Temps depuis le début du match : "+(System.currentTimeMillis() - dateDebutMatch), Subject.STATUS);
+	}
+	
+	public void setDateDebutMatch()
+	{
+		dateDebutMatch = System.currentTimeMillis();
+	}
+
+	public void correctPosition(XY_RW position, double orientation)
+	{
+		cinematique.updateReel(cinematique.getPosition().getX() + position.getX(),
+				cinematique.getPosition().getY() + position.getY(),
+				cinematique.orientationReelle + orientation, cinematique.courbureReelle);
+		out.correctPosition(position, orientation);
 	}
 }

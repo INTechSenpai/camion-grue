@@ -49,6 +49,12 @@ public class ScriptDomotique extends Script
 	{
 		return new XYO(positionEntree, -Math.PI / 2);
 	}
+	
+	@Override
+	public String toString()
+	{
+		return getClass().getSimpleName();
+	}
 
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException

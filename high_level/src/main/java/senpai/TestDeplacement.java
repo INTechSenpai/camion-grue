@@ -87,7 +87,7 @@ public class TestDeplacement {
 			table.updateCote(couleur.symmetry);
 			//XYO destination = new XYO(0, 1000, Math.PI);
 //			Script script = new ScriptPriseCube(Croix.CROIX_HAUT_DROITE, CubeColor.ORANGE, CubeFace.GAUCHE, false);
-			PriorityQueue<ScriptPriseCube> all = scripts.getAllPossible(true, CubeColor.ORANGE, false);
+			PriorityQueue<ScriptPriseCube> all = scripts.getAllPossible(CubeColor.ORANGE, false);
 //			XYO destination = new ScriptPriseCube(0, ElementColor.BLEU, ScriptPriseCube.Face.BAS, false).getPointEntree();
 
 			CapteursRobot.ToF_COIN_AVANT_DROIT.updateObstacle(new XY(-150.84,1543.50), 0);

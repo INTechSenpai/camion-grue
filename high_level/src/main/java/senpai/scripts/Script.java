@@ -50,7 +50,7 @@ public abstract class Script
 
 	public void execute() throws UnableToMoveException, ActionneurException, InterruptedException
 	{
-		log.write("Début de l'exécution de " + getClass().getSimpleName(), Subject.SCRIPT);
+		log.write("Début de l'exécution de " + getClass().getSimpleName()+" "+this, Subject.SCRIPT);
 		robot.beginScript();
 		try
 		{

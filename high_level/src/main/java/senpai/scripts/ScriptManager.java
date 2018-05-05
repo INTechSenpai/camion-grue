@@ -78,10 +78,15 @@ public class ScriptManager
 		pattern = config.getString(ConfigInfoSenpai.COLOR_PATTERN);
 		usePattern = pattern.isEmpty();
 	}
+
+	public ScriptRecalage getScriptRecalage(long dureeRecalage)
+	{
+		return new ScriptRecalage(log, robot, table, cp, couleur.symmetry, dureeRecalage);		
+	}
 	
 	public ScriptRecalage getScriptRecalage()
 	{
-		return new ScriptRecalage(log, robot, table, cp, couleur.symmetry);
+		return getScriptRecalage(500);
 	}
 	
 	public ScriptDomotique getScriptDomotique()
@@ -118,7 +123,7 @@ public class ScriptManager
 		
 	}
 	
-	public PriorityQueue<ScriptPriseCube> getAllPossible(boolean symetrie, CubeColor couleur, boolean bourrine)
+	public PriorityQueue<ScriptPriseCube> getAllPossible(CubeColor couleur, boolean bourrine)
 	{
 		PriorityQueue<ScriptPriseCube> out = new PriorityQueue<ScriptPriseCube>(new CubeComparator(robot.getCinematique().getPosition()));
 		
@@ -130,7 +135,7 @@ public class ScriptManager
 		
 		for(Croix croix : Croix.values())
 		{
-			if(symetrie == croix.center.getX() > 0)
+			if(this.couleur.symmetry == croix.center.getX() > 0)
 				continue;
 			for(CubeFace f : CubeFace.values())
 			{
@@ -146,12 +151,12 @@ public class ScriptManager
 		return out;
 	}
 	
-	public PriorityQueue<ScriptPriseCube> getAllPossible(boolean symetrie, boolean bourrine)
+	public PriorityQueue<ScriptPriseCube> getAllPossible(boolean bourrine)
 	{
 		PriorityQueue<ScriptPriseCube> out = new PriorityQueue<ScriptPriseCube>(new CubeComparator(robot.getCinematique().getPosition()));
 		for(Cube c : Cube.values())
 		{
-			if(symetrie == c.position.getX() > 0)
+			if(couleur.symmetry == c.position.getX() > 0)
 				continue;
 			for(CubeFace f : CubeFace.values())
 				if(isFacePossible(c, f, bourrine))
@@ -177,6 +182,8 @@ public class ScriptManager
 		 * A B C
 		 *   D
 		 */
+		if(table.isDone(c))
+			return false;
 		
 		Cube p1 = f.getVoisin(c); // B
 		boolean voisin1 = p1 == null || table.isDone(p1);
