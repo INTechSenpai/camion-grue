@@ -74,6 +74,7 @@ public class ScriptDeposeCube extends Script
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException
 	{
 		robot.poseCubes(coteDroit ? Math.PI / 180 * 75 : - Math.PI / 180 * 75, taillePile, nbPile);
+		table.enableObstaclePile(nbPile);
 	}
 
 }

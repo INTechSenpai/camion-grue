@@ -26,6 +26,7 @@ import senpai.table.Cube;
 import senpai.table.CubeColor;
 import senpai.table.CubeFace;
 import senpai.table.Table;
+import senpai.utils.ConfigInfoSenpai;
 import pfg.config.Config;
 import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
@@ -56,16 +57,19 @@ public class ScriptManager
 	
 	private boolean usePattern;
 	private CubeColor[] pattern;
-	private XY_RW[] pilePosition = new XY_RW[] {new XY_RW(0,0), new XY_RW(0,0)};
+	private XY_RW[] pilePosition;
 	private CubeFace faceDepose = CubeFace.BAS;
 	private double[] longueurGrue = new double[]{300, 300, 290, 365, 365}; // longueur de la grue en fonction du nombre de cube déjà posés
 	
-	public ScriptManager(Log log, Table table, Robot robot, Config config, CapteursProcess cp)
+	public ScriptManager(Log log, Config config, Table table, Robot robot, CapteursProcess cp)
 	{
 		this.log = log;
 		this.table = table;
 		this.robot = robot;
 		this.cp = cp;
+		pilePosition = new XY_RW[] {
+				new XY_RW(config.getDouble(ConfigInfoSenpai.PILE_1_X),config.getDouble(ConfigInfoSenpai.PILE_1_Y)),
+				new XY_RW(config.getDouble(ConfigInfoSenpai.PILE_2_X),config.getDouble(ConfigInfoSenpai.PILE_2_Y))};
 		usePattern = false;
 	}
 
