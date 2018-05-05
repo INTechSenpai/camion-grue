@@ -49,6 +49,8 @@ public class ThreadCommProcess extends Thread
 	private Robot robot;
 	private Senpai container;
 	private Cinematique current = new Cinematique();
+	private int[][] memory;
+	private int indexMem = 0;
 //	private DynamicPath chemin;
 
 	public volatile boolean capteursOn = false;
@@ -63,6 +65,12 @@ public class ThreadCommProcess extends Thread
 		this.buffer = buffer;
 		this.robot = robot;
 		enableTourelle = config.getBoolean(ConfigInfoSenpai.ENABLE_TOURELLE);
+		nbCapteurs = CapteursRobot.values().length;
+
+		memory = new int[100][];
+		for(int i = 0; i < memory.length; i++)
+			memory[i] = new int[nbCapteurs];
+		
 //		this.chemin = chemin;
 		setDaemon(true);
 		setPriority(Thread.MAX_PRIORITY);
@@ -74,7 +82,6 @@ public class ThreadCommProcess extends Thread
 		Thread.currentThread().setName(getClass().getSimpleName());
 		log.write("Démarrage de " + Thread.currentThread().getName(), Subject.STATUS);
 
-		nbCapteurs = CapteursRobot.values().length;
 		try
 		{
 			while(true)
@@ -117,7 +124,10 @@ public class ThreadCommProcess extends Thread
 					double courbure = data.getFloat();
 					int indexTrajectory = data.getInt();
 					boolean enMarcheAvant = data.get() != 0;
-					int[] mesures = new int[nbCapteurs];
+					int[] mesures = memory[indexMem];
+					indexMem++;
+					indexMem %= memory.length;
+					
 					for(CapteursRobot c : CapteursRobot.values())
 					{
 						if(enableTourelle || !c.isTourelle)
