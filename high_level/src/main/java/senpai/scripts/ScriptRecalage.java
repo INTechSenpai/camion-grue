@@ -40,9 +40,9 @@ public class ScriptRecalage extends Script
 	private XY_RW positionEntree = new XY_RW(1300,1700);
 	private HashMap<CapteursCorrection, Mur> capteurs = new HashMap<CapteursCorrection, Mur>();
 	
-	public ScriptRecalage(Log log, CapteursProcess cp, boolean symetrie)
+	public ScriptRecalage(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie)
 	{
-		super(log);
+		super(log, robot, table);
 		this.cp = cp;
 		if(symetrie)
 		{
@@ -65,7 +65,7 @@ public class ScriptRecalage extends Script
 	}
 
 	@Override
-	protected void run(Robot robot, Table table) throws InterruptedException, UnableToMoveException, ActionneurException
+	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException
 	{
 		for(CapteursCorrection c : capteurs.keySet())
 			c.murVu = capteurs.get(c);

@@ -30,6 +30,7 @@ import senpai.scripts.ScriptPriseCube;
 import senpai.table.Croix;
 import senpai.table.CubeColor;
 import senpai.table.CubeFace;
+import senpai.table.Table;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Subject;
 
@@ -44,6 +45,7 @@ public class Test_Robot extends JUnit_Test
 {
 
 	private Robot robot;
+	private Table table;
 //	private AStarCourbe astar;
 //	private CheminPathfinding chemin;
 //	private RealGameState state;
@@ -61,8 +63,8 @@ public class Test_Robot extends JUnit_Test
 			for(CubeColor couleur : CubeColor.values())
 				for(CubeFace face : CubeFace.values())
 				{
-					new ScriptPriseCube(log, croix, couleur, face, true);
-					new ScriptPriseCube(log, croix, couleur, face, false);
+					new ScriptPriseCube(log, robot, table, croix, couleur, face, true);
+					new ScriptPriseCube(log, robot, table, croix, couleur, face, false);
 				}
 	}
 	
@@ -118,6 +120,7 @@ public class Test_Robot extends JUnit_Test
 //		astar = container.getService(AStarCourbe.class);
 //		pathcache = container.getService(PathCache.class);
 		data = container.getService(OutgoingOrderBuffer.class);
+		table = container.getService(Table.class);
 		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 		data.startStream(Id.ODO_AND_SENSORS);
 		v = Speed.TEST;

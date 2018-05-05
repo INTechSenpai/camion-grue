@@ -59,15 +59,16 @@ public class TestDomotique
 			robot.updateColorAndSendPosition(RobotColor.VERT);
 			senpai.getService(ThreadCommProcess.class).capteursOn = true;
 			ScriptManager scripts = senpai.getService(ScriptManager.class);
-			Script rec = scripts.getScriptRecalage(RobotColor.VERT.symmetry);
-			rec.execute(robot, table);
+			scripts.setCouleur(RobotColor.VERT);
+			Script rec = scripts.getScriptRecalage();
+			rec.execute();
 /*			XYO initialCorrection = cp.doStaticCorrection(1000);
 			double deltaX = Math.round(initialCorrection.position.getX())/10.;
 			double deltaY = Math.round(initialCorrection.position.getY())/10.;
 			double orientation = initialCorrection.orientation;*/
 ///			log.write("Je suis "+", categorie);
 			table.updateCote(true);
-			Script script = scripts.getScriptDomotique(true);
+			Script script = scripts.getScriptDomotique();
 			buffer.addPrintable(new Cinematique(script.getPointEntree()), Color.BLUE, Layer.FOREGROUND.layer);
 			boolean restart;
 			do {
@@ -83,7 +84,7 @@ public class TestDomotique
 				}
 			} while(restart);
 			
-			script.execute(robot, table);
+			script.execute();
 			
 			do {
 				try {
@@ -98,7 +99,7 @@ public class TestDomotique
 				}
 			} while(restart);
 			
-			rec.execute(robot, table);
+			rec.execute();
 		}
 		catch(Exception e)
 		{

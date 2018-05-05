@@ -41,17 +41,17 @@ public class ScriptPriseCube extends Script
 	public final Cube cube;
 	public final boolean coteDroit;
 	
-	public ScriptPriseCube(Log log, Cube cube, CubeFace face, boolean coteDroit)
+	public ScriptPriseCube(Log log, Robot robot, Table table, Cube cube, CubeFace face, boolean coteDroit)
 	{
-		super(log);
+		super(log, robot, table);
 		this.cube = cube;
 		this.face = face;
 		this.coteDroit = coteDroit;
 	}
 	
-	public ScriptPriseCube(Log log, Croix croix, CubeColor couleur, CubeFace face, boolean coteDroit)
+	public ScriptPriseCube(Log log, Robot robot, Table table, Croix croix, CubeColor couleur, CubeFace face, boolean coteDroit)
 	{
-		super(log);
+		super(log, robot, table);
 		this.face = face;
 		cube = Cube.getCube(croix, couleur);
 		assert cube.couleur == couleur : cube.couleur+" "+couleur;
@@ -79,7 +79,7 @@ public class ScriptPriseCube extends Script
 	}
 
 	@Override
-	protected void run(Robot robot, Table table) throws InterruptedException, UnableToMoveException, ActionneurException
+	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException
 	{
 		// exemple classique :
 		// take cube, store cube inside

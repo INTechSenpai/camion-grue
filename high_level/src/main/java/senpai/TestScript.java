@@ -3,12 +3,11 @@ package senpai;
 import java.util.PriorityQueue;
 
 import senpai.Senpai.ErrorCode;
-import senpai.robot.Robot;
+import senpai.robot.RobotColor;
 import senpai.scripts.Script;
 import senpai.scripts.ScriptManager;
 import senpai.scripts.ScriptPriseCube;
 import senpai.table.CubeColor;
-import senpai.table.Table;
 import senpai.threads.comm.ThreadCommProcess;
 
 /*
@@ -46,14 +45,13 @@ public class TestScript
 			senpai.initialize(configfile, "default", "graphic");
 			senpai.getService(ThreadCommProcess.class).capteursOn = true;
 			ScriptManager scripts = senpai.getService(ScriptManager.class);
-			Robot robot = senpai.getService(Robot.class);
-			Table table = senpai.getService(Table.class);
+			scripts.setCouleur(RobotColor.VERT);
 
 			PriorityQueue<ScriptPriseCube> all = scripts.getAllPossible(true, CubeColor.ORANGE, false);
 			Script script = all.poll();
-			script.execute(robot, table);
+			script.execute();
 			script = all.poll();
-			script.execute(robot, table);
+			script.execute();
 		}
 		catch(Exception e)
 		{

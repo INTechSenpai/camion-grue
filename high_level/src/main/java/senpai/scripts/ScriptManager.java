@@ -22,6 +22,7 @@ import java.util.PriorityQueue;
 import pfg.log.Log;
 import senpai.capteurs.CapteursProcess;
 import senpai.robot.Robot;
+import senpai.robot.RobotColor;
 import senpai.table.Croix;
 import senpai.table.Cube;
 import senpai.table.CubeColor;
@@ -30,6 +31,7 @@ import senpai.table.Table;
 import senpai.utils.ConfigInfoSenpai;
 import pfg.config.Config;
 import pfg.kraken.utils.XY;
+import pfg.kraken.utils.XY_RW;
 
 /**
  * Script manager
@@ -43,12 +45,23 @@ public class ScriptManager
 	private Table table;
 	private Robot robot;
 	private CapteursProcess cp;
+	private RobotColor couleur;
+	
+	public void setCouleur(RobotColor couleur)
+	{
+		this.couleur = couleur;
+		if(couleur.symmetry)
+		{
+			pilePosition[0].setX(-pilePosition[0].getX());
+			pilePosition[1].setX(-pilePosition[1].getX());
+		}
+	}
 	
 	private final boolean usePattern;
 	private final String pattern;
 	@SuppressWarnings("unchecked")
 	private List<Cube>[] piles = (List<Cube>[]) new List[2];
-	private XY[] pilePosition = new XY[] {new XY(0,0), new XY(0,0)};
+	private XY_RW[] pilePosition = new XY_RW[] {new XY_RW(0,0), new XY_RW(0,0)};
 	private CubeFace faceDepose;
 	private boolean coteDroit;
 	private double[] longueurGrue = new double[]{300, 300, 290, 365, 365}; // longueur de la grue en fonction du nombre de cube déjà posés
@@ -66,20 +79,20 @@ public class ScriptManager
 		usePattern = pattern.isEmpty();
 	}
 	
-	public ScriptRecalage getScriptRecalage(boolean symetrie)
+	public ScriptRecalage getScriptRecalage()
 	{
-		return new ScriptRecalage(log, cp, symetrie);
+		return new ScriptRecalage(log, robot, table, cp, couleur.symmetry);
 	}
 	
-	public ScriptDomotique getScriptDomotique(boolean symetrie)
+	public ScriptDomotique getScriptDomotique()
 	{
-		return new ScriptDomotique(log, cp, symetrie);
+		return new ScriptDomotique(log, robot, table, cp, couleur.symmetry);
 	}
 
-	public ScriptDeposeCube getDeposeScript(boolean symetrie)
+	public ScriptDeposeCube getDeposeScript()
 	{
 		int nbPile = getNbPile();
-		return new ScriptDeposeCube(log, piles[nbPile].size(), pilePosition[nbPile], faceDepose, coteDroit, longueurGrue[piles[nbPile].size()]);
+		return new ScriptDeposeCube(log, robot, table, piles[nbPile].size(), pilePosition[nbPile], faceDepose, coteDroit, longueurGrue[piles[nbPile].size()]);
 	}
 	
 	private int getNbPile()
@@ -124,8 +137,8 @@ public class ScriptManager
 				Cube c = Cube.getCube(croix, couleur);
 				if(isFacePossible(c, f, bourrine))
 				{
-					out.add(new ScriptPriseCube(log,c,f,true));
-					out.add(new ScriptPriseCube(log,c,f,false));
+					out.add(new ScriptPriseCube(log,robot, table, c,f,true));
+					out.add(new ScriptPriseCube(log,robot, table, c,f,false));
 				}
 			}
 		}
@@ -143,8 +156,8 @@ public class ScriptManager
 			for(CubeFace f : CubeFace.values())
 				if(isFacePossible(c, f, bourrine))
 				{
-					out.add(new ScriptPriseCube(log,c,f,true));
-					out.add(new ScriptPriseCube(log,c,f,false));
+					out.add(new ScriptPriseCube(log,robot, table, c,f,true));
+					out.add(new ScriptPriseCube(log,robot, table, c,f,false));
 				}
 		}
 		return out;

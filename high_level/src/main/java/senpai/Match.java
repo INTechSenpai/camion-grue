@@ -1,5 +1,6 @@
 package senpai;
 
+import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.exceptions.TimeoutException;
 import pfg.kraken.utils.XYO;
 import pfg.log.Log;
@@ -8,6 +9,7 @@ import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
 import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
+import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
@@ -40,87 +42,18 @@ import senpai.utils.Subject;
 
 public class Match
 {
+	private static Senpai senpai = new Senpai();
+	private OutgoingOrderBuffer ll;
+	private Robot robot;
+	private Table table;
+	private ScriptManager scripts;
+	private Log log;
+
 	public static void main(String[] args)
 	{
-		String configfile = "senpai-trajectory.conf";
-		
-
-		Senpai senpai = new Senpai();
 		ErrorCode error = ErrorCode.NO_ERROR;
-		try
-		{
-			senpai = new Senpai();
-			senpai.initialize(configfile, "default", "graphic");
-			OutgoingOrderBuffer ll = senpai.getService(OutgoingOrderBuffer.class);
-			Robot robot = senpai.getService(Robot.class);
-			Table table = senpai.getService(Table.class);
-			ScriptManager scripts = senpai.getService(ScriptManager.class);
-			Log log = senpai.getService(Log.class);
-
-			RobotColor couleur;
-			
-			/*
-			 * Attente de la couleur
-			 */
-			DataTicket etat;
-			do
-			{
-				// Demande la couleur toute les 100ms et s'arrête dès qu'elle est connue
-				Ticket tc = ll.demandeCouleur();
-				etat = tc.attendStatus();
-				Thread.sleep(100);
-			} while(etat.status != CommProtocol.State.OK);
-			couleur = (RobotColor) etat.data;
-			robot.updateColorAndSendPosition(couleur);
-			table.updateCote(couleur.symmetry);
-			senpai.getService(ThreadCommProcess.class).capteursOn = true;
-			
-			
-			/*
-			 * Recalage initial
-			 */
-			ScriptRecalage rec = scripts.getScriptRecalage(couleur.symmetry);
-			rec.execute(robot, table);
-			XYO initialCorrection = rec.getCorrection();
-			System.out.println(initialCorrection);
-			double deltaX = Math.round(initialCorrection.position.getX())/10.;
-			double deltaY = Math.round(initialCorrection.position.getY())/10.;
-			double orientation = initialCorrection.orientation * 180. / Math.PI;
-			log.write("Je suis "+Math.abs(deltaX)+"cm sur la "+(deltaX < 0 ? "droite" : "gauche"), Subject.STATUS);
-			log.write("Je suis "+Math.abs(deltaY)+"cm vers l'"+(deltaY < 0 ? "avant" : "arrière"), Subject.STATUS);
-			log.write("Je suis orienté vers la "+(orientation < 0 ? "droite" : "gauche")+" de "+Math.abs(orientation)+"°", Subject.STATUS);
-			
-			Script script = scripts.getScriptDomotique(couleur.symmetry);
-			boolean restart;
-			do {
-				try {
-					restart = false;
-					robot.goTo(script.getPointEntree());
-					System.out.println("On est arrivé !");
-				}
-				catch(UnableToMoveException | TimeoutException e)
-				{
-					System.out.println("On a eu un problème : "+e);
-					restart = true;
-				}
-			} while(restart);
-			
-			script.execute(robot, table);
-			
-			do {
-				try {
-					restart = false;
-					robot.goTo(rec.getPointEntree());
-					System.out.println("On est arrivé !");
-				}
-				catch(UnableToMoveException | TimeoutException e)
-				{
-					System.out.println("On a eu un problème : "+e);
-					restart = true;
-				}
-			} while(restart);
-			
-			rec.execute(robot, table);
+		try {
+			new Match().exec();
 		}
 		catch(Exception e)
 		{
@@ -139,5 +72,93 @@ public class Match
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public void exec() throws InterruptedException
+	{
+		String configfile = "senpai-trajectory.conf";
+		
+		senpai = new Senpai();
+		senpai.initialize(configfile, "default", "graphic");
+		ll = senpai.getService(OutgoingOrderBuffer.class);
+		robot = senpai.getService(Robot.class);
+		table = senpai.getService(Table.class);
+		scripts = senpai.getService(ScriptManager.class);
+		log = senpai.getService(Log.class);
+
+		RobotColor couleur;
+		
+		/*
+		 * Attente de la couleur
+		 */
+		DataTicket etat;
+		do
+		{
+			// Demande la couleur toute les 100ms et s'arrête dès qu'elle est connue
+			Ticket tc = ll.demandeCouleur();
+			etat = tc.attendStatus();
+			Thread.sleep(100);
+		} while(etat.status != CommProtocol.State.OK);
+		couleur = (RobotColor) etat.data;
+		robot.updateColorAndSendPosition(couleur);
+		table.updateCote(couleur.symmetry);
+		scripts.setCouleur(couleur);
+		senpai.getService(ThreadCommProcess.class).capteursOn = true;
+		
+		
+		/*
+		 * Recalage initial
+		 */
+		ScriptRecalage rec = scripts.getScriptRecalage();
+		try {
+			rec.execute();
+		} catch (UnableToMoveException | ActionneurException e) {
+			// IMPOSSIBRU
+			e.printStackTrace();
+		}
+		
+		XYO initialCorrection = rec.getCorrection();
+		System.out.println(initialCorrection);
+		double deltaX = Math.round(initialCorrection.position.getX())/10.;
+		double deltaY = Math.round(initialCorrection.position.getY())/10.;
+		double orientation = initialCorrection.orientation * 180. / Math.PI;
+		log.write("Je suis "+Math.abs(deltaX)+"cm sur la "+(deltaX < 0 ? "droite" : "gauche"), Subject.STATUS);
+		log.write("Je suis "+Math.abs(deltaY)+"cm vers l'"+(deltaY < 0 ? "avant" : "arrière"), Subject.STATUS);
+		log.write("Je suis orienté vers la "+(orientation < 0 ? "droite" : "gauche")+" de "+Math.abs(orientation)+"°", Subject.STATUS);
+		
+		try {
+			doScript(scripts.getScriptDomotique(), 5, 2);
+		} catch (PathfindingException | UnableToMoveException | ActionneurException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void doScript(Script s, int nbEssaiChemin, int nbEssaiScript) throws PathfindingException, InterruptedException, UnableToMoveException, ActionneurException
+	{
+		boolean restart;
+		do {
+			try {
+				restart = false;
+				robot.goTo(s.getPointEntree());
+			}
+			catch(UnableToMoveException | TimeoutException e)
+			{
+				restart = true;
+				nbEssaiChemin--;
+			}
+		} while(restart && nbEssaiChemin > 0);
+		
+		do {
+			try {
+				restart = false;
+				s.execute();
+			}
+			catch(UnableToMoveException | ActionneurException e)
+			{
+				restart = true;
+				nbEssaiScript--;
+			}
+		} while(restart && nbEssaiScript > 0);
+
 	}
 }

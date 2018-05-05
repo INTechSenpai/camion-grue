@@ -34,23 +34,27 @@ import senpai.utils.Subject;
 public abstract class Script
 {
 	protected Log log;
+	protected Robot robot;
+	protected Table table;
 	
-	public Script(Log log)
+	public Script(Log log, Robot robot, Table table)
 	{
 		this.log = log;
+		this.robot = robot;
+		this.table = table;
 	}
 	
 	public abstract XYO getPointEntree();
 
-	protected abstract void run(Robot robot, Table table) throws InterruptedException, UnableToMoveException, ActionneurException;
+	protected abstract void run() throws InterruptedException, UnableToMoveException, ActionneurException;
 
-	public void execute(Robot robot, Table table) throws InterruptedException
+	public void execute() throws UnableToMoveException, ActionneurException, InterruptedException
 	{
 		log.write("Début de l'exécution de " + getClass().getSimpleName(), Subject.SCRIPT);
 		robot.beginScript();
 		try
 		{
-			run(robot, table);
+			run();
 			log.write("Fin de l'exécution de " + getClass().getSimpleName(), Subject.SCRIPT);
 		}
 		catch(UnableToMoveException | ActionneurException e)
@@ -62,6 +66,7 @@ public abstract class Script
 			} catch (ActionneurException e1) {
 				log.write("Erreur lors de l'exécution du script " + getClass().getSimpleName() + " : " + e, Severity.CRITICAL, Subject.SCRIPT);
 			}
+			throw e;
 		}
 		finally
 		{

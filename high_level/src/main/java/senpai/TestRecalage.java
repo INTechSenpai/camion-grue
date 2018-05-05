@@ -48,9 +48,10 @@ public class TestRecalage
 			Table table = senpai.getService(Table.class);
 			ScriptManager scripts = senpai.getService(ScriptManager.class);
 			robot.updateColorAndSendPosition(RobotColor.VERT);
+			scripts.setCouleur(RobotColor.VERT);
 			table.updateCote(true);
 			
-			Script script = scripts.getScriptRecalage(RobotColor.VERT.symmetry);
+			Script script = scripts.getScriptRecalage();
 			boolean restart;
 			do {
 				try {
@@ -65,7 +66,7 @@ public class TestRecalage
 				}
 			} while(restart);
 			
-			script.execute(robot, table);
+			script.execute();
 		}
 		catch(Exception e)
 		{

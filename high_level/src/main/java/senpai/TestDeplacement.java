@@ -74,6 +74,7 @@ public class TestDeplacement {
 				{
 					// Demande la couleur toute les 100ms et s'arrête dès qu'elle est connue
 					Ticket tc = data.demandeCouleur();
+
 					etat = tc.attendStatus();
 					Thread.sleep(100);
 				} while(etat.status != CommProtocol.State.OK);

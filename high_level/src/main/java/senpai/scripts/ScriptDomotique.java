@@ -36,9 +36,9 @@ public class ScriptDomotique extends Script
 	private XY_RW positionEntree = new XY_RW(370,1780);
 	private CapteursProcess cp;
 	
-	public ScriptDomotique(Log log, CapteursProcess cp, boolean symetrie)
+	public ScriptDomotique(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie)
 	{
-		super(log);
+		super(log, robot, table);
 		this.cp = cp;
 		if(symetrie)
 			positionEntree.setX(- positionEntree.getX());
@@ -51,7 +51,7 @@ public class ScriptDomotique extends Script
 	}
 
 	@Override
-	protected void run(Robot robot, Table table) throws InterruptedException, UnableToMoveException, ActionneurException
+	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException
 	{
 		try {
 			robot.avance(-100, 200);
