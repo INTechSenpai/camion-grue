@@ -421,7 +421,7 @@ public class CapteursProcess
 		assert mesure >= 0 : "Mesure de capteur négative ! "+c+" "+mesure;
 		
 		if(mesure == CommProtocol.EtatCapteur.TROP_PROCHE.ordinal())
-			mesure = 5;
+			mesure = 15;
 		
 		else if(mesure < CommProtocol.EtatCapteur.values().length)
 		{
@@ -484,8 +484,9 @@ public class CapteursProcess
 		return Mur.MUR_HAUT;
 	}
 	
-	public void doStaticCorrection(long duree, Cinematique cinem) throws InterruptedException
+	public XYO doStaticCorrection(long duree) throws InterruptedException
 	{
+		Cinematique cinem = robot.getCinematique();
 		ongoingStaticCorrection = true;
 
 		Thread.sleep(duree);
@@ -501,7 +502,10 @@ public class CapteursProcess
 			if(c.murVu !=  null)
 			{
 				if(c.valc1.isEmpty() || c.valc2.isEmpty())
+				{
+					log.write("Aucune valeur pour "+c+" !", Subject.CORRECTION);
 					continue;
+				}
 
 				Collections.sort(c.valc1);
 				int mesure1 = c.valc1.get(c.valc1.size() / 2);
@@ -565,10 +569,15 @@ public class CapteursProcess
 				c.valc2.clear();
 			}
 		}
-		
-		totalDeltaAngle /= nb;
-		XYO correction = new XYO(totalDeltaPos, totalDeltaAngle);
-		log.write("Envoi d'une correction XYO statique: " + correction, Subject.STATUS);
-		serie.correctPosition(correction.position, correction.orientation);
+
+		if(nb != 0)
+		{
+			totalDeltaAngle /= nb;
+			XYO correction = new XYO(totalDeltaPos, totalDeltaAngle);
+			log.write("Envoi d'une correction XYO statique: " + correction, Subject.STATUS);
+			serie.correctPosition(correction.position, correction.orientation);
+			return correction;
+		}
+		return null;
 	}
 }

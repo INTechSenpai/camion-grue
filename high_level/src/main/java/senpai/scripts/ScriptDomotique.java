@@ -17,6 +17,9 @@ package senpai.scripts;
 import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
+import senpai.capteurs.CapteursCorrection;
+import senpai.capteurs.CapteursProcess;
+import senpai.capteurs.Mur;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
@@ -31,10 +34,12 @@ import senpai.table.Table;
 public class ScriptDomotique extends Script
 {
 	private XY_RW positionEntree = new XY_RW(370,1780);
+	private CapteursProcess cp;
 	
-	public ScriptDomotique(Log log, boolean symetrie)
+	public ScriptDomotique(Log log, CapteursProcess cp, boolean symetrie)
 	{
 		super(log);
+		this.cp = cp;
 		if(symetrie)
 			positionEntree.setX(- positionEntree.getX());
 	}
@@ -55,7 +60,12 @@ public class ScriptDomotique extends Script
 			// OK
 		}
 		robot.setDomotiqueDone();
-		robot.avance(300, 800);
+		robot.avance(100, 800);
+
+		CapteursCorrection.ARRIERE.murVu = Mur.MUR_HAUT;
+		cp.doStaticCorrection(500);
+		
+		robot.avance(100, 800);
 	}
 
 }

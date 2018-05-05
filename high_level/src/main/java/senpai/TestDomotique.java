@@ -6,13 +6,16 @@ import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
 import pfg.kraken.exceptions.TimeoutException;
 import pfg.kraken.robot.Cinematique;
+import pfg.kraken.utils.XYO;
 import pfg.log.Log;
 import senpai.Senpai.ErrorCode;
+import senpai.capteurs.CapteursProcess;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
 import senpai.scripts.Script;
 import senpai.scripts.ScriptDomotique;
+import senpai.scripts.ScriptManager;
 import senpai.table.Table;
 import senpai.threads.comm.ThreadCommProcess;
 
@@ -49,14 +52,22 @@ public class TestDomotique
 		{			
 			senpai = new Senpai();
 			senpai.initialize(configfile, "default", "graphic");
-			senpai.getService(ThreadCommProcess.class).capteursOn = true;
 			Robot robot = senpai.getService(Robot.class);
 			Table table = senpai.getService(Table.class);
 			Log log = senpai.getService(Log.class);
 			GraphicDisplay buffer = senpai.getService(GraphicDisplay.class);
 			robot.updateColorAndSendPosition(RobotColor.VERT);
+			senpai.getService(ThreadCommProcess.class).capteursOn = true;
+			ScriptManager scripts = senpai.getService(ScriptManager.class);
+			Script rec = scripts.getScriptRecalage(RobotColor.VERT.symmetry);
+			rec.execute(robot, table);
+/*			XYO initialCorrection = cp.doStaticCorrection(1000);
+			double deltaX = Math.round(initialCorrection.position.getX())/10.;
+			double deltaY = Math.round(initialCorrection.position.getY())/10.;
+			double orientation = initialCorrection.orientation;*/
+///			log.write("Je suis "+", categorie);
 			table.updateCote(true);
-			Script script = new ScriptDomotique(log, true);
+			Script script = scripts.getScriptDomotique(true);
 			buffer.addPrintable(new Cinematique(script.getPointEntree()), Color.BLUE, Layer.FOREGROUND.layer);
 			boolean restart;
 			do {
@@ -73,6 +84,21 @@ public class TestDomotique
 			} while(restart);
 			
 			script.execute(robot, table);
+			
+			do {
+				try {
+					restart = false;
+					robot.goTo(rec.getPointEntree());
+					System.out.println("On est arrivé !");
+				}
+				catch(UnableToMoveException | TimeoutException e)
+				{
+					System.out.println("On a eu un problème : "+e);
+					restart = true;
+				}
+			} while(restart);
+			
+			rec.execute(robot, table);
 		}
 		catch(Exception e)
 		{

@@ -71,6 +71,11 @@ public class ScriptManager
 		return new ScriptRecalage(log, cp, symetrie);
 	}
 	
+	public ScriptDomotique getScriptDomotique(boolean symetrie)
+	{
+		return new ScriptDomotique(log, cp, symetrie);
+	}
+
 	public ScriptDeposeCube getDeposeScript(boolean symetrie)
 	{
 		int nbPile = getNbPile();

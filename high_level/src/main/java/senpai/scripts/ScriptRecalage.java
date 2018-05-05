@@ -68,7 +68,7 @@ public class ScriptRecalage extends Script
 	{
 		for(CapteursCorrection c : capteurs.keySet())
 			c.murVu = capteurs.get(c);
-		cp.doStaticCorrection(1000, robot.getCinematique());
+		cp.doStaticCorrection(500);
 	}
 
 }
