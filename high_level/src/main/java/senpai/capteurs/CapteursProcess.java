@@ -27,8 +27,8 @@ import senpai.utils.Subject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
 import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
@@ -68,7 +68,6 @@ public class CapteursProcess
 //	private boolean scan = false;
 	private final int tailleBufferRecalage;
 	private final List<XYO> bufferDynamicCorrection = new ArrayList<XYO>();
-	private final List<XYO> bufferStaticCorrection = new ArrayList<XYO>();
 //	private ObstaclesMemory obstacles;
 	private ObstaclesDynamiques dynObs;
 	private Robot robot;
@@ -246,12 +245,30 @@ public class CapteursProcess
 //		if(chemin.checkColliding(false))
 //			obsbuffer.notify();
 
-		if(enableDynamicCorrection || ongoingStaticCorrection)
-			correctXYO(data);
+		if(enableDynamicCorrection)
+			correctDynamicXYO(data);
+		if(ongoingStaticCorrection)
+			correctStaticXYO(data);
 		double duree = System.currentTimeMillis() - avant;
 		if(duree > 10)
 			log.write("Durée traitement capteurs : "+duree, duree > 1000 ? Severity.CRITICAL : Severity.WARNING, Subject.CAPTEURS);
 
+	}
+	
+	private void correctStaticXYO(SensorsData data)
+	{
+		for(CapteursCorrection c : CapteursCorrection.values())			
+		{
+			if(c.murVu !=  null)
+			{
+				if(data.mesures[c.c1.ordinal()] >= CommProtocol.EtatCapteur.values().length
+						&& data.mesures[c.c2.ordinal()] >= CommProtocol.EtatCapteur.values().length)
+				{
+					c.valc1.add(data.mesures[c.c1.ordinal()]);
+					c.valc2.add(data.mesures[c.c2.ordinal()]);
+				}
+			}
+		}
 	}
 
 	/**
@@ -260,7 +277,7 @@ public class CapteursProcess
 	 * 
 	 * @param data
 	 */
-	private void correctXYO(SensorsData data)
+	private void correctDynamicXYO(SensorsData data)
 	{
 		for(CapteursCorrection c : CapteursCorrection.values())			
 		{
@@ -277,11 +294,6 @@ public class CapteursProcess
 
 			Mur mur1 = orientationMurProche(pointVu1);
 			Mur mur2 = orientationMurProche(pointVu2);
-
-			// log.debug("PointVu1 : "+pointVu1);
-			// log.debug("PointVu2 : "+pointVu2);
-
-			// log.debug("Murs : "+mur1+" "+mur2);
 
 			// ces capteurs ne voient pas un mur proche, ou pas le même
 			if(mur1 == null || mur2 == null || mur1 != mur2)
@@ -323,15 +335,6 @@ public class CapteursProcess
 			XYO correction = new XYO(deltaX, deltaY, deltaOrientation);
 			
 			/*
-			 * On autorise n'importe quel imprécision en correction manuelle
-			 */
-			if(ongoingStaticCorrection && c.enableForStaticCorrection)
-				bufferStaticCorrection.add(correction);
-
-			if(!enableDynamicCorrection)
-				continue;
-			
-			/*
 			 * L'imprécision mesurée est trop grande. C'est probablement une
 			 * erreur.
 			 */
@@ -370,7 +373,7 @@ public class CapteursProcess
 			log.write("Intégration d'une donnée de correction", Subject.CORRECTION);
 			if(bufferDynamicCorrection.size() == tailleBufferRecalage)
 			{
-				correctPosition(bufferDynamicCorrection, false);
+				correctPosition(bufferDynamicCorrection);
 				bufferDynamicCorrection.clear();
 			}
 		}
@@ -378,14 +381,14 @@ public class CapteursProcess
 
 	}
 
-	private void correctPosition(List<XYO> bufferCorrection, boolean statique)
+	private void correctPosition(List<XYO> bufferCorrection)
 	{
 		XY_RW posmoy = new XY_RW();
 		double orientationmoy = 0;
 		int nbPos = 0;
 		for(int i = 0; i < bufferCorrection.size(); i++)
 		{
-			if(statique || i >= bufferCorrection.size() / 2)
+			if(i >= bufferCorrection.size() / 2)
 			{
 				posmoy.plus(bufferCorrection.get(i).position);
 				nbPos++;
@@ -394,7 +397,7 @@ public class CapteursProcess
 		}
 		posmoy.scalar(1. / nbPos);
 		orientationmoy /= bufferCorrection.size();
-		log.write("Envoi d'une correction XYO "+(statique ? "statique" : "dynamique") +": " + posmoy + " " + orientationmoy, Subject.CORRECTION);
+		log.write("Envoi d'une correction XYO dynamique: " + posmoy + " " + orientationmoy, Subject.STATUS);
 		serie.correctPosition(posmoy, orientationmoy);
 	}
 
@@ -446,21 +449,6 @@ public class CapteursProcess
 		return positionVue;
 	}
 
-	private enum Mur
-	{
-		MUR_HAUT(0),
-		MUR_BAS(0),
-		MUR_GAUCHE(Math.PI / 2),
-		MUR_DROIT(Math.PI / 2);
-
-		private double orientation;
-
-		private Mur(double orientation)
-		{
-			this.orientation = orientation;
-		}
-	}
-
 	/**
 	 * Renvoie l'orientation du mur le plus proche.
 	 * Renvoie null si aucun mur proche ou ambiguité (dans un coin)
@@ -477,6 +465,7 @@ public class CapteursProcess
 		boolean murDroit = Math.abs(pos.getX() - 1500) < distanceMax;
 		boolean murHaut = Math.abs(pos.getY() - 2000) < distanceMax;
 		boolean murGauche = Math.abs(pos.getX() + 1500) < distanceMax;
+		log.write(distanceMax+" "+murBas+" "+murDroit+" "+murHaut+" "+murGauche, Subject.CORRECTION);
 
 		// log.debug("État mur : "+murBas+" "+murDroit+" "+murHaut+"
 		// "+murGauche);
@@ -495,20 +484,91 @@ public class CapteursProcess
 		return Mur.MUR_HAUT;
 	}
 	
-	public void doStaticCorrection(CapteursCorrection[] capteurs, long duree) throws InterruptedException
+	public void doStaticCorrection(long duree, Cinematique cinem) throws InterruptedException
 	{
-		assert bufferStaticCorrection.isEmpty() : bufferStaticCorrection;
-		for(CapteursCorrection c : capteurs)
-			c.enableForStaticCorrection = true;
 		ongoingStaticCorrection = true;
 
 		Thread.sleep(duree);
 		
 		ongoingStaticCorrection = false;
-		for(CapteursCorrection c : CapteursCorrection.values())
-			c.enableForStaticCorrection = false;
+		
+		XY_RW totalDeltaPos = new XY_RW();
+		double totalDeltaAngle = 0;
+		int nb = 0;
+		
+		for(CapteursCorrection c : CapteursCorrection.values())			
+		{
+			if(c.murVu !=  null)
+			{
+				if(c.valc1.isEmpty() || c.valc2.isEmpty())
+					continue;
 
-		correctPosition(bufferStaticCorrection, true);
-		bufferStaticCorrection.clear();
+				Collections.sort(c.valc1);
+				int mesure1 = c.valc1.get(c.valc1.size() / 2);
+	
+				Collections.sort(c.valc2);
+				int mesure2 = c.valc2.get(c.valc2.size() / 2);
+				
+				log.write("Distance médiane de "+c.c1+" : "+mesure1+" ("+c.valc1.size()+" valeurs)", Subject.CORRECTION);
+				log.write("Distance médiane de "+c.c2+" : "+mesure2+" ("+c.valc2.size()+" valeurs)", Subject.CORRECTION);
+				
+				XY_RW pointVu1 = getPositionVue(capteurs[c.c1.ordinal()], mesure1, cinem, 0, 0, 0);
+				if(pointVu1 == null)
+					continue;
+		
+				XY_RW pointVu2 = getPositionVue(capteurs[c.c2.ordinal()], mesure2, cinem, 0, 0, 0);
+				if(pointVu2 == null)
+					continue;
+		
+				XY delta = pointVu1.minusNewVector(pointVu2);
+				double deltaOrientation = (c.murVu.orientation - delta.getArgument()) % Math.PI; // on
+																					// veut
+																					// une
+																					// mesure
+																					// précise,
+																					// donc
+																					// on
+																					// évite
+																					// getFastArgument
+		
+				// le delta d'orientation qu'on cherche est entre -PI/2 et PI/2
+				if(deltaOrientation > Math.PI / 2)
+					deltaOrientation -= Math.PI;
+				else if(deltaOrientation < -Math.PI / 2)
+					deltaOrientation += Math.PI;
+		
+				// log.debug("Delta orientation : "+deltaOrientation);
+		
+				pointVu1.rotate(deltaOrientation, cinem.getPosition());
+				pointVu2.rotate(deltaOrientation, cinem.getPosition());
+		
+				double deltaX = 0;
+				double deltaY = 0;
+				if(c.murVu == Mur.MUR_BAS)
+					deltaY = -pointVu1.getY();
+				else if(c.murVu == Mur.MUR_HAUT)
+					deltaY = -(pointVu1.getY() - 2000);
+				else if(c.murVu == Mur.MUR_GAUCHE)
+					deltaX = -(pointVu1.getX() + 1500);
+				else if(c.murVu == Mur.MUR_DROIT)
+					deltaX = -(pointVu1.getX() - 1500);
+		
+				log.write("Correction "+c+" : "+new XYO(deltaX, deltaY, deltaOrientation), Subject.CORRECTION);
+				
+				totalDeltaPos.setX(totalDeltaPos.getX() + deltaX);
+				totalDeltaPos.setY(totalDeltaPos.getY() + deltaY);
+				totalDeltaAngle += deltaOrientation;				
+				nb++;
+				
+				c.murVu = null;
+				c.valc1.clear();
+				c.valc2.clear();
+			}
+		}
+		
+		totalDeltaAngle /= nb;
+		XYO correction = new XYO(totalDeltaPos, totalDeltaAngle);
+		log.write("Envoi d'une correction XYO statique: " + correction, Subject.STATUS);
+		serie.correctPosition(correction.position, correction.orientation);
 	}
 }

@@ -14,6 +14,9 @@
 
 package senpai.capteurs;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Les différents capteurs utilisés pour la correction
  * @author pf
@@ -31,7 +34,9 @@ public enum CapteursCorrection {
 	
 	public final CapteursRobot c1;
 	public final CapteursRobot c2;
-	public volatile boolean enableForStaticCorrection = false;
+	public volatile Mur murVu = null;
+	public List<Integer> valc1 = new ArrayList<Integer>();	
+	public List<Integer> valc2 = new ArrayList<Integer>();
 	
 	private CapteursCorrection(CapteursRobot c1, CapteursRobot c2)
 	{

@@ -14,11 +14,14 @@
 
 package senpai.scripts;
 
+import java.util.HashMap;
+
 import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.capteurs.CapteursCorrection;
 import senpai.capteurs.CapteursProcess;
+import senpai.capteurs.Mur;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
@@ -34,7 +37,7 @@ public class ScriptRecalage extends Script
 {
 	private CapteursProcess cp;
 	private XY_RW positionEntree = new XY_RW(1300,1700);
-	private CapteursCorrection[] capteurs;
+	private HashMap<CapteursCorrection, Mur> capteurs = new HashMap<CapteursCorrection, Mur>();
 	
 	public ScriptRecalage(Log log, CapteursProcess cp, boolean symetrie)
 	{
@@ -42,11 +45,15 @@ public class ScriptRecalage extends Script
 		this.cp = cp;
 		if(symetrie)
 		{
-			capteurs = new CapteursCorrection[]{CapteursCorrection.DROITE, CapteursCorrection.ARRIERE};
+			capteurs.put(CapteursCorrection.DROITE, Mur.MUR_GAUCHE);
+			capteurs.put(CapteursCorrection.ARRIERE, Mur.MUR_HAUT);
 			positionEntree.setX(- positionEntree.getX());
 		}
 		else
-			capteurs = new CapteursCorrection[]{CapteursCorrection.GAUCHE, CapteursCorrection.ARRIERE};
+		{
+			capteurs.put(CapteursCorrection.GAUCHE, Mur.MUR_DROIT);
+			capteurs.put(CapteursCorrection.ARRIERE, Mur.MUR_HAUT);
+		}
 			
 	}
 
@@ -59,7 +66,9 @@ public class ScriptRecalage extends Script
 	@Override
 	protected void run(Robot robot, Table table) throws InterruptedException, UnableToMoveException, ActionneurException
 	{
-		cp.doStaticCorrection(capteurs, 3000);
+		for(CapteursCorrection c : capteurs.keySet())
+			c.murVu = capteurs.get(c);
+		cp.doStaticCorrection(1000, robot.getCinematique());
 	}
 
 }
