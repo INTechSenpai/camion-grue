@@ -23,8 +23,9 @@ public class ScriptDeposeCube extends Script
 	private CubeFace faceDepose;
 	private boolean coteDroit;
 	private double longueurGrue;
+	private int nbPile;
 	
-	public ScriptDeposeCube(Log log, Robot robot, Table table, int taillePile, XY positionPile, CubeFace faceDepose, boolean coteDroit, double longueurGrue)
+	public ScriptDeposeCube(Log log, Robot robot, Table table, int taillePile, XY positionPile, CubeFace faceDepose, boolean coteDroit, double longueurGrue, int nbPile)
 	{
 		super(log, robot, table);
 		this.taillePile = taillePile;
@@ -32,6 +33,7 @@ public class ScriptDeposeCube extends Script
 		this.faceDepose = faceDepose;
 		this.coteDroit = coteDroit;
 		this.longueurGrue = longueurGrue;
+		this.nbPile = nbPile;
 	}
 
 	@Override
@@ -71,8 +73,7 @@ public class ScriptDeposeCube extends Script
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException
 	{
-		for(int i = 0; i < 2; i++)
-			robot.poseCube(coteDroit ? Math.PI / 180 * 75 : - Math.PI / 180 * 75, taillePile);
+		robot.poseCubes(coteDroit ? Math.PI / 180 * 75 : - Math.PI / 180 * 75, taillePile, nbPile);
 	}
 
 }

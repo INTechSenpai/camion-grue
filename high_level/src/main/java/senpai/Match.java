@@ -96,7 +96,9 @@ public class Match
 		table = senpai.getService(Table.class);
 		scripts = senpai.getService(ScriptManager.class);
 		log = senpai.getService(Log.class);
-
+		if(pattern != null)
+			scripts.setPattern(pattern);
+		
 		RobotColor couleur;
 
 		/*

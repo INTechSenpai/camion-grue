@@ -55,7 +55,7 @@ public class ScriptManager
 	}
 	
 	private boolean usePattern;
-	private String pattern;
+	private CubeColor[] pattern;
 	private XY_RW[] pilePosition = new XY_RW[] {new XY_RW(0,0), new XY_RW(0,0)};
 	private CubeFace faceDepose = CubeFace.BAS;
 	private double[] longueurGrue = new double[]{300, 300, 290, 365, 365}; // longueur de la grue en fonction du nombre de cube déjà posés
@@ -69,7 +69,7 @@ public class ScriptManager
 		usePattern = false;
 	}
 
-	public void setPattern(String pattern)
+	public void setPattern(CubeColor[] pattern)
 	{
 		this.pattern = pattern;
 		usePattern = true;
@@ -93,8 +93,8 @@ public class ScriptManager
 	public ScriptDeposeCube getDeposeScript()
 	{
 		int nbPile = robot.getNbPile(usePattern);
-		ScriptDeposeCube s1 = new ScriptDeposeCube(log, robot, table, robot.getHauteurPile(nbPile), pilePosition[nbPile], faceDepose, false, longueurGrue[robot.getHauteurPile(nbPile)]);
-		ScriptDeposeCube s2 = new ScriptDeposeCube(log, robot, table, robot.getHauteurPile(nbPile), pilePosition[nbPile], faceDepose, true, longueurGrue[robot.getHauteurPile(nbPile)]);
+		ScriptDeposeCube s1 = new ScriptDeposeCube(log, robot, table, robot.getHauteurPile(nbPile), pilePosition[nbPile], faceDepose, false, longueurGrue[robot.getHauteurPile(nbPile)], nbPile);
+		ScriptDeposeCube s2 = new ScriptDeposeCube(log, robot, table, robot.getHauteurPile(nbPile), pilePosition[nbPile], faceDepose, true, longueurGrue[robot.getHauteurPile(nbPile)], nbPile);
 		CubeComparator compare = new CubeComparator(robot.getCinematique().getXYO());
 		if(compare.compare(s1, s2) < 0)
 			return s1;
