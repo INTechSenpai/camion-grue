@@ -62,6 +62,7 @@ public class CapteursProcess
 
 	private long dateLastMesureCorrection = -1;
 	private final long peremptionCorrection;
+	private final int distanceAuMurMinimumTourelle = 250;
 	private final boolean enableDynamicCorrection;
 	private volatile boolean ongoingStaticCorrection;
 //	private boolean scan = false;
@@ -179,6 +180,16 @@ public class CapteursProcess
 				c.isThereObstacle = false;
 				continue;
 			}
+			
+			if(c.isTourelle)
+				if(positionVue.getY() > (2000 - distanceAuMurMinimumTourelle)
+					|| 	positionVue.getY() < distanceAuMurMinimumTourelle
+					|| positionVue.getX() > (1500 - distanceAuMurMinimumTourelle)
+					|| positionVue.getX() < (-1500 + distanceAuMurMinimumTourelle))
+				{
+					c.isThereObstacle = false;
+					continue;					
+				}
 
 			for(Cube o : Cube.values())
 				if(!table.isDone(o) && o.isVisible(capteurs[i].sureleve) && o.obstacle.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)

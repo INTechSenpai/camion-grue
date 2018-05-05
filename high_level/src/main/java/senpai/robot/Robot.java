@@ -148,14 +148,10 @@ public class Robot extends RobotState
 		this.cinematique.getPosition().copy(oldPosition);
 		cinematique.copy(this.cinematique);
 		obstacle.update(cinematique.getPosition(), cinematique.orientationReelle);
+
 		/*
 		 * On vient juste de récupérer la position initiale
 		 */
-		if(!cinematiqueInitialised)
-		{
-			cinematiqueInitialised = true;
-//			notifyAll();
-		}
 		if(printTrace)
 			synchronized(buffer)
 			{
@@ -228,6 +224,11 @@ public class Robot extends RobotState
 
 	public void avance(double distance, double vitesseMax) throws InterruptedException, UnableToMoveException
 	{
+		if(distance >= 0)
+			log.write("On avance de "+distance+" mm", Subject.TRAJECTORY);
+		else
+			log.write("On recule de "+(-distance)+" mm", Subject.TRAJECTORY);
+		
 		LinkedList<ItineraryPoint> ch = new LinkedList<ItineraryPoint>();
 		double cos = Math.cos(cinematique.orientationReelle);
 		double sin = Math.sin(cinematique.orientationReelle);
@@ -332,10 +333,9 @@ public class Robot extends RobotState
 		out.setScore(score);
 	}
 
-	public void updateColorAndSendPosition(RobotColor c)
+	public void updateColorAndSendPosition(RobotColor c) throws InterruptedException
 	{
 		assert cinematique != null;
-		
 		symetrie = c.symmetry;
 
 		// on applique la symétrie à la position initiale
@@ -349,6 +349,8 @@ public class Robot extends RobotState
 
 		// on envoie la position au LL
 		out.setPosition(cinematique.getPosition(), cinematique.orientationReelle);
+		Thread.sleep(100);
+		cinematiqueInitialised = true;
 	}
 
 	/*
@@ -633,7 +635,8 @@ public class Robot extends RobotState
 	{	
 		currentIndexTrajectory = indexTrajectory;
 //		chemin.setCurrentTrajectoryIndex(indexTrajectory);
-		setCinematique(current);
+		if(cinematiqueInitialised)
+			setCinematique(current);
 	}
 
 	public void setDomotiqueDone()

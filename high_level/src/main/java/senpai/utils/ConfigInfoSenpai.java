@@ -106,9 +106,6 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	DISTANCE_MAX_ENTRE_MESURE_ET_OBJET(50), // quelle marge d'erreur
 											// autorise-t-on entre un objet et
 											// sa détection
-	DISTANCE_BETWEEN_PROXIMITY_OBSTACLES(5), // sous quelle distance
-												// fusionne-t-on deux obstacles
-												// de proximité ?
 	IMPRECISION_MAX_POSITION(50.), // quelle imprecision maximale sur la
 									// position du robot peut-on attendre (en
 									// mm)
