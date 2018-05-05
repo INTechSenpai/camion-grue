@@ -9,8 +9,6 @@ import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.obstacles.ObstaclesDynamiques;
 import senpai.robot.Robot;
-import senpai.utils.Severity;
-import senpai.utils.Subject;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -126,8 +126,9 @@ public class Senpai
 		OutgoingOrderBuffer outBuffer = injector.getExistingService(OutgoingOrderBuffer.class);
 		if(outBuffer != null)
 		{
-			outBuffer.armGoHome();
 			outBuffer.stopStream(Id.ODO_AND_SENSORS);
+			outBuffer.armGoHome();
+			Thread.sleep(1000);
 		}
 		
 		/*

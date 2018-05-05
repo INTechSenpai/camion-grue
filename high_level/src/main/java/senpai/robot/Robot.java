@@ -94,7 +94,7 @@ public class Robot extends RobotState
 	private volatile boolean cinematiqueInitialised = false;
 	private boolean enableLoadPath;
 	private int currentIndexTrajectory = 0, anticipationTourelle;
-	private boolean domotiqueDone = false;
+//	private boolean domotiqueDone = false;
 	private int score;
 	
 	// Constructeur
@@ -638,7 +638,7 @@ public class Robot extends RobotState
 
 	public void setDomotiqueDone()
 	{
-		domotiqueDone = true;
+//		domotiqueDone = true;
 		score += 25;
 		out.setScore(score);
 	}

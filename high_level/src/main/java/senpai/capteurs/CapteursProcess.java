@@ -32,6 +32,7 @@ import pfg.graphic.printable.Layer;
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.robot.Cinematique;
 import pfg.kraken.utils.XY;
+import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 
@@ -59,9 +60,10 @@ public class CapteursProcess
 	private long dateLastMesureCorrection = -1;
 	private long peremptionCorrection;
 	private boolean enableCorrection;
+	private boolean ongoingCorrection;
 	private int indexCorrection = 0;
 //	private boolean scan = false;
-	private Cinematique[] bufferCorrection;
+	private XYO[] bufferCorrection;
 //	private ObstaclesMemory obstacles;
 	private ObstaclesDynamiques dynObs;
 	private Robot robot;
@@ -81,7 +83,7 @@ public class CapteursProcess
 		nbCapteurs = CapteursRobot.values().length;
 		imprecisionMaxPos = config.getDouble(ConfigInfoSenpai.IMPRECISION_MAX_POSITION);
 		imprecisionMaxAngle = config.getDouble(ConfigInfoSenpai.IMPRECISION_MAX_ORIENTATION);
-		bufferCorrection = new Cinematique[config.getInt(ConfigInfoSenpai.TAILLE_BUFFER_RECALAGE)];
+		bufferCorrection = new XYO[config.getInt(ConfigInfoSenpai.TAILLE_BUFFER_RECALAGE)];
 		peremptionCorrection = config.getInt(ConfigInfoSenpai.PEREMPTION_CORRECTION);
 		enableCorrection = config.getBoolean(ConfigInfoSenpai.ENABLE_CORRECTION);
 		margeIgnoreTourelle = config.getInt(ConfigInfoSenpai.MARGE_IGNORE_TOURELLE);
@@ -246,17 +248,22 @@ public class CapteursProcess
 	private void correctXYO(SensorsData data)
 	{
 		int index1, index2;
-		for(int k = 0; k < 2; k++)
+		for(int k = 0; k < 3; k++)
 		{
 			if(k == 0)
 			{
 				index1 = CapteursRobot.ToF_LATERAL_AVANT_GAUCHE.ordinal();
 				index2 = CapteursRobot.ToF_LATERAL_ARRIERE_GAUCHE.ordinal();
 			}
-			else
+			else if(k == 1)
 			{
 				index1 = CapteursRobot.ToF_LATERAL_AVANT_DROIT.ordinal();
 				index2 = CapteursRobot.ToF_LATERAL_ARRIERE_DROIT.ordinal();
+			}
+			else
+			{
+				index1 = CapteursRobot.ToF_ARRIERE_DROITE.ordinal();
+				index2 = CapteursRobot.ToF_ARRIERE_GAUCHE.ordinal();
 			}
 			
 			XY_RW pointVu1 = getPositionVue(capteurs[index1], data.mesures[index1], data.cinematique, data.angleTourelleGauche, data.angleTourelleDroite, data.angleGrue);
@@ -335,7 +342,7 @@ public class CapteursProcess
 			// log.debug("Correction : "+deltaX+" "+deltaY+"
 			// "+deltaOrientation);
 
-			Cinematique correction = new Cinematique(deltaX, deltaY, deltaOrientation, true, 0, false);
+			XYO correction = new XYO(deltaX, deltaY, deltaOrientation);
 			if(System.currentTimeMillis() - dateLastMesureCorrection > peremptionCorrection) // trop
 																								// de
 																								// temps
@@ -358,8 +365,8 @@ public class CapteursProcess
 				for(int i = 0; i < bufferCorrection.length; i++)
 				{
 					if(i >= bufferCorrection.length / 2)
-						posmoy.plus(bufferCorrection[i].getPosition());
-					orientationmoy += bufferCorrection[i].orientationReelle;
+						posmoy.plus(bufferCorrection[i].position);
+					orientationmoy += bufferCorrection[i].orientation;
 				}
 				posmoy.scalar(2. / bufferCorrection.length);
 				orientationmoy /= bufferCorrection.length;
@@ -457,19 +464,14 @@ public class CapteursProcess
 
 		if(!(murBas ^ murDroit ^ murHaut ^ murGauche)) // cette condition est
 														// vraie si on est près
-														// de 1 ou de 3 murs
+														// de 0 ou de 2 murs
 			return null;
 
-		// la correction sur les murs gauche et droit sont désactivés
-		
-		// TODO
 		if(murBas)
 			return Mur.MUR_BAS;
 		else if(murDroit)
-//			return null;
 			return Mur.MUR_DROIT;
 		else if(murGauche)
-//			return null;
 			return Mur.MUR_GAUCHE;
 		return Mur.MUR_HAUT;
 	}
