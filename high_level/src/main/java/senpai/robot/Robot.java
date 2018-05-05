@@ -292,13 +292,15 @@ public class Robot extends RobotState
 		bloque(ordre.getMethodName(), param);
 	}
 
-	public void poseCubes(double angle, int etage, int nbPile) throws InterruptedException, ActionneurException
+	public void poseCubes(double angle, int nbPile) throws InterruptedException, ActionneurException
 	{
+		int etage = piles[nbPile].size();
 		if(cubeTop != null)
 		{
 			execute(Id.ARM_PUT_ON_PILE_S, angle, etage);
 			piles[nbPile].add(cubeTop);
 			cubeTop = null;
+			etage++;
 		}
 		if(cubeInside != null)
 		{

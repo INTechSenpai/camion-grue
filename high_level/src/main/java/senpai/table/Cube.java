@@ -65,14 +65,23 @@ public enum Cube
 	CROIX_TOUT_DROITE_CUBE_BAS(Croix.CROIX_TOUT_DROITE, CubeColor.BLEU),
 	CROIX_TOUT_DROITE_CUBE_CENTRE(Croix.CROIX_TOUT_DROITE, CubeColor.JAUNE),
 
-	GOLDEN_CUBE_1(null, CubeColor.GOLDEN),
-	GOLDEN_CUBE_2(null, CubeColor.GOLDEN);
+	GOLDEN_CUBE_1(CubeColor.GOLDEN),
+	GOLDEN_CUBE_2(CubeColor.GOLDEN);
 
 	public final Obstacle obstacle;
 	public final Croix croix;
 	public final CubePlace place;
 	public final CubeColor couleur;
 	public final XY position;
+	
+	private Cube(CubeColor couleur)
+	{
+		this.couleur = couleur;
+		obstacle = null;
+		croix = null;
+		place = null;
+		position = null;
+	}
 	
 	private Cube(Croix croix, CubeColor couleur)
 	{

@@ -162,6 +162,13 @@ public class Match
 		robot.printTemps();
 		
 		try {
+			doScript(scripts.getDeposeScript(), 5);
+		} catch (PathfindingException | UnableToMoveException | ActionneurException e) {
+			log.write("Erreur : "+e, Subject.SCRIPT);
+		}
+
+		
+/*		try {
 			doScript(scripts.getAllPossible(false).poll(), 5);
 		} catch (PathfindingException | UnableToMoveException | ActionneurException e) {
 			log.write("Erreur : "+e, Subject.SCRIPT);
@@ -173,7 +180,7 @@ public class Match
 			doScript(scripts.getAllPossible(false).poll(), 5);
 		} catch (PathfindingException | UnableToMoveException | ActionneurException e) {
 			log.write("Erreur : "+e, Subject.SCRIPT);
-		}
+		}*/
 
 	}
 	

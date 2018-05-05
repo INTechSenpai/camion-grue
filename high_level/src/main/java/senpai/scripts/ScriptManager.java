@@ -52,13 +52,15 @@ public class ScriptManager
 		{
 			pilePosition[0].setX(-pilePosition[0].getX());
 			pilePosition[1].setX(-pilePosition[1].getX());
+			anglesDepose[0] = Math.PI - anglesDepose[0];
+			anglesDepose[1] = Math.PI - anglesDepose[1];
 		}
 	}
 	
 	private boolean usePattern;
 	private CubeColor[] pattern;
 	private XY_RW[] pilePosition;
-	private CubeFace faceDepose = CubeFace.BAS;
+	private double anglesDepose[];
 	private double[] longueurGrue = new double[]{300, 300, 290, 365, 365}; // longueur de la grue en fonction du nombre de cube déjà posés
 	
 	public ScriptManager(Log log, Config config, Table table, Robot robot, CapteursProcess cp)
@@ -70,6 +72,7 @@ public class ScriptManager
 		pilePosition = new XY_RW[] {
 				new XY_RW(config.getDouble(ConfigInfoSenpai.PILE_1_X),config.getDouble(ConfigInfoSenpai.PILE_1_Y)),
 				new XY_RW(config.getDouble(ConfigInfoSenpai.PILE_2_X),config.getDouble(ConfigInfoSenpai.PILE_2_Y))};
+		anglesDepose = new double[] {config.getDouble(ConfigInfoSenpai.PILE_1_O),config.getDouble(ConfigInfoSenpai.PILE_2_O)};
 		usePattern = false;
 	}
 
@@ -97,8 +100,8 @@ public class ScriptManager
 	public ScriptDeposeCube getDeposeScript()
 	{
 		int nbPile = robot.getNbPile(usePattern);
-		ScriptDeposeCube s1 = new ScriptDeposeCube(log, robot, table, robot.getHauteurPile(nbPile), pilePosition[nbPile], faceDepose, false, longueurGrue[robot.getHauteurPile(nbPile)], nbPile);
-		ScriptDeposeCube s2 = new ScriptDeposeCube(log, robot, table, robot.getHauteurPile(nbPile), pilePosition[nbPile], faceDepose, true, longueurGrue[robot.getHauteurPile(nbPile)], nbPile);
+		ScriptDeposeCube s1 = new ScriptDeposeCube(log, robot, table, robot.getHauteurPile(nbPile), pilePosition[nbPile], anglesDepose[nbPile], false, longueurGrue[robot.getHauteurPile(nbPile)], nbPile);
+		ScriptDeposeCube s2 = new ScriptDeposeCube(log, robot, table, robot.getHauteurPile(nbPile), pilePosition[nbPile], anglesDepose[nbPile], true, longueurGrue[robot.getHauteurPile(nbPile)], nbPile);
 		CubeComparator compare = new CubeComparator(robot.getCinematique().getXYO());
 		if(compare.compare(s1, s2) < 0)
 			return s1;

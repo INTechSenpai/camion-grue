@@ -69,7 +69,7 @@ public class Table implements Printable
 	public void updateCote(boolean symetrie)
 	{
 		for(Cube c : Cube.values())
-			if(c.position.getX() > 0 == symetrie)
+			if(c.position == null || c.position.getX() > 0 == symetrie)
 				setDone(c);
 		
 		if(symetrie)
