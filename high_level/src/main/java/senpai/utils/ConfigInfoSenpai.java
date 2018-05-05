@@ -76,36 +76,11 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	VITESSE_ROBOT_REPLANIF(200), // vitesse en replanification en mm/s
 
 	/**
-	 * Paramètres du log
-	 */
-//	FAST_LOG(false), // affichage plus rapide des logs
-//	SAUVEGARDE_LOG(false), // sauvegarde les logs dans un fichier externe
-//	AFFICHE_CONFIG(false), // affiche la configuration complète au lancement
-//	COLORED_LOG(false), // de la couleur dans les sauvegardes de logs !
-
-	/**
 	 * Paramètres du pathfinding
 	 */
-//	COURBURE_MAX(3), // quelle courbure maximale la trajectoire du robot
-						// peut-elle avoir
-//	TEMPS_ARRET(800), // temps qu'il faut au robot pour s'arrêter et repartir
-						// (par exemple à cause d'un rebroussement)
-//	PF_MARGE_AVANT_COLLISION(100), // combien de mm laisse-t-on au plus % avant
-									// la collision
-//	PF_MARGE_NECESSAIRE(40), // combien de mm le bas niveau DOIT-il toujours
-								// avoir
-//	PF_MARGE_PREFERABLE(60), // combien de mm le bas niveau devrait-il toujours
-								// avoir
-//	PF_MARGE_INITIALE(100), // combien de mm garde-t-on obligatoirement au début
-							// de la replanification
-//	DUREE_MAX_RECHERCHE_PF(10000), // durée maximale que peut prendre le
-									// pathfinding
-//	TAILLE_FAISCEAU_PF(20), // combien de voisins sont ajoutés à l'openset à
-							// chaque itération. CONFIG IGNORÉE !
-//	NB_ESSAIS_PF(100), // nombre d'essais du pathfinding
 	ALLOW_PRECOMPUTED_PATH(true), // autorise-t-on l'utilisation de chemins
 									// précalculés
-	SAVE_FOUND_PATH(true), // sauvegarde tous les trajets calculés en match
+//	SAVE_FOUND_PATH(true), // sauvegarde tous les trajets calculés en match
 
 	/**
 	 * Paramètres de la comm
@@ -144,16 +119,9 @@ public enum ConfigInfoSenpai implements ConfigInfo
 								// obtenir une correction de recalage
 	PEREMPTION_CORRECTION(100), // temps maximal entre deux mesures de
 								// correction au sein d'un même buffer (en ms)
-	ENABLE_CORRECTION(false), // la correction de position et d'orientation
+	ENABLE_DYNAMIC_CORRECTION(false), // la correction de position et d'orientation
 								// est-elle activée ?
 	WARM_UP_DURATION(5000), // durée du warm-up
-	RAYON_ROBOT_SUPPRESSION_OBSTACLES_FIXES(300), // dans quel rayon
-													// supprime-t-on les
-													// obstacles fixes si on est
-													// dedans
-	SUPPRESSION_AUTO_OBSTACLES_FIXES(true), // si on démarre dans un obstacle
-											// fixe, est-ce qu'on le vire ?
-//	ENABLE_SCAN(true), // scan-t-on autour du robot s'il est coincé ?
 
 	ENABLE_KNOWN_PATHS(true), // active les chemins enregistrés ?
 	/**

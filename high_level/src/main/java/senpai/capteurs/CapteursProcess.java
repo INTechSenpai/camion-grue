@@ -26,6 +26,9 @@ import senpai.utils.Severity;
 import senpai.utils.Subject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+
 import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
@@ -54,20 +57,21 @@ public class CapteursProcess
 	private int distanceApproximation;
 	private RectangularObstacle obstacleRobot;
 	private Capteur[] capteurs;
-	private double imprecisionMaxPos;
-	private double imprecisionMaxAngle;
+	private final double imprecisionMaxPos;
+	private final double imprecisionMaxAngle;
 
 	private long dateLastMesureCorrection = -1;
-	private long peremptionCorrection;
-	private boolean enableCorrection;
-	private boolean ongoingCorrection;
-	private int indexCorrection = 0;
+	private final long peremptionCorrection;
+	private final boolean enableDynamicCorrection;
+	private volatile boolean ongoingStaticCorrection;
 //	private boolean scan = false;
-	private XYO[] bufferCorrection;
+	private final int tailleBufferRecalage;
+	private final List<XYO> bufferDynamicCorrection = new ArrayList<XYO>();
+	private final List<XYO> bufferStaticCorrection = new ArrayList<XYO>();
 //	private ObstaclesMemory obstacles;
 	private ObstaclesDynamiques dynObs;
 	private Robot robot;
-	private int margeIgnoreTourelle;
+	private final int margeIgnoreTourelle;
 	
 //	private List<SensorsData> mesuresScan = new ArrayList<SensorsData>();
 
@@ -83,9 +87,9 @@ public class CapteursProcess
 		nbCapteurs = CapteursRobot.values().length;
 		imprecisionMaxPos = config.getDouble(ConfigInfoSenpai.IMPRECISION_MAX_POSITION);
 		imprecisionMaxAngle = config.getDouble(ConfigInfoSenpai.IMPRECISION_MAX_ORIENTATION);
-		bufferCorrection = new XYO[config.getInt(ConfigInfoSenpai.TAILLE_BUFFER_RECALAGE)];
+		tailleBufferRecalage = config.getInt(ConfigInfoSenpai.TAILLE_BUFFER_RECALAGE);
 		peremptionCorrection = config.getInt(ConfigInfoSenpai.PEREMPTION_CORRECTION);
-		enableCorrection = config.getBoolean(ConfigInfoSenpai.ENABLE_CORRECTION);
+		enableDynamicCorrection = config.getBoolean(ConfigInfoSenpai.ENABLE_DYNAMIC_CORRECTION);
 		margeIgnoreTourelle = config.getInt(ConfigInfoSenpai.MARGE_IGNORE_TOURELLE);
 
 		this.obstacleRobot = obstacleRobot;
@@ -231,7 +235,7 @@ public class CapteursProcess
 //		if(chemin.checkColliding(false))
 //			obsbuffer.notify();
 
-		if(enableCorrection)
+		if(enableDynamicCorrection || ongoingStaticCorrection)
 			correctXYO(data);
 		double duree = System.currentTimeMillis() - avant;
 		if(duree > 10)
@@ -247,24 +251,10 @@ public class CapteursProcess
 	 */
 	private void correctXYO(SensorsData data)
 	{
-		int index1, index2;
-		for(int k = 0; k < 3; k++)
+		for(CapteursCorrection c : CapteursCorrection.values())			
 		{
-			if(k == 0)
-			{
-				index1 = CapteursRobot.ToF_LATERAL_AVANT_GAUCHE.ordinal();
-				index2 = CapteursRobot.ToF_LATERAL_ARRIERE_GAUCHE.ordinal();
-			}
-			else if(k == 1)
-			{
-				index1 = CapteursRobot.ToF_LATERAL_AVANT_DROIT.ordinal();
-				index2 = CapteursRobot.ToF_LATERAL_ARRIERE_DROIT.ordinal();
-			}
-			else
-			{
-				index1 = CapteursRobot.ToF_ARRIERE_DROITE.ordinal();
-				index2 = CapteursRobot.ToF_ARRIERE_GAUCHE.ordinal();
-			}
+			int index1 = c.c1.ordinal();
+			int index2 = c.c2.ordinal();
 			
 			XY_RW pointVu1 = getPositionVue(capteurs[index1], data.mesures[index1], data.cinematique, data.angleTourelleGauche, data.angleTourelleDroite, data.angleGrue);
 			if(pointVu1 == null)
@@ -305,16 +295,6 @@ public class CapteursProcess
 
 			// log.debug("Delta orientation : "+deltaOrientation);
 
-			/*
-			 * L'imprécision mesurée est trop grande. C'est probablement une
-			 * erreur.
-			 */
-			if(Math.abs(deltaOrientation) > imprecisionMaxAngle)
-			{
-				log.write("Imprécision en angle trop grande !" + Math.abs(deltaOrientation), Subject.CORRECTION);
-				continue;
-			}
-
 			pointVu1.rotate(deltaOrientation, data.cinematique.getPosition());
 			pointVu2.rotate(deltaOrientation, data.cinematique.getPosition());
 
@@ -329,6 +309,27 @@ public class CapteursProcess
 			else if(mur1 == Mur.MUR_DROIT)
 				deltaX = -(pointVu1.getX() - 1500);
 
+			XYO correction = new XYO(deltaX, deltaY, deltaOrientation);
+			
+			/*
+			 * On autorise n'importe quel imprécision en correction manuelle
+			 */
+			if(ongoingStaticCorrection && c.enableForStaticCorrection)
+				bufferStaticCorrection.add(correction);
+
+			if(!enableDynamicCorrection)
+				continue;
+			
+			/*
+			 * L'imprécision mesurée est trop grande. C'est probablement une
+			 * erreur.
+			 */
+			if(Math.abs(deltaOrientation) > imprecisionMaxAngle)
+			{
+				log.write("Imprécision en angle trop grande !" + Math.abs(deltaOrientation), Subject.CORRECTION);
+				continue;
+			}
+			
 			/*
 			 * L'imprécision mesurée est trop grande. C'est probablement une
 			 * erreur.
@@ -342,7 +343,6 @@ public class CapteursProcess
 			// log.debug("Correction : "+deltaX+" "+deltaY+"
 			// "+deltaOrientation);
 
-			XYO correction = new XYO(deltaX, deltaY, deltaOrientation);
 			if(System.currentTimeMillis() - dateLastMesureCorrection > peremptionCorrection) // trop
 																								// de
 																								// temps
@@ -352,31 +352,39 @@ public class CapteursProcess
 																								// calcul
 			{
 				log.write("Correction timeout", Subject.CORRECTION);
-				indexCorrection = 0;
+				bufferDynamicCorrection.clear();
 			}
 
-			bufferCorrection[indexCorrection] = correction;
-			indexCorrection++;
+			bufferDynamicCorrection.add(correction);
 			log.write("Intégration d'une donnée de correction", Subject.CORRECTION);
-			if(indexCorrection == bufferCorrection.length)
+			if(bufferDynamicCorrection.size() == tailleBufferRecalage)
 			{
-				XY_RW posmoy = new XY_RW();
-				double orientationmoy = 0;
-				for(int i = 0; i < bufferCorrection.length; i++)
-				{
-					if(i >= bufferCorrection.length / 2)
-						posmoy.plus(bufferCorrection[i].position);
-					orientationmoy += bufferCorrection[i].orientation;
-				}
-				posmoy.scalar(2. / bufferCorrection.length);
-				orientationmoy /= bufferCorrection.length;
-				log.write("Envoi d'une correction XYO : " + posmoy + " " + orientationmoy, Subject.CORRECTION);
-				serie.correctPosition(posmoy, orientationmoy);
-				indexCorrection = 0;
+				correctPosition(bufferDynamicCorrection, false);
+				bufferDynamicCorrection.clear();
 			}
 		}
 		dateLastMesureCorrection = System.currentTimeMillis();
 
+	}
+
+	private void correctPosition(List<XYO> bufferCorrection, boolean statique)
+	{
+		XY_RW posmoy = new XY_RW();
+		double orientationmoy = 0;
+		int nbPos = 0;
+		for(int i = 0; i < bufferCorrection.size(); i++)
+		{
+			if(statique || i >= bufferCorrection.size() / 2)
+			{
+				posmoy.plus(bufferCorrection.get(i).position);
+				nbPos++;
+			}
+			orientationmoy += bufferCorrection.get(i).orientation;
+		}
+		posmoy.scalar(1. / nbPos);
+		orientationmoy /= bufferCorrection.size();
+		log.write("Envoi d'une correction XYO "+(statique ? "statique" : "dynamique") +": " + posmoy + " " + orientationmoy, Subject.CORRECTION);
+		serie.correctPosition(posmoy, orientationmoy);
 	}
 
 	/**
@@ -474,5 +482,22 @@ public class CapteursProcess
 		else if(murGauche)
 			return Mur.MUR_GAUCHE;
 		return Mur.MUR_HAUT;
+	}
+	
+	public void doStaticCorrection(CapteursCorrection[] capteurs, long duree) throws InterruptedException
+	{
+		assert bufferStaticCorrection.isEmpty() : bufferStaticCorrection;
+		for(CapteursCorrection c : capteurs)
+			c.enableForStaticCorrection = true;
+		ongoingStaticCorrection = true;
+
+		Thread.sleep(duree);
+		
+		ongoingStaticCorrection = false;
+		for(CapteursCorrection c : CapteursCorrection.values())
+			c.enableForStaticCorrection = false;
+
+		correctPosition(bufferStaticCorrection, true);
+		bufferStaticCorrection.clear();
 	}
 }
