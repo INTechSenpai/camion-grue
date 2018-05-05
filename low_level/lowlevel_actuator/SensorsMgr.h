@@ -49,11 +49,16 @@ public:
 
     void getSensorsData(int32_t & tof_g, int32_t & tof_d, float & angleTG, float & angleTD)
     {
+        digitalWrite(PIN_DEL_GYRO_D, HIGH);
         int leftRotatingSpeed = servos.read(ID_XL320_LEFT, XL_PRESENT_SPEED, 2);
+        int rightRotatingSpeed = servos.read(ID_XL320_RIGHT, XL_PRESENT_SPEED, 2);
+        int newLeftAngle = servos.getJointPosition(ID_XL320_LEFT);
+        int newRightAngle = servos.getJointPosition(ID_XL320_RIGHT);
+        digitalWrite(PIN_DEL_GYRO_D, LOW);
+
         if (leftRotatingSpeed & 1023 < 10)
         {
             tof_g = sensorLeft.getMesure();
-            int newLeftAngle = servos.getJointPosition(ID_XL320_LEFT);
             if (newLeftAngle >= 0)
             {
                 currentLeftAngle = xl_to_rad((uint16_t)newLeftAngle) - SERVO_LEFT_ORIGIN;
@@ -64,11 +69,9 @@ public:
             tof_g = 0;
         }
 
-        int rightRotatingSpeed = servos.read(ID_XL320_RIGHT, XL_PRESENT_SPEED, 2);
         if (rightRotatingSpeed & 1023 < 10)
         {
             tof_d = sensorRight.getMesure();
-            int newRightAngle = servos.getJointPosition(ID_XL320_RIGHT);
             if (newRightAngle >= 0)
             {
                 currentRightAngle = xl_to_rad((uint16_t)newRightAngle) - SERVO_RIGHT_ORIGIN;
