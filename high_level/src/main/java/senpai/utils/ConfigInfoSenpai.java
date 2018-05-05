@@ -47,10 +47,10 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	INITIAL_Y(1700),
 	INITIAL_O(-Math.PI/2),
 
-	PILE_1_X(0),
-	PILE_1_Y(0),
-	PILE_2_X(0),
-	PILE_2_Y(0),
+	PILE_1_X(620),
+	PILE_1_Y(1980),
+	PILE_2_X(1000),
+	PILE_2_Y(1980),
 	
 	/**
 	 * Infos sur le robot

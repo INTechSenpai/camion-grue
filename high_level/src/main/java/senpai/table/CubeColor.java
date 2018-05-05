@@ -28,7 +28,8 @@ public enum CubeColor
 	ORANGE(Color.ORANGE, CubePlace.GAUCHE, CubePlace.DROITE),
 	VERT(Color.GREEN, CubePlace.DROITE, CubePlace.GAUCHE),
 	NOIR(Color.BLACK, CubePlace.HAUT, CubePlace.HAUT),
-	BLEU(Color.BLUE, CubePlace.BAS, CubePlace.BAS);
+	BLEU(Color.BLUE, CubePlace.BAS, CubePlace.BAS),
+	GOLDEN(Color.CYAN, null, null);
 	
 	public final Color color;
 	private CubePlace placeDroite, placeGauche;
@@ -58,11 +59,15 @@ public enum CubeColor
 		for(int i = 0; i < 3; i++)
 		{
 			for(CubeColor c : values())
+			{
+				if(c == GOLDEN) // cas à part
+					continue;
 				if(c.name().toLowerCase().startsWith(pattern[i].toLowerCase()))
 				{
 					couleurs[i] = c;
 					break;
 				}
+			}
 			if(couleurs[i] == null)
 			{
 				System.out.println("Couleur non reconnue : "+pattern[i]);

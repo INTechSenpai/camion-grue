@@ -68,8 +68,8 @@ public class Robot extends RobotState
 	
 	private boolean isInScript = false;
 	
-	private Cube cubeTop = null;
-	private Cube cubeInside = null;
+	private Cube cubeTop = Cube.GOLDEN_CUBE_1;
+	private Cube cubeInside = Cube.GOLDEN_CUBE_2;
 	@SuppressWarnings("unchecked")
 	private List<Cube>[] piles = (List<Cube>[]) new List[2];
 	protected volatile boolean symetrie;
