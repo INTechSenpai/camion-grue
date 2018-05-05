@@ -1,8 +1,5 @@
 # TODO
 
-Mettre à jour la documentation des ordres HL
-Limiter le couple de l'AX12 de la pince
-
 # Bug tracker
 
 # Fixed
