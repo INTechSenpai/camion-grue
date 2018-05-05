@@ -58,6 +58,7 @@ void loop()
         lightsMgr.update();
 
         sensorsMgr.update();
+        Serial.println(sensorsMgr);
         sensorsMgr.getValues(sensorsValues);
         commMgr.sendSensorsData(sensorsValues);
     }

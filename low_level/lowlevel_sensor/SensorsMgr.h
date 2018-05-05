@@ -83,9 +83,25 @@ public:
         for (size_t i = 0; i < NB_SENSORS; i++)
         {
             ret += p.print(sensors[i].name);
-            ret += p.printf("=%u ", sensorsValues[i]);
+            ret += p.print("=");
+            SensorValue val = sensorsValues[i];
+            if (val == (SensorValue)SENSOR_DEAD || val == (SensorValue)SENSOR_NOT_UPDATED)
+            {
+                ret += p.print("HS ");
+            }
+            else if (val == (SensorValue)NO_OBSTACLE)
+            {
+                ret += p.print("inf ");
+            }
+            else if (val == (SensorValue)OBSTACLE_TOO_CLOSE)
+            {
+                ret += p.print("0 ");
+            }
+            else
+            {
+                ret += p.printf("%u ", val);
+            }
         }
-        ret += p.println();
         return ret;
     }
 
