@@ -9,7 +9,7 @@ import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
 import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
-import senpai.exceptions.ActionneurException;
+import senpai.exceptions.ScriptException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
@@ -136,12 +136,12 @@ public class Match
 		/*
 		 * Recalage initial
 		 */
-		ScriptRecalage rec = scripts.getScriptRecalage(2000);
+		ScriptRecalage rec = scripts.getScriptRecalage(1000);
 		try {
 			rec.execute();
-		} catch (UnableToMoveException | ActionneurException e) {
-			// IMPOSSIBRU
-			e.printStackTrace();
+			// TODO vérification couleur
+		} catch (ScriptException e) {
+	
 		}
 		
 		XYO initialCorrection = rec.getCorrection();
@@ -169,7 +169,7 @@ public class Match
 
 		try {
 			doScript(scripts.getScriptDomotique(), 5);
-		} catch (PathfindingException | UnableToMoveException | ActionneurException e) {
+		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
 			log.write("Erreur : "+e, Subject.SCRIPT);
 		}
 		
@@ -177,7 +177,7 @@ public class Match
 		
 		try {
 			doScript(scripts.getAllPossible(false).poll(), 5);
-		} catch (PathfindingException | UnableToMoveException | ActionneurException e) {
+		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
 			log.write("Erreur : "+e, Subject.SCRIPT);
 		}
 
@@ -185,13 +185,13 @@ public class Match
 
 		try {
 			doScript(scripts.getAllPossible(false).poll(), 5);
-		} catch (PathfindingException | UnableToMoveException | ActionneurException e) {
+		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
 			log.write("Erreur : "+e, Subject.SCRIPT);
 		}
 
 	}
 	
-	private void doScript(Script s, int nbEssaiChemin) throws PathfindingException, InterruptedException, UnableToMoveException, ActionneurException
+	private void doScript(Script s, int nbEssaiChemin) throws PathfindingException, InterruptedException, UnableToMoveException, ScriptException
 	{
 		XYO pointEntree = s.getPointEntree();
 		boolean restart;
@@ -211,7 +211,7 @@ public class Match
 			robot.goTo(pointEntree);
 
 		if(Math.abs(XYO.angleDifference(robot.getCinematique().orientationReelle, pointEntree.orientation)) > 5.*Math.PI/180)
-			throw new UnableToMoveException("On n'a pas réussi à arriver à l'orientation voulue");
+			throw new ScriptException("On n'a pas réussi à arriver à l'orientation voulue");
 		
 		if(!restart)
 			s.execute();

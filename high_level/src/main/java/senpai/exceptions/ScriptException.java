@@ -15,23 +15,22 @@
 package senpai.exceptions;
 
 /**
- * Exception levée en cas de détection d'un ennemi proche (par les capteurs,
- * ultrason, infrarouge, etc.)
+ * Problème durant un script
  * 
- * @author pf, marsu
+ * @author pf
  *
  */
-public class UnexpectedObstacleOnPathException extends Exception
+public class ScriptException extends Exception
 {
 
-	private static final long serialVersionUID = -3791360446545658528L;
+	private static final long serialVersionUID = -8139322860107594266L;
 
-	public UnexpectedObstacleOnPathException()
+	public ScriptException()
 	{
 		super();
 	}
 
-	public UnexpectedObstacleOnPathException(String m)
+	public ScriptException(String m)
 	{
 		super(m);
 	}

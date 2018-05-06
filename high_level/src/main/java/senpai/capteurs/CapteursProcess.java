@@ -592,7 +592,14 @@ public class CapteursProcess
 					// log.debug("Delta orientation : "+deltaOrientation);
 				}
 				
-				double distanceRobotMur = (mesure1 + mesure2) / 2 + c.distanceToRobot;
+				// orientation corrigée du robot entre -pi/4 et pi/4
+				double orientationRobot = (cinem.orientationReelle + deltaOrientation) % (Math.PI / 2);
+				if(orientationRobot > Math.PI / 4)
+					orientationRobot -= Math.PI / 2;
+				else if(orientationRobot < -Math.PI / 4)
+					orientationRobot += Math.PI / 2;
+				
+				double distanceRobotMur = ((mesure1 + mesure2) / 2 + c.distanceToRobot) * Math.cos(orientationRobot);
 
 				log.write("Delta distance "+distanceRobotMur, Subject.CORRECTION);
 

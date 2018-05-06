@@ -17,6 +17,7 @@ package senpai.scripts;
 import pfg.kraken.utils.XYO;
 import pfg.log.Log;
 import senpai.exceptions.ActionneurException;
+import senpai.exceptions.ScriptException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.table.Table;
@@ -47,9 +48,9 @@ public abstract class Script
 	
 	public abstract XYO getPointEntree();
 
-	protected abstract void run() throws InterruptedException, UnableToMoveException, ActionneurException;
+	protected abstract void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException;
 
-	public void execute() throws UnableToMoveException, ActionneurException, InterruptedException
+	public void execute() throws ScriptException, InterruptedException
 	{
 		log.write("Début de l'exécution de "+this, Subject.SCRIPT);
 		robot.beginScript();
@@ -58,7 +59,7 @@ public abstract class Script
 			run();
 			log.write("Fin de l'exécution de " + getClass().getSimpleName(), Subject.SCRIPT);
 		}
-		catch(UnableToMoveException | ActionneurException e)
+		catch(ScriptException | UnableToMoveException | ActionneurException e)
 		{
 			log.write("Erreur lors de l'exécution du script " + this + " : " + e, Severity.CRITICAL, Subject.SCRIPT);
 			try {
@@ -67,7 +68,7 @@ public abstract class Script
 			} catch (ActionneurException e1) {
 				log.write("Erreur lors de l'exécution du script " + this + " : " + e, Severity.CRITICAL, Subject.SCRIPT);
 			}
-			throw e;
+			throw new ScriptException(e.getMessage());
 		}
 		finally
 		{

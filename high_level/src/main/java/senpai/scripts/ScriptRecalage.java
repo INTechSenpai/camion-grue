@@ -20,6 +20,7 @@ import pfg.log.Log;
 import senpai.capteurs.CapteursCorrection;
 import senpai.capteurs.CapteursProcess;
 import senpai.exceptions.ActionneurException;
+import senpai.exceptions.ScriptException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.table.Table;
@@ -70,9 +71,13 @@ public class ScriptRecalage extends Script
 	}
 
 	@Override
-	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException
+	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{		
 		correction = cp.doStaticCorrection(dureeRecalage, capteurs);
+		if(correction == null)
+		{
+			throw new ScriptException("Aucune correction réalisée !");
+		}
 	}
 	
 	public XYO getCorrection()
