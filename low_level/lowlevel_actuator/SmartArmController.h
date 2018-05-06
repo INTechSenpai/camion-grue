@@ -96,6 +96,11 @@ public:
 
         if (currentCommand != ACTUATOR_NO_COMMAND)
         {
+            if (armControler.getStatus() != ARM_STATUS_OK)
+            {
+                stopCommand();
+                return;
+            }
             switch (currentCommand)
             {
             case ACTUATOR_GO_TO_HOME:

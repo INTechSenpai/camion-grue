@@ -1,5 +1,6 @@
 # TODO
 
+Régler détection des blocages physiques des moteurs CC grue
 Ajouter ordre "pushBee"
 Ajouter des paramètres à l'ordre "pushButton"
 
