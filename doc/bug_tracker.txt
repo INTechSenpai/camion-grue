@@ -1,6 +1,11 @@
 # TODO
 
+Ajouter ordre "pushBee"
+Ajouter des paramètres à l'ordre "pushButton"
+
 # Bug tracker
+
+Lib XL320 à réécrire car cause hardfault
 
 # Fixed
 ArmController : initial position incorrect
