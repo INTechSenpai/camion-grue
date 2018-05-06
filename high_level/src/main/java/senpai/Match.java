@@ -107,7 +107,7 @@ public class Match
 
 		if(config.getBoolean(ConfigInfoSenpai.DISABLE_JUMPER))
 		{
-			couleur = RobotColor.VERT;
+			couleur = RobotColor.ORANGE;
 			robot.setDateDebutMatch();
 		}
 		else
@@ -162,13 +162,6 @@ public class Match
 		robot.printTemps();
 		
 		try {
-			doScript(scripts.getDeposeScript(), 5);
-		} catch (PathfindingException | UnableToMoveException | ActionneurException e) {
-			log.write("Erreur : "+e, Subject.SCRIPT);
-		}
-
-		
-/*		try {
 			doScript(scripts.getAllPossible(false).poll(), 5);
 		} catch (PathfindingException | UnableToMoveException | ActionneurException e) {
 			log.write("Erreur : "+e, Subject.SCRIPT);
@@ -180,7 +173,7 @@ public class Match
 			doScript(scripts.getAllPossible(false).poll(), 5);
 		} catch (PathfindingException | UnableToMoveException | ActionneurException e) {
 			log.write("Erreur : "+e, Subject.SCRIPT);
-		}*/
+		}
 
 	}
 	
@@ -199,6 +192,9 @@ public class Match
 			}
 		} while(restart && nbEssaiChemin > 0);
 		
-		s.execute();
+		if(!restart)
+			s.execute();
+		else
+			log.write("On annule l'exécution du script "+s, Subject.SCRIPT);
 	}
 }

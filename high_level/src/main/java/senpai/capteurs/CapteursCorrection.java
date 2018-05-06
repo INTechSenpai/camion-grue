@@ -30,7 +30,9 @@ public enum CapteursCorrection {
 	DROITE(CapteursRobot.ToF_LATERAL_AVANT_DROIT,
 			CapteursRobot.ToF_LATERAL_ARRIERE_DROIT),
 	ARRIERE(CapteursRobot.ToF_ARRIERE_DROITE,
-			CapteursRobot.ToF_ARRIERE_GAUCHE);
+			CapteursRobot.ToF_ARRIERE_GAUCHE),
+	AVANT(CapteursRobot.ToF_AVANT,
+			CapteursRobot.ToF_AVANT);
 	
 	public final CapteursRobot c1;
 	public final CapteursRobot c2;

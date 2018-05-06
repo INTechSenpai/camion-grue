@@ -19,6 +19,7 @@ import java.util.PriorityQueue;
 
 import pfg.log.Log;
 import senpai.capteurs.CapteursProcess;
+import senpai.obstacles.ObstaclesDynamiques;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
 import senpai.table.Croix;
@@ -44,6 +45,7 @@ public class ScriptManager
 	private Robot robot;
 	private CapteursProcess cp;
 	private RobotColor couleur;
+	private ObstaclesDynamiques obsDyn;
 	
 	public void setCouleur(RobotColor couleur)
 	{
@@ -63,8 +65,9 @@ public class ScriptManager
 	private double anglesDepose[];
 	private double[] longueurGrue = new double[]{300, 300, 290, 365, 365}; // longueur de la grue en fonction du nombre de cube déjà posés
 	
-	public ScriptManager(Log log, Config config, Table table, Robot robot, CapteursProcess cp)
+	public ScriptManager(Log log, Config config, Table table, Robot robot, CapteursProcess cp, ObstaclesDynamiques obsDyn)
 	{
+		this.obsDyn = obsDyn;
 		this.log = log;
 		this.table = table;
 		this.robot = robot;
@@ -151,8 +154,8 @@ public class ScriptManager
 				Cube c = Cube.getCube(croix, couleur);
 				if(isFacePossible(c, f, bourrine))
 				{
-					out.add(new ScriptPriseCube(log,robot, table, c,f,true));
-					out.add(new ScriptPriseCube(log,robot, table, c,f,false));
+					out.add(new ScriptPriseCube(log,robot, table, obsDyn, c,f,true));
+					out.add(new ScriptPriseCube(log,robot, table, obsDyn, c,f,false));
 				}
 			}
 		}
@@ -170,13 +173,15 @@ public class ScriptManager
 		PriorityQueue<ScriptPriseCube> out = new PriorityQueue<ScriptPriseCube>(new CubeComparator(robot.getCinematique().getXYO()));
 		for(Cube c : Cube.values())
 		{
+			if(c == Cube.GOLDEN_CUBE_1 || c == Cube.GOLDEN_CUBE_2)
+				continue;
 			if(couleur.symmetry == c.position.getX() > 0)
 				continue;
 			for(CubeFace f : CubeFace.values())
 				if(isFacePossible(c, f, bourrine))
 				{
-					out.add(new ScriptPriseCube(log,robot, table, c,f,true));
-					out.add(new ScriptPriseCube(log,robot, table, c,f,false));
+					out.add(new ScriptPriseCube(log,robot, table, obsDyn, c,f,true));
+					out.add(new ScriptPriseCube(log,robot, table, obsDyn, c,f,false));
 				}
 		}
 		return out;

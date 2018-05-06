@@ -50,7 +50,7 @@ public abstract class Script
 
 	public void execute() throws UnableToMoveException, ActionneurException, InterruptedException
 	{
-		log.write("Début de l'exécution de " + getClass().getSimpleName()+" "+this, Subject.SCRIPT);
+		log.write("Début de l'exécution de "+this, Subject.SCRIPT);
 		robot.beginScript();
 		try
 		{
@@ -59,12 +59,12 @@ public abstract class Script
 		}
 		catch(UnableToMoveException | ActionneurException e)
 		{
-			log.write("Erreur lors de l'exécution du script " + getClass().getSimpleName() + " : " + e, Severity.CRITICAL, Subject.SCRIPT);
+			log.write("Erreur lors de l'exécution du script " + this + " : " + e, Severity.CRITICAL, Subject.SCRIPT);
 			try {
 				// lâche tout (s'il y a) et rentre le bras // TODO pas safe !
 				robot.execute(Id.ARM_GO_HOME);
 			} catch (ActionneurException e1) {
-				log.write("Erreur lors de l'exécution du script " + getClass().getSimpleName() + " : " + e, Severity.CRITICAL, Subject.SCRIPT);
+				log.write("Erreur lors de l'exécution du script " + this + " : " + e, Severity.CRITICAL, Subject.SCRIPT);
 			}
 			throw e;
 		}

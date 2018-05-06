@@ -166,6 +166,19 @@ public class OutgoingOrderBuffer implements Plottable
 		return Id.START_MATCH_CHRONO.ticket;
 	}
 
+
+	/**
+	 * Set la courbure
+	 */
+	public void setCurvature(double curvature)
+	{
+		ByteBuffer data = ByteBuffer.allocate(4);
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.putFloat((float)curvature);
+		addToBuffer(new Order(data, Id.SET_CURVATURE));
+	}
+
+	
 	public void setTourellesAngles(double angleTourelleGauche, double angleTourelleDroite)
 	{
 //		log.write("Angles tourelles : "+angleTourelleGauche+" "+angleTourelleDroite, Subject.STATUS);

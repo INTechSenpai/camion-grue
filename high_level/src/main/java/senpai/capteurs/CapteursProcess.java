@@ -533,25 +533,31 @@ public class CapteursProcess
 				if(pointVu2 == null)
 					continue;
 		
-				XY delta = pointVu1.minusNewVector(pointVu2);
-				double deltaOrientation = (c.murVu.orientation - delta.getArgument()) % Math.PI; // on
-																					// veut
-																					// une
-																					// mesure
-																					// précise,
-																					// donc
-																					// on
-																					// évite
-																					// getFastArgument
-		
-				// le delta d'orientation qu'on cherche est entre -PI/2 et PI/2
-				if(deltaOrientation > Math.PI / 2)
-					deltaOrientation -= Math.PI;
-				else if(deltaOrientation < -Math.PI / 2)
-					deltaOrientation += Math.PI;
-		
-				// log.debug("Delta orientation : "+deltaOrientation);
-		
+				double deltaOrientation;
+				if(c.c1 == c.c2)
+					deltaOrientation = 0;
+				else
+				{
+					XY delta = pointVu1.minusNewVector(pointVu2);					
+					deltaOrientation = (c.murVu.orientation - delta.getArgument() - cinem.orientationReelle) % Math.PI; // on
+																						// veut
+																						// une
+																						// mesure
+																						// précise,
+																						// donc
+																						// on
+																						// évite
+																						// getFastArgument
+			
+					// le delta d'orientation qu'on cherche est entre -PI/2 et PI/2
+					if(deltaOrientation > Math.PI / 2)
+						deltaOrientation -= Math.PI;
+					else if(deltaOrientation < -Math.PI / 2)
+						deltaOrientation += Math.PI;
+			
+					// log.debug("Delta orientation : "+deltaOrientation);
+				}
+				
 				pointVu1.rotate(deltaOrientation, cinem.getPosition());
 				pointVu2.rotate(deltaOrientation, cinem.getPosition());
 		

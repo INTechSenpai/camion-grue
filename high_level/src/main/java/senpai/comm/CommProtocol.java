@@ -96,7 +96,8 @@ public class CommProtocol
 		SET_SENSORS_ANGLE(0x87, false),
 		SET_SCORE(0x88, false),
 		GET_ARM_POSITION(0x89, true),
-		GET_BATTERY(0x94, true);
+		GET_BATTERY(0x94, true),
+		SET_CURVATURE(0x9B, false);
 		
 
 		// Paramètres constants

@@ -68,12 +68,13 @@ public class Robot extends RobotState
 	
 	private boolean isInScript = false;
 	
-	private Cube cubeTop = Cube.GOLDEN_CUBE_1;
-	private Cube cubeInside = Cube.GOLDEN_CUBE_2;
+	private Cube cubeTop = null;//Cube.GOLDEN_CUBE_1;
+	private Cube cubeInside = null;//Cube.GOLDEN_CUBE_2;
 	@SuppressWarnings("unchecked")
 	private List<Cube>[] piles = (List<Cube>[]) new List[2];
 	protected volatile boolean symetrie;
 	protected Log log;
+	private double defaultSpeed;
 	protected Kraken kraken;
 //	private volatile boolean modeDegrade = false;
 	private List<ItineraryPoint> pathDegrade;
@@ -112,6 +113,7 @@ public class Robot extends RobotState
 		angleMin = config.getInt(ConfigInfoSenpai.ANGLE_MIN_TOURELLE) * Math.PI / 180;
 		angleMax = config.getInt(ConfigInfoSenpai.ANGLE_MAX_TOURELLE) * Math.PI / 180;
 		anticipationTourelle = (int) Math.round(config.getInt(ConfigInfoSenpai.ANTICIPATION_TOURELLE) / 20.);
+		defaultSpeed = config.getDouble(ConfigInfoSenpai.DEFAULT_MAX_SPEED);
 		// On ajoute une fois pour toute l'image du robot
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS))
 		{
@@ -130,6 +132,7 @@ public class Robot extends RobotState
 		simuleLL = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);		
 		score = 5;
 		out.setScore(score);
+		out.setCurvature(0);
 //		setDegrade();
 	}
 	
@@ -240,6 +243,11 @@ public class Robot extends RobotState
 			throw new ActionneurException("Problème pour l'actionneur " + nom+" : "+dt.data);
 
 		log.write("Temps d'exécution de " + nom + " : " + (System.currentTimeMillis() - avant), Subject.SCRIPT);
+	}
+	
+	public void avance(double distance) throws InterruptedException, UnableToMoveException
+	{
+		avance(distance, defaultSpeed);
 	}
 
 	public void avance(double distance, double vitesseMax) throws InterruptedException, UnableToMoveException

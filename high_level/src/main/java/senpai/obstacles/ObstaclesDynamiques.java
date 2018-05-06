@@ -28,6 +28,7 @@ import pfg.graphic.printable.Printable;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.obstacles.container.SmartDynamicObstacles;
+import pfg.kraken.utils.XY;
 import pfg.log.Log;
 import senpai.capteurs.CapteursRobot;
 import senpai.table.Table;
@@ -124,5 +125,14 @@ public class ObstaclesDynamiques extends SmartDynamicObstacles implements Iterat
 	public void clearNew()
 	{
 		newObs.clear();
+	}
+
+	public boolean collisionScript(RectangularObstacle o)
+	{
+		Iterator<Obstacle> iter = getCurrentDynamicObstacles();
+		while(iter.hasNext())
+			if(iter.next().isColliding(o))
+				return true;
+		return false;
 	}
 }

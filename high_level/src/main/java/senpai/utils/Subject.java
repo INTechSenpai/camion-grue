@@ -29,7 +29,8 @@ public enum Subject implements LogCategory
 	CORRECTION,
 	COMM,
 	TRAJECTORY,
-	SCRIPT;
+	SCRIPT,
+	TABLE;
 	
 	public boolean shouldPrint = false;
 	

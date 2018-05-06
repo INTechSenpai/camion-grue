@@ -127,6 +127,7 @@ public class Senpai
 		if(outBuffer != null)
 		{
 			outBuffer.stopStream(Id.ODO_AND_SENSORS);
+			outBuffer.setCurvature(0);
 			outBuffer.armGoHome();
 			Thread.sleep(1000);
 		}
@@ -225,6 +226,7 @@ public class Senpai
 		Subject.COMM.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_COMM));
 		Subject.TRAJECTORY.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_TRAJECTORY));
 		Subject.SCRIPT.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_SCRIPT));
+		Subject.TABLE.setShouldPrint(config.getBoolean(ConfigInfoSenpai.PRINT_TABLE));
 		Severity.WARNING.setPrint(config.getBoolean(ConfigInfoSenpai.PRINT_WARNING));
 		Severity.CRITICAL.setPrint(config.getBoolean(ConfigInfoSenpai.PRINT_CRITICAL));
 		
@@ -307,7 +309,7 @@ public class Senpai
 			warmUp.start();
 		}
 
-		Kraken k = new Kraken(robotTemplate, obstaclesFixes, obsDyn, new XY(-1500, 0), new XY(1500, 2000), configfile, profiles);
+		Kraken k = new Kraken(robotTemplate, obstaclesFixes, obsDyn, new XY(-1480, 20), new XY(1480, 1980), configfile, profiles);
 		injector.addService(k);
 
 //		injector.addService(k.enableAutoReplanning());

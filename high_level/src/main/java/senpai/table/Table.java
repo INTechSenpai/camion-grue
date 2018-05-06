@@ -30,6 +30,7 @@ import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.utils.ConfigInfoSenpai;
+import senpai.utils.Subject;
 
 /**
  * Gère les éléments de jeux
@@ -93,6 +94,7 @@ public class Table implements Printable
 	 */
 	public void setDone(Cube id)
 	{
+		log.write("Cube absent de la table : "+id, Subject.TABLE);
 		etat.put(id, true);
 	}
 

@@ -14,6 +14,7 @@
 
 package senpai.scripts;
 
+import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
@@ -21,6 +22,7 @@ import pfg.log.Log;
 import senpai.comm.CommProtocol.Id;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
+import senpai.obstacles.ObstaclesDynamiques;
 import senpai.robot.Robot;
 import senpai.table.Croix;
 import senpai.table.Cube;
@@ -40,10 +42,13 @@ public class ScriptPriseCube extends Script
 	public final CubeFace face;
 	public final Cube cube;
 	public final boolean coteDroit;
+	private ObstaclesDynamiques obsDyn;
+	private RectangularObstacle o;
 	
-	public ScriptPriseCube(Log log, Robot robot, Table table, Cube cube, CubeFace face, boolean coteDroit)
+	public ScriptPriseCube(Log log, Robot robot, Table table, ObstaclesDynamiques obsDyn, Cube cube, CubeFace face, boolean coteDroit)
 	{
 		super(log, robot, table);
+		this.obsDyn = obsDyn;
 		this.cube = cube;
 		this.face = face;
 		this.coteDroit = coteDroit;
@@ -65,6 +70,7 @@ public class ScriptPriseCube extends Script
 		if(coteDroit)
 		{
 			XY_RW position = new XY_RW(298, face.angleAttaque, true).plus(cube.position);
+			o = new RectangularObstacle(position, 0, 300, 100, 300, face.angleAttaque);
 			double angle = face.angleAttaque - Math.PI / 2 - 15. * Math.PI / 180.;
 			position.plus(new XY(50, angle, true));
 			return new XYO(position, angle);
@@ -72,6 +78,7 @@ public class ScriptPriseCube extends Script
 		else
 		{
 			XY_RW position = new XY_RW(298, face.angleAttaque, true).plus(cube.position);
+			o = new RectangularObstacle(position, 0, 300, 300, 100, face.angleAttaque);
 			double angle = face.angleAttaque + Math.PI / 2 + 15. * Math.PI / 180.;
 			position.plus(new XY(50, angle, true));
 			return new XYO(position, angle);
@@ -87,10 +94,9 @@ public class ScriptPriseCube extends Script
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException
 	{
-		// exemple classique :
-		// take cube, store cube inside
-		// take cube, store cube top
-		// put cube, table cube inside, put cube, go to home 
+		Thread.sleep(1000);
+		if(obsDyn.collisionScript(o))
+			throw new UnableToMoveException("Obstacle détecté !");
 		table.setDone(cube); // dans tous les cas, le cas n'est plus là (soit il ne l'a jamais été, soit on l'a pris)
 		if(robot.canTakeCube())
 		{

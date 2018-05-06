@@ -54,6 +54,8 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	PILE_2_Y(1910),
 	PILE_2_O(- Math.PI / 2),
 	
+	DEFAULT_MAX_SPEED(0.8),
+	
 	/**
 	 * Infos sur le robot
 	 */
@@ -137,6 +139,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	PRINT_COMM(false),
 	PRINT_TRAJECTORY(true),
 	PRINT_SCRIPT(true),
+	PRINT_TABLE(true),
 	PRINT_WARNING(true),
 	PRINT_CRITICAL(true),
 	

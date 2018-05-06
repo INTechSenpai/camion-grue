@@ -60,18 +60,18 @@ public class ScriptDomotique extends Script
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException
 	{
 		try {
-			robot.avance(-100, 200);
+			robot.avance(-300, 0.2);
 		} catch(UnableToMoveException e)
 		{
 			// OK
 		}
 		robot.setDomotiqueDone();
-		robot.avance(100, 800);
+		robot.avance(100);
 
 		CapteursCorrection.ARRIERE.murVu = Mur.MUR_HAUT;
 		cp.doStaticCorrection(500);
 		
-		robot.avance(100, 800);
+		robot.avance(100);
 	}
 
 }
