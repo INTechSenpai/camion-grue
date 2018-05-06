@@ -19,8 +19,10 @@ import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.capteurs.CapteursCorrection;
 import senpai.capteurs.CapteursProcess;
+import senpai.capteurs.CapteursRobot;
 import senpai.comm.CommProtocol.Id;
 import senpai.exceptions.ActionneurException;
+import senpai.exceptions.ScriptException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.table.Table;
@@ -58,27 +60,39 @@ public class ScriptDomotiqueV2 extends Script
 	}
 
 	@Override
-	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException
+	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{		
-		double distance = cp.getLast()[CapteursCorrection.AVANT.ordinal()] * Math.cos(robot.getCinematique().orientationReelle - Math.PI / 2);
+		Integer distanceBrute = cp.getLast()[CapteursRobot.ToF_AVANT.ordinal()];
+		if(distanceBrute == null)
+			throw new ScriptException("Pas de mesure du capteur avant !");
+		
+		double distance = distanceBrute * Math.cos(robot.getCinematique().orientationReelle - Math.PI / 2);
 		log.write("Distance à l'avant : "+distance, Subject.SCRIPT);
 		if(distance > 100)
 		{
 			robot.avance(distance - 80);
-			distance = cp.getLast()[CapteursCorrection.AVANT.ordinal()] * Math.cos(robot.getCinematique().orientationReelle - Math.PI / 2);
+			distanceBrute = cp.getLast()[CapteursRobot.ToF_AVANT.ordinal()];
+			if(distanceBrute == null)
+				throw new ScriptException("Pas de mesure du capteur avant !");
+			
+			distance = distanceBrute * Math.cos(robot.getCinematique().orientationReelle - Math.PI / 2);
 		}
 		else if(distance < 60)
 		{
 			robot.avance(distance - 80);
-			distance = cp.getLast()[CapteursCorrection.AVANT.ordinal()] * Math.cos(robot.getCinematique().orientationReelle - Math.PI / 2);
+			distanceBrute = cp.getLast()[CapteursRobot.ToF_AVANT.ordinal()];
+			if(distanceBrute == null)
+				throw new ScriptException("Pas de mesure du capteur avant !");
+			
+			distance = distanceBrute * Math.cos(robot.getCinematique().orientationReelle - Math.PI / 2);
 		}
 		if(distance > 100 || distance < 60)
-			throw new ActionneurException("Mauvaise distance pour panneau domotique : "+distance);
+			throw new ScriptException("Mauvaise distance pour panneau domotique : "+distance);
 		
 		double angle = -0.0025*distance+0.25;
 		log.write("Angle domotique : "+angle, Subject.SCRIPT);
+		cp.startStaticCorrection(CapteursCorrection.AVANT);
 		robot.execute(Id.ARM_PUSH_BUTTON, angle);
-		
 		robot.setDomotiqueDone();
 		robot.rangeBras();
 		cp.endStaticCorrection();

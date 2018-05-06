@@ -193,6 +193,8 @@ public class Match
 	
 	private void doScript(Script s, int nbEssaiChemin) throws PathfindingException, InterruptedException, UnableToMoveException, ScriptException
 	{
+		log.write("Essai du script "+s, Subject.SCRIPT);
+
 		XYO pointEntree = s.getPointEntree();
 		boolean restart;
 		do {

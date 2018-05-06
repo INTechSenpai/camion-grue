@@ -75,9 +75,8 @@ public class ScriptRecalage extends Script
 	{		
 		correction = cp.doStaticCorrection(dureeRecalage, capteurs);
 		if(correction == null)
-		{
 			throw new ScriptException("Aucune correction réalisée !");
-		}
+		Thread.sleep(200); // attendre la mise à jour de la correction
 	}
 	
 	public XYO getCorrection()

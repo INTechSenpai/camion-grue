@@ -26,7 +26,6 @@ import senpai.utils.Subject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
-import java.util.List;
 import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
 import pfg.graphic.printable.Layer;
@@ -70,7 +69,7 @@ public class CapteursProcess
 	private ObstaclesDynamiques dynObs;
 	private Robot robot;
 	private volatile boolean needLast = false;
-	private volatile int[] last;
+	private volatile Integer[] last;
 	private final int margeIgnoreTourelle;
 	
 //	private List<SensorsData> mesuresScan = new ArrayList<SensorsData>();
@@ -85,7 +84,7 @@ public class CapteursProcess
 		distanceApproximation = config.getInt(ConfigInfoSenpai.DISTANCE_MAX_ENTRE_MESURE_ET_OBJET);
 		nbCapteurs = CapteursRobot.values().length;
 		margeIgnoreTourelle = config.getInt(ConfigInfoSenpai.MARGE_IGNORE_TOURELLE);
-		last = new int[nbCapteurs];
+		last = new Integer[nbCapteurs];
 		
 		this.obstacleRobot = obstacleRobot;
 		
@@ -120,7 +119,10 @@ public class CapteursProcess
 			synchronized(this)
 			{
 				for(int i = 0; i < nbCapteurs; i++)
-					last[i] = data.mesures[i];
+					if(data.mesures[i] < CommProtocol.EtatCapteur.values().length)
+						last[i] = null;
+					else
+						last[i] = data.mesures[i];
 				needLast = false;
 				notifyAll();
 			}
@@ -490,22 +492,14 @@ public class CapteursProcess
 	
 	public void startStaticCorrection(CapteursCorrection... c)
 	{
+		log.write("Démarrage de la correction manuelle !", Subject.CORRECTION);
 		for(CapteursCorrection cc : c)
+		{
 			cc.enable = true;
+			cc.valc1.clear();
+			cc.valc2.clear();
+		}
 		ongoingStaticCorrection = true;		
-	}
-	
-	public Integer getDistance(CapteursCorrection c, int nb)
-	{
-		if(c.valc1.isEmpty() || c.valc2.isEmpty())
-			return null;
-		List<Integer> l;
-		if(nb == 0)
-			l = c.valc1;
-		else
-			l = c.valc2;
-		Collections.sort(l);
-		return l.get(l.size() / 2);
 	}
 	
 	public XYO doStaticCorrection(long duree, CapteursCorrection... c) throws InterruptedException
@@ -515,7 +509,7 @@ public class CapteursProcess
 		return endStaticCorrection();
 	}
 	
-	public void cancelStaticCorrection()
+/*	public void cancelStaticCorrection()
 	{
 		ongoingStaticCorrection = false;	
 		for(CapteursCorrection c : CapteursCorrection.values())			
@@ -524,10 +518,11 @@ public class CapteursProcess
 			c.valc1.clear();
 			c.valc2.clear();
 		}
-	}
+	}*/
 		
 	public XYO endStaticCorrection()
 	{
+		log.write("Fin de la correction manuelle !", Subject.CORRECTION);
 		Cinematique cinem = robot.getCinematique();
 		ongoingStaticCorrection = false;
 		
@@ -539,20 +534,20 @@ public class CapteursProcess
 		{
 			if(c.enable)
 			{
-				if(c.valc1.isEmpty() || c.valc2.isEmpty())
+				if(c.valc1.size() < 10 || c.valc2.size() < 10)
 				{
-					log.write("Aucune valeur pour "+c+" !", Subject.CORRECTION);
+					c.enable = false;
+					c.valc1.clear();
+					c.valc2.clear();
+					log.write("Pas assez de valeurs pour "+c+" !", Subject.CORRECTION);
 					continue;
 				}
 
-				int mesure1 = getDistance(c, 0);
-				int mesure2 = getDistance(c, 1);
-
-				/*Collections.sort(c.valc1);
+				Collections.sort(c.valc1);
 				int mesure1 = c.valc1.get(c.valc1.size() / 2);
 	
 				Collections.sort(c.valc2);
-				int mesure2 = c.valc2.get(c.valc2.size() / 2);*/
+				int mesure2 = c.valc2.get(c.valc2.size() / 2);
 				
 				log.write("Distance médiane de "+c.c1+" : "+mesure1+" ("+c.valc1.size()+" valeurs)", Subject.CORRECTION);
 				log.write("Distance médiane de "+c.c2+" : "+mesure2+" ("+c.valc2.size()+" valeurs)", Subject.CORRECTION);
@@ -565,11 +560,14 @@ public class CapteursProcess
 				if(pointVu2 == null)
 					continue;
 		
+//				log.write(c+" "+pointVu1+" "+pointVu2, Subject.CORRECTION);
+
 				double deltaOrientation;
 				if(c.c1 == c.c2)
 					deltaOrientation = 0;
 				else
 				{
+					
 					XY delta = pointVu1.minusNewVector(pointVu2);
 					deltaOrientation = (-delta.getArgument()) % (Math.PI / 2); // on
 																						// veut
@@ -587,7 +585,8 @@ public class CapteursProcess
 					else if(deltaOrientation < -Math.PI / 4)
 						deltaOrientation += Math.PI / 2;
 			
-					log.write(c+", delta orientation : "+deltaOrientation, Subject.CORRECTION);
+//					log.write(c+", delta orientation : "+deltaOrientation, Subject.CORRECTION);
+//					log.write(c+", delta : "+delta, Subject.CORRECTION);
 
 					// log.debug("Delta orientation : "+deltaOrientation);
 				}
@@ -601,11 +600,38 @@ public class CapteursProcess
 				
 				double distanceRobotMur = ((mesure1 + mesure2) / 2 + c.distanceToRobot) * Math.cos(orientationRobot);
 
-				log.write("Delta distance "+distanceRobotMur, Subject.CORRECTION);
-
-//				XY delta = new XY(distanceRobotMur, c.c1.angle + cinem.orientationReelle + deltaOrientation, true); 
-				XY delta = new XY(0,0);
-				log.write("Correction "+c+" : "+new XYO(delta.getX(), delta.getY(), deltaOrientation), Subject.CORRECTION);
+//				log.write(c+", delta distance "+distanceRobotMur, Subject.CORRECTION);
+				
+				orientationRobot = (c.c1.angle + cinem.orientationReelle + deltaOrientation) % (2 * Math.PI);
+				if(orientationRobot > Math.PI)
+					orientationRobot -= 2 * Math.PI;
+				else if(orientationRobot < -Math.PI)
+					orientationRobot += 2 * Math.PI;
+				
+				XY delta;
+				
+				if(orientationRobot > 3 * Math.PI / 4 || orientationRobot < -3 * Math.PI / 4)
+				{
+					// GAUCHE
+					delta = new XY(distanceRobotMur - cinem.getPosition().getX() - 1500, 0);
+				}
+				else if(orientationRobot > Math.PI / 4)
+				{
+					// HAUT
+					delta = new XY(0, - cinem.getPosition().getY() + 2000 - distanceRobotMur);
+				}
+				else if(orientationRobot < -Math.PI / 4)
+				{
+					// BAS
+					delta = new XY(0, distanceRobotMur - cinem.getPosition().getY());
+				}
+				else
+				{
+					// DROITE
+					delta = new XY(- distanceRobotMur - cinem.getPosition().getX() + 1500, 0);
+				}
+				
+//				log.write("Correction "+c+" : "+new XYO(delta.getX(), delta.getY(), deltaOrientation), Subject.CORRECTION);
 				
 				totalDeltaPos.plus(delta);
 				totalDeltaAngle += deltaOrientation;				
@@ -628,7 +654,7 @@ public class CapteursProcess
 		return null;
 	}
 	
-	public synchronized int[] getLast() throws InterruptedException
+	public synchronized Integer[] getLast() throws InterruptedException
 	{
 		needLast = true;
 		while(needLast)
