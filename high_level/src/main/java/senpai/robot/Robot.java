@@ -95,7 +95,8 @@ public class Robot extends RobotState
 	private volatile boolean cinematiqueInitialised = false;
 //	private boolean enableLoadPath;
 	private int currentIndexTrajectory = 0, anticipationTourelle;
-//	private boolean domotiqueDone = false;
+	private boolean domotiqueDone = true;
+	private boolean abeilleDone = true;
 	private int score;
 	
 	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, /*DynamicPath dpath,*/ KnownPathManager known, RectangularObstacle obstacle)
@@ -129,8 +130,18 @@ public class Robot extends RobotState
 				config.getDouble(ConfigInfoSenpai.INITIAL_O)));
 		cinematique.enMarcheAvant = true;
 
-		simuleLL = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);		
-		score = 5;
+		simuleLL = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
+		score = 0;
+		if(config.getBoolean(ConfigInfoSenpai.DOMOTIQUE_THERE))
+		{
+			score += 5;
+			domotiqueDone = false;
+		}
+		if(config.getBoolean(ConfigInfoSenpai.ABEILLE_THERE))
+		{
+			score += 5;
+			abeilleDone = false;
+		}
 		out.setScore(score);
 		out.setCurvature(0);
 //		setDegrade();
@@ -673,8 +684,15 @@ public class Robot extends RobotState
 
 	public void setDomotiqueDone()
 	{
-//		domotiqueDone = true;
+		domotiqueDone = true;
 		score += 25;
+		out.setScore(score);
+	}
+	
+	public void setAbeilleDone()
+	{
+		abeilleDone = true;
+		score += 50;
 		out.setScore(score);
 	}
 	
@@ -717,5 +735,15 @@ public class Robot extends RobotState
 			execute(Id.ARM_GO_HOME);
 		else
 			execute(Id.ARM_STORE_CUBE_TOP);
+	}
+
+	public boolean isDomotiqueDone()
+	{
+		return domotiqueDone;
+	}
+
+	public boolean isAbeilleDone()
+	{
+		return abeilleDone;
 	}
 }

@@ -548,7 +548,8 @@ public class CapteursProcess
 				else
 				{
 					XY delta = pointVu1.minusNewVector(pointVu2);
-					deltaOrientation = (0 - delta.getArgument() - cinem.orientationReelle) % (Math.PI / 2); // on
+					log.write(c+", orientation de ce qu'on voit : "+delta.getArgument(), Subject.CORRECTION);
+					deltaOrientation = (-delta.getArgument() - cinem.orientationReelle) % (Math.PI / 2); // on
 																						// veut
 																						// une
 																						// mesure
@@ -564,27 +565,22 @@ public class CapteursProcess
 					else if(deltaOrientation < -Math.PI / 4)
 						deltaOrientation += Math.PI / 2;
 			
+					log.write(c+", notre orientation : "+cinem.orientationReelle, Subject.CORRECTION);
+					log.write(c+", delta orientation : "+deltaOrientation, Subject.CORRECTION);
+
 					// log.debug("Delta orientation : "+deltaOrientation);
 				}
 				
-				double distanceRobotMur = (mesure1*c.distanceToCenterc2 + mesure2*c.distanceToCenterc1) / c.distanceBetween + c.distanceToRobot;
+				double distanceRobotMur = (mesure1*Math.abs(c.distanceToCenterc2) + mesure2*Math.abs(c.distanceToCenterc1)) / c.distanceBetween + c.distanceToRobot;
 				distanceRobotMur *= Math.cos(deltaOrientation);
-		
-				double deltaX = 0;
-				double deltaY = 0;
-/*				if(c.murVu == Mur.MUR_BAS)
-					deltaY = -pointVu1.getY();
-				else if(c.murVu == Mur.MUR_HAUT)
-					deltaY = -(pointVu1.getY() - 2000);
-				else if(c.murVu == Mur.MUR_GAUCHE)
-					deltaX = -(pointVu1.getX() + 1500);
-				else if(c.murVu == Mur.MUR_DROIT)
-					deltaX = -(pointVu1.getX() - 1500);*/
-		
-				log.write("Correction "+c+" : "+new XYO(deltaX, deltaY, deltaOrientation), Subject.CORRECTION);
+
+				log.write("Delta distance "+distanceRobotMur, Subject.CORRECTION);
+
+				XY delta = new XY(distanceRobotMur, c.c1.angle + cinem.orientationReelle + deltaOrientation, true); 
 				
-				totalDeltaPos.setX(totalDeltaPos.getX() + deltaX);
-				totalDeltaPos.setY(totalDeltaPos.getY() + deltaY);
+				log.write("Correction "+c+" : "+new XYO(delta.getX(), delta.getY(), deltaOrientation), Subject.CORRECTION);
+				
+				totalDeltaPos.plus(delta);
 				totalDeltaAngle += deltaOrientation;				
 				nb++;
 				

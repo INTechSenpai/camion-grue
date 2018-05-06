@@ -72,4 +72,10 @@ public class ScriptDomotique extends Script
 		robot.avance(100);
 	}
 
+	@Override
+	public boolean faisable()
+	{
+		return robot.isDomotiqueDone();
+	}
+
 }

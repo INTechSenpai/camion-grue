@@ -104,4 +104,11 @@ public class ScriptPriseCube extends Script
 			robot.storeCube(cube);
 		}
 	}
+	
+	@Override
+	public boolean faisable()
+	{
+		// TODO
+		return robot.isDomotiqueDone();
+	}
 }

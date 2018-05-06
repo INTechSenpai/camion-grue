@@ -28,9 +28,9 @@ public enum CapteursCorrection {
 	GAUCHE(CapteursRobot.ToF_LATERAL_AVANT_GAUCHE, CapteursRobot.ToF_LATERAL_AVANT_GAUCHE.pos.getX(),
 			CapteursRobot.ToF_LATERAL_ARRIERE_GAUCHE, CapteursRobot.ToF_LATERAL_ARRIERE_GAUCHE.pos.getX(), CapteursRobot.ToF_LATERAL_ARRIERE_GAUCHE.pos.getY()),
 	DROITE(CapteursRobot.ToF_LATERAL_AVANT_DROIT, CapteursRobot.ToF_LATERAL_AVANT_DROIT.pos.getX(),
-			CapteursRobot.ToF_LATERAL_ARRIERE_DROIT, CapteursRobot.ToF_LATERAL_ARRIERE_DROIT.pos.getX(), CapteursRobot.ToF_LATERAL_ARRIERE_DROIT.pos.getY()),
+			CapteursRobot.ToF_LATERAL_ARRIERE_DROIT, CapteursRobot.ToF_LATERAL_ARRIERE_DROIT.pos.getX(), -CapteursRobot.ToF_LATERAL_ARRIERE_DROIT.pos.getY()),
 	ARRIERE(CapteursRobot.ToF_ARRIERE_DROITE, CapteursRobot.ToF_ARRIERE_DROITE.pos.getY(),
-			CapteursRobot.ToF_ARRIERE_GAUCHE, CapteursRobot.ToF_ARRIERE_GAUCHE.pos.getY(), CapteursRobot.ToF_ARRIERE_DROITE.pos.getX()),
+			CapteursRobot.ToF_ARRIERE_GAUCHE, CapteursRobot.ToF_ARRIERE_GAUCHE.pos.getY(), -CapteursRobot.ToF_ARRIERE_DROITE.pos.getX()),
 	AVANT(CapteursRobot.ToF_AVANT, CapteursRobot.ToF_AVANT.pos.getY(),
 			CapteursRobot.ToF_AVANT, CapteursRobot.ToF_AVANT.pos.getY(), CapteursRobot.ToF_AVANT.pos.getX());
 	
@@ -47,7 +47,7 @@ public enum CapteursCorrection {
 		this.distanceToCenterc1 = distanceToCenterc1;
 		this.distanceToCenterc2 = distanceToCenterc2;
 		this.distanceToRobot = distanceToRobot;
-		distanceBetween = distanceToCenterc1 + distanceToCenterc2;
+		distanceBetween = Math.abs(distanceToCenterc1) + Math.abs(distanceToCenterc2);
 	}
 	
 }

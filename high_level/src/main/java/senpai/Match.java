@@ -153,6 +153,12 @@ public class Match
 		log.write("Je suis "+Math.abs(deltaY)+"cm vers l'"+(deltaY < 0 ? "avant" : "arrière"), Subject.STATUS);
 		log.write("Je suis orienté vers la "+(orientation < 0 ? "droite" : "gauche")+" de "+Math.abs(orientation)+"°", Subject.STATUS);
 		
+		// dépose golden
+		// domotique
+		// prise
+		// dépose
+		// abeille
+		
 		try {
 			doScript(scripts.getScriptAbeille(), 5);
 		} catch (PathfindingException | UnableToMoveException | ActionneurException e) {

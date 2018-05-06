@@ -25,38 +25,30 @@ import senpai.robot.Robot;
 import senpai.table.Table;
 
 /**
- * Script de recalage
+ * Script de l'abeille
  * @author pf
  *
  */
 
-public class ScriptRecalage extends Script
+public class ScriptAbeille extends Script
 {
+	private XY_RW positionEntree = new XY_RW(1200,180);
 	private CapteursProcess cp;
-	private XYO correction;
-	private XY_RW positionEntree = new XY_RW(1300,1700);
-	private CapteursCorrection[] capteurs = new CapteursCorrection[2];
-	private long dureeRecalage;
 	
-	public ScriptRecalage(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie, long dureeRecalage)
+	public ScriptAbeille(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie)
 	{
 		super(log, robot, table);
-		this.dureeRecalage = dureeRecalage;
 		this.cp = cp;
 		if(symetrie)
-		{
-			capteurs[0] = CapteursCorrection.DROITE;
-			capteurs[1] = CapteursCorrection.ARRIERE;
 			positionEntree.setX(- positionEntree.getX());
-		}
-		else
-		{
-			capteurs[0] = CapteursCorrection.GAUCHE;
-			capteurs[1] = CapteursCorrection.ARRIERE;
-		}
-			
 	}
 
+	@Override
+	public XYO getPointEntree()
+	{
+		return new XYO(positionEntree, 0); // TODO symétrie angles
+	}
+	
 	@Override
 	public String toString()
 	{
@@ -64,25 +56,19 @@ public class ScriptRecalage extends Script
 	}
 
 	@Override
-	public XYO getPointEntree()
-	{
-		return new XYO(positionEntree, -Math.PI / 2);
-	}
-
-	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException
-	{		
-		correction = cp.doStaticCorrection(dureeRecalage, capteurs);
-	}
-	
-	public XYO getCorrection()
 	{
-		return correction;
+		cp.startStaticCorrection(CapteursCorrection.AVANT, CapteursCorrection.GAUCHE);
+		robot.avance(200, 0.2);
+//		robot.execute(Id.ARM_GO_TO, param);
+		// TODO
+		robot.rangeBras();
+		cp.endStaticCorrection();
 	}
 
 	@Override
 	public boolean faisable()
 	{
-		return true;
+		return robot.isAbeilleDone();
 	}
 }

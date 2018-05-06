@@ -43,6 +43,8 @@ public abstract class Script
 		this.table = table;
 	}
 	
+	public abstract boolean faisable();
+	
 	public abstract XYO getPointEntree();
 
 	protected abstract void run() throws InterruptedException, UnableToMoveException, ActionneurException;

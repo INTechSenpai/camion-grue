@@ -19,44 +19,38 @@ import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.capteurs.CapteursCorrection;
 import senpai.capteurs.CapteursProcess;
+import senpai.comm.CommProtocol.Id;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.table.Table;
+import senpai.utils.Subject;
 
 /**
- * Script de recalage
+ * Script du panneau domotique v2
  * @author pf
  *
  */
 
-public class ScriptRecalage extends Script
+public class ScriptDomotiqueV2 extends Script
 {
+	private XY_RW positionEntree = new XY_RW(370,1920-260);
 	private CapteursProcess cp;
-	private XYO correction;
-	private XY_RW positionEntree = new XY_RW(1300,1700);
-	private CapteursCorrection[] capteurs = new CapteursCorrection[2];
-	private long dureeRecalage;
 	
-	public ScriptRecalage(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie, long dureeRecalage)
+	public ScriptDomotiqueV2(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie)
 	{
 		super(log, robot, table);
-		this.dureeRecalage = dureeRecalage;
 		this.cp = cp;
 		if(symetrie)
-		{
-			capteurs[0] = CapteursCorrection.DROITE;
-			capteurs[1] = CapteursCorrection.ARRIERE;
 			positionEntree.setX(- positionEntree.getX());
-		}
-		else
-		{
-			capteurs[0] = CapteursCorrection.GAUCHE;
-			capteurs[1] = CapteursCorrection.ARRIERE;
-		}
-			
 	}
 
+	@Override
+	public XYO getPointEntree()
+	{
+		return new XYO(positionEntree, Math.PI / 2);
+	}
+	
 	@Override
 	public String toString()
 	{
@@ -64,25 +58,24 @@ public class ScriptRecalage extends Script
 	}
 
 	@Override
-	public XYO getPointEntree()
-	{
-		return new XYO(positionEntree, -Math.PI / 2);
-	}
-
-	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException
-	{		
-		correction = cp.doStaticCorrection(dureeRecalage, capteurs);
-	}
-	
-	public XYO getCorrection()
 	{
-		return correction;
+		cp.startStaticCorrection(CapteursCorrection.AVANT);
+		Thread.sleep(500);
+		
+		double distance = cp.getDistance(CapteursCorrection.AVANT, 0);
+		log.write("Distance à l'avant : "+distance, Subject.SCRIPT);
+		double angle = -0.0025*distance+0.25;		
+		robot.execute(Id.ARM_PUSH_BUTTON, angle);
+		
+		robot.setDomotiqueDone();
+		robot.rangeBras();
+		cp.endStaticCorrection();
 	}
 
 	@Override
 	public boolean faisable()
 	{
-		return true;
+		return robot.isDomotiqueDone();
 	}
 }

@@ -75,5 +75,12 @@ public class ScriptDeposeCube extends Script
 		robot.poseCubes(coteDroit ? Math.PI / 180 * 75 : - Math.PI / 180 * 75, nbPile);
 		table.enableObstaclePile(nbPile);
 	}
+	
+	@Override
+	public boolean faisable()
+	{
+		// TODO
+		return robot.isDomotiqueDone();
+	}
 
 }
