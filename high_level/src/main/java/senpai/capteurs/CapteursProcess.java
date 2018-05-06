@@ -572,7 +572,6 @@ public class CapteursProcess
 				}
 				
 				double distanceRobotMur = (mesure1*Math.abs(c.distanceToCenterc2) + mesure2*Math.abs(c.distanceToCenterc1)) / c.distanceBetween + c.distanceToRobot;
-				distanceRobotMur *= Math.cos(deltaOrientation);
 
 				log.write("Delta distance "+distanceRobotMur, Subject.CORRECTION);
 

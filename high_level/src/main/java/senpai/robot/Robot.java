@@ -330,6 +330,11 @@ public class Robot extends RobotState
 		}
 	}
 	
+	public boolean canDropCube()
+	{
+		return cubeInside != null;
+	}
+	
 	public boolean canTakeCube()
 	{
 		return cubeTop == null;

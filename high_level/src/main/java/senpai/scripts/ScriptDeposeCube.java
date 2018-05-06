@@ -79,8 +79,7 @@ public class ScriptDeposeCube extends Script
 	@Override
 	public boolean faisable()
 	{
-		// TODO
-		return robot.isDomotiqueDone();
+		return robot.canDropCube();
 	}
 
 }

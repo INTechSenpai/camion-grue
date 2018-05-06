@@ -108,7 +108,6 @@ public class ScriptPriseCube extends Script
 	@Override
 	public boolean faisable()
 	{
-		// TODO
-		return robot.isDomotiqueDone();
+		return robot.canTakeCube();
 	}
 }
