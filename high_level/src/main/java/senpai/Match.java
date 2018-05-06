@@ -159,13 +159,13 @@ public class Match
 		// dépose
 		// abeille
 		
-		try {
+/*		try {
 			doScript(scripts.getScriptAbeille(), 5);
 		} catch (PathfindingException | UnableToMoveException | ActionneurException e) {
 			log.write("Erreur : "+e, Subject.SCRIPT);
 		}
 		
-		robot.printTemps();
+		robot.printTemps();*/
 
 		try {
 			doScript(scripts.getScriptDomotique(), 5);
@@ -193,11 +193,12 @@ public class Match
 	
 	private void doScript(Script s, int nbEssaiChemin) throws PathfindingException, InterruptedException, UnableToMoveException, ActionneurException
 	{
+		XYO pointEntree = s.getPointEntree();
 		boolean restart;
 		do {
 			try {
 				restart = false;
-				robot.goTo(s.getPointEntree());
+				robot.goTo(pointEntree);
 			}
 			catch(UnableToMoveException e)
 			{
@@ -205,6 +206,12 @@ public class Match
 				nbEssaiChemin--;
 			}
 		} while(restart && nbEssaiChemin > 0);
+		
+		if(Math.abs(XYO.angleDifference(robot.getCinematique().orientationReelle, pointEntree.orientation)) > 5.*Math.PI/180)
+			robot.goTo(pointEntree);
+
+		if(Math.abs(XYO.angleDifference(robot.getCinematique().orientationReelle, pointEntree.orientation)) > 5.*Math.PI/180)
+			throw new UnableToMoveException("On n'a pas réussi à arriver à l'orientation voulue");
 		
 		if(!restart)
 			s.execute();

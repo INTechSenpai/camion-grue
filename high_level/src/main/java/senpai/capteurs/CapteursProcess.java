@@ -502,6 +502,17 @@ public class CapteursProcess
 		Thread.sleep(duree);
 		return endStaticCorrection();
 	}
+	
+	public void cancelStaticCorrection()
+	{
+		ongoingStaticCorrection = false;	
+		for(CapteursCorrection c : CapteursCorrection.values())			
+		{
+			c.enable = false;
+			c.valc1.clear();
+			c.valc2.clear();
+		}
+	}
 		
 	public XYO endStaticCorrection()
 	{
@@ -575,8 +586,8 @@ public class CapteursProcess
 
 				log.write("Delta distance "+distanceRobotMur, Subject.CORRECTION);
 
-				XY delta = new XY(distanceRobotMur, c.c1.angle + cinem.orientationReelle + deltaOrientation, true); 
-				
+//				XY delta = new XY(distanceRobotMur, c.c1.angle + cinem.orientationReelle + deltaOrientation, true); 
+				XY delta = new XY(0,0);
 				log.write("Correction "+c+" : "+new XYO(delta.getX(), delta.getY(), deltaOrientation), Subject.CORRECTION);
 				
 				totalDeltaPos.plus(delta);

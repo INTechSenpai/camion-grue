@@ -376,10 +376,10 @@ public class Robot extends RobotState
 		}
 	}
 
-	public void setScore(int score)
+/*	public void setScore(int score)
 	{
 		out.setScore(score);
-	}
+	}*/
 
 	public void updateColorAndSendPosition(RobotColor c) throws InterruptedException
 	{

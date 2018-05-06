@@ -63,9 +63,29 @@ public class ScriptDomotiqueV2 extends Script
 		cp.startStaticCorrection(CapteursCorrection.AVANT);
 		Thread.sleep(500);
 		
-		double distance = cp.getDistance(CapteursCorrection.AVANT, 0);
+		double distance = cp.getDistance(CapteursCorrection.AVANT, 0) * Math.cos(robot.getCinematique().orientationReelle - Math.PI / 2);
 		log.write("Distance à l'avant : "+distance, Subject.SCRIPT);
-		double angle = -0.0025*distance+0.25;		
+		if(distance > 100)
+		{
+			cp.cancelStaticCorrection();
+			robot.avance(distance - 80);
+			cp.startStaticCorrection(CapteursCorrection.AVANT);
+			Thread.sleep(500);
+			distance = cp.getDistance(CapteursCorrection.AVANT, 0) * Math.cos(robot.getCinematique().orientationReelle - Math.PI / 2);
+		}
+		else if(distance < 60)
+		{
+			cp.cancelStaticCorrection();
+			robot.avance(distance - 80);
+			cp.startStaticCorrection(CapteursCorrection.AVANT);
+			Thread.sleep(500);
+			distance = cp.getDistance(CapteursCorrection.AVANT, 0) * Math.cos(robot.getCinematique().orientationReelle - Math.PI / 2);
+		}
+		if(distance > 100 || distance < 60)
+			throw new ActionneurException("Mauvaise distance pour panneau : "+distance);
+		
+		double angle = -0.0025*distance+0.25;
+		log.write("Angle domotique : "+angle, Subject.SCRIPT);
 		robot.execute(Id.ARM_PUSH_BUTTON, angle);
 		
 		robot.setDomotiqueDone();
