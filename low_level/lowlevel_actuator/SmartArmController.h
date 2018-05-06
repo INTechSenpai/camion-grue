@@ -125,6 +125,9 @@ public:
             case ACTUATOR_SET_ARM_POSITION:
                 set_arm_position();
                 break;
+            case ACTUATOR_PUSH_BUTTON:
+                push_button();
+                break;
             default:
                 Serial.println("SmartArmController: unknown command");
                 stopCommand();
@@ -832,6 +835,67 @@ private:
             waitForMoveCompletion();
             break;
         case 1:
+            stopCommand();
+            break;
+        default:
+            Serial.println("Err unhandled command step");
+            stopCommand();
+            break;
+        }
+    }
+
+    void push_button()
+    {
+        switch (currentCommandStep)
+        {
+        case 0:
+            armControler.getCurrentPositionSpecial(armPosition);
+            armPosition.setHAngle(ARM_H_ANGLE_MANIP);
+            armPosition.setVAngle(commandArgAngle);
+            armPosition.setPlierPos(ARM_MIN_PLIER_POS);
+            armControler.setAimPosition(armPosition);
+            currentCommandStep++;
+            break;
+        case 1:
+            waitForMoveCompletion();
+            break;
+        case 2:
+            armControler.getCurrentPositionSpecial(armPosition);
+            armPosition.setHeadGlobalAngle(0.2);
+            armControler.setAimPosition(armPosition);
+            currentCommandStep++;
+            break;
+        case 3:
+            waitForMoveCompletion();
+            break;
+        case 4:
+            armControler.getCurrentPositionSpecial(armPosition);
+            armPosition.setHAngle(0);
+            armControler.setAimPosition(armPosition);
+            currentCommandStep++;
+            break;
+        case 5:
+            waitForMoveCompletion();
+            break;
+        case 6:
+            armControler.getCurrentPositionSpecial(armPosition);
+            armPosition.setHeadGlobalAngle(0.8);
+            armControler.setAimPosition(armPosition);
+            currentCommandStep++;
+            break;
+        case 7:
+            waitForMoveCompletion();
+            break;
+        case 8:
+            armControler.getCurrentPositionSpecial(armPosition);
+            armPosition.setHeadGlobalAngle(0.2);
+            armControler.setAimPosition(armPosition);
+            currentCommandStep++;
+            break;
+        case 9:
+            waitForMoveCompletion();
+            break;
+        case 10:
             stopCommand();
             break;
         default:

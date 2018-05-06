@@ -100,3 +100,6 @@ uint8_t[4]
 ### [0x0F] Stop arm
 uint8_t[0]
 
+### [0x10] Push button
+uint8_t[4]
+(float)angleV

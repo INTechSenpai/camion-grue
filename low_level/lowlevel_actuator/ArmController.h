@@ -13,8 +13,9 @@
 #include "dynamixel_teensy/src/DynamixelInterface.h"
 #include "dynamixel_teensy/src/DynamixelMotor.h"
 
-#define PLIER_MAX_TORQUE        1000    // [unité interne d'AX12]
+#define PLIER_MAX_TORQUE        950     // [unité interne d'AX12]
 #define PLIER_OVERLOAD_TIMEOUT  500     // [ms]
+#define HEAD_OVERLOAD_TIMEOUT   300     // [ms]
 
 
 class ArmController : public Singleton<ArmController>
@@ -52,7 +53,9 @@ public:
         moveTimer = 0;
         manualMode = false;
         plierOverloadTimer = 0;
-        plierOverloadStarted = 0;
+        plierOverloadStarted = false;
+        headOverloadTimer = 0;
+        headOverloadStarted = false;
 
         serialAX.begin(SERIAL_AX12_BAUDRATE);
     }
@@ -220,7 +223,7 @@ public:
                 }
                 counter = 4;
             }
-            else
+            else if (counter == 4)
             { // Get torque AX12 plier
                 uint16_t torque = 0;
                 lastStatus = plierAX12.read(0x28, torque);
@@ -246,6 +249,33 @@ public:
 
                     Serial.println("STOPPED PLIER ON POSITION");
                 }
+                counter = 5;
+            }
+            else
+            { // Get torque AX12 head
+                uint16_t torque = 0;
+                lastStatus = headAX12.read(0x28, torque);
+                torque &= 1023;
+                if (!headOverloadStarted && torque > PLIER_MAX_TORQUE)
+                {
+                    headOverloadStarted = true;
+                    headOverloadTimer = millis();
+                }
+                else if (headOverloadStarted && torque <= PLIER_MAX_TORQUE)
+                {
+                    headOverloadStarted = false;
+                }
+                else if (headOverloadStarted && millis() - headOverloadTimer > HEAD_OVERLOAD_TIMEOUT)
+                {
+                    headOverloadStarted = false;
+                    noInterrupts();
+                    aimPosition.setHeadLocalAngle(currentPosition.getHeadLocalAngle());
+                    uint16_t p = (uint16_t)aimPosition.getHeadLocalAngleDeg();
+                    interrupts();
+                    lastStatus = headAX12.goalPositionDegree(p);
+
+                    Serial.println("STOPPED HEAD ON POSITION");
+                }
                 counter = 0;
             }
 
@@ -256,6 +286,8 @@ public:
                 status |= ARM_STATUS_AXBLOCKED;
                 interrupts();
                 Serial.printf("AX12 OVERLOAD: errno %u c=%u\n", lastStatus, counter);
+                headAX12.recoverTorque();
+                plierAX12.recoverTorque();
             }
             else if (lastStatus != DYN_STATUS_OK)
             {
@@ -449,6 +481,8 @@ private:
     DynamixelMotor plierAX12;
     uint32_t plierOverloadTimer;
     bool plierOverloadStarted;
+    uint32_t headOverloadTimer;
+    bool headOverloadStarted;
 
 };
 

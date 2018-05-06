@@ -162,6 +162,7 @@ Command(0x2C, "Arm go to",          CommandType.LONG_ORDER,
          Field("plier pos", float, default=25)],
         [Field("Arm status", int)]),
 Command(0x2D, "Arm stop",           CommandType.LONG_ORDER, [], []),
+Command(0x2E, "Arm push button",	CommandType.LONG_ORDER, [Field("angle", float, default=0.1)], [Field("Arm status", int)]),
 
 
 # Short orders

@@ -509,4 +509,32 @@ public:
 };
 
 
+class ActPushButton : public OrderLong, public Singleton<ActPushButton>
+{
+public:
+    ActPushButton() {}
+    void _launch(const std::vector<uint8_t> & input)
+    {
+        if (input.size() == 4)
+        {
+            size_t index = 0;
+            float angle = Serializer::readFloat(input, index);
+            slaveActuator.pushButton(angle);
+        }
+        else
+        {
+            Server.printf_err("ActPushButton: wrong number of arguments\n");
+        }
+    }
+    void onExecute()
+    {
+        finished = !slaveActuator.isMoving();
+    }
+    void terminate(std::vector<uint8_t> & output)
+    {
+        Serializer::writeInt(slaveActuator.getStatus(), output);
+    }
+};
+
+
 #endif

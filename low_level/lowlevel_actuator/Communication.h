@@ -184,6 +184,18 @@ public:
             case ACTUATOR_STOP:
                 smartArmControler.emergencyStop();
                 break;
+            case ACTUATOR_PUSH_BUTTON:
+                if (message.size() == 4)
+                {
+                    float angle = Serializer::readFloat(message.getPayload(), index);
+                    smartArmControler.executeCommand(ACTUATOR_PUSH_BUTTON, angle);
+                    sendAck();
+                }
+                else
+                {
+                    Serial.println("ACTUATOR_PUSH_BUTTON wrong args size");
+                }
+                break;
             default:
                 Serial.println("Unknown command received");
                 break;

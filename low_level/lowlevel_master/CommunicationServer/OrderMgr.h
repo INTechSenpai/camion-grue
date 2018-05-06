@@ -82,6 +82,7 @@ public:
         longOrderList[0x0B] = &ActPutOnPileFixed::Instance();
         longOrderList[0x0C] = &ActGoToPosition::Instance();
         longOrderList[0x0D] = &ActStop::Instance();
+        longOrderList[0x0E] = &ActPushButton::Instance();
     }
 
     void execute()

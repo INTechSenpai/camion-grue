@@ -18,6 +18,7 @@ enum CommandId
     ACTUATOR_SET_SENSORS_ANGLES = 0x0D,
     ACTUATOR_SET_SCORE          = 0x0E,
     ACTUATOR_STOP               = 0x0F,
+    ACTUATOR_PUSH_BUTTON        = 0x10,
 
     ACTUATOR_NO_COMMAND         = 0xFF
 };

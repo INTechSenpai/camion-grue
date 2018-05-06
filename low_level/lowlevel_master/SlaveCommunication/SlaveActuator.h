@@ -21,6 +21,7 @@
 #define ID_FRAME_ACTUATOR_SET_SENSORS_ANGLES    0x0D
 #define ID_FRAME_ACTUATOR_SET_SCORE             0x0E
 #define ID_FRAME_ACTUATOR_STOP                  0x0F
+#define ID_FRAME_ACTUATOR_PUSH_BUTTON           0x10
 
 #define ACTUATOR_STATUS_OK                      0x0000
 #define ACTUATOR_STATUS_COM_ERR                 0x0100
@@ -214,6 +215,13 @@ public:
     {
         std::vector<uint8_t> payload;
         sendCommand(ID_FRAME_ACTUATOR_STOP, payload);
+    }
+
+    void pushButton(float angle)
+    {
+        std::vector<uint8_t> payload;
+        Serializer::writeFloat(angle, payload);
+        sendMoveCommand(ID_FRAME_ACTUATOR_PUSH_BUTTON, payload);
     }
 
 private:
