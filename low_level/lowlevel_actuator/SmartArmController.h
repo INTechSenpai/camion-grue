@@ -844,11 +844,21 @@ private:
         }
     }
 
+
+    /*
+        Valeurs d'angle Vertical du bras en fonction de la distance mesurée par le capteur avant
+        angle = -0.0025 * distance + 0.25
+        [mm]    [rad]
+        100     0
+        80      0.05
+        60      0.10
+    */
     void push_button()
     {
         switch (currentCommandStep)
         {
         case 0:
+            // Décalage du bras sur le côté
             armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHAngle(ARM_H_ANGLE_MANIP);
             armPosition.setVAngle(commandArgAngle);
@@ -860,6 +870,7 @@ private:
             waitForMoveCompletion();
             break;
         case 2:
+            // Semi-déploiement de la pince
             armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHeadGlobalAngle(0.2);
             armControler.setAimPosition(armPosition);
@@ -869,6 +880,7 @@ private:
             waitForMoveCompletion();
             break;
         case 4:
+            // Placement du bars en face du robot
             armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHAngle(0);
             armControler.setAimPosition(armPosition);
@@ -878,6 +890,7 @@ private:
             waitForMoveCompletion();
             break;
         case 6:
+            // Appui sur le bouton
             armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHeadGlobalAngle(0.8);
             armControler.setAimPosition(armPosition);
@@ -887,6 +900,7 @@ private:
             waitForMoveCompletion();
             break;
         case 8:
+            // Rétractation de la pince
             armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHeadGlobalAngle(0.2);
             armControler.setAimPosition(armPosition);
