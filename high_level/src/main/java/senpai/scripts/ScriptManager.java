@@ -95,9 +95,9 @@ public class ScriptManager
 		return getScriptRecalage(500);
 	}
 	
-	public ScriptDomotique getScriptDomotique()
+	public ScriptDomotiqueV2 getScriptDomotique()
 	{
-		return new ScriptDomotique(log, robot, table, cp, couleur.symmetry);
+		return new ScriptDomotiqueV2(log, robot, table, cp, couleur.symmetry);
 	}
 
 	public ScriptDeposeCube getDeposeScript()

@@ -83,7 +83,9 @@ public class CommProtocol
 		ARM_PUT_ON_PILE_S(0x2A, "armPutOnPileS"),
 		ARM_PUT_ON_PILE(0x2B, "armPutOnPile"),
 		ARM_GO_TO(0x2C, "armGoTo"),
-		ARM_STOP(0x2D, "armStop"),
+		STOP_ARM(0x2D, "armStop"),
+		ARM_PUSH_BUTTON(0x2E, "armPushButton"),
+		
 				
 		// Ordres immédiats (0x80 à 0xFF)
 		PING(0x80, true),

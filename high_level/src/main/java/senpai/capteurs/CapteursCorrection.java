@@ -25,25 +25,29 @@ import java.util.List;
 
 public enum CapteursCorrection {
 
-	GAUCHE(CapteursRobot.ToF_LATERAL_AVANT_GAUCHE,
-			CapteursRobot.ToF_LATERAL_ARRIERE_GAUCHE),
-	DROITE(CapteursRobot.ToF_LATERAL_AVANT_DROIT,
-			CapteursRobot.ToF_LATERAL_ARRIERE_DROIT),
-	ARRIERE(CapteursRobot.ToF_ARRIERE_DROITE,
-			CapteursRobot.ToF_ARRIERE_GAUCHE),
-	AVANT(CapteursRobot.ToF_AVANT,
-			CapteursRobot.ToF_AVANT);
+	GAUCHE(CapteursRobot.ToF_LATERAL_AVANT_GAUCHE, CapteursRobot.ToF_LATERAL_AVANT_GAUCHE.pos.getX(),
+			CapteursRobot.ToF_LATERAL_ARRIERE_GAUCHE, CapteursRobot.ToF_LATERAL_ARRIERE_GAUCHE.pos.getX(), CapteursRobot.ToF_LATERAL_ARRIERE_GAUCHE.pos.getY()),
+	DROITE(CapteursRobot.ToF_LATERAL_AVANT_DROIT, CapteursRobot.ToF_LATERAL_AVANT_DROIT.pos.getX(),
+			CapteursRobot.ToF_LATERAL_ARRIERE_DROIT, CapteursRobot.ToF_LATERAL_ARRIERE_DROIT.pos.getX(), CapteursRobot.ToF_LATERAL_ARRIERE_DROIT.pos.getY()),
+	ARRIERE(CapteursRobot.ToF_ARRIERE_DROITE, CapteursRobot.ToF_ARRIERE_DROITE.pos.getY(),
+			CapteursRobot.ToF_ARRIERE_GAUCHE, CapteursRobot.ToF_ARRIERE_GAUCHE.pos.getY(), CapteursRobot.ToF_ARRIERE_DROITE.pos.getX()),
+	AVANT(CapteursRobot.ToF_AVANT, CapteursRobot.ToF_AVANT.pos.getY(),
+			CapteursRobot.ToF_AVANT, CapteursRobot.ToF_AVANT.pos.getY(), CapteursRobot.ToF_AVANT.pos.getX());
 	
-	public final CapteursRobot c1;
-	public final CapteursRobot c2;
+	public final CapteursRobot c1, c2;
+	public final double distanceToCenterc1, distanceToCenterc2, distanceBetween, distanceToRobot;
 	public volatile Mur murVu = null;
 	public List<Integer> valc1 = new ArrayList<Integer>();	
 	public List<Integer> valc2 = new ArrayList<Integer>();
 	
-	private CapteursCorrection(CapteursRobot c1, CapteursRobot c2)
+	private CapteursCorrection(CapteursRobot c1, double distanceToCenterc1, CapteursRobot c2, double distanceToCenterc2, double distanceToRobot)
 	{
 		this.c1 = c1;
 		this.c2 = c2;
+		this.distanceToCenterc1 = distanceToCenterc1;
+		this.distanceToCenterc2 = distanceToCenterc2;
+		this.distanceToRobot = distanceToRobot;
+		distanceBetween = distanceToCenterc1 + distanceToCenterc2;
 	}
 	
 }

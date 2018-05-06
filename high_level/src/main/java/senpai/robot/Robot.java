@@ -710,4 +710,12 @@ public class Robot extends RobotState
 				cinematique.orientationReelle + orientation, cinematique.courbureReelle);
 		out.correctPosition(position, orientation);
 	}
+
+	public void rangeBras() throws InterruptedException, ActionneurException
+	{
+		if(cubeInside == null)
+			execute(Id.ARM_GO_HOME);
+		else
+			execute(Id.ARM_STORE_CUBE_TOP);
+	}
 }

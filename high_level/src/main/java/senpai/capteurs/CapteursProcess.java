@@ -490,6 +490,19 @@ public class CapteursProcess
 		
 	}
 	
+	public Integer getDistance(CapteursCorrection c, int nb)
+	{
+		if(c.valc1.isEmpty() || c.valc2.isEmpty())
+			return null;
+		List<Integer> l;
+		if(nb == 0)
+			l = c.valc1;
+		else
+			l = c.valc2;
+		Collections.sort(l);
+		return l.get(l.size() / 2);
+	}
+	
 	public XYO doStaticCorrection(long duree) throws InterruptedException
 	{
 		startStaticCorrection();
@@ -516,11 +529,14 @@ public class CapteursProcess
 					continue;
 				}
 
-				Collections.sort(c.valc1);
+				int mesure1 = getDistance(c, 0);
+				int mesure2 = getDistance(c, 1);
+
+				/*Collections.sort(c.valc1);
 				int mesure1 = c.valc1.get(c.valc1.size() / 2);
 	
 				Collections.sort(c.valc2);
-				int mesure2 = c.valc2.get(c.valc2.size() / 2);
+				int mesure2 = c.valc2.get(c.valc2.size() / 2);*/
 				
 				log.write("Distance médiane de "+c.c1+" : "+mesure1+" ("+c.valc1.size()+" valeurs)", Subject.CORRECTION);
 				log.write("Distance médiane de "+c.c2+" : "+mesure2+" ("+c.valc2.size()+" valeurs)", Subject.CORRECTION);
@@ -539,7 +555,7 @@ public class CapteursProcess
 				else
 				{
 					XY delta = pointVu1.minusNewVector(pointVu2);					
-					deltaOrientation = (c.murVu.orientation - delta.getArgument() - cinem.orientationReelle) % Math.PI; // on
+					deltaOrientation = (c.murVu.orientation - delta.getArgument()/* - cinem.orientationReelle*/) % Math.PI; // on
 																						// veut
 																						// une
 																						// mesure
@@ -558,8 +574,8 @@ public class CapteursProcess
 					// log.debug("Delta orientation : "+deltaOrientation);
 				}
 				
-				pointVu1.rotate(deltaOrientation, cinem.getPosition());
-				pointVu2.rotate(deltaOrientation, cinem.getPosition());
+				double distanceRobotMur = (mesure1*c.distanceToCenterc2 + mesure2*c.distanceToCenterc1) / c.distanceBetween + c.distanceToRobot;
+				distanceRobotMur *= Math.cos(deltaOrientation);
 		
 				double deltaX = 0;
 				double deltaY = 0;

@@ -201,6 +201,15 @@ public class OutgoingOrderBuffer implements Plottable
 		return Id.ARM_GO_HOME.ticket;
 	}
 	
+	public Ticket armPushButton(Double angleV)
+	{
+		ByteBuffer data = ByteBuffer.allocate(4);
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.putFloat(new Float(angleV));
+		addToBuffer(new Order(data, Id.ARM_PUSH_BUTTON));
+		return Id.ARM_PUSH_BUTTON.ticket;
+	}
+	
 	public Ticket armTakeCubeS(Double angle)
 	{
 		ByteBuffer data = ByteBuffer.allocate(4);
@@ -271,8 +280,8 @@ public class OutgoingOrderBuffer implements Plottable
 
 	public Ticket armStop()
 	{
-		addToBuffer(new Order(Id.ARM_STOP));
-		return Id.ARM_STOP.ticket;
+		addToBuffer(new Order(Id.STOP_ARM));
+		return Id.STOP_ARM.ticket;
 	}
 
 	public void setScore(int score)
