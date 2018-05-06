@@ -14,7 +14,6 @@
 
 package senpai.capteurs;
 
-import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
 import senpai.obstacles.ObstaclesDynamiques;
 import senpai.obstacles.ObstaclesFixes;
@@ -26,7 +25,6 @@ import senpai.utils.Severity;
 import senpai.utils.Subject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import pfg.config.Config;
@@ -51,23 +49,23 @@ public class CapteursProcess
 {
 	protected Log log;
 	private Table table;
-	private OutgoingOrderBuffer serie;
+//	private OutgoingOrderBuffer serie;
 
 	private int nbCapteurs;
 	private int distanceApproximation;
 	private RectangularObstacle obstacleRobot;
 	private Capteur[] capteurs;
-	private final double imprecisionMaxPos;
-	private final double imprecisionMaxAngle;
+//	private final double imprecisionMaxPos;
+//	private final double imprecisionMaxAngle;
 
-	private long dateLastMesureCorrection = -1;
-	private final long peremptionCorrection;
+//	private long dateLastMesureCorrection = -1;
+//	private final long peremptionCorrection;
 	private final int distanceAuMurMinimumTourelle = 250;
-	private final boolean enableDynamicCorrection;
+//	private final boolean enableDynamicCorrection;
 	private volatile boolean ongoingStaticCorrection;
 //	private boolean scan = false;
-	private final int tailleBufferRecalage;
-	private final List<XYO> bufferDynamicCorrection = new ArrayList<XYO>();
+//	private final int tailleBufferRecalage;
+//	private final List<XYO> bufferDynamicCorrection = new ArrayList<XYO>();
 //	private ObstaclesMemory obstacles;
 	private ObstaclesDynamiques dynObs;
 	private Robot robot;
@@ -75,21 +73,15 @@ public class CapteursProcess
 	
 //	private List<SensorsData> mesuresScan = new ArrayList<SensorsData>();
 
-	public CapteursProcess(ObstaclesDynamiques dynObs, Robot robot, Log log, RectangularObstacle obstacleRobot, Table table, OutgoingOrderBuffer serie, Config config, GraphicDisplay buffer)
+	public CapteursProcess(ObstaclesDynamiques dynObs, Robot robot, Log log, RectangularObstacle obstacleRobot, Table table, Config config, GraphicDisplay buffer)
 	{
 		this.table = table;
 		this.log = log;
-		this.serie = serie;
 		this.dynObs = dynObs;
 		this.robot = robot;
 
 		distanceApproximation = config.getInt(ConfigInfoSenpai.DISTANCE_MAX_ENTRE_MESURE_ET_OBJET);
 		nbCapteurs = CapteursRobot.values().length;
-		imprecisionMaxPos = config.getDouble(ConfigInfoSenpai.IMPRECISION_MAX_POSITION);
-		imprecisionMaxAngle = config.getDouble(ConfigInfoSenpai.IMPRECISION_MAX_ORIENTATION);
-		tailleBufferRecalage = config.getInt(ConfigInfoSenpai.TAILLE_BUFFER_RECALAGE);
-		peremptionCorrection = config.getInt(ConfigInfoSenpai.PEREMPTION_CORRECTION);
-		enableDynamicCorrection = config.getBoolean(ConfigInfoSenpai.ENABLE_DYNAMIC_CORRECTION);
 		margeIgnoreTourelle = config.getInt(ConfigInfoSenpai.MARGE_IGNORE_TOURELLE);
 
 		this.obstacleRobot = obstacleRobot;
@@ -245,8 +237,8 @@ public class CapteursProcess
 //		if(chemin.checkColliding(false))
 //			obsbuffer.notify();
 
-		if(enableDynamicCorrection)
-			correctDynamicXYO(data);
+//		if(enableDynamicCorrection)
+//			correctDynamicXYO(data);
 		if(ongoingStaticCorrection)
 			correctStaticXYO(data);
 		double duree = System.currentTimeMillis() - avant;
@@ -259,7 +251,7 @@ public class CapteursProcess
 	{
 		for(CapteursCorrection c : CapteursCorrection.values())			
 		{
-			if(c.murVu !=  null)
+			if(c.enable)
 			{
 				if(data.mesures[c.c1.ordinal()] >= CommProtocol.EtatCapteur.values().length
 						&& data.mesures[c.c2.ordinal()] >= CommProtocol.EtatCapteur.values().length)
@@ -277,7 +269,7 @@ public class CapteursProcess
 	 * 
 	 * @param data
 	 */
-	private void correctDynamicXYO(SensorsData data)
+/*	private void correctDynamicXYO(SensorsData data)
 	{
 		for(CapteursCorrection c : CapteursCorrection.values())			
 		{
@@ -333,22 +325,22 @@ public class CapteursProcess
 				deltaX = -(pointVu1.getX() - 1500);
 
 			XYO correction = new XYO(deltaX, deltaY, deltaOrientation);
-			
+			*/
 			/*
 			 * L'imprécision mesurée est trop grande. C'est probablement une
 			 * erreur.
 			 */
-			if(Math.abs(deltaOrientation) > imprecisionMaxAngle)
+/*			if(Math.abs(deltaOrientation) > imprecisionMaxAngle)
 			{
 				log.write("Imprécision en angle trop grande !" + Math.abs(deltaOrientation), Subject.CORRECTION);
 				continue;
 			}
-			
+			*/
 			/*
 			 * L'imprécision mesurée est trop grande. C'est probablement une
 			 * erreur.
 			 */
-			if(Math.abs(deltaX) > imprecisionMaxPos || Math.abs(deltaY) > imprecisionMaxPos)
+/*			if(Math.abs(deltaX) > imprecisionMaxPos || Math.abs(deltaY) > imprecisionMaxPos)
 			{
 				log.write("Imprécision en position trop grande ! ("+deltaX+","+deltaY+")", Subject.CORRECTION);
 				continue;
@@ -399,7 +391,7 @@ public class CapteursProcess
 		orientationmoy /= bufferCorrection.size();
 		log.write("Envoi d'une correction XYO dynamique: " + posmoy + " " + orientationmoy, Subject.STATUS);
 		serie.correctPosition(posmoy, orientationmoy);
-	}
+	}*/
 
 	/**
 	 * Renvoie la position vue par ce capteurs
@@ -456,7 +448,7 @@ public class CapteursProcess
 	 * @param pos
 	 * @return
 	 */
-	private Mur orientationMurProche(XY pos)
+/*	private Mur orientationMurProche(XY pos)
 	{
 		double distanceMax = 3 * imprecisionMaxPos; // c'est une première
 													// approximation, on peut
@@ -482,12 +474,13 @@ public class CapteursProcess
 		else if(murGauche)
 			return Mur.MUR_GAUCHE;
 		return Mur.MUR_HAUT;
-	}
+	}*/
 	
-	public void startStaticCorrection()
+	public void startStaticCorrection(CapteursCorrection... c)
 	{
-		ongoingStaticCorrection = true;
-		
+		for(CapteursCorrection cc : c)
+			cc.enable = true;
+		ongoingStaticCorrection = true;		
 	}
 	
 	public Integer getDistance(CapteursCorrection c, int nb)
@@ -503,9 +496,9 @@ public class CapteursProcess
 		return l.get(l.size() / 2);
 	}
 	
-	public XYO doStaticCorrection(long duree) throws InterruptedException
+	public XYO doStaticCorrection(long duree, CapteursCorrection... c) throws InterruptedException
 	{
-		startStaticCorrection();
+		startStaticCorrection(c);
 		Thread.sleep(duree);
 		return endStaticCorrection();
 	}
@@ -521,7 +514,7 @@ public class CapteursProcess
 		
 		for(CapteursCorrection c : CapteursCorrection.values())			
 		{
-			if(c.murVu !=  null)
+			if(c.enable)
 			{
 				if(c.valc1.isEmpty() || c.valc2.isEmpty())
 				{
@@ -554,8 +547,8 @@ public class CapteursProcess
 					deltaOrientation = 0;
 				else
 				{
-					XY delta = pointVu1.minusNewVector(pointVu2);					
-					deltaOrientation = (c.murVu.orientation - delta.getArgument()/* - cinem.orientationReelle*/) % Math.PI; // on
+					XY delta = pointVu1.minusNewVector(pointVu2);
+					deltaOrientation = (0 - delta.getArgument() - cinem.orientationReelle) % (Math.PI / 2); // on
 																						// veut
 																						// une
 																						// mesure
@@ -565,11 +558,11 @@ public class CapteursProcess
 																						// évite
 																						// getFastArgument
 			
-					// le delta d'orientation qu'on cherche est entre -PI/2 et PI/2
-					if(deltaOrientation > Math.PI / 2)
-						deltaOrientation -= Math.PI;
-					else if(deltaOrientation < -Math.PI / 2)
-						deltaOrientation += Math.PI;
+					// le delta d'orientation qu'on cherche est entre -PI/4 et PI/4
+					if(deltaOrientation > Math.PI / 4)
+						deltaOrientation -= Math.PI / 2;
+					else if(deltaOrientation < -Math.PI / 4)
+						deltaOrientation += Math.PI / 2;
 			
 					// log.debug("Delta orientation : "+deltaOrientation);
 				}
@@ -579,14 +572,14 @@ public class CapteursProcess
 		
 				double deltaX = 0;
 				double deltaY = 0;
-				if(c.murVu == Mur.MUR_BAS)
+/*				if(c.murVu == Mur.MUR_BAS)
 					deltaY = -pointVu1.getY();
 				else if(c.murVu == Mur.MUR_HAUT)
 					deltaY = -(pointVu1.getY() - 2000);
 				else if(c.murVu == Mur.MUR_GAUCHE)
 					deltaX = -(pointVu1.getX() + 1500);
 				else if(c.murVu == Mur.MUR_DROIT)
-					deltaX = -(pointVu1.getX() - 1500);
+					deltaX = -(pointVu1.getX() - 1500);*/
 		
 				log.write("Correction "+c+" : "+new XYO(deltaX, deltaY, deltaOrientation), Subject.CORRECTION);
 				
@@ -595,7 +588,7 @@ public class CapteursProcess
 				totalDeltaAngle += deltaOrientation;				
 				nb++;
 				
-				c.murVu = null;
+				c.enable = false;
 				c.valc1.clear();
 				c.valc2.clear();
 			}

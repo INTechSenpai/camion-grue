@@ -36,7 +36,7 @@ public enum CapteursCorrection {
 	
 	public final CapteursRobot c1, c2;
 	public final double distanceToCenterc1, distanceToCenterc2, distanceBetween, distanceToRobot;
-	public volatile Mur murVu = null;
+	public volatile boolean enable = false;
 	public List<Integer> valc1 = new ArrayList<Integer>();	
 	public List<Integer> valc2 = new ArrayList<Integer>();
 	

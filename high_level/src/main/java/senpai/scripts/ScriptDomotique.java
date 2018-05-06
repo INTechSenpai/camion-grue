@@ -19,7 +19,6 @@ import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.capteurs.CapteursCorrection;
 import senpai.capteurs.CapteursProcess;
-import senpai.capteurs.Mur;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
@@ -68,8 +67,7 @@ public class ScriptDomotique extends Script
 		robot.setDomotiqueDone();
 		robot.avance(100);
 
-		CapteursCorrection.ARRIERE.murVu = Mur.MUR_HAUT;
-		cp.doStaticCorrection(500);
+		cp.doStaticCorrection(500, CapteursCorrection.ARRIERE);
 		
 		robot.avance(100);
 	}

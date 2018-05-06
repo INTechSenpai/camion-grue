@@ -28,7 +28,6 @@ import pfg.graphic.printable.Printable;
 import pfg.kraken.obstacles.Obstacle;
 import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.obstacles.container.SmartDynamicObstacles;
-import pfg.kraken.utils.XY;
 import pfg.log.Log;
 import senpai.capteurs.CapteursRobot;
 import senpai.table.Table;

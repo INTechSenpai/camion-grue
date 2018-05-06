@@ -100,6 +100,11 @@ public class ScriptManager
 		return new ScriptDomotiqueV2(log, robot, table, cp, couleur.symmetry);
 	}
 
+	public ScriptAbeille getScriptAbeille()
+	{
+		return new ScriptAbeille(log, robot, table, cp, couleur.symmetry);
+	}
+
 	public ScriptDeposeCube getDeposeScript()
 	{
 		int nbPile = robot.getNbPile(usePattern);

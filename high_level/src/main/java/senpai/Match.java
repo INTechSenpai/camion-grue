@@ -154,6 +154,14 @@ public class Match
 		log.write("Je suis orienté vers la "+(orientation < 0 ? "droite" : "gauche")+" de "+Math.abs(orientation)+"°", Subject.STATUS);
 		
 		try {
+			doScript(scripts.getScriptAbeille(), 5);
+		} catch (PathfindingException | UnableToMoveException | ActionneurException e) {
+			log.write("Erreur : "+e, Subject.SCRIPT);
+		}
+		
+		robot.printTemps();
+
+		try {
 			doScript(scripts.getScriptDomotique(), 5);
 		} catch (PathfindingException | UnableToMoveException | ActionneurException e) {
 			log.write("Erreur : "+e, Subject.SCRIPT);
