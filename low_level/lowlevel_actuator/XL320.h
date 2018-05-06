@@ -1,9 +1,3 @@
-/*
-    Crappy code from the Arduino community
-    Credits have been removed to preserve the author's reputation
-    Reworked in order to be usable and almost readable (and to remove warnings)
- */
-
 #ifndef XL320_H_
 #define XL320_H_
 
@@ -45,8 +39,8 @@
 #define XL_HARDWARE_ERROR           50
 #define XL_PUNCH                    51
 
-#include <inttypes.h>
-#include <Stream.h>
+#include <Printable.h>
+#include <vector>
 
 
 class XL320
@@ -79,35 +73,28 @@ private:
 	int readPacket(unsigned char *buffer, size_t size);
 	int requestPacket(int id, int Address, int size);
 
-	class Packet {
-	  bool freeData;
-	  public:
-	    unsigned char *data;
-	    size_t data_size;
+	class Packet : public Printable
+    {
+    public:
+        Packet();
+        Packet(uint8_t id, uint8_t instruction, const std::vector<uint8_t> & parameters);
 
-	    // wrap a received data stream in an Packet object for analysis
-	    Packet(unsigned char *data, size_t size);
-	    // build a packet into the pre-allocated data array
-	    // if data is null it will be malloc'ed and free'd on destruction.
-	    
-	    Packet(
-	      unsigned char *data, 
-	      size_t        size,
-	      unsigned char id,
-	      unsigned char instruction,
-	      int           parameter_data_size,
-	      ...);
-	    ~Packet();
-	    unsigned char getId();
-	    int getLength();
-	    int getSize();
-	    int getParameterCount();
-	    unsigned char getInstruction();
-            unsigned char getParameter(int n);
-	    bool isValid();
+        void reset();
+	    uint8_t getId() const;
+	    uint16_t getParameterCount() const;
+	    uint8_t getInstruction() const;
+        uint8_t getParameter(uint16_t n) const;
+	    bool isValid() const;
+        size_t printTo(Print& p) const;
+        size_t writeOnStream(Stream & stream) const;
 
-	    void toStream(Stream &stream);
-
+        void addByte(uint8_t b);
+        bool isReading() const;
+    private:
+        uint16_t computeChecksum() const;
+        bool valid;
+        bool reading;
+        std::vector<uint8_t> data;
 	};
     
 

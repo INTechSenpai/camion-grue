@@ -1,14 +1,5 @@
-/*
-    Crappy code from the Arduino community
-    Credits have been removed to preserve the author's reputation
-    Reworked in order to be usable and almost readable (and to remove warnings)
- */
-
-#include "Arduino.h"
 #include "dxl_pro.h"
 #include "XL320.h"
-#include <stdlib.h>
-#include <stdarg.h>	
 
 
 XL320::XL320() {}
@@ -262,115 +253,171 @@ int XL320::readPacket(unsigned char *BUFFER, size_t SIZE)
     }
 }
 
-
-XL320::Packet::Packet(
-	unsigned char *data,
-	size_t data_size,
-	unsigned char id,
-	unsigned char instruction,
-	int parameter_data_size,
-	...)
+XL320::Packet::Packet()
 {
-    // [ff][ff][fd][00][id][len1][len2] { [instr][params(parameter_data_size)][crc1][crc2] }
-    unsigned int length=3+parameter_data_size;
-    if(!data) {
-	// [ff][ff][fd][00][id][len1][len2] { [data(length)] }
-	this->data_size = 7+length;   
-	this->data = (unsigned char*)malloc(data_size);
-	this->freeData = true;
-    } else {
-	this->data = data;
-	this->data_size = data_size;
-	this->freeData = false;
-    }
-    this->data[0]=0xFF;
-    this->data[1]=0xFF;
-    this->data[2]=0xFD;
-    this->data[3]=0x00;
-    this->data[4]=id;
-    this->data[5]=length&0xff;
-    this->data[6]=(length>>8)&0xff;
-    this->data[7]=instruction;
-    va_list args;
-    va_start(args, parameter_data_size); 
-    for(int i=0;i<parameter_data_size;i++) {
-	unsigned char arg = va_arg(args, int);
-	this->data[8+i]=arg;
-    }
-    unsigned short crc = update_crc(0,this->data,this->getSize()-2);
-    this->data[8+parameter_data_size]=crc&0xff;
-    this->data[9+parameter_data_size]=(crc>>8)&0xff;
-    va_end(args);
+    reset();
 }
 
-XL320::Packet::Packet(unsigned char *data, size_t size)
+XL320::Packet::Packet(uint8_t id, uint8_t instruction, const std::vector<uint8_t>& parameters)
 {
-    this->data = data;
-    this->data_size = size;
-    this->freeData = false;
+    /* Building an instruction packet */
+    data.push_back(0xFF);
+    data.push_back(0xFF);
+    data.push_back(0xFD);
+    data.push_back(0x00);
+    data.push_back(id);
+    uint16_t length = parameters.size() + 3;
+    uint8_t lw_length = (uint8_t)(length & 0xFF);
+    uint8_t hw_length = (uint8_t)((length >> 8) & 0xFF);
+    data.push_back(lw_length);
+    data.push_back(hw_length);
+    data.push_back(instruction);
+    data.insert(data.end(), parameters.begin(), parameters.end());
+    uint16_t checksum = computeChecksum();
+    uint8_t lw_checksum = (uint8_t)(checksum & 0xFF);
+    uint8_t hw_checksum = (uint8_t)((checksum >> 8) & 0xFF);
+    data.push_back(lw_checksum);
+    data.push_back(hw_checksum);
+    valid = true;
+    reading = false;
 }
 
-XL320::Packet::~Packet()
+void XL320::Packet::reset()
 {
-    if(this->freeData==true) {
-	    free(this->data);
+    data.clear();
+    valid = false;
+    reading = true;
+}
+
+uint8_t XL320::Packet::getId() const
+{
+    if (data.size() > 4 && valid)
+    {
+        return data.at(4);
+    }
+    else
+    {
+        return -1;
     }
 }
 
-void XL320::Packet::toStream(Stream &stream)
+uint16_t XL320::Packet::getParameterCount() const
 {
-    stream.print("id: ");
-    stream.println(this->getId(),DEC);
-    stream.print("length: ");
-    stream.println(this->getLength(),DEC);
-    stream.print("instruction: ");
-    stream.println(this->getInstruction(),HEX);
-    stream.print("parameter count: ");
-    stream.println(this->getParameterCount(), DEC);
-    for(int i=0;i<this->getParameterCount(); i++) {
-	    stream.print(this->getParameter(i),HEX);
-	    if(i<this->getParameterCount()-1) {
-	        stream.print(",");
-	    }
+    if (data.size() >= 10 && valid)
+    {
+        return data.size() - 10;
     }
-    stream.println();
-    stream.print("valid: ");
-    stream.println(this->isValid()?"yes":"no");
+    else
+    {
+        return 0;
+    }
 }
 
-unsigned char XL320::Packet::getId()
+uint8_t XL320::Packet::getInstruction() const
 {
-    return data[4];
+    if (data.size() > 7 && valid)
+    {
+        return data.at(7);
+    }
+    else
+    {
+        return -1;
+    }
 }
 
-int XL320::Packet::getLength()
+uint8_t XL320::Packet::getParameter(uint16_t n) const
 {
-    return data[5]+((data[6]&0xff)<<8);
+    if (data.size() > 8 + n && valid)
+    {
+        return data.at(8 + n);
+    }
+    else
+    {
+        return 0;
+    }
 }
 
-int XL320::Packet::getSize()
+bool XL320::Packet::isValid() const
 {
-    return getLength()+7;
+    return valid;
 }
 
-int XL320::Packet::getParameterCount()
+size_t XL320::Packet::printTo(Print & p) const
 {
-    return getLength()-3;
+    size_t ret = 0;
+    ret += p.print("id=");
+    ret += p.println(getId());
+    ret += p.print("instruction=");
+    ret += p.println(getInstruction());
+    uint16_t paramCount = getParameterCount();
+    ret += p.print(paramCount);
+    ret += p.print(" parameters");
+    if (paramCount > 0)
+    {
+        ret += p.println(":");
+    }
+    else
+    {
+        ret += p.println();
+    }
+    for (uint16_t i = 0; i < paramCount; i++)
+    {
+        ret += p.println(getParameter(i));
+    }
+    if (valid)
+    {
+        ret += p.println("Valid=TRUE");
+    }
+    else
+    {
+        ret += p.println("Valid=FALSE");
+    }
+    return ret;
 }
 
-unsigned char XL320::Packet::getInstruction()
+size_t XL320::Packet::writeOnStream(Stream & stream) const
 {
-    return data[7];
+    if (valid)
+    {
+        return stream.write((uint8_t*)data.data(), data.size());
+    }
+    else
+    {
+        return 0;
+    }
 }
 
-unsigned char XL320::Packet::getParameter(int n)
+void XL320::Packet::addByte(uint8_t b)
 {
-    return data[8+n];
+    if (reading)
+    {
+        data.push_back(b);
+
+        if (data.size() == 3)
+        {
+
+        }
+        else if ()
+        {
+
+        }
+
+    }
 }
 
-bool XL320::Packet::isValid()
+bool XL320::Packet::isReading() const
 {
-    int length = getLength();
-    unsigned short storedChecksum = data[length+5]+(data[length+6]<<8);
-    return storedChecksum == update_crc(0,data,length+5);
+    return reading;
+}
+
+uint16_t XL320::Packet::computeChecksum() const
+{
+    if (data.size() > 2)
+    {
+        return update_crc(0, (unsigned char*)data.data(), data.size() - 2);
+    }
+    else
+    {
+        return 0;
+    }
 }
