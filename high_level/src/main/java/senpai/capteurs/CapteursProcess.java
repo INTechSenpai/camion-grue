@@ -69,6 +69,8 @@ public class CapteursProcess
 //	private ObstaclesMemory obstacles;
 	private ObstaclesDynamiques dynObs;
 	private Robot robot;
+	private volatile boolean needLast = false;
+	private volatile int[] last;
 	private final int margeIgnoreTourelle;
 	
 //	private List<SensorsData> mesuresScan = new ArrayList<SensorsData>();
@@ -83,7 +85,8 @@ public class CapteursProcess
 		distanceApproximation = config.getInt(ConfigInfoSenpai.DISTANCE_MAX_ENTRE_MESURE_ET_OBJET);
 		nbCapteurs = CapteursRobot.values().length;
 		margeIgnoreTourelle = config.getInt(ConfigInfoSenpai.MARGE_IGNORE_TOURELLE);
-
+		last = new int[nbCapteurs];
+		
 		this.obstacleRobot = obstacleRobot;
 		
 		capteurs = new Capteur[nbCapteurs];
@@ -113,6 +116,15 @@ public class CapteursProcess
 	 */
 	public synchronized void updateObstaclesMobiles(SensorsData data)
 	{
+		if(needLast)
+			synchronized(this)
+			{
+				for(int i = 0; i < nbCapteurs; i++)
+					last[i] = data.mesures[i];
+				needLast = false;
+				notifyAll();
+			}
+		
 		long avant = System.currentTimeMillis();
 
 		double orientationRobot = data.cinematique.orientationReelle;
@@ -559,8 +571,7 @@ public class CapteursProcess
 				else
 				{
 					XY delta = pointVu1.minusNewVector(pointVu2);
-					log.write(c+", orientation de ce qu'on voit : "+delta.getArgument(), Subject.CORRECTION);
-					deltaOrientation = (-delta.getArgument() - cinem.orientationReelle) % (Math.PI / 2); // on
+					deltaOrientation = (-delta.getArgument()) % (Math.PI / 2); // on
 																						// veut
 																						// une
 																						// mesure
@@ -576,13 +587,12 @@ public class CapteursProcess
 					else if(deltaOrientation < -Math.PI / 4)
 						deltaOrientation += Math.PI / 2;
 			
-					log.write(c+", notre orientation : "+cinem.orientationReelle, Subject.CORRECTION);
 					log.write(c+", delta orientation : "+deltaOrientation, Subject.CORRECTION);
 
 					// log.debug("Delta orientation : "+deltaOrientation);
 				}
 				
-				double distanceRobotMur = (mesure1*Math.abs(c.distanceToCenterc2) + mesure2*Math.abs(c.distanceToCenterc1)) / c.distanceBetween + c.distanceToRobot;
+				double distanceRobotMur = (mesure1 + mesure2) / 2 + c.distanceToRobot;
 
 				log.write("Delta distance "+distanceRobotMur, Subject.CORRECTION);
 
@@ -609,5 +619,13 @@ public class CapteursProcess
 			return correction;
 		}
 		return null;
+	}
+	
+	public synchronized int[] getLast() throws InterruptedException
+	{
+		needLast = true;
+		while(needLast)
+			wait();
+		return last;
 	}
 }

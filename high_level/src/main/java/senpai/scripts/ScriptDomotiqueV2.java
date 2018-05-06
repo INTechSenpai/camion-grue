@@ -59,30 +59,21 @@ public class ScriptDomotiqueV2 extends Script
 
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException
-	{
-		cp.startStaticCorrection(CapteursCorrection.AVANT);
-		Thread.sleep(500);
-		
-		double distance = cp.getDistance(CapteursCorrection.AVANT, 0) * Math.cos(robot.getCinematique().orientationReelle - Math.PI / 2);
+	{		
+		double distance = cp.getLast()[CapteursCorrection.AVANT.ordinal()] * Math.cos(robot.getCinematique().orientationReelle - Math.PI / 2);
 		log.write("Distance à l'avant : "+distance, Subject.SCRIPT);
 		if(distance > 100)
 		{
-			cp.cancelStaticCorrection();
 			robot.avance(distance - 80);
-			cp.startStaticCorrection(CapteursCorrection.AVANT);
-			Thread.sleep(500);
-			distance = cp.getDistance(CapteursCorrection.AVANT, 0) * Math.cos(robot.getCinematique().orientationReelle - Math.PI / 2);
+			distance = cp.getLast()[CapteursCorrection.AVANT.ordinal()] * Math.cos(robot.getCinematique().orientationReelle - Math.PI / 2);
 		}
 		else if(distance < 60)
 		{
-			cp.cancelStaticCorrection();
 			robot.avance(distance - 80);
-			cp.startStaticCorrection(CapteursCorrection.AVANT);
-			Thread.sleep(500);
-			distance = cp.getDistance(CapteursCorrection.AVANT, 0) * Math.cos(robot.getCinematique().orientationReelle - Math.PI / 2);
+			distance = cp.getLast()[CapteursCorrection.AVANT.ordinal()] * Math.cos(robot.getCinematique().orientationReelle - Math.PI / 2);
 		}
 		if(distance > 100 || distance < 60)
-			throw new ActionneurException("Mauvaise distance pour panneau : "+distance);
+			throw new ActionneurException("Mauvaise distance pour panneau domotique : "+distance);
 		
 		double angle = -0.0025*distance+0.25;
 		log.write("Angle domotique : "+angle, Subject.SCRIPT);
