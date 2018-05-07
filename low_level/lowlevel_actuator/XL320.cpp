@@ -290,6 +290,14 @@ size_t XL320::Packet::writeOnStream(HardwareSerial & stream) const
 {
     if (valid)
     {
+        uint8_t *data_ptr = (uint8_t*)data.data();
+        for (size_t i = 0; i < data.size(); i++)
+        {
+            Serial.print(data_ptr[i], HEX);
+            Serial.print(" ");
+        }
+        Serial.println();
+
         size_t ret = stream.write((uint8_t*)data.data(), data.size());
         stream.flush();
         stream.clear();
