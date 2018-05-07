@@ -33,18 +33,22 @@ import senpai.table.Table;
 public class ScriptAbeille extends Script
 {
 	private XY_RW positionEntree = new XY_RW(1200,180);
+	private double angle = 0;
 	
 	public ScriptAbeille(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie)
 	{
 		super(log, robot, table, cp);
 		if(symetrie)
+		{
 			positionEntree.setX(- positionEntree.getX());
+			angle = Math.PI - angle;
+		}
 	}
 
 	@Override
 	public XYO getPointEntree()
 	{
-		return new XYO(positionEntree, 0); // TODO symétrie angles
+		return new XYO(positionEntree, angle);
 	}
 	
 	@Override

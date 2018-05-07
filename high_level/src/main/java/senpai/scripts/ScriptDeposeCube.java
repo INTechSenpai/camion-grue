@@ -44,7 +44,6 @@ public class ScriptDeposeCube extends Script
 			angleGrue = Math.PI / 2;
 		else
 			angleGrue = 15. * Math.PI / 180.;
-		
 	}
 
 	@Override
