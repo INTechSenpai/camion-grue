@@ -25,12 +25,15 @@ public class ScriptDeposeCube extends Script
 	private boolean coteDroit;
 	private double longueurGrue;
 	private int nbPile;
-	private int distanceToScript = 80;
+	private int distanceToScript;
 	private double angleGrue;
+	private int nbMaxDepose;
 	
-	public ScriptDeposeCube(Log log, Robot robot, Table table, CapteursProcess cp, int taillePile, XY positionPile, double angleDepose, boolean coteDroit, double longueurGrue, int nbPile)
+	public ScriptDeposeCube(Log log, Robot robot, Table table, CapteursProcess cp, int taillePile, XY positionPile, double angleDepose, boolean coteDroit, double longueurGrue, int nbPile, int distanceToScript, int nbMaxDepose)
 	{
 		super(log, robot, table, cp);
+		this.nbMaxDepose = nbMaxDepose;
+		this.distanceToScript = distanceToScript;
 		this.taillePile = taillePile;
 		this.positionPile = positionPile;
 		this.angleDepose = angleDepose;
@@ -94,7 +97,7 @@ public class ScriptDeposeCube extends Script
 	{
 		cp.startStaticCorrection(CapteursCorrection.AVANT, CapteursCorrection.ARRIERE);
 		robot.avance(-distanceToScript, 0.2);
-		robot.poseCubes(coteDroit ? - Math.PI / 2 + angleGrue : Math.PI / 2 - angleGrue, nbPile);
+		robot.poseCubes(coteDroit ? - Math.PI / 2 + angleGrue : Math.PI / 2 - angleGrue, nbPile, nbMaxDepose);
 		table.enableObstaclePile(nbPile);
 		robot.rangeBras();
 		cp.endStaticCorrection();

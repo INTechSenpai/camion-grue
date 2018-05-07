@@ -307,7 +307,7 @@ public class Robot extends RobotState
 		bloque(ordre.getMethodName(), param);
 	}
 
-	public void poseCubes(double angle, int nbPile) throws InterruptedException, ActionneurException
+	public void poseCubes(double angle, int nbPile, int nbMaxDepose) throws InterruptedException, ActionneurException
 	{
 		int etage = piles[nbPile].size();
 		if(cubeTop != null)
@@ -323,7 +323,7 @@ public class Robot extends RobotState
 		// et donc qu'on n'est pas en position pour le cube 4
 		
 		// etage 6 : la pile est pleine
-		if(cubeInside != null && etage != 4 && etage != 6)
+		if(cubeInside != null && etage != 4 && etage != 6 && nbMaxDepose == 2)
 		{
 			execute(Id.ARM_TAKE_FROM_STORAGE);
 			execute(Id.ARM_PUT_ON_PILE_S, angle, etage);

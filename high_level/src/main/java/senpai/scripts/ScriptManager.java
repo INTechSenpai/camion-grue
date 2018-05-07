@@ -70,6 +70,7 @@ public class ScriptManager
 	private double anglesDepose[];
 	private double[] longueurGrue = new double[]{300, 300, 290, 365, 365}; // longueur de la grue en fonction du nombre de cube déjà posés
 	private boolean[] coteDroits;
+	private int[] distanceToScript = new int[]{80, 80}; 
 	
 	public ScriptManager(Log log, Config config, Table table, Robot robot, CapteursProcess cp, ObstaclesDynamiques obsDyn)
 	{
@@ -119,14 +120,19 @@ public class ScriptManager
 	{
 		return new ScriptAbeille(log, robot, table, cp, couleur.symmetry);
 	}
+	
+	public ScriptDeposeCube getDeposeUnCubeScript(int nbPile)
+	{
+		return new ScriptDeposeCube(log, robot, table, cp, robot.getHauteurPile(nbPile), pilePosition[nbPile], anglesDepose[nbPile], coteDroits[nbPile], longueurGrue[robot.getHauteurPile(nbPile)], nbPile, distanceToScript[nbPile], 1);
+	}
 
 	public List<ScriptDeposeCube> getDeposeScript()
 	{
 		List<ScriptDeposeCube> out = new ArrayList<ScriptDeposeCube>();
 		int nbPile = robot.getNbPile(usePattern);
-		out.add(new ScriptDeposeCube(log, robot, table, cp, robot.getHauteurPile(nbPile), pilePosition[nbPile], anglesDepose[nbPile], coteDroits[nbPile], longueurGrue[robot.getHauteurPile(nbPile)], nbPile));
+		out.add(new ScriptDeposeCube(log, robot, table, cp, robot.getHauteurPile(nbPile), pilePosition[nbPile], anglesDepose[nbPile], coteDroits[nbPile], longueurGrue[robot.getHauteurPile(nbPile)], nbPile, distanceToScript[nbPile], 2));
 		nbPile = 1 - nbPile;
-		out.add(new ScriptDeposeCube(log, robot, table, cp, robot.getHauteurPile(nbPile), pilePosition[nbPile], anglesDepose[nbPile], coteDroits[nbPile], longueurGrue[robot.getHauteurPile(nbPile)], nbPile));
+		out.add(new ScriptDeposeCube(log, robot, table, cp, robot.getHauteurPile(nbPile), pilePosition[nbPile], anglesDepose[nbPile], coteDroits[nbPile], longueurGrue[robot.getHauteurPile(nbPile)], nbPile, distanceToScript[nbPile], 2));
 		return out;
 	}
 

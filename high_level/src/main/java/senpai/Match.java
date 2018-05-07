@@ -195,20 +195,25 @@ public class Match
 		PriorityQueue<ScriptPriseCube> allPrise;
 		List<ScriptDeposeCube> allDepose;
 		boolean error;
-		allDepose = scripts.getDeposeScript();
 		
 		/*
 		 * Dépose de golden cube
 		 */
 
+		/*
+		 * Le premier golden cube près de la zone de départ
+		 */
 		try {
-			doScript(allDepose.get(0), 5);
+			doScript(scripts.getDeposeUnCubeScript(1), 5);
 		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
 			log.write("Erreur : "+e, Subject.SCRIPT);
 		}
 
+		/*
+		 * Le second golden cube près du panneau domotique
+		 */
 		try {
-			doScript(allDepose.get(1), 5);
+			doScript(scripts.getDeposeUnCubeScript(0), 5);
 		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
 			log.write("Erreur : "+e, Subject.SCRIPT);
 		}
