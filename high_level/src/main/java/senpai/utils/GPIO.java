@@ -24,21 +24,6 @@ import java.io.IOException;
 
 public class GPIO
 {
-	public static boolean waitUndervoltage() throws InterruptedException
-	{
-		try
-		{
-			Process p = Runtime.getRuntime().exec("gpio -g wfi 35 both");
-			int retour = p.getInputStream().read();
-			return retour == '0';
-		}
-		catch(IOException e)
-		{
-			Thread.sleep(500);
-			return false;
-		}
-	}
-	
 	public static void allumeDiode()
 	{
 		try

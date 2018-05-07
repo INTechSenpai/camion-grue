@@ -168,8 +168,8 @@ public class Senpai
 		printMessage("outro.txt");
 
 		// en cas d'erreur, la led clignote
-		if(!errorCode.normal)
-			GPIO.clignoteDiode(5);
+//		if(!errorCode.normal)
+//			GPIO.clignoteDiode(5);
 	}
 	
 	public synchronized <S> S getService(Class<S> service)

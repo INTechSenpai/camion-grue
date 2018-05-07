@@ -62,11 +62,6 @@ public class ScriptDeposeCube extends Script
 		 */
 		
 		/*
-		 * En étant bien placé (au-dessus du bloc noir), on peut prendre et poser le cube noir sans se déplacer
-		 * Pour la stratégie sans pattern, on peut tenter une grande pile en exploitant ça
-		 */
-		
-		/*
 		 * Attention ! Plus on met un cube haut, plus la projection verticale de la grue sera courte. Il faut donc prendre en compte cet effet.
 		 */
 		
