@@ -14,7 +14,6 @@
 
 package senpai.scripts;
 
-import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
@@ -43,23 +42,21 @@ public class ScriptPriseCube extends Script
 	public final CubeFace face;
 	public final Cube cube;
 	public final boolean coteDroit;
-	private ObstaclesDynamiques obsDyn;
-	private boolean bonus;
-	private RectangularObstacle o;
+//	private ObstaclesDynamiques obsDyn;
+//	private RectangularObstacle o;
 	
-	public ScriptPriseCube(Log log, Robot robot, Table table, CapteursProcess cp, ObstaclesDynamiques obsDyn, Cube cube, CubeFace face, boolean coteDroit, boolean bonus)
+	public ScriptPriseCube(Log log, Robot robot, Table table, CapteursProcess cp, ObstaclesDynamiques obsDyn, Cube cube, CubeFace face, boolean coteDroit)
 	{
 		super(log, robot, table, cp);
-		this.obsDyn = obsDyn;
+//		this.obsDyn = obsDyn;
 		this.cube = cube;
 		this.face = face;
 		this.coteDroit = coteDroit;
-		this.bonus = bonus;
 	}
 	
-	public ScriptPriseCube(Log log, Robot robot, Table table, CapteursProcess cp, ObstaclesDynamiques obsDyn, Croix croix, CubeColor couleur, CubeFace face, boolean coteDroit, boolean bonus)
+	public ScriptPriseCube(Log log, Robot robot, Table table, CapteursProcess cp, ObstaclesDynamiques obsDyn, Croix croix, CubeColor couleur, CubeFace face, boolean coteDroit)
 	{
-		this(log, robot, table, cp, obsDyn, Cube.getCube(croix, couleur), face, coteDroit, bonus);
+		this(log, robot, table, cp, obsDyn, Cube.getCube(croix, couleur), face, coteDroit);
 	}
 	
 	@Override
@@ -68,7 +65,7 @@ public class ScriptPriseCube extends Script
 		if(coteDroit)
 		{
 			XY_RW position = new XY_RW(298, face.angleAttaque, true).plus(cube.position);
-			o = new RectangularObstacle(position, 0, 300, 100, 300, face.angleAttaque);
+//			o = new RectangularObstacle(position, 0, 300, 100, 300, face.angleAttaque);
 			double angle = face.angleAttaque - Math.PI / 2 - 15. * Math.PI / 180.;
 			position.plus(new XY(50, angle, true));
 			return new XYO(position, angle);
@@ -76,7 +73,7 @@ public class ScriptPriseCube extends Script
 		else
 		{
 			XY_RW position = new XY_RW(298, face.angleAttaque, true).plus(cube.position);
-			o = new RectangularObstacle(position, 0, 300, 300, 100, face.angleAttaque);
+//			o = new RectangularObstacle(position, 0, 300, 300, 100, face.angleAttaque);
 			double angle = face.angleAttaque + Math.PI / 2 + 15. * Math.PI / 180.;
 			position.plus(new XY(50, angle, true));
 			return new XYO(position, angle);
@@ -92,27 +89,18 @@ public class ScriptPriseCube extends Script
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException
 	{
-		Thread.sleep(1000);
-		if(obsDyn.collisionScript(o))
-			throw new UnableToMoveException("Obstacle détecté !");
+//		Thread.sleep(1000);
+//		if(obsDyn.collisionScript(o))
+//			throw new UnableToMoveException("Obstacle détecté !");
 		table.setDone(cube); // dans tous les cas, le cas n'est plus là (soit il ne l'a jamais été, soit on l'a pris)
-		if(robot.canTakeCube())
-		{
-			robot.execute(Id.ARM_TAKE_CUBE, coteDroit ? - Math.PI / 180 * 75 : Math.PI / 180 * 75);
-			robot.storeCube(cube);
-		}
+		robot.execute(Id.ARM_TAKE_CUBE, coteDroit ? - Math.PI / 180 * 75 : Math.PI / 180 * 75);
+		robot.storeCube(cube);
 	}
 	
 	@Override
 	public boolean faisable()
 	{
-		return robot.canTakeCube();
-	}
-
-	public double getBonus()
-	{
-		if(bonus)
-			return -500;
-		return 0;
+		// si on peut prendre ET deposer
+		return robot.canTakeCube() && (!robot.isPileFull(0) || !robot.isPileFull(1));
 	}
 }

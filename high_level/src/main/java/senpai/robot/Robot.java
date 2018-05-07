@@ -529,7 +529,7 @@ public class Robot extends RobotState
 			// On cherche et on envoie
 //			if(path == null)
 //			{
-				log.write("On cherche un chemin en mode dégradé", Subject.TRAJECTORY);
+				log.write("On cherche un chemin", Subject.TRAJECTORY);
 				avant = System.currentTimeMillis();
 				path = kraken.search();
 				log.write("Durée de la recherche : "+(System.currentTimeMillis() - avant), Subject.TRAJECTORY);
@@ -538,7 +538,7 @@ public class Robot extends RobotState
 //				log.write("On réutilise un chemin déjà connu !", Subject.TRAJECTORY);
 			if(!simuleLL)
 			{
-				log.write("On envoie la trajectoire initiale en mode dégradé", Subject.TRAJECTORY);
+				log.write("On envoie la trajectoire", Subject.TRAJECTORY);
 				out.destroyPointsTrajectoires(0);
 				out.ajoutePointsTrajectoire(path, true);
 			}
@@ -821,6 +821,11 @@ public class Robot extends RobotState
 
 	public boolean isPileFull(int nbPile)
 	{
-		return piles[nbPile].size() == 5;
+		return piles[nbPile].size() == 3;
+	}
+
+	public boolean isAllDone()
+	{
+		return isPileFull(0) && isPileFull(1) && domotiqueDone && abeilleDone;
 	}
 }

@@ -47,7 +47,7 @@ public class TestScript
 			ScriptManager scripts = senpai.getService(ScriptManager.class);
 			scripts.setCouleur(RobotColor.VERT);
 
-			PriorityQueue<ScriptPriseCube> all = scripts.getAllPossible(CubeColor.ORANGE, false);
+			PriorityQueue<ScriptPriseCube> all = scripts.getAllPossible(CubeColor.ORANGE, null, false);
 			Script script = all.poll();
 			script.execute();
 			script = all.poll();

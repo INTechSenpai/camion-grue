@@ -67,8 +67,8 @@ public class Test_Robot extends JUnit_Test
 				if(couleur != CubeColor.GOLDEN)
 					for(CubeFace face : CubeFace.values())
 					{
-						new ScriptPriseCube(log, robot, table, cp, null, croix, couleur, face, true, false);
-						new ScriptPriseCube(log, robot, table, cp, null, croix, couleur, face, false, false);
+						new ScriptPriseCube(log, robot, table, cp, null, croix, couleur, face, true);
+						new ScriptPriseCube(log, robot, table, cp, null, croix, couleur, face, false);
 					}
 	}
 	

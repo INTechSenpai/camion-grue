@@ -129,10 +129,9 @@ public class ScriptManager
 	public List<ScriptDeposeCube> getDeposeScript()
 	{
 		List<ScriptDeposeCube> out = new ArrayList<ScriptDeposeCube>();
-		int nbPile = robot.getNbPile(usePattern);
-		out.add(new ScriptDeposeCube(log, robot, table, cp, robot.getHauteurPile(nbPile), pilePosition[nbPile], anglesDepose[nbPile], coteDroits[nbPile], longueurGrue[robot.getHauteurPile(nbPile)], nbPile, distanceToScript[nbPile], 2));
-		nbPile = 1 - nbPile;
-		out.add(new ScriptDeposeCube(log, robot, table, cp, robot.getHauteurPile(nbPile), pilePosition[nbPile], anglesDepose[nbPile], coteDroits[nbPile], longueurGrue[robot.getHauteurPile(nbPile)], nbPile, distanceToScript[nbPile], 2));
+		for(int nbPile = 0; nbPile < 2; nbPile++)
+			if(!robot.isPileFull(nbPile))
+				out.add(new ScriptDeposeCube(log, robot, table, cp, robot.getHauteurPile(nbPile), pilePosition[nbPile], anglesDepose[nbPile], coteDroits[nbPile], longueurGrue[robot.getHauteurPile(nbPile)], nbPile, distanceToScript[nbPile], 2));
 		return out;
 	}
 
@@ -150,50 +149,36 @@ public class ScriptManager
 			XYO s1 = arg0.getPointEntree();
 			XYO s2 = arg1.getPointEntree();
 			
-			return (int) (s1.position.squaredDistance(position.position) - arg0.getBonus() + Math.abs(XYO.angleDifference(s1.orientation, position.orientation))
-					- s2.position.squaredDistance(position.position) + arg1.getBonus() + Math.abs(XYO.angleDifference(s2.orientation, position.orientation)));
+			return (int) (s1.position.squaredDistance(position.position) + Math.abs(XYO.angleDifference(s1.orientation, position.orientation))
+					- s2.position.squaredDistance(position.position) - Math.abs(XYO.angleDifference(s2.orientation, position.orientation)));
 		}
 		
 	}
 	
-	public ScriptPriseCube getScriptPriseCube(CubeColor couleur, boolean bourrine)
-	{
-		return getAllPossible(couleur, bourrine).poll();
-	}
-	
-	public PriorityQueue<ScriptPriseCube> getAllPossible()
-	{
-		if(pattern != null)
-		{
-			// Attention ! Le stockage des cubes est LIFO
-			getAllPossible(pattern[2], false);
-			getAllPossible(pattern[1], false);
-		}
-		return getAllPossible(false);
-	}
-	
-	public PriorityQueue<ScriptPriseCube> getAllPossible(CubeColor couleur, boolean bourrine)
+	public PriorityQueue<ScriptPriseCube> getAllPossible(CubeColor couleur1, CubeColor couleur2, boolean bourrine)
 	{
 		PriorityQueue<ScriptPriseCube> out = new PriorityQueue<ScriptPriseCube>(new CubeComparator(robot.getCinematique().getXYO()));
 		
-		/*
-		 * On n'a plus de place !
-		 */
-		if(!robot.canTakeCube())
-			return out;
-		
 		for(Croix croix : Croix.values())
 		{
-			if(this.couleur.symmetry == croix.center.getX() > 0)
-				continue;
 			for(CubeFace f : CubeFace.values())
 			{
-				Cube c = Cube.getCube(croix, couleur);
+				Cube c = Cube.getCube(croix, couleur1);
 				if(isFacePossible(c, f, bourrine))
 				{
 					log.write("Possible : "+c+" "+f, Subject.SCRIPT);
-					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true,false));
-					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false,false));
+					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true));
+					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false));
+				}
+				if(couleur2 != null)
+				{
+					c = Cube.getCube(croix, couleur2);
+					if(isFacePossible(c, f, bourrine))
+					{
+						log.write("Possible : "+c+" "+f, Subject.SCRIPT);
+						out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true));
+						out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false));
+					}					
 				}
 			}
 		}
@@ -220,8 +205,8 @@ public class ScriptManager
 				if(isFacePossible(c, f, bourrine))
 				{
 					log.write("Possible : "+c+" "+f, Subject.SCRIPT);
-					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true,false));
-					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false,false));
+					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true));
+					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false));
 				}
 //				else
 //					log.write("Impossible : "+c+" "+f, Subject.SCRIPT);
@@ -310,5 +295,27 @@ public class ScriptManager
 		boolean voisin2 = p2 == null || table.isDone(p2);
 
 		return voisin1 && voisin2;
+	}
+
+	public PriorityQueue<ScriptPriseCube> getFirstPatternColor()
+	{
+		if(usePattern)
+			return getAllPossible(pattern[0], pattern[2], false);
+		else
+			return getAllPossible(false);
+	}
+
+	public PriorityQueue<ScriptPriseCube> getSecondPatternColor()
+	{
+		if(usePattern)
+		{
+			// on vérifie qu'on a bien le premier cube, sinon on annule
+			if(robot.isThereCubeInside())
+				return getAllPossible(pattern[1], null, false);
+			else
+				return new PriorityQueue<ScriptPriseCube>();
+		}
+		else
+			return getAllPossible(false);
 	}
 }
