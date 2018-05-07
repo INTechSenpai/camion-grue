@@ -202,20 +202,27 @@ public class Match
 
 		/*
 		 * Le premier golden cube près de la zone de départ
+		 * S'il n'y a qu'un seul golden cube dans le robot, ce script n'est pas fait
 		 */
-		try {
-			doScript(scripts.getDeposeUnCubeScript(1), 5);
-		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-			log.write("Erreur : "+e, Subject.SCRIPT);
+		if(robot.isThereCubeTop())
+		{
+			try {
+				doScript(scripts.getDeposeUnCubeScript(1), 5);
+			} catch (PathfindingException | UnableToMoveException | ScriptException e) {
+				log.write("Erreur : "+e, Subject.SCRIPT);
+			}
 		}
 
 		/*
 		 * Le second golden cube près du panneau domotique
 		 */
-		try {
-			doScript(scripts.getDeposeUnCubeScript(0), 5);
-		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-			log.write("Erreur : "+e, Subject.SCRIPT);
+		if(robot.isThereCubeInside())
+		{
+			try {
+				doScript(scripts.getDeposeUnCubeScript(0), 5);
+			} catch (PathfindingException | UnableToMoveException | ScriptException e) {
+				log.write("Erreur : "+e, Subject.SCRIPT);
+			}
 		}
 
 		try {
