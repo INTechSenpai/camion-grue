@@ -59,7 +59,7 @@ public class IncomingBuffer<T> implements Plottable
 			}*/
 			if(buffer.remainingCapacity() == 0)
 			{
-				log.write("Buffer de "+elem.getClass().getSimpleName()+" traités trop lentement ! Plus aucune place !", Severity.CRITICAL, Subject.COMM);
+				log.write("Buffer de "+elem.getClass().getSimpleName()+" traités trop lentement ! Plus aucune place !", Severity.WARNING, Subject.COMM);
 				warning = true;
 			}
 			else if(buffer.size() > 5)

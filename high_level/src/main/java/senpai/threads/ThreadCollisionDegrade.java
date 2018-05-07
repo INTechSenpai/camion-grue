@@ -103,14 +103,17 @@ public final class ThreadCollisionDegrade extends Thread
 					int currentIndexTrajectory = robot.getIndexTrajectory();
 //					log.write("Vérification collision.", Subject.STATUS);					
 
-					List<RectangularObstacle> subList = initialObstacles.subList(currentIndexTrajectory, Math.min(currentIndexTrajectory + 13, initialObstacles.size()));
-					
-					if(robot.needCollisionCheck() && dynObs.isThereCollision(subList) != subList.size())
+					int indexMax = Math.min(currentIndexTrajectory + 13, initialObstacles.size());
+					if(indexMax > currentIndexTrajectory)
 					{
-						robot.setStopping();
-						out.immobilise();
+						List<RectangularObstacle> subList = initialObstacles.subList(currentIndexTrajectory, indexMax);
+						
+						if(robot.needCollisionCheck() && dynObs.isThereCollision(subList) != subList.size())
+						{
+							robot.setStopping();
+							out.immobilise();
+						}
 					}
-					
 //					log.write("Vérification finie.", Subject.STATUS);
 
 				}

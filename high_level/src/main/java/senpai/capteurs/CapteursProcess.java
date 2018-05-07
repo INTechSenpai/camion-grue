@@ -152,7 +152,11 @@ public class CapteursProcess
 		{
 			CapteursRobot c = CapteursRobot.values[i];
 
-			XY positionVue = getPositionVue(capteurs[i], data.mesures[i], data.cinematique, data.angleTourelleGauche, data.angleTourelleDroite, data.angleGrue);
+			int mesure = data.mesures[i];
+			if(mesure == CommProtocol.EtatCapteur.TROP_PROCHE.ordinal() || (mesure >= CommProtocol.EtatCapteur.values().length && mesure < 30))
+				mesure = 30;
+
+			XY positionVue = getPositionVue(capteurs[i], mesure, data.cinematique, data.angleTourelleGauche, data.angleTourelleDroite, data.angleGrue);
 			if(positionVue == null)
 			{
 				c.isThereObstacle = false;
@@ -425,11 +429,8 @@ public class CapteursProcess
 		 */
 		
 		assert mesure >= 0 : "Mesure de capteur négative ! "+c+" "+mesure;
-		
-		if(mesure == CommProtocol.EtatCapteur.TROP_PROCHE.ordinal())
-			mesure = 15;
-		
-		else if(mesure < CommProtocol.EtatCapteur.values().length)
+				
+		if(mesure < CommProtocol.EtatCapteur.values().length)
 		{
 //			log.write("Capteur "+c+" : "+CommProtocol.EtatCapteur.values()[mesure], Subject.CAPTEURS);
 			return null;

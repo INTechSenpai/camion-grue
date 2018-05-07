@@ -691,13 +691,12 @@ public class Robot extends RobotState
 		}
 		
 		if(isInScript)
-			out.setTourellesAngles(Math.PI / 2, -Math.PI / 2);
+			envoieAnglesTourelles(Math.PI / 2, -Math.PI / 2);
 			
-//		else if(path == null)
-		envoieAnglesTourelles(angleDefautGauche, angleDefautDroite);
+		else if(path == null)
+			envoieAnglesTourelles(angleDefautGauche, angleDefautDroite);
 
-		// TODO
-/*		else
+		else
 		{
 			int pointVise = Math.min(currentIndexTrajectory + anticipationTourelle, path.size() - 1);
 			ItineraryPoint ip = path.get(pointVise);
@@ -718,7 +717,7 @@ public class Robot extends RobotState
 				else
 					envoieAnglesTourelles(angleDefautGauche, angleDefautDroite);
 			}
-		}*/
+		}
 	}
 	
 	private void envoieAnglesTourelles(double angleTourelleGauche, double angleTourelleDroite)
