@@ -8,7 +8,7 @@
 #define SERVO_LEFT_ORIGIN   (1.4)
 #define SERVO_RIGHT_ORIGIN  (4.3)
 
-#define SERVO_UPDATE_PERIOD 50  // ms
+#define SERVO_UPDATE_PERIOD 100  // ms
 
 
 class SensorsMgr

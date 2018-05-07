@@ -2,7 +2,7 @@
 #define _CONFIG_h
 
 /* Report period */
-#define REPORT_PERIOD   20  // ms
+#define REPORT_PERIOD   100  // ms
 
 /* Master serial */
 #define MASTER_SERIAL  Serial1

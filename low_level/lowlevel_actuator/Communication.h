@@ -174,6 +174,7 @@ public:
             case ACTUATOR_SET_SCORE:
                 if (message.size() == 4)
                 {
+                    Serial.println("ACTUATOR_SET_SCORE");
                     score = Serializer::readInt(message.getPayload(), index);
                     scoreAvailable = true;
                 }
