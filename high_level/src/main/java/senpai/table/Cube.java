@@ -89,7 +89,7 @@ public enum Cube
 		this.place = couleur.getPlace(croix.center.getX() > 0);
 		this.couleur = couleur;
 		position = new XY(croix.center.getX() + place.deltaX, croix.center.getY() + place.deltaY);
-		obstacle = new RectangularObstacle(position, 58, 58);
+		obstacle = new RectangularObstacle(position, 58+30, 58+30);
 	}
 
 	public boolean isVisible(boolean sureleve)
