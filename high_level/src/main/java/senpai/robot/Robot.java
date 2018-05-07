@@ -318,7 +318,12 @@ public class Robot extends RobotState
 			etage++;
 			updateScore();
 		}
-		if(cubeInside != null)
+		
+		// si l'étage vaut 4 ici, c'est qu'on a posé le cube 3 avant
+		// et donc qu'on n'est pas en position pour le cube 4
+		
+		// etage 6 : la pile est pleine
+		if(cubeInside != null && etage != 4 && etage != 6)
 		{
 			execute(Id.ARM_TAKE_FROM_STORAGE);
 			execute(Id.ARM_PUT_ON_PILE_S, angle, etage);
@@ -812,5 +817,10 @@ public class Robot extends RobotState
 	{
 		this.pattern1 = pattern;
 		this.pattern2 = new CubeColor[]{pattern[2], pattern[1], pattern[0]};
+	}
+
+	public boolean isPileFull(int nbPile)
+	{
+		return piles[nbPile].size() == 5;
 	}
 }

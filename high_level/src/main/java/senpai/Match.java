@@ -1,5 +1,6 @@
 package senpai;
 
+import java.util.List;
 import java.util.PriorityQueue;
 
 import pfg.config.Config;
@@ -17,6 +18,7 @@ import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
 import senpai.scripts.Script;
+import senpai.scripts.ScriptDeposeCube;
 import senpai.scripts.ScriptManager;
 import senpai.scripts.ScriptPriseCube;
 import senpai.scripts.ScriptRecalageInitial;
@@ -183,15 +185,30 @@ public class Match
 		// prise
 		// dépose
 		// retenter abeille
+		// retenter domotique
 		// prise
 		// dépose
 		// retenter abeille
+		// retenter domotique
+		// etc.
 
-		PriorityQueue<ScriptPriseCube> all;
+		PriorityQueue<ScriptPriseCube> allPrise;
+		List<ScriptDeposeCube> allDepose;
 		boolean error;
+		allDepose = scripts.getDeposeScript();
 		
+		/*
+		 * Dépose de golden cube
+		 */
+
 		try {
-			doScript(scripts.getDeposeScript(), 5);
+			doScript(allDepose.get(0), 5);
+		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
+			log.write("Erreur : "+e, Subject.SCRIPT);
+		}
+
+		try {
+			doScript(allDepose.get(1), 5);
 		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
 			log.write("Erreur : "+e, Subject.SCRIPT);
 		}
@@ -203,12 +220,20 @@ public class Match
 			log.write("Erreur : "+e, Subject.SCRIPT);
 		}
 
+		/*
+		 * Abeille
+		 */
+
 		try {
 			doScript(scripts.getScriptAbeille(), 5);
 			robot.printTemps();
 		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
 			log.write("Erreur : "+e, Subject.SCRIPT);
 		}
+
+		/*
+		 * Domotique
+		 */
 
 		try {
 			doScript(scripts.getScriptDomotique(), 5);
@@ -221,11 +246,16 @@ public class Match
 		while(true)
 		{		
 			allError = true;
-			all = scripts.getAllPossible(false);
+			
+			/*
+			 * Prise de cube
+			 */
+
+			allPrise = scripts.getAllPossible();
 			do {
 				error = false;
 				try {
-					doScript(all.poll(), 5);
+					doScript(allPrise.poll(), 5);
 					robot.printTemps();
 					allError = false;
 				} catch (PathfindingException e) {
@@ -234,14 +264,14 @@ public class Match
 				} catch (UnableToMoveException | ScriptException e) {
 					log.write("Erreur : "+e, Subject.SCRIPT);
 				}
-			} while(error && !all.isEmpty());
+			} while(error && !allPrise.isEmpty());
 	
 	
-			all = scripts.getAllPossible(false);
+			allPrise = scripts.getAllPossible();
 			do {
 				error = false;
 				try {
-					doScript(all.poll(), 5);
+					doScript(allPrise.poll(), 5);
 					robot.printTemps();
 					allError = false;
 				} catch (PathfindingException e) {
@@ -250,16 +280,46 @@ public class Match
 				} catch (UnableToMoveException | ScriptException e) {
 					log.write("Erreur : "+e, Subject.SCRIPT);
 				}
-			} while(error && !all.isEmpty());
+			} while(error && !allPrise.isEmpty());
+			
+			/*
+			 * Dépose de cube
+			 */
+			
+			allDepose = scripts.getDeposeScript();
 			
 			try {
-				doScript(scripts.getDeposeScript(), 5);
-				robot.printTemps();
+				doScript(allDepose.get(0), 5);
 				allError = false;
 			} catch (PathfindingException | UnableToMoveException | ScriptException e) {
 				log.write("Erreur : "+e, Subject.SCRIPT);
+				try {
+					doScript(allDepose.get(1), 5);
+					allError = false;
+				} catch (PathfindingException | UnableToMoveException | ScriptException e1) {
+					log.write("Erreur : "+e1, Subject.SCRIPT);
+				}
 			}
-	
+
+			allDepose = scripts.getDeposeScript();
+			
+			try {
+				doScript(allDepose.get(0), 5);
+				allError = false;
+			} catch (PathfindingException | UnableToMoveException | ScriptException e) {
+				log.write("Erreur : "+e, Subject.SCRIPT);
+				try {
+					doScript(allDepose.get(1), 5);
+					allError = false;
+				} catch (PathfindingException | UnableToMoveException | ScriptException e1) {
+					log.write("Erreur : "+e1, Subject.SCRIPT);
+				}
+			}
+
+			/*
+			 * Abeille
+			 */
+
 			try {
 				doScript(scripts.getScriptAbeille(), 5);
 				robot.printTemps();
@@ -267,7 +327,11 @@ public class Match
 			} catch (PathfindingException | UnableToMoveException | ScriptException e) {
 				log.write("Erreur : "+e, Subject.SCRIPT);
 			}
-			
+
+			/*
+			 * Domotique
+			 */
+
 			try {
 				doScript(scripts.getScriptDomotique(), 5);
 				robot.printTemps();
@@ -278,7 +342,7 @@ public class Match
 			
 			if(allError)
 			{
-				log.write("On ne peut ni déposer, ni prendre, ni faire l'abeille !", Severity.WARNING, Subject.SCRIPT);
+				log.write("On ne peut ni déposer, ni prendre, ni faire l'abeille, ni poser le panneau domotique !", Severity.WARNING, Subject.SCRIPT);
 				Thread.sleep(1000);
 			}
 		}

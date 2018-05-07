@@ -14,7 +14,9 @@
 
 package senpai.scripts;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.PriorityQueue;
 
 import pfg.log.Log;
@@ -118,13 +120,17 @@ public class ScriptManager
 		return new ScriptAbeille(log, robot, table, cp, couleur.symmetry);
 	}
 
-	public ScriptDeposeCube getDeposeScript()
+	public List<ScriptDeposeCube> getDeposeScript()
 	{
+		List<ScriptDeposeCube> out = new ArrayList<ScriptDeposeCube>();
 		int nbPile = robot.getNbPile(usePattern);
-		return new ScriptDeposeCube(log, robot, table, cp, robot.getHauteurPile(nbPile), pilePosition[nbPile], anglesDepose[nbPile], coteDroits[nbPile], longueurGrue[robot.getHauteurPile(nbPile)], nbPile);
+		out.add(new ScriptDeposeCube(log, robot, table, cp, robot.getHauteurPile(nbPile), pilePosition[nbPile], anglesDepose[nbPile], coteDroits[nbPile], longueurGrue[robot.getHauteurPile(nbPile)], nbPile));
+		nbPile = 1 - nbPile;
+		out.add(new ScriptDeposeCube(log, robot, table, cp, robot.getHauteurPile(nbPile), pilePosition[nbPile], anglesDepose[nbPile], coteDroits[nbPile], longueurGrue[robot.getHauteurPile(nbPile)], nbPile));
+		return out;
 	}
 
-	public class CubeComparator implements Comparator<Script>
+	public class CubeComparator implements Comparator<ScriptPriseCube>
 	{
 		private XYO position;
 		
@@ -134,11 +140,12 @@ public class ScriptManager
 		}
 		
 		@Override
-		public int compare(Script arg0, Script arg1) {
+		public int compare(ScriptPriseCube arg0, ScriptPriseCube arg1) {
 			XYO s1 = arg0.getPointEntree();
 			XYO s2 = arg1.getPointEntree();
-			return (int) (s1.position.squaredDistance(position.position) - s2.position.squaredDistance(position.position))
-					+ (int) (XYO.angleDifference(s1.orientation, s2.orientation));
+			
+			return (int) (s1.position.squaredDistance(position.position) - arg0.getBonus() + Math.abs(XYO.angleDifference(s1.orientation, position.orientation))
+					- s2.position.squaredDistance(position.position) + arg1.getBonus() + Math.abs(XYO.angleDifference(s2.orientation, position.orientation)));
 		}
 		
 	}
@@ -146,6 +153,11 @@ public class ScriptManager
 	public ScriptPriseCube getScriptPriseCube(CubeColor couleur, boolean bourrine)
 	{
 		return getAllPossible(couleur, bourrine).poll();
+	}
+	
+	public PriorityQueue<ScriptPriseCube> getAllPossible()
+	{
+		return getAllPossible(false);
 	}
 	
 	public PriorityQueue<ScriptPriseCube> getAllPossible(CubeColor couleur, boolean bourrine)
@@ -168,8 +180,8 @@ public class ScriptManager
 				if(isFacePossible(c, f, bourrine))
 				{
 					log.write("Possible : "+c+" "+f, Subject.SCRIPT);
-					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true));
-					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false));
+					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true,false));
+					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false,false));
 				}
 			}
 		}
@@ -196,8 +208,8 @@ public class ScriptManager
 				if(isFacePossible(c, f, bourrine))
 				{
 					log.write("Possible : "+c+" "+f, Subject.SCRIPT);
-					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true));
-					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false));
+					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true,false));
+					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false,false));
 				}
 //				else
 //					log.write("Impossible : "+c+" "+f, Subject.SCRIPT);

@@ -44,20 +44,22 @@ public class ScriptPriseCube extends Script
 	public final Cube cube;
 	public final boolean coteDroit;
 	private ObstaclesDynamiques obsDyn;
+	private boolean bonus;
 	private RectangularObstacle o;
 	
-	public ScriptPriseCube(Log log, Robot robot, Table table, CapteursProcess cp, ObstaclesDynamiques obsDyn, Cube cube, CubeFace face, boolean coteDroit)
+	public ScriptPriseCube(Log log, Robot robot, Table table, CapteursProcess cp, ObstaclesDynamiques obsDyn, Cube cube, CubeFace face, boolean coteDroit, boolean bonus)
 	{
 		super(log, robot, table, cp);
 		this.obsDyn = obsDyn;
 		this.cube = cube;
 		this.face = face;
 		this.coteDroit = coteDroit;
+		this.bonus = bonus;
 	}
 	
-	public ScriptPriseCube(Log log, Robot robot, Table table, CapteursProcess cp, ObstaclesDynamiques obsDyn, Croix croix, CubeColor couleur, CubeFace face, boolean coteDroit)
+	public ScriptPriseCube(Log log, Robot robot, Table table, CapteursProcess cp, ObstaclesDynamiques obsDyn, Croix croix, CubeColor couleur, CubeFace face, boolean coteDroit, boolean bonus)
 	{
-		this(log, robot, table, cp, obsDyn, Cube.getCube(croix, couleur), face, coteDroit);
+		this(log, robot, table, cp, obsDyn, Cube.getCube(croix, couleur), face, coteDroit, bonus);
 	}
 	
 	@Override
@@ -105,5 +107,12 @@ public class ScriptPriseCube extends Script
 	public boolean faisable()
 	{
 		return robot.canTakeCube();
+	}
+
+	public double getBonus()
+	{
+		if(bonus)
+			return -500;
+		return 0;
 	}
 }
