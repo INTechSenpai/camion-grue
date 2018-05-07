@@ -46,7 +46,6 @@ import senpai.robot.Speed;
 import senpai.threads.ThreadName;
 import senpai.threads.ThreadWarmUp;
 import senpai.utils.ConfigInfoSenpai;
-import senpai.utils.GPIO;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
 

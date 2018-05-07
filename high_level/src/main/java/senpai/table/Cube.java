@@ -68,7 +68,7 @@ public enum Cube
 	GOLDEN_CUBE_1(CubeColor.GOLDEN),
 	GOLDEN_CUBE_2(CubeColor.GOLDEN);
 
-	public final Obstacle obstacle;
+	public final Obstacle obstacle, obstacleGrossi;
 	public final Croix croix;
 	public final CubePlace place;
 	public final CubeColor couleur;
@@ -78,6 +78,7 @@ public enum Cube
 	{
 		this.couleur = couleur;
 		obstacle = null;
+		obstacleGrossi = null;
 		croix = null;
 		place = null;
 		position = null;
@@ -89,7 +90,8 @@ public enum Cube
 		this.place = couleur.getPlace(croix.center.getX() > 0);
 		this.couleur = couleur;
 		position = new XY(croix.center.getX() + place.deltaX, croix.center.getY() + place.deltaY);
-		obstacle = new RectangularObstacle(position, 58+30, 58+30);
+		obstacle = new RectangularObstacle(position, 58, 58);
+		obstacleGrossi = new RectangularObstacle(position, 58+30, 58+30);
 	}
 
 	public boolean isVisible(boolean sureleve)

@@ -115,7 +115,7 @@ public class Table implements Printable
 		currentObstacles.clear();
 		for(Cube n : Cube.values())
 			if(!etat.get(n))
-				currentObstacles.add(n.obstacle);
+				currentObstacles.add(n.obstacleGrossi);
 		if(pileActivees[0])
 			currentObstacles.add(obstaclePiles[0]);
 		if(pileActivees[1])

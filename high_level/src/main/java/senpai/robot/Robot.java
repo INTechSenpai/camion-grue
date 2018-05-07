@@ -140,17 +140,17 @@ public class Robot extends RobotState
 		
 		simuleLL = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 		score = 0;
-		updateScore();
 		if(config.getBoolean(ConfigInfoSenpai.DOMOTIQUE_THERE))
 		{
-			updateScore(5);
+			score += 5;
 			domotiqueDone = false;
 		}
 		if(config.getBoolean(ConfigInfoSenpai.ABEILLE_THERE))
 		{
-			updateScore(5);
+			score += 5;
 			abeilleDone = false;
 		}
+		updateScore();
 		out.setCurvature(0);
 	}
 	

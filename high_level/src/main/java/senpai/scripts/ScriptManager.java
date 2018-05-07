@@ -163,6 +163,12 @@ public class ScriptManager
 	
 	public PriorityQueue<ScriptPriseCube> getAllPossible()
 	{
+		if(pattern != null)
+		{
+			// Attention ! Le stockage des cubes est LIFO
+			getAllPossible(pattern[2], false);
+			getAllPossible(pattern[1], false);
+		}
 		return getAllPossible(false);
 	}
 	
