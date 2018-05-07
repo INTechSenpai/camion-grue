@@ -105,9 +105,7 @@ void loop()
 void armControllerInterrupt()
 {
     static ArmController & armController = ArmController::Instance();
-    digitalWrite(PIN_DEL_GYRO_G, HIGH);
     armController.controlCCMotors();
-    digitalWrite(PIN_DEL_GYRO_G, LOW);
 }
 
 

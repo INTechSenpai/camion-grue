@@ -84,7 +84,7 @@ private:
         void addByte(uint8_t b);
         bool isReading() const;
     private:
-        uint16_t computeChecksum() const;
+        uint16_t computeChecksum(uint16_t sizeToCompute) const;
         bool valid;
         bool reading;
         std::vector<uint8_t> data;

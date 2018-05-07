@@ -186,7 +186,7 @@ XL320::Packet::Packet(uint8_t id, uint8_t instruction, const std::vector<uint8_t
     data.push_back(DXL_HIBYTE(length));
     data.push_back(instruction);
     data.insert(data.end(), parameters.begin(), parameters.end());
-    uint16_t checksum = computeChecksum();
+    uint16_t checksum = computeChecksum(data.size());
     data.push_back(DXL_LOBYTE(checksum));
     data.push_back(DXL_HIBYTE(checksum));
     valid = true;
@@ -290,14 +290,6 @@ size_t XL320::Packet::writeOnStream(HardwareSerial & stream) const
 {
     if (valid)
     {
-        uint8_t *data_ptr = (uint8_t*)data.data();
-        for (size_t i = 0; i < data.size(); i++)
-        {
-            Serial.print(data_ptr[i], HEX);
-            Serial.print(" ");
-        }
-        Serial.println();
-
         size_t ret = stream.write((uint8_t*)data.data(), data.size());
         stream.flush();
         stream.clear();
@@ -339,7 +331,7 @@ void XL320::Packet::addByte(uint8_t b)
             else if (dataSize == (size_t)(packetLength + 7))
             {
                 uint16_t checksum = DXL_MAKEWORD(data.at(dataSize - 2), data.at(dataSize - 1));
-                valid = checksum == computeChecksum();
+                valid = checksum == computeChecksum(dataSize - 2);
                 reading = false;
             }
         }
@@ -351,11 +343,11 @@ bool XL320::Packet::isReading() const
     return reading;
 }
 
-uint16_t XL320::Packet::computeChecksum() const
+uint16_t XL320::Packet::computeChecksum(uint16_t sizeToCompute) const
 {
-    if (data.size() > 2)
+    if (data.size() >= sizeToCompute)
     {
-        return update_crc(0, (unsigned char*)data.data(), data.size() - 2);
+        return update_crc(0, (uint8_t*)data.data(), sizeToCompute);
     }
     else
     {
