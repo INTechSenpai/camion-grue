@@ -45,6 +45,7 @@ import senpai.comm.CommProtocol.Id;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.table.Cube;
+import senpai.table.CubeColor;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
@@ -98,7 +99,7 @@ public class Robot extends RobotState
 	private boolean domotiqueDone = true;
 	private boolean abeilleDone = true;
 	private int score;
-	private int scorePile = 0;
+	private CubeColor[] pattern1 = null, pattern2 = null;
 	
 	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, /*DynamicPath dpath,*/ KnownPathManager known, RectangularObstacle obstacle)
 	{
@@ -320,7 +321,6 @@ public class Robot extends RobotState
 			piles[nbPile].add(cubeTop);
 			cubeTop = null;
 			etage++;
-			updateScorePile();
 			updateScore();
 		}
 		if(cubeInside != null)
@@ -329,14 +329,58 @@ public class Robot extends RobotState
 			execute(Id.ARM_PUT_ON_PILE_S, angle, etage);
 			piles[nbPile].add(cubeInside);
 			cubeInside = null;
-			updateScorePile();
 			updateScore();
 		}
 	}
 	
-	public void updateScorePile()
+	private int getScorePile()
 	{
-		// TODO
+		return getScorePile(piles[0]) + getScorePile(piles[1]);
+	}
+	
+	private int getScorePile(List<Cube> l)
+	{
+		// score de hauteur
+		int score = l.size() * (l.size() + 1) / 2;
+		// score de pattern
+		if(isTherePattern(l, pattern1) || isTherePattern(l, pattern2))
+			score += 30;
+		return score;
+	}
+	
+	private boolean isTherePattern(List<Cube> l, CubeColor[] pattern)
+	{
+		if(pattern != null)
+			for(int i = 0; i <= l.size() - 3; i++)
+			{
+				int nbGolden = 0;
+				boolean ok = true;
+				for(int j = 0; j < 3; j++)
+				{
+					CubeColor c = l.get(i+j).couleur;
+					if(c == CubeColor.GOLDEN)
+					{
+						nbGolden++;
+						// il y a deux GOLDEN, c'est foutu
+						if(nbGolden == 2)
+						{
+							System.out.println("Non : deux golden");
+							ok = false;
+							break;
+						}
+					}
+					// mauvaise couleur
+					else if(c != pattern[j])
+					{
+						System.out.println("Non : "+c+" neq "+pattern[j]);
+						ok = false;
+						break;
+					}
+				}
+				if(ok)
+					return true;
+			}
+		return false;
 	}
 	
 	public boolean canDropCube()
@@ -384,11 +428,6 @@ public class Robot extends RobotState
 			setCubeTop(c);
 		}
 	}
-
-/*	public void setScore(int score)
-	{
-		out.setScore(score);
-	}*/
 
 	public void updateColorAndSendPosition(RobotColor c) throws InterruptedException
 	{
@@ -710,7 +749,7 @@ public class Robot extends RobotState
 	public void updateScore(int increment)
 	{
 		score += increment;
-		out.setScore(score + scorePile);
+		out.setScore(score + getScorePile());
 	}
 	
 	public void setDomotiqueDone()
@@ -774,5 +813,11 @@ public class Robot extends RobotState
 	public boolean isAbeilleDone()
 	{
 		return abeilleDone;
+	}
+
+	public void setPattern(CubeColor[] pattern)
+	{
+		this.pattern1 = pattern;
+		this.pattern2 = new CubeColor[]{pattern[2], pattern[1], pattern[0]};
 	}
 }

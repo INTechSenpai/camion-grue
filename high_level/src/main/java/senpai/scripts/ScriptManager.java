@@ -90,6 +90,7 @@ public class ScriptManager
 	{
 		this.pattern = pattern;
 		usePattern = true;
+		robot.setPattern(pattern);
 	}
 	
 	public ScriptRecalage getScriptRecalage(long dureeRecalage)
