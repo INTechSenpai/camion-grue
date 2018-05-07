@@ -15,7 +15,6 @@
 package senpai.scripts;
 
 import pfg.kraken.utils.XYO;
-import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.capteurs.CapteursCorrection;
 import senpai.capteurs.CapteursProcess;
@@ -26,33 +25,22 @@ import senpai.robot.Robot;
 import senpai.table.Table;
 
 /**
- * Script de recalage
+ * Script de recalage initial
  * @author pf
  *
  */
 
-public class ScriptRecalage extends Script
+public class ScriptRecalageInitial extends Script
 {
-	private XY_RW positionEntree = new XY_RW(1300,1700);
-	private CapteursCorrection[] capteurs = new CapteursCorrection[2];
+	private XYO correction;
+	private CapteursCorrection[] capteurs;
 	private long dureeRecalage;
 	
-	public ScriptRecalage(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie, long dureeRecalage)
+	public ScriptRecalageInitial(Log log, Robot robot, Table table, CapteursProcess cp, long dureeRecalage)
 	{
 		super(log, robot, table, cp);
 		this.dureeRecalage = dureeRecalage;
-		if(symetrie)
-		{
-			capteurs[0] = CapteursCorrection.DROITE;
-			capteurs[1] = CapteursCorrection.ARRIERE;
-			positionEntree.setX(- positionEntree.getX());
-		}
-		else
-		{
-			capteurs[0] = CapteursCorrection.GAUCHE;
-			capteurs[1] = CapteursCorrection.ARRIERE;
-		}
-			
+		capteurs = new CapteursCorrection[] {CapteursCorrection.DROITE, CapteursCorrection.GAUCHE, CapteursCorrection.ARRIERE};
 	}
 
 	@Override
@@ -64,18 +52,23 @@ public class ScriptRecalage extends Script
 	@Override
 	public XYO getPointEntree()
 	{
-		return new XYO(positionEntree, -Math.PI / 2);
+		return null;
 	}
 
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{		
-		XYO correction = cp.doStaticCorrection(dureeRecalage, capteurs);
+		correction = cp.doStaticCorrection(dureeRecalage, capteurs);
 		if(correction == null)
 			throw new ScriptException("Aucune correction réalisée !");
 		Thread.sleep(200); // attendre la mise à jour de la correction
 	}
 	
+	public XYO getCorrection()
+	{
+		return correction;
+	}
+
 	@Override
 	public boolean faisable()
 	{

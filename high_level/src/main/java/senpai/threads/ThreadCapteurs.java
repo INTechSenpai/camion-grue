@@ -17,6 +17,7 @@ package senpai.threads;
 import pfg.log.Log;
 import senpai.buffer.SensorsDataBuffer;
 import senpai.capteurs.CapteursProcess;
+import senpai.utils.Severity;
 import senpai.utils.Subject;
 
 /**
@@ -58,7 +59,7 @@ public class ThreadCapteurs extends Thread
 		}
 		catch(Exception e)
 		{
-			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, Subject.STATUS);
+			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, Severity.CRITICAL, Subject.STATUS);
 			e.printStackTrace();
 			Thread.currentThread().interrupt();
 		}

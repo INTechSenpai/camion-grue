@@ -537,9 +537,9 @@ public class CapteursProcess
 				if(c.valc1.size() < 10 || c.valc2.size() < 10)
 				{
 					c.enable = false;
+					log.write("Pas assez de valeurs pour "+c+" : "+c.valc1.size()+" "+c.valc2.size(), Subject.CORRECTION);
 					c.valc1.clear();
 					c.valc2.clear();
-					log.write("Pas assez de valeurs pour "+c+" !", Subject.CORRECTION);
 					continue;
 				}
 

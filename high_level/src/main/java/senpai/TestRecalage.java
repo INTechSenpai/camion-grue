@@ -47,7 +47,7 @@ public class TestRecalage
 			Robot robot = senpai.getService(Robot.class);
 			Table table = senpai.getService(Table.class);
 			ScriptManager scripts = senpai.getService(ScriptManager.class);
-			robot.updateColorAndSendPosition(RobotColor.VERT);
+			robot.updateColorAndSendPosition(RobotColor.VERT, true);
 			scripts.setCouleur(RobotColor.VERT);
 			table.updateCote(true);
 			

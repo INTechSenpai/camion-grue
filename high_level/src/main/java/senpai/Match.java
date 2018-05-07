@@ -19,11 +19,12 @@ import senpai.robot.RobotColor;
 import senpai.scripts.Script;
 import senpai.scripts.ScriptManager;
 import senpai.scripts.ScriptPriseCube;
-import senpai.scripts.ScriptRecalage;
+import senpai.scripts.ScriptRecalageInitial;
 import senpai.table.CubeColor;
 import senpai.table.Table;
 import senpai.threads.comm.ThreadCommProcess;
 import senpai.utils.ConfigInfoSenpai;
+import senpai.utils.Severity;
 import senpai.utils.Subject;
 
 /*
@@ -132,10 +133,6 @@ public class Match
 			couleur = (RobotColor) etat.data;
 		}
 
-		robot.updateColorAndSendPosition(couleur);
-		table.updateCote(couleur.symmetry);
-		scripts.setCouleur(couleur);
-		
 		/*
 		 * Allumage des capteurs
 		 */
@@ -145,22 +142,39 @@ public class Match
 		/*
 		 * Recalage initial
 		 */
-		ScriptRecalage rec = scripts.getScriptRecalage(1000);
+		boolean byLL;
+		ScriptRecalageInitial rec = scripts.getScriptRecalageInitial();
 		try {
+			RobotColor couleurRecalage;
 			rec.execute();
-			// TODO vérification couleur
+			XYO initialCorrection = rec.getCorrection();
+			double deltaX = Math.round(initialCorrection.position.getX())/10.;
+			double deltaY = Math.round(initialCorrection.position.getY())/10.;
+			double orientation = initialCorrection.orientation * 180. / Math.PI;
+			log.write("Je suis "+Math.abs(deltaX)+"cm sur la "+(deltaX < 0 ? "droite" : "gauche"), Subject.STATUS);
+			log.write("Je suis "+Math.abs(deltaY)+"cm vers l'"+(deltaY < 0 ? "avant" : "arrière"), Subject.STATUS);
+			log.write("Je suis orienté vers la "+(orientation < 0 ? "droite" : "gauche")+" de "+Math.abs(orientation)+"°", Subject.STATUS);
+
+			if(robot.getCinematique().getPosition().getX() > 0)
+				couleurRecalage = RobotColor.ORANGE;
+			else
+				couleurRecalage = RobotColor.VERT;
+			if(couleur != couleurRecalage)
+			{
+				log.write("Conflit de couleur ! LL : "+couleur+", recalage : "+couleurRecalage, Severity.CRITICAL, Subject.STATUS);
+				couleur = couleurRecalage;
+			}
+			byLL = false;
 		} catch (ScriptException e) {
-	
+			log.write("Aucun recalage possible, on prend la couleur du bas niveau", Severity.WARNING, Subject.STATUS);
+			byLL = true;
 		}
+
+		log.write("Couleur utilisée : "+couleur, Subject.STATUS);
+		robot.updateColorAndSendPosition(couleur, byLL);
+		table.updateCote(couleur.symmetry);
+		scripts.setCouleur(couleur);
 		
-		XYO initialCorrection = rec.getCorrection();
-		System.out.println(initialCorrection);
-		double deltaX = Math.round(initialCorrection.position.getX())/10.;
-		double deltaY = Math.round(initialCorrection.position.getY())/10.;
-		double orientation = initialCorrection.orientation * 180. / Math.PI;
-		log.write("Je suis "+Math.abs(deltaX)+"cm sur la "+(deltaX < 0 ? "droite" : "gauche"), Subject.STATUS);
-		log.write("Je suis "+Math.abs(deltaY)+"cm vers l'"+(deltaY < 0 ? "avant" : "arrière"), Subject.STATUS);
-		log.write("Je suis orienté vers la "+(orientation < 0 ? "droite" : "gauche")+" de "+Math.abs(orientation)+"°", Subject.STATUS);
 		
 		// dépose golden (si y'a)
 		// domotique
@@ -188,43 +202,6 @@ public class Match
 		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
 			log.write("Erreur : "+e, Subject.SCRIPT);
 		}
-			
-		
-		all = scripts.getAllPossible(false);
-		do {
-			error = false;
-			try {
-				doScript(all.poll(), 5);
-				robot.printTemps();
-			} catch (PathfindingException e) {
-				log.write("Erreur : "+e+", on tente le script suivant", Subject.SCRIPT);				
-				error = true;
-			} catch (UnableToMoveException | ScriptException e) {
-				log.write("Erreur : "+e, Subject.SCRIPT);
-			}
-		} while(error && !all.isEmpty());
-
-
-		all = scripts.getAllPossible(false);
-		do {
-			error = false;
-			try {
-				doScript(all.poll(), 5);
-				robot.printTemps();
-			} catch (PathfindingException e) {
-				log.write("Erreur : "+e+", on tente le script suivant", Subject.SCRIPT);				
-				error = true;
-			} catch (UnableToMoveException | ScriptException e) {
-				log.write("Erreur : "+e, Subject.SCRIPT);
-			}
-		} while(error && !all.isEmpty());
-		
-		try {
-			doScript(scripts.getDeposeScript(), 5);
-			robot.printTemps();
-		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-			log.write("Erreur : "+e, Subject.SCRIPT);
-		}
 
 		try {
 			doScript(scripts.getScriptAbeille(), 5);
@@ -232,11 +209,87 @@ public class Match
 		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
 			log.write("Erreur : "+e, Subject.SCRIPT);
 		}
+
+		try {
+			doScript(scripts.getScriptDomotique(), 5);
+			robot.printTemps();
+		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
+			log.write("Erreur : "+e, Subject.SCRIPT);
+		}
+
+		boolean allError;
+		while(true)
+		{		
+			allError = true;
+			all = scripts.getAllPossible(false);
+			do {
+				error = false;
+				try {
+					doScript(all.poll(), 5);
+					robot.printTemps();
+					allError = false;
+				} catch (PathfindingException e) {
+					log.write("Erreur : "+e+", on tente le script suivant", Subject.SCRIPT);				
+					error = true;
+				} catch (UnableToMoveException | ScriptException e) {
+					log.write("Erreur : "+e, Subject.SCRIPT);
+				}
+			} while(error && !all.isEmpty());
+	
+	
+			all = scripts.getAllPossible(false);
+			do {
+				error = false;
+				try {
+					doScript(all.poll(), 5);
+					robot.printTemps();
+					allError = false;
+				} catch (PathfindingException e) {
+					log.write("Erreur : "+e+", on tente le script suivant", Subject.SCRIPT);				
+					error = true;
+				} catch (UnableToMoveException | ScriptException e) {
+					log.write("Erreur : "+e, Subject.SCRIPT);
+				}
+			} while(error && !all.isEmpty());
+			
+			try {
+				doScript(scripts.getDeposeScript(), 5);
+				robot.printTemps();
+				allError = false;
+			} catch (PathfindingException | UnableToMoveException | ScriptException e) {
+				log.write("Erreur : "+e, Subject.SCRIPT);
+			}
+	
+			try {
+				doScript(scripts.getScriptAbeille(), 5);
+				robot.printTemps();
+				allError = false;
+			} catch (PathfindingException | UnableToMoveException | ScriptException e) {
+				log.write("Erreur : "+e, Subject.SCRIPT);
+			}
+			
+			try {
+				doScript(scripts.getScriptDomotique(), 5);
+				robot.printTemps();
+				allError = false;
+			} catch (PathfindingException | UnableToMoveException | ScriptException e) {
+				log.write("Erreur : "+e, Subject.SCRIPT);
+			}
+			
+			if(allError)
+			{
+				log.write("On ne peut ni déposer, ni prendre, ni faire l'abeille !", Severity.WARNING, Subject.SCRIPT);
+				Thread.sleep(1000);
+			}
+		}
 		
 	}
 	
 	private void doScript(Script s, int nbEssaiChemin) throws PathfindingException, InterruptedException, UnableToMoveException, ScriptException
 	{
+		if(Thread.currentThread().isInterrupted())
+			throw new InterruptedException();
+
 		log.write("Essai du script "+s, Subject.SCRIPT);
 		if(!s.faisable())
 			throw new ScriptException("Script n'est pas faisable !");
@@ -249,6 +302,8 @@ public class Match
 			try {
 				restart = false;
 				robot.goTo(pointEntree);
+				if(Thread.currentThread().isInterrupted())
+					throw new InterruptedException();
 			}
 			catch(UnableToMoveException e)
 			{
@@ -267,5 +322,8 @@ public class Match
 			s.execute();
 		else
 			log.write("On annule l'exécution du script "+s, Subject.SCRIPT);
+
+		if(Thread.currentThread().isInterrupted())
+			throw new InterruptedException();
 	}
 }

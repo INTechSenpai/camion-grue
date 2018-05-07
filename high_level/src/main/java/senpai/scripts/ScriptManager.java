@@ -93,14 +93,14 @@ public class ScriptManager
 		robot.setPattern(pattern);
 	}
 	
-	public ScriptRecalage getScriptRecalage(long dureeRecalage)
+	public ScriptRecalageInitial getScriptRecalageInitial()
 	{
-		return new ScriptRecalage(log, robot, table, cp, couleur.symmetry, dureeRecalage);		
+		return new ScriptRecalageInitial(log, robot, table, cp, 1000);
 	}
 	
 	public ScriptRecalage getScriptRecalage()
 	{
-		return getScriptRecalage(500);
+		return new ScriptRecalage(log, robot, table, cp, couleur.symmetry, 500);		
 	}
 	
 	public ScriptDomotiqueV2 getScriptDomotique()

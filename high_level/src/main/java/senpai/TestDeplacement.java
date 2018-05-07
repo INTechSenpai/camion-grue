@@ -84,7 +84,7 @@ public class TestDeplacement {
 			else
 				couleur = RobotColor.VERT;
 			
-			robot.updateColorAndSendPosition(couleur);
+			robot.updateColorAndSendPosition(couleur, true);
 			table.updateCote(couleur.symmetry);
 			scripts.setCouleur(couleur);
 			//XYO destination = new XYO(0, 1000, Math.PI);

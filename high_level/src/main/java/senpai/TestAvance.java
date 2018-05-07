@@ -46,7 +46,7 @@ public class TestAvance
 			Thread.sleep(1000);
 			senpai.getService(ThreadCommProcess.class).capteursOn = true;
 			Robot robot = senpai.getService(Robot.class);
-			robot.updateColorAndSendPosition(RobotColor.ORANGE);
+			robot.updateColorAndSendPosition(RobotColor.ORANGE, true);
 			robot.avance(distance, 0.8);
 		}
 		catch(Exception e)

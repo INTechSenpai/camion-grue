@@ -65,12 +65,14 @@ public class Table implements Printable
 		pilePosition = new XY_RW[] {
 				new XY_RW(config.getDouble(ConfigInfoSenpai.PILE_1_X),config.getDouble(ConfigInfoSenpai.PILE_1_Y)),
 				new XY_RW(config.getDouble(ConfigInfoSenpai.PILE_2_X),config.getDouble(ConfigInfoSenpai.PILE_2_Y))};
+		setDone(Cube.GOLDEN_CUBE_1);
+		setDone(Cube.GOLDEN_CUBE_2);
 	}
 
 	public void updateCote(boolean symetrie)
 	{
 		for(Cube c : Cube.values())
-			if(c.position == null || c.position.getX() > 0 == symetrie)
+			if(!isDone(c) && c.position.getX() > 0 == symetrie)
 				setDone(c);
 		
 		if(symetrie)

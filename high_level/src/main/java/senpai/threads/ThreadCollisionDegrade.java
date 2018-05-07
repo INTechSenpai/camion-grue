@@ -9,6 +9,9 @@ import pfg.log.Log;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.obstacles.ObstaclesDynamiques;
 import senpai.robot.Robot;
+import senpai.utils.Severity;
+import senpai.utils.Subject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,10 +118,12 @@ public final class ThreadCollisionDegrade extends Thread
 		}
 		catch(InterruptedException e)
 		{
+			log.write("Arrêt de " + Thread.currentThread().getName(), Subject.STATUS);
 			Thread.currentThread().interrupt();
 		}
 		catch(Exception e)
 		{
+			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, Severity.CRITICAL, Subject.STATUS);
 			e.printStackTrace();
 			Thread.currentThread().interrupt();
 		}

@@ -18,6 +18,7 @@ import pfg.config.Config;
 import pfg.log.Log;
 import senpai.robot.Robot;
 import senpai.utils.ConfigInfoSenpai;
+import senpai.utils.Severity;
 import senpai.utils.Subject;
 
 /**
@@ -67,7 +68,7 @@ public class ThreadTourelles extends Thread
 		}
 		catch(Exception e)
 		{
-			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, Subject.STATUS);
+			log.write("Arrêt inattendu de " + Thread.currentThread().getName() + " : " + e, Severity.CRITICAL, Subject.STATUS);
 			e.printStackTrace();
 			Thread.currentThread().interrupt();
 		}

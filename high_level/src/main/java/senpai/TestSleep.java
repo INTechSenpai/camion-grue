@@ -41,7 +41,7 @@ public class TestSleep
 //			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
 			Robot robot = senpai.getService(Robot.class);
 			senpai.getService(ThreadCommProcess.class).capteursOn = true;
-			robot.updateColorAndSendPosition(RobotColor.ORANGE);
+			robot.updateColorAndSendPosition(RobotColor.ORANGE, true);
 			robot.setEnMarcheAvance(false);
 			Thread.sleep(100000);
 		}

@@ -56,7 +56,7 @@ public class TestDomotique
 			Table table = senpai.getService(Table.class);
 			Log log = senpai.getService(Log.class);
 			GraphicDisplay buffer = senpai.getService(GraphicDisplay.class);
-			robot.updateColorAndSendPosition(RobotColor.VERT);
+			robot.updateColorAndSendPosition(RobotColor.VERT, true);
 			senpai.getService(ThreadCommProcess.class).capteursOn = true;
 			ScriptManager scripts = senpai.getService(ScriptManager.class);
 			scripts.setCouleur(RobotColor.VERT);

@@ -172,11 +172,6 @@ public class Robot extends RobotState
 		cinematique.enMarcheAvant = enMarcheAvant;
 	}
 
-	public boolean isCinematiqueInitialised()
-	{
-		return cinematiqueInitialised;
-	}
-
 	@Override
 	public String toString()
 	{
@@ -430,13 +425,15 @@ public class Robot extends RobotState
 		}
 	}
 
-	public void updateColorAndSendPosition(RobotColor c) throws InterruptedException
+	public void updateColorAndSendPosition(RobotColor c, boolean byLL) throws InterruptedException
 	{
 		assert cinematique != null;
 		symetrie = c.symmetry;
 
+		// avec la correction, la position est déjà à jour et envoyée
+		
 		// on applique la symétrie à la position initiale
-		if(symetrie)
+		if(symetrie && byLL)
 			setCinematique(new Cinematique(-cinematique.getPosition().getX(),
 					cinematique.getPosition().getY(),
 					Math.PI - cinematique.orientationReelle,
