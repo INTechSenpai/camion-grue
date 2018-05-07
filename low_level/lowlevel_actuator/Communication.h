@@ -184,6 +184,7 @@ public:
                 }
                 break;
             case ACTUATOR_STOP:
+                Serial.println("ACTUATOR_STOP");
                 smartArmControler.emergencyStop();
                 break;
             case ACTUATOR_PUSH_BUTTON:

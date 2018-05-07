@@ -51,7 +51,8 @@ uint8_t[38]
 (float)pos_pince_grue
 
 ### [0x04] Go to home position
-uint8_t[0]
+uint8_t[4]
+(float) deploy side (-1; 0; +1)
 Retour à la position initiale du bras (avec pince entre-ouverte)
 
 ### [0x05] Take cube using sensor
@@ -66,10 +67,12 @@ uint8_t[4]
 uint8_t[0]
 
 ### [0x08] Store cube on top
-uint8_t[0]
+uint8_t[4]
+(float) deploy side (-1; 0; +1)
 
 ### [0x09] Take cube from storage
-uint8_t[0]
+uint8_t[4]
+(float) deploy side (-1; 0; +1)
 
 ### [0x0A] Put cube on pile using sensor 
 uint8_t[8]
@@ -101,5 +104,15 @@ uint8_t[4]
 uint8_t[0]
 
 ### [0x10] Push button
-uint8_t[4]
+uint8_t[8]
 (float)angleV
+(int) deploy side (-1; 0; +1)
+
+### [0x11] Push bee
+uint8_t[4]
+(float)angleH
+
+### [0x12] Take cube from human
+uint8_t[4]
+(float) deploy side (-1; 0; +1)
+
