@@ -75,7 +75,7 @@ public class ScriptDomotique extends Script
 	@Override
 	public boolean faisable()
 	{
-		return robot.isDomotiqueDone();
+		return robot.isDomotiqueDone() && !robot.isThereCubeTop();
 	}
 
 }

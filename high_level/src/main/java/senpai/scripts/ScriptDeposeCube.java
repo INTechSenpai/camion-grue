@@ -23,6 +23,7 @@ public class ScriptDeposeCube extends Script
 	private boolean coteDroit;
 	private double longueurGrue;
 	private int nbPile;
+	private int distanceToScript = 40;
 	
 	public ScriptDeposeCube(Log log, Robot robot, Table table, int taillePile, XY positionPile, double angleDepose, boolean coteDroit, double longueurGrue, int nbPile)
 	{
@@ -65,13 +66,14 @@ public class ScriptDeposeCube extends Script
 		
 		XY_RW position = new XY_RW(longueurGrue, angleDepose, true).plus(positionPile);
 		double angle = angleDepose + Math.PI / 2 + 15. * Math.PI / 180.;
-		position.plus(new XY(50, angle, true));
+		position.plus(new XY(50+distanceToScript, angle, true));
 		return new XYO(position, angle);
 	}
 
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException
 	{
+		robot.avance(-distanceToScript);
 		robot.poseCubes(coteDroit ? Math.PI / 180 * 75 : - Math.PI / 180 * 75, nbPile);
 		table.enableObstaclePile(nbPile);
 	}

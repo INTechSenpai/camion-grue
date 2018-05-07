@@ -68,8 +68,8 @@ public class Robot extends RobotState
 	
 	private boolean isInScript = false;
 	
-	private Cube cubeTop = null;//Cube.GOLDEN_CUBE_1;
-	private Cube cubeInside = null;//Cube.GOLDEN_CUBE_2;
+	private Cube cubeTop = null;
+	private Cube cubeInside = null;
 	@SuppressWarnings("unchecked")
 	private List<Cube>[] piles = (List<Cube>[]) new List[2];
 	protected volatile boolean symetrie;
@@ -130,6 +130,12 @@ public class Robot extends RobotState
 				config.getDouble(ConfigInfoSenpai.INITIAL_O)));
 		cinematique.enMarcheAvant = true;
 
+		if(config.getBoolean(ConfigInfoSenpai.GOLDEN_LOADED))
+		{
+			cubeTop = Cube.GOLDEN_CUBE_1;
+			cubeInside = Cube.GOLDEN_CUBE_2;
+		}
+		
 		simuleLL = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 		score = 0;
 		if(config.getBoolean(ConfigInfoSenpai.DOMOTIQUE_THERE))

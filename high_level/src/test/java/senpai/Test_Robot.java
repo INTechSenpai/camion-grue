@@ -25,9 +25,12 @@ import pfg.kraken.utils.XY;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol.Id;
 import senpai.robot.Robot;
+import senpai.robot.RobotColor;
 import senpai.robot.Speed;
+import senpai.scripts.ScriptManager;
 import senpai.scripts.ScriptPriseCube;
 import senpai.table.Croix;
+import senpai.table.Cube;
 import senpai.table.CubeColor;
 import senpai.table.CubeFace;
 import senpai.table.Table;
@@ -51,6 +54,7 @@ public class Test_Robot extends JUnit_Test
 //	private RealGameState state;
 //	private PathCache pathcache;
 	private OutgoingOrderBuffer data;
+	private ScriptManager scripts;
 //	private Cinematique c = null;
 	private boolean simuleSerie;
 	private Speed v;
@@ -61,11 +65,22 @@ public class Test_Robot extends JUnit_Test
 	{
 		for(Croix croix : Croix.values())
 			for(CubeColor couleur : CubeColor.values())
-				for(CubeFace face : CubeFace.values())
-				{
-					new ScriptPriseCube(log, robot, table, croix, couleur, face, true);
-					new ScriptPriseCube(log, robot, table, croix, couleur, face, false);
-				}
+				if(couleur != CubeColor.GOLDEN)
+					for(CubeFace face : CubeFace.values())
+					{
+						new ScriptPriseCube(log, robot, table, croix, couleur, face, true);
+						new ScriptPriseCube(log, robot, table, croix, couleur, face, false);
+					}
+	}
+	
+	@Test
+	public void test_cube2() throws Exception
+	{
+		scripts.setCouleur(RobotColor.ORANGE);
+		table.updateCote(RobotColor.ORANGE.symmetry);
+		scripts.getAllPossible(false);
+		table.setDone(Cube.CROIX_CENTRE_DROITE_CUBE_DROITE);
+		scripts.getAllPossible(false);
 	}
 	
 	/**
@@ -120,6 +135,7 @@ public class Test_Robot extends JUnit_Test
 //		astar = container.getService(AStarCourbe.class);
 //		pathcache = container.getService(PathCache.class);
 		data = container.getService(OutgoingOrderBuffer.class);
+		scripts = container.getService(ScriptManager.class);
 		table = container.getService(Table.class);
 		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 		data.startStream(Id.ODO_AND_SENSORS);

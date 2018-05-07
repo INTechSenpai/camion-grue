@@ -28,6 +28,7 @@ import senpai.table.CubeColor;
 import senpai.table.CubeFace;
 import senpai.table.Table;
 import senpai.utils.ConfigInfoSenpai;
+import senpai.utils.Subject;
 import pfg.config.Config;
 import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
@@ -56,6 +57,8 @@ public class ScriptManager
 			pilePosition[1].setX(-pilePosition[1].getX());
 			anglesDepose[0] = Math.PI - anglesDepose[0];
 			anglesDepose[1] = Math.PI - anglesDepose[1];
+			coteDroits[0] = !coteDroits[0];
+			coteDroits[1] = !coteDroits[1];
 		}
 	}
 	
@@ -64,6 +67,7 @@ public class ScriptManager
 	private XY_RW[] pilePosition;
 	private double anglesDepose[];
 	private double[] longueurGrue = new double[]{300, 300, 290, 365, 365}; // longueur de la grue en fonction du nombre de cube déjà posés
+	private boolean[] coteDroits;
 	
 	public ScriptManager(Log log, Config config, Table table, Robot robot, CapteursProcess cp, ObstaclesDynamiques obsDyn)
 	{
@@ -77,6 +81,9 @@ public class ScriptManager
 				new XY_RW(config.getDouble(ConfigInfoSenpai.PILE_2_X),config.getDouble(ConfigInfoSenpai.PILE_2_Y))};
 		anglesDepose = new double[] {config.getDouble(ConfigInfoSenpai.PILE_1_O),config.getDouble(ConfigInfoSenpai.PILE_2_O)};
 		usePattern = false;
+		coteDroits = new boolean[] {
+				config.getBoolean(ConfigInfoSenpai.PILE_1_COTE_DROIT),
+				config.getBoolean(ConfigInfoSenpai.PILE_2_COTE_DROIT)};
 	}
 
 	public void setPattern(CubeColor[] pattern)
@@ -113,12 +120,7 @@ public class ScriptManager
 	public ScriptDeposeCube getDeposeScript()
 	{
 		int nbPile = robot.getNbPile(usePattern);
-		ScriptDeposeCube s1 = new ScriptDeposeCube(log, robot, table, robot.getHauteurPile(nbPile), pilePosition[nbPile], anglesDepose[nbPile], false, longueurGrue[robot.getHauteurPile(nbPile)], nbPile);
-		ScriptDeposeCube s2 = new ScriptDeposeCube(log, robot, table, robot.getHauteurPile(nbPile), pilePosition[nbPile], anglesDepose[nbPile], true, longueurGrue[robot.getHauteurPile(nbPile)], nbPile);
-		CubeComparator compare = new CubeComparator(robot.getCinematique().getXYO());
-		if(compare.compare(s1, s2) < 0)
-			return s1;
-		return s2;
+		return new ScriptDeposeCube(log, robot, table, robot.getHauteurPile(nbPile), pilePosition[nbPile], anglesDepose[nbPile], coteDroits[nbPile], longueurGrue[robot.getHauteurPile(nbPile)], nbPile);
 	}
 
 	public class CubeComparator implements Comparator<Script>
@@ -164,6 +166,7 @@ public class ScriptManager
 				Cube c = Cube.getCube(croix, couleur);
 				if(isFacePossible(c, f, bourrine))
 				{
+					log.write("Possible : "+c+" "+f, Subject.SCRIPT);
 					out.add(new ScriptPriseCube(log,robot, table, obsDyn, c,f,true));
 					out.add(new ScriptPriseCube(log,robot, table, obsDyn, c,f,false));
 				}
@@ -185,14 +188,18 @@ public class ScriptManager
 		{
 			if(c == Cube.GOLDEN_CUBE_1 || c == Cube.GOLDEN_CUBE_2)
 				continue;
+
 			if(couleur.symmetry == c.position.getX() > 0)
 				continue;
 			for(CubeFace f : CubeFace.values())
 				if(isFacePossible(c, f, bourrine))
 				{
+					log.write("Possible : "+c+" "+f, Subject.SCRIPT);
 					out.add(new ScriptPriseCube(log,robot, table, obsDyn, c,f,true));
 					out.add(new ScriptPriseCube(log,robot, table, obsDyn, c,f,false));
 				}
+//				else
+//					log.write("Impossible : "+c+" "+f, Subject.SCRIPT);
 		}
 		return out;
 	}
@@ -217,6 +224,8 @@ public class ScriptManager
 		Cube p1 = f.getVoisin(c); // B
 		boolean voisin1 = p1 == null || table.isDone(p1);
 		
+//		log.write("v1 : "+voisin1, Subject.SCRIPT);
+		
 		if(p1 != null) // on vérifie ses voisins
 		{
 			Cube p2 = f.getVoisin(p1); // D
@@ -228,6 +237,7 @@ public class ScriptManager
 			Cube p4 = f.getOrthogonal(false).getVoisin(p1); // C
 			boolean voisin4 = p4 == null || table.isDone(p4);
 			
+//			log.write("v1-4 : "+voisin1+" "+voisin2+" "+voisin3+" "+voisin4, Subject.SCRIPT);
 			return voisin1 && voisin2 && voisin3 && voisin4;
 		}
 		else

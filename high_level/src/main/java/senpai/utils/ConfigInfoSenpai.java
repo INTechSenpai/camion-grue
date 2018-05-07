@@ -42,6 +42,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	
 	DOMOTIQUE_THERE(true),
 	ABEILLE_THERE(true),
+	GOLDEN_LOADED(true),
 	
 	/**
 	 * Position initiale du robot
@@ -50,12 +51,14 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	INITIAL_Y(1700),
 	INITIAL_O(-Math.PI/2),
 
-	PILE_1_X(620),
-	PILE_1_Y(1910),
-	PILE_1_O(-3 * Math.PI / 4),
+	PILE_1_X(600),
+	PILE_1_Y(1850),
+	PILE_1_O(0),
+	PILE_1_COTE_DROIT(true),
 	PILE_2_X(1000),
-	PILE_2_Y(1910),
+	PILE_2_Y(1850),
 	PILE_2_O(- Math.PI / 2),
+	PILE_2_COTE_DROIT(true),
 	
 	DEFAULT_MAX_SPEED(0.8),
 	

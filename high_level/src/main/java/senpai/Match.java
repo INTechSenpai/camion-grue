@@ -158,44 +158,61 @@ public class Match
 		// prise
 		// dépose
 		// abeille
+
 		
-/*		try {
-			doScript(scripts.getScriptAbeille(), 5);
-		} catch (PathfindingException | UnableToMoveException | ActionneurException e) {
+		try {
+			doScript(scripts.getDeposeScript(), 5);
+		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
 			log.write("Erreur : "+e, Subject.SCRIPT);
 		}
-		
-		robot.printTemps();*/
 
 		try {
 			doScript(scripts.getScriptDomotique(), 5);
+			robot.printTemps();
+		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
+			log.write("Erreur : "+e, Subject.SCRIPT);
+		}
+				
+		try {
+			doScript(scripts.getAllPossible(false).poll(), 5);
+			robot.printTemps();
+		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
+			log.write("Erreur : "+e, Subject.SCRIPT);
+		}
+
+
+		try {
+			doScript(scripts.getAllPossible(false).poll(), 5);
+			robot.printTemps();
 		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
 			log.write("Erreur : "+e, Subject.SCRIPT);
 		}
 		
-		robot.printTemps();
+		try {
+			doScript(scripts.getDeposeScript(), 5);
+			robot.printTemps();
+		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
+			log.write("Erreur : "+e, Subject.SCRIPT);
+		}
+
+		try {
+			doScript(scripts.getScriptAbeille(), 5);
+			robot.printTemps();
+		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
+			log.write("Erreur : "+e, Subject.SCRIPT);
+		}
 		
-		try {
-			doScript(scripts.getAllPossible(false).poll(), 5);
-		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-			log.write("Erreur : "+e, Subject.SCRIPT);
-		}
-
-		robot.printTemps();
-
-		try {
-			doScript(scripts.getAllPossible(false).poll(), 5);
-		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-			log.write("Erreur : "+e, Subject.SCRIPT);
-		}
-
 	}
 	
 	private void doScript(Script s, int nbEssaiChemin) throws PathfindingException, InterruptedException, UnableToMoveException, ScriptException
 	{
 		log.write("Essai du script "+s, Subject.SCRIPT);
-
+		if(!s.faisable())
+			throw new ScriptException("Script n'est pas faisable !");
+		
 		XYO pointEntree = s.getPointEntree();
+		log.write("Point d'entrée du script "+pointEntree, Subject.SCRIPT);
+		
 		boolean restart;
 		do {
 			try {
