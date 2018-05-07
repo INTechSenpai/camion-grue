@@ -171,9 +171,11 @@ public:
     {
         if (currentCommand != ACTUATOR_NO_COMMAND)
         {
-            Serial.println("SmartArmController: command already running");
+            Serial.println("SmartArmController::executeCommand command already running");
             return;
         }
+        Serial.print("Run command ");
+        Serial.println(id);
         status = ARM_STATUS_OK;
         currentCommand = id;
         currentCommandStep = 0;
@@ -186,9 +188,10 @@ public:
     {
         if (currentCommand != ACTUATOR_NO_COMMAND)
         {
-            Serial.println("SmartArmController: command already running");
+            Serial.println("SmartArmController::setArmPosition command already running");
             return;
         }
+        Serial.println("Run command ACTUATOR_SET_ARM_POSITION");
         status = ARM_STATUS_OK;
         currentCommand = ACTUATOR_SET_ARM_POSITION;
         currentCommandStep = 0;
@@ -236,6 +239,7 @@ public:
 private:
     void stopCommand()
     {
+        Serial.println("StopCommand");
         currentCommand = ACTUATOR_NO_COMMAND;
         currentCommandStep = 0;
         commandArgAngle = 0;

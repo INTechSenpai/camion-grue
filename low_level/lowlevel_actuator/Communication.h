@@ -139,6 +139,7 @@ public:
                 }
                 break;
             case ACTUATOR_SET_ARM_POSITION:
+                Serial.println("Launch ACTUATOR_SET_ARM_POSITION");
                 if (message.size() == 16)
                 {
                     ArmPosition position;
