@@ -695,8 +695,8 @@ public class Robot extends RobotState
 		if(isInScript)
 			out.setTourellesAngles(Math.PI / 2, -Math.PI / 2);
 			
-		else if(path == null)
-			envoieAnglesTourelles(angleDefautGauche, angleDefautDroite);
+//		else if(path == null)
+		envoieAnglesTourelles(angleDefautGauche, angleDefautDroite);
 
 		// TODO
 /*		else

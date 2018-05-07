@@ -1,5 +1,7 @@
 package senpai;
 
+import java.util.PriorityQueue;
+
 import pfg.config.Config;
 import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.utils.XYO;
@@ -9,13 +11,13 @@ import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
 import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
-import senpai.exceptions.ActionneurException;
 import senpai.exceptions.ScriptException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
 import senpai.scripts.Script;
 import senpai.scripts.ScriptManager;
+import senpai.scripts.ScriptPriseCube;
 import senpai.scripts.ScriptRecalage;
 import senpai.table.CubeColor;
 import senpai.table.Table;
@@ -170,6 +172,8 @@ public class Match
 		// dépose
 		// retenter abeille
 
+		PriorityQueue<ScriptPriseCube> all;
+		boolean error;
 		
 		try {
 			doScript(scripts.getDeposeScript(), 5);
@@ -183,21 +187,36 @@ public class Match
 		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
 			log.write("Erreur : "+e, Subject.SCRIPT);
 		}
-				
-		try {
-			doScript(scripts.getAllPossible(false).poll(), 5);
-			robot.printTemps();
-		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-			log.write("Erreur : "+e, Subject.SCRIPT);
-		}
+			
+		
+		all = scripts.getAllPossible(false);
+		do {
+			error = false;
+			try {
+				doScript(all.poll(), 5);
+				robot.printTemps();
+			} catch (PathfindingException e) {
+				log.write("Erreur : "+e+", on tente le script suivant", Subject.SCRIPT);				
+				error = true;
+			} catch (UnableToMoveException | ScriptException e) {
+				log.write("Erreur : "+e, Subject.SCRIPT);
+			}
+		} while(error && !all.isEmpty());
 
 
-		try {
-			doScript(scripts.getAllPossible(false).poll(), 5);
-			robot.printTemps();
-		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-			log.write("Erreur : "+e, Subject.SCRIPT);
-		}
+		all = scripts.getAllPossible(false);
+		do {
+			error = false;
+			try {
+				doScript(all.poll(), 5);
+				robot.printTemps();
+			} catch (PathfindingException e) {
+				log.write("Erreur : "+e+", on tente le script suivant", Subject.SCRIPT);				
+				error = true;
+			} catch (UnableToMoveException | ScriptException e) {
+				log.write("Erreur : "+e, Subject.SCRIPT);
+			}
+		} while(error && !all.isEmpty());
 		
 		try {
 			doScript(scripts.getDeposeScript(), 5);
