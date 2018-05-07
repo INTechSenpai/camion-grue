@@ -18,10 +18,8 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import pfg.kraken.utils.XY;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.capteurs.CapteursProcess;
 import senpai.comm.CommProtocol.Id;
@@ -35,7 +33,6 @@ import senpai.table.Cube;
 import senpai.table.CubeColor;
 import senpai.table.CubeFace;
 import senpai.table.Table;
-import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Subject;
 
 /**
@@ -58,9 +55,9 @@ public class Test_Robot extends JUnit_Test
 	private ScriptManager scripts;
 	private CapteursProcess cp;
 //	private Cinematique c = null;
-	private boolean simuleSerie;
+//	private boolean simuleSerie;
 	private Speed v;
-	private double last;
+//	private double last;
 
 	@Test
 	public void test_cube() throws Exception
@@ -140,7 +137,7 @@ public class Test_Robot extends JUnit_Test
 		scripts = container.getService(ScriptManager.class);
 		cp = container.getService(CapteursProcess.class);
 		table = container.getService(Table.class);
-		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
+//		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 		data.startStream(Id.ODO_AND_SENSORS);
 		v = Speed.TEST;
 		log.write("Vitesse du robot : " + v.translationalSpeed * 1000, Subject.STATUS);

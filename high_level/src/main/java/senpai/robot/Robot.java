@@ -312,9 +312,9 @@ public class Robot extends RobotState
 		int etage = piles[nbPile].size();
 		if(cubeTop != null)
 		{
+			cubeTop = null;
 			execute(Id.ARM_PUT_ON_PILE_S, angle, etage);
 			piles[nbPile].add(cubeTop);
-			cubeTop = null;
 			etage++;
 			updateScore();
 		}
@@ -326,9 +326,9 @@ public class Robot extends RobotState
 		if(cubeInside != null && etage != 4 && etage != 6 && nbMaxDepose == 2)
 		{
 			execute(Id.ARM_TAKE_FROM_STORAGE);
+			cubeInside = null;
 			execute(Id.ARM_PUT_ON_PILE_S, angle, etage);
 			piles[nbPile].add(cubeInside);
-			cubeInside = null;
 			updateScore();
 		}
 	}

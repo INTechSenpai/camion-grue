@@ -207,7 +207,7 @@ public class Match
 		if(robot.isThereCubeTop())
 		{
 			try {
-				doScript(scripts.getDeposeUnCubeScript(1), 5);
+				doScript(scripts.getDeposeUnCubeScript(0), 5);
 			} catch (PathfindingException | UnableToMoveException | ScriptException e) {
 				log.write("Erreur : "+e, Subject.SCRIPT);
 			}
@@ -219,7 +219,7 @@ public class Match
 		if(robot.isThereCubeInside())
 		{
 			try {
-				doScript(scripts.getDeposeUnCubeScript(0), 5);
+				doScript(scripts.getDeposeUnCubeScript(1), 5);
 			} catch (PathfindingException | UnableToMoveException | ScriptException e) {
 				log.write("Erreur : "+e, Subject.SCRIPT);
 			}

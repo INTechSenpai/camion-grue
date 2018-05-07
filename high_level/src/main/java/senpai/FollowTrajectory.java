@@ -6,7 +6,6 @@ import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
 import senpai.robot.KnownPathManager;
-import senpai.robot.Robot;
 import senpai.robot.SavedPath;
 import senpai.threads.comm.ThreadCommProcess;
 import senpai.utils.Severity;

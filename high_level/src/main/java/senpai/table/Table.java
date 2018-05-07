@@ -90,7 +90,6 @@ public class Table implements Printable
 	 * On a pris l'objet, on est passé dessus, le robot ennemi est passé
 	 * dessus...
 	 * Attention, on ne peut qu'augmenter cette valeur.
-	 * Renvoie vrai si l'état de la table a changé pour le futur (?)
 	 * 
 	 * @param id
 	 */

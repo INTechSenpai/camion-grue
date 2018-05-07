@@ -2,19 +2,14 @@ package senpai;
 
 import pfg.kraken.SearchParameters;
 import pfg.kraken.astar.DirectionStrategy;
-import pfg.kraken.exceptions.PathfindingException;
 import pfg.kraken.exceptions.TimeoutException;
 import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import senpai.Senpai.ErrorCode;
 import senpai.buffer.OutgoingOrderBuffer;
-import senpai.comm.CommProtocol;
-import senpai.comm.DataTicket;
-import senpai.comm.Ticket;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.threads.comm.ThreadCommProcess;
-import senpai.utils.Subject;
 
 /*
  * Copyright (C) 2013-2018 Pierre-François Gimenez

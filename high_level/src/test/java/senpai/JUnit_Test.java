@@ -21,13 +21,11 @@ import org.junit.runner.Request;
 import org.junit.runner.Result;
 
 import pfg.config.Config;
-import pfg.graphic.WindowFrame;
 import pfg.kraken.robot.Cinematique;
 import pfg.log.Log;
 import org.junit.After;
 
 import senpai.robot.Robot;
-import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Subject;
 import senpai.Senpai;
 import senpai.Senpai.ErrorCode;

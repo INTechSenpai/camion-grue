@@ -16,7 +16,6 @@ package senpai;
 
 import java.awt.Color;
 import java.util.List;
-import java.util.PriorityQueue;
 
 import pfg.config.Config;
 import pfg.graphic.GraphicDisplay;
@@ -36,8 +35,6 @@ import senpai.robot.Robot;
 import senpai.robot.RobotColor;
 import senpai.scripts.Script;
 import senpai.scripts.ScriptManager;
-import senpai.scripts.ScriptPriseCube;
-import senpai.table.CubeColor;
 import senpai.table.Table;
 import senpai.utils.ConfigInfoSenpai;
 
@@ -107,7 +104,7 @@ public class TestDeplacement {
 			init.copy(robot.getCinematique());
 			DataTicket dt = robot.goTo(destination);
 				
-			Cinematique c = robot.getCinematique();//.clone();
+			/*Cinematique c = */robot.getCinematique();//.clone();
 		
 			// Ceci ne fonctionne qu'avec la simulation du LL !
 			@SuppressWarnings("unchecked")
