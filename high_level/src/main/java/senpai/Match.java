@@ -11,6 +11,7 @@ import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
 import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
+import senpai.exceptions.ActionneurException;
 import senpai.exceptions.ScriptException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
@@ -103,11 +104,11 @@ public class Match
 			scripts.setPattern(pattern);
 		
 		RobotColor couleur;
-/*		try {
+		try {
 			robot.rangeBras();
 		} catch (ActionneurException e1) {
 			log.write("Erreur lors de l'initialisation du bras : "+e1, Subject.STATUS);
-		}*/
+		}
 
 		/*
 		 * Attente de la couleur

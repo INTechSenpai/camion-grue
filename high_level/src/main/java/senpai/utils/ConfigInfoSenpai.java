@@ -42,7 +42,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	
 	DOMOTIQUE_THERE(true),
 	ABEILLE_THERE(true),
-	GOLDEN_LOADED(true),
+	NB_GOLDEN_LOADED(2),
 	
 	/**
 	 * Position initiale du robot
