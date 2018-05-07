@@ -78,7 +78,6 @@ public class Robot extends RobotState
 	private double defaultSpeed;
 	protected Kraken kraken;
 //	private volatile boolean modeDegrade = false;
-	private List<ItineraryPoint> pathDegrade;
 	private RectangularObstacle obstacle;
 	private double angleMin, angleMax;
 	private List<ItineraryPoint> path = null;
@@ -295,7 +294,7 @@ public class Robot extends RobotState
 		out.destroyPointsTrajectoires(0);
 		out.ajoutePointsTrajectoire(ch, true);
 
-		pathDegrade = ch;
+		path = ch;
 		setReady();
 
 		DataTicket dt = followTrajectory();
@@ -539,7 +538,6 @@ public class Robot extends RobotState
 				out.ajoutePointsTrajectoire(path, true);
 			}
 			setReady();
-			pathDegrade = path;
 /*		}
 		else
 		{
@@ -591,7 +589,7 @@ public class Robot extends RobotState
 			jumperOK = true;
 		}
 		
-		log.write("On commence à suivre la trajectoire de "+pathDegrade.size()+" points", Subject.TRAJECTORY);
+		log.write("On commence à suivre la trajectoire de "+path.size()+" points", Subject.TRAJECTORY);
 
 		assert etat == State.READY_TO_GO;
 		setMoving();
@@ -613,11 +611,9 @@ public class Robot extends RobotState
 		}
 		else
 		{
-			dt = new DataTicket(/*modeDegrade ?*/ pathDegrade /*: dpath.getPath()*/, CommProtocol.State.OK);
+			dt = new DataTicket(/*modeDegrade ?*/ path /*: dpath.getPath()*/, CommProtocol.State.OK);
 		}
 		
-
-		pathDegrade = null;
 		path = null;
 		etat = State.STANDBY;
 		return dt;
@@ -664,7 +660,7 @@ public class Robot extends RobotState
 	public List<ItineraryPoint> getPath()
 	{
 		assert etat == State.READY_TO_GO || etat == State.MOVING;
-		return pathDegrade;
+		return path;
 	}
 
 	public boolean isProcheRobot(XY positionVue, int distance)
