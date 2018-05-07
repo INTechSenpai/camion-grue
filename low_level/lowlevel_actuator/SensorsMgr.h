@@ -15,6 +15,7 @@ class SensorsMgr
 {
 public:
     SensorsMgr() :
+        servos(SERIAL_XL320),
         sensorLeft(44, PIN_EN_TOF_G),
         sensorRight(45, PIN_EN_TOF_D)
     {
@@ -26,11 +27,9 @@ public:
 
     int init()
     {
-        SERIAL_XL320.begin(SERIAL_XL320_BAUDRATE);
-        SERIAL_XL320.setTimeout(10);
-        servos.begin(SERIAL_XL320);
-        servos.setJointSpeed(ID_XL320_LEFT, 1023);
-        servos.setJointSpeed(ID_XL320_RIGHT, 1023);
+        servos.begin(SERIAL_XL320_BAUDRATE, 10);
+        servos.setSpeed(ID_XL320_LEFT, 1023);
+        servos.setSpeed(ID_XL320_RIGHT, 1023);
         sensorLeft.powerON("Left");
         sensorRight.powerON("Right");
         return 0;
@@ -42,26 +41,26 @@ public:
         if (millis() - lastUpdateTime > SERVO_UPDATE_PERIOD)
         {
             lastUpdateTime = millis();
-            servos.moveJoint(ID_XL320_LEFT, aimLeft);
-            servos.moveJoint(ID_XL320_RIGHT, aimRight);
+            servos.setPosition(ID_XL320_LEFT, aimLeft);
+            servos.setPosition(ID_XL320_RIGHT, aimRight);
         }
     }
 
     void getSensorsData(int32_t & tof_g, int32_t & tof_d, float & angleTG, float & angleTD)
     {
         digitalWrite(PIN_DEL_GYRO_D, HIGH);
-        int leftRotatingSpeed = servos.read(ID_XL320_LEFT, XL_PRESENT_SPEED, 2);
-        int rightRotatingSpeed = servos.read(ID_XL320_RIGHT, XL_PRESENT_SPEED, 2);
-        int newLeftAngle = servos.getJointPosition(ID_XL320_LEFT);
-        int newRightAngle = servos.getJointPosition(ID_XL320_RIGHT);
+        uint16_t leftRotatingSpeed = servos.getPresentSpeed(ID_XL320_LEFT);
+        uint16_t rightRotatingSpeed = servos.getPresentSpeed(ID_XL320_RIGHT);
+        uint16_t newLeftAngle = servos.getPresentPosition(ID_XL320_LEFT);
+        uint16_t newRightAngle = servos.getPresentPosition(ID_XL320_RIGHT);
         digitalWrite(PIN_DEL_GYRO_D, LOW);
 
-        if (leftRotatingSpeed & 1023 < 10)
+        if ((leftRotatingSpeed & 1023) < 10)
         {
             tof_g = sensorLeft.getMesure();
-            if (newLeftAngle >= 0)
+            if (newLeftAngle < 1024)
             {
-                currentLeftAngle = xl_to_rad((uint16_t)newLeftAngle) - SERVO_LEFT_ORIGIN;
+                currentLeftAngle = xl_to_rad(newLeftAngle) - SERVO_LEFT_ORIGIN;
             }
         }
         else
@@ -69,12 +68,12 @@ public:
             tof_g = 0;
         }
 
-        if (rightRotatingSpeed & 1023 < 10)
+        if ((rightRotatingSpeed & 1023) < 10)
         {
             tof_d = sensorRight.getMesure();
-            if (newRightAngle >= 0)
+            if (newRightAngle < 1024)
             {
-                currentRightAngle = xl_to_rad((uint16_t)newRightAngle) - SERVO_RIGHT_ORIGIN;
+                currentRightAngle = xl_to_rad(newRightAngle) - SERVO_RIGHT_ORIGIN;
             }
         }
         else

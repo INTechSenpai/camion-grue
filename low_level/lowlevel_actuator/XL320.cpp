@@ -2,30 +2,32 @@
 #include "XL320.h"
 
 
-XL320::XL320() {}
-
-XL320::~XL320() {}
-
-void XL320::begin(Stream &stream)
+XL320::XL320(HardwareSerial & stream) :
+    stream(stream)
 {
-    this->stream = &stream;
-    this->setHalfDuplex(stream);
-    this->setWriteMode(stream);
 }
 
-void XL320::moveJoint(int id, int value)
+void XL320::begin(uint32_t baudrate, uint32_t timeout)
 {
-	writeDouble(id, XL_GOAL_POSITION_L, value);
+    stream.begin(baudrate);
+    stream.setTimeout(timeout);
+    setHalfDuplex(stream);
+    setWriteMode(stream);
 }
 
-void XL320::setJointSpeed(int id, int value)
+void XL320::setPosition(uint8_t id, uint16_t value)
 {
-    writeDouble(id, XL_GOAL_SPEED_L, value);
+	write(id, XL_GOAL_POSITION_L, value, 2);
 }
 
-void XL320::LED(int id, char led_color)
+void XL320::setSpeed(uint8_t id, uint16_t value)
 {
-	int val = 0;
+    write(id, XL_GOAL_SPEED_L, value, 2);
+}
+
+void XL320::setLED(uint8_t id, char led_color)
+{
+	uint8_t val = 0;
     switch (led_color)
     {
     case 'r':
@@ -56,201 +58,114 @@ void XL320::LED(int id, char led_color)
         break;
     }
 
-	write(id, XL_LED, val);
+	write(id, XL_LED, val, 1);
 }
 
-void XL320::setJointTorque(int id, int value)
+void XL320::setTorque(uint8_t id, uint16_t value)
 {
-    writeDouble(id, XL_GOAL_TORQUE, value);
+    write(id, XL_GOAL_TORQUE, value, 2);
 }
 
-void XL320::TorqueON(int id)
+void XL320::torqueOn(uint8_t id)
 {
-	write(id, XL_TORQUE_ENABLE, 1);
+	write(id, XL_TORQUE_ENABLE, 1, 1);
 }
 
-void XL320::TorqueOFF(int id)
+void XL320::torqueOff(uint8_t id)
 {
-	write(id, XL_TORQUE_ENABLE, 0);
+	write(id, XL_TORQUE_ENABLE, 0, 1);
 }
 
-int XL320::getJointPosition(int id)
+uint16_t XL320::getPresentPosition(uint8_t id)
 {
     return read(id, XL_PRESENT_POSITION, 2);
 }
 
-int XL320::write(int id, int Address, int value)
+uint16_t XL320::getPresentSpeed(uint8_t id)
 {
-    return write(id, Address, value, 1);
+    return read(id, XL_PRESENT_SPEED, 2);
 }
 
-int XL320::writeDouble(int id, int Address, int value)
+uint16_t XL320::getPresentTorque(uint8_t id)
 {
-    return write(id, Address, value, 2);
+    return read(id, XL_PRESENT_LOAD, 2);
 }
 
-int XL320::write(int id, int Address, int value, int size)
+size_t XL320::write(uint8_t id, uint16_t address, uint16_t value, uint8_t size)
 {
-
-    /*Dynamixel 2.0 communication protocol
-      used by Dynamixel XL-320 and Dynamixel PRO only.
-    */
-
-    const int bufsize = 16;
-    byte txbuffer[bufsize];
-
+    std::vector<uint8_t> params;
+    params.push_back(DXL_LOBYTE(address));
+    params.push_back(DXL_HIBYTE(address));
     if (size == 1)
     {
-        Packet p(txbuffer, bufsize, id, 0x03, 3,
-            DXL_LOBYTE(Address),
-            DXL_HIBYTE(Address),
-            DXL_LOBYTE(value));
-        stream->write(txbuffer, p.getSize());
-        this->stream->flush();
-        return p.getSize();
+        params.push_back((uint8_t)value);
     }
     else if (size == 2)
     {
-        Packet p(txbuffer, bufsize, id, 0x03, 4,
-            DXL_LOBYTE(Address),
-            DXL_HIBYTE(Address),
-            DXL_LOBYTE(value),
-            DXL_HIBYTE(value));
-        stream->write(txbuffer, p.getSize());
-        this->stream->flush();
-        return p.getSize();
+        params.push_back(DXL_LOBYTE(value));
+        params.push_back(DXL_HIBYTE(value));
     }
     else
     {
-        return -1;
+        return 0;
     }
+
+    Packet packet(id, 0x03, params);
+    return packet.writeOnStream(stream);
 }
 
-
-
-int XL320::read(int id, int Address, int size)
+uint16_t XL320::read(uint8_t id, uint16_t address, uint16_t size)
 {
-    unsigned char buffer[255];
-
-    requestPacket(id, Address, size);
-    this->setReadMode(*(this->stream));
-    int ret = this->readPacket(buffer, 255);
-    this->setWriteMode(*(this->stream));
-
-    if (ret > 0) {
-        Packet p(buffer, 255);
-        if (p.isValid() && p.getParameterCount() >= size + 1) {
-            int ret = 0;
-            for (int i = 0; i < size; i++) {
-                ret += (p.getParameter(i + 1) << (8*i));
+    uint16_t ret = UINT16_MAX;
+    if (size == 1 || size == 2)
+    {
+        if (requestPacket(id, address, size) > 0)
+        {
+            Packet packet = readPacket();
+            if (packet.isValid() && packet.getParameterCount() == size + 1)
+            {
+                uint8_t lw_ret = packet.getParameter(1);
+                uint8_t hw_ret = 0;
+                if (size == 2)
+                {
+                    hw_ret = packet.getParameter(2);
+                }
+                ret = DXL_MAKEWORD(lw_ret, hw_ret);
             }
-            return ret;
-        }
-        else {
-            return -1;
         }
     }
-    return -2;
+    return ret;
 }
 
-int XL320::requestPacket(int id, int Address, int size){
-
-	/*Dynamixel 2.0 communication protocol
-	  used by Dynamixel XL-320 and Dynamixel PRO only.
-	*/
-
-    const int bufsize = 16;
-
-    byte txbuffer[bufsize];
-
-    Packet p(txbuffer,bufsize,id,0x02,4,
-	DXL_LOBYTE(Address),
-	DXL_HIBYTE(Address),
-	DXL_LOBYTE(size),
-	DXL_HIBYTE(size));
-
-    stream->write(txbuffer,p.getSize());
-    this->stream->flush();
-
-    return p.getSize();	
-}
-
-// from http://stackoverflow.com/a/133363/195061
-
-#define FSM
-#define STATE(x)        s_##x : if(!stream->readBytes(&BUFFER[I++],1)) goto sx_timeout ; if(I>=SIZE) goto sx_overflow; sn_##x :
-#define THISBYTE        (BUFFER[I-1])
-#define NEXTSTATE(x)    goto s_##x
-#define NEXTSTATE_NR(x) goto sn_##x
-#define OVERFLOW        sx_overflow :
-#define TIMEOUT         sx_timeout :
-
-int XL320::readPacket(unsigned char *BUFFER, size_t SIZE)
+size_t XL320::requestPacket(uint8_t id, uint16_t address, uint16_t size)
 {
-    int C;
-    int I = 0;    
+    std::vector<uint8_t> params;
+    params.push_back(DXL_LOBYTE(address));
+    params.push_back(DXL_HIBYTE(address));
+    params.push_back(DXL_LOBYTE(size));
+    params.push_back(DXL_HIBYTE(size));
+    Packet packet(id, 0x02, params);
+    return packet.writeOnStream(stream);
+}
 
-    int length = 0;
-
-      // state names normally name the last parsed symbol
-      
-
-    FSM {
-      STATE(start) {
-	if(THISBYTE==0xFF) NEXTSTATE(header_ff_1);
-	I=0; NEXTSTATE(start);
-      }
-      STATE(header_ff_1) {
-	if(THISBYTE==0xFF) NEXTSTATE(header_ff_2);
-	I=0; NEXTSTATE(start);	
-      }
-      STATE(header_ff_2) {
-	if(THISBYTE==0xFD) NEXTSTATE(header_fd);
-	// yet more 0xFF's? stay in this state
-	if(THISBYTE==0xFF) NEXTSTATE(header_ff_2);
-	// anything else? restart
-	I=0; NEXTSTATE(start);
-      }
-      STATE(header_fd) {
-	  // reading reserved, could be anything in theory, normally 0
-      }
-      STATE(header_reserved) {
-	  // id = THISBYTE
-      }
-      STATE(id) {
-	length = THISBYTE;
-      }
-      STATE(length_1) {
-	length += THISBYTE<<8; // eg: length=4
-      }
-      STATE(length_2) {
-      }
-      STATE(instr) {
-	// instr = THISBYTE
-        // check length because
-        // action and reboot commands have no parameters
-	if(I-length>=5) NEXTSTATE(checksum_1);
-      }
-      STATE(params) {
-	  // check length and maybe skip to checksum
-	  if(I-length>=5) NEXTSTATE(checksum_1);
-	  // or keep reading params
-	  NEXTSTATE(params);
-      }
-      STATE(checksum_1) {
-      }
-      STATE(checksum_2) {
-	  // done
-	  return I; 
-      }
-      OVERFLOW {
-          return -1;
-      }
-      TIMEOUT {
-	  return -2;
-      }
-
+XL320::Packet XL320::readPacket()
+{
+    Packet packet;
+    uint8_t rxBuf[1] = { 0 };
+    setReadMode(stream);
+    while (packet.isReading())
+    {
+        if (stream.readBytes(rxBuf, 1) == 1)
+        {
+            packet.addByte(rxBuf[0]);
+        }
+        else
+        {
+            break;
+        }
     }
+    setWriteMode(stream);
+    return packet;
 }
 
 XL320::Packet::Packet()
@@ -267,17 +182,13 @@ XL320::Packet::Packet(uint8_t id, uint8_t instruction, const std::vector<uint8_t
     data.push_back(0x00);
     data.push_back(id);
     uint16_t length = parameters.size() + 3;
-    uint8_t lw_length = (uint8_t)(length & 0xFF);
-    uint8_t hw_length = (uint8_t)((length >> 8) & 0xFF);
-    data.push_back(lw_length);
-    data.push_back(hw_length);
+    data.push_back(DXL_LOBYTE(length));
+    data.push_back(DXL_HIBYTE(length));
     data.push_back(instruction);
     data.insert(data.end(), parameters.begin(), parameters.end());
     uint16_t checksum = computeChecksum();
-    uint8_t lw_checksum = (uint8_t)(checksum & 0xFF);
-    uint8_t hw_checksum = (uint8_t)((checksum >> 8) & 0xFF);
-    data.push_back(lw_checksum);
-    data.push_back(hw_checksum);
+    data.push_back(DXL_LOBYTE(checksum));
+    data.push_back(DXL_HIBYTE(checksum));
     valid = true;
     reading = false;
 }
@@ -327,7 +238,7 @@ uint8_t XL320::Packet::getInstruction() const
 
 uint8_t XL320::Packet::getParameter(uint16_t n) const
 {
-    if (data.size() > 8 + n && valid)
+    if ((data.size() > (size_t)(8 + n)) && valid)
     {
         return data.at(8 + n);
     }
@@ -375,11 +286,14 @@ size_t XL320::Packet::printTo(Print & p) const
     return ret;
 }
 
-size_t XL320::Packet::writeOnStream(Stream & stream) const
+size_t XL320::Packet::writeOnStream(HardwareSerial & stream) const
 {
     if (valid)
     {
-        return stream.write((uint8_t*)data.data(), data.size());
+        size_t ret = stream.write((uint8_t*)data.data(), data.size());
+        stream.flush();
+        stream.clear();
+        return ret;
     }
     else
     {
@@ -389,19 +303,38 @@ size_t XL320::Packet::writeOnStream(Stream & stream) const
 
 void XL320::Packet::addByte(uint8_t b)
 {
-    if (reading)
+    static const uint8_t expectedHeader[3] = { 0xFF, 0xFF, 0xFD };
+    if (reading && !valid)
     {
         data.push_back(b);
 
-        if (data.size() == 3)
+        size_t dataSize = data.size();
+        if (dataSize == 1)
         {
-
+            reading = data.at(0) == expectedHeader[0];
         }
-        else if ()
+        else if (dataSize == 2)
         {
-
+            reading = data.at(1) == expectedHeader[1];
         }
-
+        else if (dataSize == 3)
+        {
+            reading = data.at(2) == expectedHeader[2];
+        }
+        else if (dataSize >= 7)
+        {
+            uint16_t packetLength = DXL_MAKEWORD(data.at(5), data.at(6));
+            if (packetLength < 3)
+            {
+                reading = false;
+            }
+            else if (dataSize == (size_t)(packetLength + 7))
+            {
+                uint16_t checksum = DXL_MAKEWORD(data.at(dataSize - 2), data.at(dataSize - 1));
+                valid = checksum == computeChecksum();
+                reading = false;
+            }
+        }
     }
 }
 

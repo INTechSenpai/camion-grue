@@ -8,6 +8,8 @@
 #ifndef DXL_PRO_H_
 #define DXL_PRO_H_
 
+#include <inttypes.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -17,14 +19,14 @@ extern "C" {
 #define MAXNUM_RXPACKET     (65535)
 
 ///////////////// utility for value ///////////////////////////
-#define DXL_MAKEWORD(a, b)      ((unsigned short)(((unsigned char)(((unsigned long)(a)) & 0xff)) | ((unsigned short)((unsigned char)(((unsigned long)(b)) & 0xff))) << 8))
-#define DXL_MAKEDWORD(a, b)     ((unsigned int)(((unsigned short)(((unsigned long)(a)) & 0xffff)) | ((unsigned int)((unsigned short)(((unsigned long)(b)) & 0xffff))) << 16))
-#define DXL_LOWORD(l)           ((unsigned short)(((unsigned long)(l)) & 0xffff))
-#define DXL_HIWORD(l)           ((unsigned short)((((unsigned long)(l)) >> 16) & 0xffff))
-#define DXL_LOBYTE(w)           ((unsigned char)(((unsigned long)(w)) & 0xff))
-#define DXL_HIBYTE(w)           ((unsigned char)((((unsigned long)(w)) >> 8) & 0xff))
+#define DXL_MAKEWORD(a, b)      ((uint16_t)(((uint8_t)(((uint32_t)(a)) & 0xff)) | ((uint16_t)((uint8_t)(((uint32_t)(b)) & 0xff))) << 8))
+#define DXL_MAKEDWORD(a, b)     ((uint32_t)(((uint16_t)(((uint32_t)(a)) & 0xffff)) | ((uint32_t)((uint16_t)(((uint32_t)(b)) & 0xffff))) << 16))
+#define DXL_LOWORD(l)           ((uint16_t)(((uint32_t)(l)) & 0xffff))
+#define DXL_HIWORD(l)           ((uint16_t)((((uint32_t)(l)) >> 16) & 0xffff))
+#define DXL_LOBYTE(w)           ((uint8_t)(((uint32_t)(w)) & 0xff))
+#define DXL_HIBYTE(w)           ((uint8_t)((((uint32_t)(w)) >> 8) & 0xff))
 
-unsigned short update_crc(unsigned short crc_accum, unsigned char *data_blk_ptr, unsigned short data_blk_size);
+uint16_t update_crc(uint16_t crc_accum, const uint8_t *data_blk_ptr, uint16_t data_blk_size);
 
 #ifdef __cplusplus
 }

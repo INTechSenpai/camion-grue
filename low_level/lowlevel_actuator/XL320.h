@@ -41,38 +41,31 @@
 
 #include <Printable.h>
 #include <vector>
+#include <Arduino.h>
 
 
 class XL320
 {
-private:
-	Stream *stream;
-
 public:
-	XL320();
-	virtual ~XL320();
+	XL320(HardwareSerial & stream);
+
+    void begin(uint32_t baudrate, uint32_t timeout);
 	
-	void begin(Stream &stream);
-	
-	void moveJoint(int id, int value);
-	void setJointSpeed(int id, int value);
-	void LED(int id, char led_color);
-	void setJointTorque(int id, int value);
+	void setPosition(uint8_t id, uint16_t value);
+	void setSpeed(uint8_t id, uint16_t value);
+	void setLED(uint8_t id, char led_color);
+	void setTorque(uint8_t id, uint16_t value);
+	void torqueOn(uint8_t id);
+	void torqueOff(uint8_t id);
 
-	void TorqueON(int id);
-	void TorqueOFF(int id);
+	uint16_t getPresentPosition(uint8_t id);
+    uint16_t getPresentSpeed(uint8_t id);
+    uint16_t getPresentTorque(uint8_t id);
 
-	int getJointPosition(int id);
-
-    int write(int id, int Address, int value);
-    int writeDouble(int id, int Address, int value);
-    int read(int id, int Address, int size);
+    size_t write(uint8_t id, uint16_t address, uint16_t value, uint8_t size);
+    uint16_t read(uint8_t id, uint16_t address, uint16_t size);
 
 private:
-    int write(int id, int Address, int value, int size);
-	int readPacket(unsigned char *buffer, size_t size);
-	int requestPacket(int id, int Address, int size);
-
 	class Packet : public Printable
     {
     public:
@@ -86,7 +79,7 @@ private:
         uint8_t getParameter(uint16_t n) const;
 	    bool isValid() const;
         size_t printTo(Print& p) const;
-        size_t writeOnStream(Stream & stream) const;
+        size_t writeOnStream(HardwareSerial & stream) const;
 
         void addByte(uint8_t b);
         bool isReading() const;
@@ -97,6 +90,10 @@ private:
         std::vector<uint8_t> data;
 	};
     
+    size_t requestPacket(uint8_t id, uint16_t address, uint16_t size);
+    Packet readPacket();
+    HardwareSerial & stream;
+
 
     void setHalfDuplex(Stream & mStream)
     {

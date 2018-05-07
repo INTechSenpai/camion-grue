@@ -7,10 +7,10 @@
 #include "dxl_pro.h"
 
 
-unsigned short update_crc(unsigned short crc_accum, const unsigned char *data_blk_ptr, unsigned short data_blk_size)
+uint16_t update_crc(uint16_t crc_accum, const uint8_t *data_blk_ptr, uint16_t data_blk_size)
 {
-	unsigned short i, j;
-	unsigned short crc_table[256] = {0x0000,
+	uint16_t i, j;
+	uint16_t crc_table[256] = {0x0000,
 	                                0x8005, 0x800F, 0x000A, 0x801B, 0x001E, 0x0014, 0x8011,
 	                                0x8033, 0x0036, 0x003C, 0x8039, 0x0028, 0x802D, 0x8027,
 	                                0x0022, 0x8063, 0x0066, 0x006C, 0x8069, 0x0078, 0x807D,
@@ -51,7 +51,7 @@ unsigned short update_crc(unsigned short crc_accum, const unsigned char *data_bl
 
 	for(j = 0; j < data_blk_size; j++)
 	{
-		i = ((unsigned short)(crc_accum >> 8) ^ *data_blk_ptr++) & 0xFF;
+		i = ((uint16_t)(crc_accum >> 8) ^ *data_blk_ptr++) & 0xFF;
 		crc_accum = (crc_accum << 8) ^ crc_table[i];
 	}
 
