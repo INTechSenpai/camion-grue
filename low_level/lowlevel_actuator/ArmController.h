@@ -349,6 +349,13 @@ public:
         return ret;
     }
 
+    void resetStatus()
+    {
+        noInterrupts();
+        status = ARM_STATUS_OK;
+        interrupts();
+    }
+
     void setHeadSpeed(uint16_t speed)
     {
         headAX12.speed(speed);

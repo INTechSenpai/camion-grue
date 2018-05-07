@@ -98,6 +98,8 @@ public:
         {
             if (armControler.getStatus() != ARM_STATUS_OK)
             {
+                Serial.print("ARM status not OK: ");
+                Serial.println((int32_t)armControler.getStatus());
                 stopCommand();
                 return;
             }
@@ -177,6 +179,7 @@ public:
         Serial.print("Run command ");
         Serial.println(id);
         status = ARM_STATUS_OK;
+        armControler.resetStatus();
         currentCommand = id;
         currentCommandStep = 0;
         commandArgAngle = angle;
@@ -193,6 +196,7 @@ public:
         }
         Serial.println("Run command ACTUATOR_SET_ARM_POSITION");
         status = ARM_STATUS_OK;
+        armControler.resetStatus();
         currentCommand = ACTUATOR_SET_ARM_POSITION;
         currentCommandStep = 0;
         commandArgAngle = 0;
