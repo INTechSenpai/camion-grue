@@ -33,12 +33,10 @@ import senpai.table.Table;
 public class ScriptDomotique extends Script
 {
 	private XY_RW positionEntree = new XY_RW(370,1780);
-	private CapteursProcess cp;
 	
 	public ScriptDomotique(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie)
 	{
-		super(log, robot, table);
-		this.cp = cp;
+		super(log, robot, table, cp);
 		if(symetrie)
 			positionEntree.setX(- positionEntree.getX());
 	}
@@ -66,10 +64,7 @@ public class ScriptDomotique extends Script
 		}
 		robot.setDomotiqueDone();
 		robot.avance(100);
-
 		cp.doStaticCorrection(500, CapteursCorrection.ARRIERE);
-		
-		robot.avance(100);
 	}
 
 	@Override

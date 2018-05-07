@@ -9,6 +9,7 @@ import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
 import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
+import senpai.exceptions.ActionneurException;
 import senpai.exceptions.ScriptException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
@@ -100,6 +101,11 @@ public class Match
 			scripts.setPattern(pattern);
 		
 		RobotColor couleur;
+/*		try {
+			robot.rangeBras();
+		} catch (ActionneurException e1) {
+			log.write("Erreur lors de l'initialisation du bras : "+e1, Subject.STATUS);
+		}*/
 
 		/*
 		 * Attente de la couleur
@@ -153,11 +159,16 @@ public class Match
 		log.write("Je suis "+Math.abs(deltaY)+"cm vers l'"+(deltaY < 0 ? "avant" : "arrière"), Subject.STATUS);
 		log.write("Je suis orienté vers la "+(orientation < 0 ? "droite" : "gauche")+" de "+Math.abs(orientation)+"°", Subject.STATUS);
 		
-		// dépose golden
+		// dépose golden (si y'a)
 		// domotique
+		// abeille
+		// retenter domotique
 		// prise
 		// dépose
-		// abeille
+		// retenter abeille
+		// prise
+		// dépose
+		// retenter abeille
 
 		
 		try {

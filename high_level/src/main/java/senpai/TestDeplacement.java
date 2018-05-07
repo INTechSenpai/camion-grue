@@ -57,6 +57,7 @@ public class TestDeplacement {
 			senpai.initialize("match.conf", "default", "graphic", "test", "noLL");
 //			Log log = senpai.getService(Log.class);
 			Config config = senpai.getService(Config.class);
+			config.override(ConfigInfoSenpai.SIMULE_COMM, true);
 			Thread.sleep(config.getInt(ConfigInfoSenpai.WARM_UP_DURATION));
 			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
 			Robot robot = senpai.getService(Robot.class);
@@ -85,35 +86,35 @@ public class TestDeplacement {
 			
 			robot.updateColorAndSendPosition(couleur);
 			table.updateCote(couleur.symmetry);
+			scripts.setCouleur(couleur);
 			//XYO destination = new XYO(0, 1000, Math.PI);
 //			Script script = new ScriptPriseCube(Croix.CROIX_HAUT_DROITE, CubeColor.ORANGE, CubeFace.GAUCHE, false);
-			PriorityQueue<ScriptPriseCube> all = scripts.getAllPossible(CubeColor.ORANGE, false);
+//			PriorityQueue<ScriptPriseCube> all = scripts.getAllPossible(CubeColor.ORANGE, false);
 //			XYO destination = new ScriptPriseCube(0, ElementColor.BLEU, ScriptPriseCube.Face.BAS, false).getPointEntree();
 
 			CapteursRobot.ToF_COIN_AVANT_DROIT.updateObstacle(new XY(-150.84,1543.50), 0);
 			od.update(CapteursRobot.ToF_COIN_AVANT_DROIT);
 			
 //			ObstacleProximity obs = new ObstacleProximity(new XY(-150.84,1543.50), 100, 100, 0, 0, null, 0);
-			buffer.addPrintable(CapteursRobot.ToF_COIN_AVANT_DROIT.current, Color.RED, Layer.FOREGROUND.layer);
+//			buffer.addPrintable(CapteursRobot.ToF_COIN_AVANT_DROIT.current, Color.RED, Layer.FOREGROUND.layer);
 //			mem.add(obs);
 
 			Cinematique init = robot.getCinematique().clone();
 			
-			for(int i = 0; i < 5; i++)
-			{
-				Script script = all.poll();
-				XYO destination = script.getPointEntree();
-				buffer.addPrintable(new Cinematique(destination), Color.BLUE, Layer.FOREGROUND.layer);
-				init.copy(robot.getCinematique());
-				DataTicket dt = robot.goTo(destination);
-					
-				Cinematique c = robot.getCinematique();//.clone();
-			
-				// Ceci ne fonctionne qu'avec la simulation du LL !
-				@SuppressWarnings("unchecked")
-				List<ItineraryPoint> path = (List<ItineraryPoint>) dt.data;
-				for(ItineraryPoint p : path)
-					buffer.addPrintable(p, p.stop ? Color.BLUE : Color.BLACK, Layer.FOREGROUND.layer);
+			Script script = scripts.getDeposeScript();
+			XYO destination = script.getPointEntree();
+			buffer.addPrintable(new Cinematique(destination), Color.BLUE, Layer.FOREGROUND.layer);
+			init.copy(robot.getCinematique());
+			DataTicket dt = robot.goTo(destination);
+				
+			Cinematique c = robot.getCinematique();//.clone();
+		
+			// Ceci ne fonctionne qu'avec la simulation du LL !
+			@SuppressWarnings("unchecked")
+			List<ItineraryPoint> path = (List<ItineraryPoint>) dt.data;
+			for(ItineraryPoint p : path)
+				buffer.addPrintable(p, p.stop ? Color.BLUE : Color.BLACK, Layer.FOREGROUND.layer);
+			buffer.refresh();
 /*	
 				for(ItineraryPoint p : path)
 				{
@@ -132,7 +133,6 @@ public class TestDeplacement {
 				script.execute(robot, table);
 //				if(i == 0)
 //					robot.setDegrade();*/
-			}
 		}
 		catch(Exception e)
 		{

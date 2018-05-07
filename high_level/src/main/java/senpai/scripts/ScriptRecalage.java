@@ -33,7 +33,6 @@ import senpai.table.Table;
 
 public class ScriptRecalage extends Script
 {
-	private CapteursProcess cp;
 	private XYO correction;
 	private XY_RW positionEntree = new XY_RW(1300,1700);
 	private CapteursCorrection[] capteurs = new CapteursCorrection[2];
@@ -41,9 +40,8 @@ public class ScriptRecalage extends Script
 	
 	public ScriptRecalage(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie, long dureeRecalage)
 	{
-		super(log, robot, table);
+		super(log, robot, table, cp);
 		this.dureeRecalage = dureeRecalage;
-		this.cp = cp;
 		if(symetrie)
 		{
 			capteurs[0] = CapteursCorrection.DROITE;

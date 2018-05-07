@@ -53,12 +53,12 @@ public enum ConfigInfoSenpai implements ConfigInfo
 
 	PILE_1_X(600),
 	PILE_1_Y(1850),
-	PILE_1_O(0),
-	PILE_1_COTE_DROIT(true),
+	PILE_1_O(Math.PI),
+	PILE_1_COTE_DROIT(false),
 	PILE_2_X(1000),
 	PILE_2_Y(1850),
 	PILE_2_O(- Math.PI / 2),
-	PILE_2_COTE_DROIT(true),
+	PILE_2_COTE_DROIT(false),
 	
 	DEFAULT_MAX_SPEED(0.8),
 	

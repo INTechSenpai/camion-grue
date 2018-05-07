@@ -98,6 +98,7 @@ public class Robot extends RobotState
 	private boolean domotiqueDone = true;
 	private boolean abeilleDone = true;
 	private int score;
+	private int scorePile = 0;
 	
 	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, /*DynamicPath dpath,*/ KnownPathManager known, RectangularObstacle obstacle)
 	{
@@ -138,19 +139,18 @@ public class Robot extends RobotState
 		
 		simuleLL = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 		score = 0;
+		updateScore();
 		if(config.getBoolean(ConfigInfoSenpai.DOMOTIQUE_THERE))
 		{
-			score += 5;
+			updateScore(5);
 			domotiqueDone = false;
 		}
 		if(config.getBoolean(ConfigInfoSenpai.ABEILLE_THERE))
 		{
-			score += 5;
+			updateScore(5);
 			abeilleDone = false;
 		}
-		out.setScore(score);
 		out.setCurvature(0);
-//		setDegrade();
 	}
 	
 	public int getNbPile(boolean usePattern)
@@ -200,12 +200,6 @@ public class Robot extends RobotState
 					buffer.addPrintable(new Segment(oldPosition, cinematique.getPosition().clone()), Color.RED, Layer.MIDDLE.layer);
 			}
 	}
-
-
-	/*
-	 * DÉPLACEMENTS
-	 */
-
 	
 	/*
 	 * ACTIONNEURS
@@ -326,6 +320,8 @@ public class Robot extends RobotState
 			piles[nbPile].add(cubeTop);
 			cubeTop = null;
 			etage++;
+			updateScorePile();
+			updateScore();
 		}
 		if(cubeInside != null)
 		{
@@ -333,7 +329,14 @@ public class Robot extends RobotState
 			execute(Id.ARM_PUT_ON_PILE_S, angle, etage);
 			piles[nbPile].add(cubeInside);
 			cubeInside = null;
+			updateScorePile();
+			updateScore();
 		}
+	}
+	
+	public void updateScorePile()
+	{
+		// TODO
 	}
 	
 	public boolean canDropCube()
@@ -512,7 +515,12 @@ public class Robot extends RobotState
 //				log.write("On réutilise un chemin déjà connu !", Subject.TRAJECTORY);
 		}*/
 
-		DataTicket out = followTrajectory();
+		DataTicket out = null;
+		
+		if(!simuleLL)
+			out = followTrajectory();
+		else
+			out = new DataTicket(path, null);
 /*		if(!modeDegrade)
 		{
 			log.write("Fin de la recherche en mode continu", Subject.TRAJECTORY);
@@ -651,7 +659,8 @@ public class Robot extends RobotState
 		else if(path == null)
 			envoieAnglesTourelles(angleDefautGauche, angleDefautDroite);
 
-		else
+		// TODO
+/*		else
 		{
 			int pointVise = Math.min(currentIndexTrajectory + anticipationTourelle, path.size() - 1);
 			ItineraryPoint ip = path.get(pointVise);
@@ -672,7 +681,7 @@ public class Robot extends RobotState
 				else
 					envoieAnglesTourelles(angleDefautGauche, angleDefautDroite);
 			}
-		}
+		}*/
 	}
 	
 	private void envoieAnglesTourelles(double angleTourelleGauche, double angleTourelleDroite)
@@ -693,18 +702,27 @@ public class Robot extends RobotState
 			setCinematique(current);
 	}
 
+	public void updateScore()
+	{
+		updateScore(0);
+	}
+	
+	public void updateScore(int increment)
+	{
+		score += increment;
+		out.setScore(score + scorePile);
+	}
+	
 	public void setDomotiqueDone()
 	{
 		domotiqueDone = true;
-		score += 25;
-		out.setScore(score);
+		updateScore(25);
 	}
 	
 	public void setAbeilleDone()
 	{
 		abeilleDone = true;
-		score += 50;
-		out.setScore(score);
+		updateScore(50);
 	}
 	
 	public void beginScript()

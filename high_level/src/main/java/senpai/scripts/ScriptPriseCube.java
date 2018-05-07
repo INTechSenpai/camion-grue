@@ -19,6 +19,7 @@ import pfg.kraken.utils.XY;
 import pfg.kraken.utils.XYO;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
+import senpai.capteurs.CapteursProcess;
 import senpai.comm.CommProtocol.Id;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
@@ -45,23 +46,18 @@ public class ScriptPriseCube extends Script
 	private ObstaclesDynamiques obsDyn;
 	private RectangularObstacle o;
 	
-	public ScriptPriseCube(Log log, Robot robot, Table table, ObstaclesDynamiques obsDyn, Cube cube, CubeFace face, boolean coteDroit)
+	public ScriptPriseCube(Log log, Robot robot, Table table, CapteursProcess cp, ObstaclesDynamiques obsDyn, Cube cube, CubeFace face, boolean coteDroit)
 	{
-		super(log, robot, table);
+		super(log, robot, table, cp);
 		this.obsDyn = obsDyn;
 		this.cube = cube;
 		this.face = face;
 		this.coteDroit = coteDroit;
 	}
 	
-	public ScriptPriseCube(Log log, Robot robot, Table table, Croix croix, CubeColor couleur, CubeFace face, boolean coteDroit)
+	public ScriptPriseCube(Log log, Robot robot, Table table, CapteursProcess cp, ObstaclesDynamiques obsDyn, Croix croix, CubeColor couleur, CubeFace face, boolean coteDroit)
 	{
-		super(log, robot, table);
-		this.face = face;
-		cube = Cube.getCube(croix, couleur);
-		assert cube.couleur == couleur : cube.couleur+" "+couleur;
-		assert cube.croix == croix : cube.croix+" "+croix;
-		this.coteDroit = coteDroit;
+		this(log, robot, table, cp, obsDyn, Cube.getCube(croix, couleur), face, coteDroit);
 	}
 	
 	@Override

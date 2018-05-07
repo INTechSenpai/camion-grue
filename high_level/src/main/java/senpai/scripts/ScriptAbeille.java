@@ -33,12 +33,10 @@ import senpai.table.Table;
 public class ScriptAbeille extends Script
 {
 	private XY_RW positionEntree = new XY_RW(1200,180);
-	private CapteursProcess cp;
 	
 	public ScriptAbeille(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie)
 	{
-		super(log, robot, table);
-		this.cp = cp;
+		super(log, robot, table, cp);
 		if(symetrie)
 			positionEntree.setX(- positionEntree.getX());
 	}
@@ -69,6 +67,6 @@ public class ScriptAbeille extends Script
 	@Override
 	public boolean faisable()
 	{
-		return robot.isAbeilleDone();
+		return !robot.isAbeilleDone();
 	}
 }

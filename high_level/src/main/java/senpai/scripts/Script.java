@@ -16,6 +16,7 @@ package senpai.scripts;
 
 import pfg.kraken.utils.XYO;
 import pfg.log.Log;
+import senpai.capteurs.CapteursProcess;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.ScriptException;
 import senpai.exceptions.UnableToMoveException;
@@ -36,12 +37,14 @@ public abstract class Script
 	protected Log log;
 	protected Robot robot;
 	protected Table table;
+	protected CapteursProcess cp;
 	
-	public Script(Log log, Robot robot, Table table)
+	public Script(Log log, Robot robot, Table table, CapteursProcess cp)
 	{
 		this.log = log;
 		this.robot = robot;
 		this.table = table;
+		this.cp = cp;
 	}
 	
 	public abstract boolean faisable();

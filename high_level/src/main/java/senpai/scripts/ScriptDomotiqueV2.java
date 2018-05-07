@@ -37,12 +37,10 @@ import senpai.utils.Subject;
 public class ScriptDomotiqueV2 extends Script
 {
 	private XY_RW positionEntree = new XY_RW(370,1920-260);
-	private CapteursProcess cp;
 	
 	public ScriptDomotiqueV2(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie)
 	{
-		super(log, robot, table);
-		this.cp = cp;
+		super(log, robot, table, cp);
 		if(symetrie)
 			positionEntree.setX(- positionEntree.getX());
 	}
@@ -101,6 +99,6 @@ public class ScriptDomotiqueV2 extends Script
 	@Override
 	public boolean faisable()
 	{
-		return robot.isDomotiqueDone();
+		return !robot.isDomotiqueDone() && !robot.isThereCubeTop();
 	}
 }

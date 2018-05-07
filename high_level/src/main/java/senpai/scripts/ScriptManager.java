@@ -120,7 +120,7 @@ public class ScriptManager
 	public ScriptDeposeCube getDeposeScript()
 	{
 		int nbPile = robot.getNbPile(usePattern);
-		return new ScriptDeposeCube(log, robot, table, robot.getHauteurPile(nbPile), pilePosition[nbPile], anglesDepose[nbPile], coteDroits[nbPile], longueurGrue[robot.getHauteurPile(nbPile)], nbPile);
+		return new ScriptDeposeCube(log, robot, table, cp, robot.getHauteurPile(nbPile), pilePosition[nbPile], anglesDepose[nbPile], coteDroits[nbPile], longueurGrue[robot.getHauteurPile(nbPile)], nbPile);
 	}
 
 	public class CubeComparator implements Comparator<Script>
@@ -167,8 +167,8 @@ public class ScriptManager
 				if(isFacePossible(c, f, bourrine))
 				{
 					log.write("Possible : "+c+" "+f, Subject.SCRIPT);
-					out.add(new ScriptPriseCube(log,robot, table, obsDyn, c,f,true));
-					out.add(new ScriptPriseCube(log,robot, table, obsDyn, c,f,false));
+					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true));
+					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false));
 				}
 			}
 		}
@@ -195,8 +195,8 @@ public class ScriptManager
 				if(isFacePossible(c, f, bourrine))
 				{
 					log.write("Possible : "+c+" "+f, Subject.SCRIPT);
-					out.add(new ScriptPriseCube(log,robot, table, obsDyn, c,f,true));
-					out.add(new ScriptPriseCube(log,robot, table, obsDyn, c,f,false));
+					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true));
+					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false));
 				}
 //				else
 //					log.write("Impossible : "+c+" "+f, Subject.SCRIPT);

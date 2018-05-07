@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import pfg.kraken.utils.XY;
 import senpai.buffer.OutgoingOrderBuffer;
+import senpai.capteurs.CapteursProcess;
 import senpai.comm.CommProtocol.Id;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
@@ -55,6 +56,7 @@ public class Test_Robot extends JUnit_Test
 //	private PathCache pathcache;
 	private OutgoingOrderBuffer data;
 	private ScriptManager scripts;
+	private CapteursProcess cp;
 //	private Cinematique c = null;
 	private boolean simuleSerie;
 	private Speed v;
@@ -68,8 +70,8 @@ public class Test_Robot extends JUnit_Test
 				if(couleur != CubeColor.GOLDEN)
 					for(CubeFace face : CubeFace.values())
 					{
-						new ScriptPriseCube(log, robot, table, croix, couleur, face, true);
-						new ScriptPriseCube(log, robot, table, croix, couleur, face, false);
+						new ScriptPriseCube(log, robot, table, cp, null, croix, couleur, face, true);
+						new ScriptPriseCube(log, robot, table, cp, null, croix, couleur, face, false);
 					}
 	}
 	
@@ -136,6 +138,7 @@ public class Test_Robot extends JUnit_Test
 //		pathcache = container.getService(PathCache.class);
 		data = container.getService(OutgoingOrderBuffer.class);
 		scripts = container.getService(ScriptManager.class);
+		cp = container.getService(CapteursProcess.class);
 		table = container.getService(Table.class);
 		simuleSerie = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 		data.startStream(Id.ODO_AND_SENSORS);
