@@ -26,6 +26,7 @@ import senpai.comm.Order;
 import senpai.comm.Ticket;
 import senpai.comm.CommProtocol.Channel;
 import senpai.comm.CommProtocol.Id;
+import senpai.comm.CommProtocol.LLCote;
 import senpai.utils.ConfigInfoSenpai;
 import senpai.utils.Severity;
 import senpai.utils.Subject;
@@ -89,12 +90,6 @@ public class OutgoingOrderBuffer implements Plottable
 		buffer.offer(o);
 	}
 	
-	public Ticket run()
-	{
-		// TODO ordre ascii
-		return null;
-	}
-
 	/**
 	 * Ordre long de suivi de trajectoire
 	 * 
@@ -195,13 +190,13 @@ public class OutgoingOrderBuffer implements Plottable
 		return Id.GET_ARM_POSITION.ticket;
 	}
 	
-	public Ticket armGoHome()
+	public Ticket armGoHome(LLCote coteDroit) // TODO
 	{
 		addToBuffer(new Order(Id.ARM_GO_HOME));
 		return Id.ARM_GO_HOME.ticket;
 	}
 	
-	public Ticket armPushButton(Double angleV)
+	public Ticket armPushButton(Double angleV, LLCote coteDroit) // TODO
 	{
 		ByteBuffer data = ByteBuffer.allocate(4);
 		data.order(ByteOrder.LITTLE_ENDIAN);
@@ -234,7 +229,7 @@ public class OutgoingOrderBuffer implements Plottable
 		return Id.ARM_STORE_CUBE_INSIDE.ticket;
 	}
 	
-	public Ticket armStoreCubeTop()
+	public Ticket armStoreCubeTop(LLCote coteDroit) // TODO
 	{
 		addToBuffer(new Order(Id.ARM_STORE_CUBE_TOP));
 		return Id.ARM_STORE_CUBE_TOP.ticket;

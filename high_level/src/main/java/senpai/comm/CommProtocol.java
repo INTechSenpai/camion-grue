@@ -288,6 +288,20 @@ public class CommProtocol
 
 	}
 	
+	public enum LLCote
+	{
+		PAR_LA_GAUCHE(-1),
+		PAR_LA_DROITE(1),
+		AU_PLUS_VITE(0);
+		
+		public final int code;
+
+		private LLCote(int c)
+		{
+			code = c;
+		}
+	}
+	
 	public enum LLStatus
 	{
 		/**

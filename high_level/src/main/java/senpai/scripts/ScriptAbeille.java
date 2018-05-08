@@ -19,6 +19,7 @@ import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.capteurs.CapteursCorrection;
 import senpai.capteurs.CapteursProcess;
+import senpai.comm.CommProtocol.LLCote;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
@@ -64,7 +65,7 @@ public class ScriptAbeille extends Script
 		robot.avance(200, 0.2);
 //		robot.execute(Id.ARM_GO_TO, param);
 		// TODO
-		robot.rangeBras();
+		robot.rangeBras(LLCote.AU_PLUS_VITE); // TODO
 		cp.endStaticCorrection();
 	}
 

@@ -42,6 +42,7 @@ import senpai.comm.CommProtocol;
 import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
 import senpai.comm.CommProtocol.Id;
+import senpai.comm.CommProtocol.LLCote;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.table.Cube;
@@ -425,7 +426,7 @@ public class Robot extends RobotState
 		}
 		else
 		{
-			execute(Id.ARM_STORE_CUBE_TOP);
+			execute(Id.ARM_STORE_CUBE_TOP, LLCote.AU_PLUS_VITE);
 			setCubeTop(c);
 		}
 	}
@@ -796,12 +797,12 @@ public class Robot extends RobotState
 		out.correctPosition(position, orientation);
 	}
 
-	public void rangeBras() throws InterruptedException, ActionneurException
+	public void rangeBras(LLCote cote) throws InterruptedException, ActionneurException
 	{
 		if(cubeInside == null)
-			execute(Id.ARM_GO_HOME);
+			execute(Id.ARM_GO_HOME, cote);
 		else
-			execute(Id.ARM_STORE_CUBE_TOP);
+			execute(Id.ARM_STORE_CUBE_TOP, cote);
 	}
 
 	public boolean isDomotiqueDone()

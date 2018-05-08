@@ -1,4 +1,5 @@
 /*
+
  * Copyright (C) 2013-2018 Pierre-François Gimenez
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +18,7 @@ package senpai.scripts;
 import pfg.kraken.utils.XYO;
 import pfg.log.Log;
 import senpai.capteurs.CapteursProcess;
+import senpai.comm.CommProtocol.LLCote;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.ScriptException;
 import senpai.exceptions.UnableToMoveException;
@@ -67,7 +69,7 @@ public abstract class Script
 			log.write("Erreur lors de l'exécution du script " + this + " : " + e, Severity.CRITICAL, Subject.SCRIPT);
 			try {
 				// lâche tout (s'il y a) et rentre le bras
-				robot.rangeBras();
+				robot.rangeBras(LLCote.AU_PLUS_VITE);
 			} catch (ActionneurException e1) {
 				log.write("Erreur lors de l'exécution du script " + this + " : " + e, Severity.CRITICAL, Subject.SCRIPT);
 			}

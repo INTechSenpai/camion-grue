@@ -2,6 +2,8 @@ package senpai;
 
 import senpai.Senpai.ErrorCode;
 import senpai.comm.CommProtocol.Id;
+import senpai.comm.CommProtocol.LLCote;
+import senpai.exceptions.ActionneurException;
 import senpai.robot.Robot;
 
 /*
@@ -39,7 +41,7 @@ public class DemoPerimetre
 		Senpai senpai = new Senpai();
 		ErrorCode error = ErrorCode.NO_ERROR;
 		try
-		{			
+		{
 			senpai = new Senpai();
 			senpai.initialize(configfile, "default");
 			Robot robot = senpai.getService(Robot.class);
@@ -61,6 +63,13 @@ public class DemoPerimetre
 		}
 		catch(Exception e)
 		{
+			Robot robot = senpai.getExistingService(Robot.class);
+			if(robot != null)
+				try {
+					robot.rangeBras(LLCote.AU_PLUS_VITE);
+				} catch (InterruptedException | ActionneurException e1) {
+					e1.printStackTrace();
+				}
 			error = ErrorCode.EXCEPTION;
 			error.setException(e);
 		}

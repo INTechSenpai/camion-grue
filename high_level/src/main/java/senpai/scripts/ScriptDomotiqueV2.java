@@ -21,6 +21,7 @@ import senpai.capteurs.CapteursCorrection;
 import senpai.capteurs.CapteursProcess;
 import senpai.capteurs.CapteursRobot;
 import senpai.comm.CommProtocol.Id;
+import senpai.comm.CommProtocol.LLCote;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.ScriptException;
 import senpai.exceptions.UnableToMoveException;
@@ -37,10 +38,12 @@ import senpai.utils.Subject;
 public class ScriptDomotiqueV2 extends Script
 {
 	private XY_RW positionEntree = new XY_RW(370,1920-260);
+	private boolean symetrie;
 	
 	public ScriptDomotiqueV2(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie)
 	{
 		super(log, robot, table, cp);
+		this.symetrie = symetrie;
 		if(symetrie)
 			positionEntree.setX(- positionEntree.getX());
 	}
@@ -60,40 +63,51 @@ public class ScriptDomotiqueV2 extends Script
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{		
-		Integer distanceBrute = cp.getLast()[CapteursRobot.ToF_AVANT.ordinal()];
-		if(distanceBrute == null)
-			throw new ScriptException("Pas de mesure du capteur avant !");
-		
-		double distance = distanceBrute * Math.cos(robot.getCinematique().orientationReelle - Math.PI / 2);
-		log.write("Distance à l'avant : "+distance, Subject.SCRIPT);
-		if(distance > 100)
+		try
 		{
-			robot.avance(distance - 80);
-			distanceBrute = cp.getLast()[CapteursRobot.ToF_AVANT.ordinal()];
+			Integer distanceBrute = cp.getLast()[CapteursRobot.ToF_AVANT.ordinal()];
 			if(distanceBrute == null)
 				throw new ScriptException("Pas de mesure du capteur avant !");
 			
-			distance = distanceBrute * Math.cos(robot.getCinematique().orientationReelle - Math.PI / 2);
-		}
-		else if(distance < 60)
-		{
-			robot.avance(distance - 80);
-			distanceBrute = cp.getLast()[CapteursRobot.ToF_AVANT.ordinal()];
-			if(distanceBrute == null)
-				throw new ScriptException("Pas de mesure du capteur avant !");
+			double distance = distanceBrute * Math.cos(robot.getCinematique().orientationReelle - Math.PI / 2);
+			log.write("Distance à l'avant : "+distance, Subject.SCRIPT);
+			if(distance > 100)
+			{
+				robot.avance(distance - 80);
+				distanceBrute = cp.getLast()[CapteursRobot.ToF_AVANT.ordinal()];
+				if(distanceBrute == null)
+					throw new ScriptException("Pas de mesure du capteur avant !");
+				
+				distance = distanceBrute * Math.cos(robot.getCinematique().orientationReelle - Math.PI / 2);
+			}
+			else if(distance < 60)
+			{
+				robot.avance(distance - 80);
+				distanceBrute = cp.getLast()[CapteursRobot.ToF_AVANT.ordinal()];
+				if(distanceBrute == null)
+					throw new ScriptException("Pas de mesure du capteur avant !");
+				
+				distance = distanceBrute * Math.cos(robot.getCinematique().orientationReelle - Math.PI / 2);
+			}
+			if(distance > 100 || distance < 60)
+				throw new ScriptException("Mauvaise distance pour panneau domotique : "+distance);
 			
-			distance = distanceBrute * Math.cos(robot.getCinematique().orientationReelle - Math.PI / 2);
+			double angle = -0.0025*distance+0.25;
+			log.write("Angle domotique : "+angle, Subject.SCRIPT);
+			cp.startStaticCorrection(CapteursCorrection.AVANT);
+			if(symetrie)
+				robot.execute(Id.ARM_PUSH_BUTTON, angle, LLCote.PAR_LA_DROITE);
+			else
+				robot.execute(Id.ARM_PUSH_BUTTON, angle, LLCote.PAR_LA_GAUCHE);
+			robot.setDomotiqueDone();
+			if(symetrie)
+				robot.rangeBras(LLCote.PAR_LA_DROITE);
+			else
+				robot.rangeBras(LLCote.PAR_LA_GAUCHE);
+			cp.endStaticCorrection();
+		} finally {
+			robot.avance(-100);
 		}
-		if(distance > 100 || distance < 60)
-			throw new ScriptException("Mauvaise distance pour panneau domotique : "+distance);
-		
-		double angle = -0.0025*distance+0.25;
-		log.write("Angle domotique : "+angle, Subject.SCRIPT);
-		cp.startStaticCorrection(CapteursCorrection.AVANT);
-		robot.execute(Id.ARM_PUSH_BUTTON, angle);
-		robot.setDomotiqueDone();
-		robot.rangeBras();
-		cp.endStaticCorrection();
 	}
 
 	@Override

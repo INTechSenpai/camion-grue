@@ -10,6 +10,7 @@ import pfg.log.Log;
 import senpai.Senpai.ErrorCode;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.comm.CommProtocol;
+import senpai.comm.CommProtocol.LLCote;
 import senpai.comm.DataTicket;
 import senpai.comm.Ticket;
 import senpai.exceptions.ActionneurException;
@@ -107,11 +108,6 @@ public class Match
 			scripts.setPattern(pattern);
 		
 		RobotColor couleur;
-		try {
-			robot.rangeBras();
-		} catch (ActionneurException e1) {
-			log.write("Erreur lors de l'initialisation du bras : "+e1, Subject.STATUS);
-		}
 
 		/*
 		 * Attente de la couleur
@@ -176,7 +172,16 @@ public class Match
 		robot.updateColorAndSendPosition(couleur, byLL);
 		table.updateCote(couleur.symmetry);
 		scripts.setCouleur(couleur);
-		
+
+		try {
+			if(couleur.symmetry)
+				robot.rangeBras(LLCote.PAR_LA_GAUCHE);
+			else
+				robot.rangeBras(LLCote.PAR_LA_DROITE);
+		} catch (ActionneurException e1) {
+			log.write("Erreur lors de l'initialisation du bras : "+e1, Subject.STATUS);
+		}
+
 		
 		// dépose golden (si y'a)
 		// domotique

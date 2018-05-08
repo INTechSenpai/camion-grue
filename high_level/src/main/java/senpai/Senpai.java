@@ -127,7 +127,6 @@ public class Senpai
 		{
 			outBuffer.stopStream(Id.ODO_AND_SENSORS);
 			outBuffer.setCurvature(0);
-			outBuffer.armGoHome();
 			Thread.sleep(1000);
 		}
 		

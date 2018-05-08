@@ -6,6 +6,7 @@ import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.capteurs.CapteursCorrection;
 import senpai.capteurs.CapteursProcess;
+import senpai.comm.CommProtocol.LLCote;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
@@ -77,12 +78,18 @@ public class ScriptDeposeCube extends Script
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException
 	{
 		robot.avance(-distanceToScript, 0.2);
-		cp.startStaticCorrection(CapteursCorrection.AVANT, CapteursCorrection.ARRIERE);
-		robot.poseCubes(coteDroit ? - Math.PI / 2 + angleGrue : Math.PI / 2 - angleGrue, nbPile, nbMaxDepose);
-		table.enableObstaclePile(nbPile);
-		robot.rangeBras();
-		cp.endStaticCorrection();
-		robot.avance(distanceToScript, 0.2);
+		try {
+			cp.startStaticCorrection(CapteursCorrection.AVANT, CapteursCorrection.ARRIERE);
+			robot.poseCubes(coteDroit ? - Math.PI / 2 + angleGrue : Math.PI / 2 - angleGrue, nbPile, nbMaxDepose);
+			table.enableObstaclePile(nbPile);
+			if(coteDroit)
+				robot.rangeBras(LLCote.PAR_LA_GAUCHE);
+			else
+				robot.rangeBras(LLCote.PAR_LA_DROITE);
+			cp.endStaticCorrection();
+		} finally {
+			robot.avance(distanceToScript, 0.2);
+		}
 	}
 	
 	@Override
