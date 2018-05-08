@@ -235,6 +235,15 @@ public class OutgoingOrderBuffer implements Plottable
 		return Id.ARM_TAKE_CUBE.ticket;
 	}
 	
+	public Ticket armPushBee(Double angle)
+	{
+		ByteBuffer data = ByteBuffer.allocate(4);
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.putFloat(new Float(angle));
+		addToBuffer(new Order(data, Id.ARM_PUSH_BEE));
+		return Id.ARM_PUSH_BEE.ticket;
+	}
+	
 	public Ticket armStoreCubeInside()
 	{
 		addToBuffer(new Order(Id.ARM_STORE_CUBE_INSIDE));

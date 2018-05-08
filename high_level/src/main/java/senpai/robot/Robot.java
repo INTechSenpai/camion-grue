@@ -304,12 +304,13 @@ public class Robot extends RobotState
 		boolean firstDone = false;
 		if(cubeTop != null)
 		{
+			Cube s = cubeTop;
 			cubeTop = null;
 			if(etage == 0) // étage 0 : pas de scan
 				execute(Id.ARM_PUT_ON_PILE, angle, etage);
 			else
 				execute(Id.ARM_PUT_ON_PILE_S, angle, etage);
-			piles.add(cubeTop);
+			piles.add(s);
 			updateScore();
 			firstDone = true;
 		}
@@ -321,6 +322,7 @@ public class Robot extends RobotState
 		if(cubeInside != null && etage != 4)
 		{
 			execute(Id.ARM_TAKE_FROM_STORAGE);
+			Cube s = cubeInside;
 			cubeInside = null;
 			if(firstDone)
 				execute(Id.ARM_PUT_ON_PILE, angle, etage);
@@ -328,7 +330,7 @@ public class Robot extends RobotState
 				execute(Id.ARM_PUT_ON_PILE, angle, etage);
 			else
 				execute(Id.ARM_PUT_ON_PILE_S, angle, etage);
-			piles.add(cubeInside);
+			piles.add(s);
 			updateScore();
 		}
 	}

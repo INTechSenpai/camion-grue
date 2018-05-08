@@ -1,6 +1,5 @@
 package senpai;
 
-import java.util.List;
 import java.util.PriorityQueue;
 
 import pfg.config.Config;
@@ -19,7 +18,6 @@ import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
 import senpai.scripts.Script;
-import senpai.scripts.ScriptDeposeCube;
 import senpai.scripts.ScriptManager;
 import senpai.scripts.ScriptPriseCube;
 import senpai.scripts.ScriptRecalageInitial;

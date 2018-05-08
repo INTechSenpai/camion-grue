@@ -19,6 +19,7 @@ import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.capteurs.CapteursCorrection;
 import senpai.capteurs.CapteursProcess;
+import senpai.comm.CommProtocol.Id;
 import senpai.comm.CommProtocol.LLCote;
 import senpai.exceptions.ActionneurException;
 import senpai.exceptions.UnableToMoveException;
@@ -34,6 +35,7 @@ import senpai.table.Table;
 public class ScriptAbeille extends Script
 {
 	private XY_RW positionEntree = new XY_RW(1200,180);
+	private CapteursCorrection[] capteurs = new CapteursCorrection[2];
 	private double angle = 0;
 	
 	public ScriptAbeille(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie)
@@ -41,8 +43,15 @@ public class ScriptAbeille extends Script
 		super(log, robot, table, cp);
 		if(symetrie)
 		{
+			capteurs[0] = CapteursCorrection.GAUCHE;
+			capteurs[1] = CapteursCorrection.AVANT;
 			positionEntree.setX(- positionEntree.getX());
 			angle = Math.PI - angle;
+		}
+		else
+		{
+			capteurs[0] = CapteursCorrection.DROITE;
+			capteurs[1] = CapteursCorrection.AVANT;
 		}
 	}
 
@@ -61,12 +70,15 @@ public class ScriptAbeille extends Script
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException
 	{
-		cp.startStaticCorrection(CapteursCorrection.AVANT, CapteursCorrection.GAUCHE);
 		robot.avance(200, 0.2);
-//		robot.execute(Id.ARM_GO_TO, param);
-		// TODO
-		robot.rangeBras(LLCote.AU_PLUS_VITE); // TODO
-		cp.endStaticCorrection();
+		try {
+			cp.startStaticCorrection(CapteursCorrection.AVANT, CapteursCorrection.GAUCHE);
+			robot.execute(Id.ARM_PUSH_BEE, 0); // TODO angle
+			robot.rangeBras(LLCote.AU_PLUS_VITE);
+			cp.endStaticCorrection();
+		} finally {
+			robot.avance(-200, 0.2);
+		}
 	}
 
 	@Override

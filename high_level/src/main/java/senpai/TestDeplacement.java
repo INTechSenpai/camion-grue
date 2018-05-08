@@ -98,7 +98,7 @@ public class TestDeplacement {
 
 			Cinematique init = robot.getCinematique().clone();
 			
-			Script script = scripts.getDeposeUnCubeScript(1);
+			Script script = scripts.getDeposeScript();
 			XYO destination = script.getPointEntree();
 			buffer.addPrintable(new Cinematique(destination), Color.BLUE, Layer.FOREGROUND.layer);
 			init.copy(robot.getCinematique());
