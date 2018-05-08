@@ -560,6 +560,10 @@ public class CapteursProcess
 				log.write("Distance médiane de "+c.c1+" : "+mesure1+" ("+c.valc1.size()+" valeurs)", Subject.CORRECTION);
 				log.write("Distance médiane de "+c.c2+" : "+mesure2+" ("+c.valc2.size()+" valeurs)", Subject.CORRECTION);
 				
+				c.enable = false;
+				c.valc1.clear();
+				c.valc2.clear();
+
 				XY_RW pointVu1 = getPositionVue(capteurs[c.c1.ordinal()], mesure1, cinem, 0, 0, 0);
 				if(pointVu1 == null)
 					continue;
@@ -643,11 +647,7 @@ public class CapteursProcess
 				
 				totalDeltaPos.plus(delta);
 				totalDeltaAngle += deltaOrientation;				
-				nb++;
-				
-				c.enable = false;
-				c.valc1.clear();
-				c.valc2.clear();
+				nb++;				
 			}
 		}
 
