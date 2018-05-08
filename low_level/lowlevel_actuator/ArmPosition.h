@@ -26,7 +26,8 @@
 
 /* Angles utiles */
 #define ARM_H_ANGLE_CABIN           0.8     // [rad] Angle horizontal en dessous duquel on peut se manger la cabine
-#define ARM_H_ANGLE_MANIP           1.10    // [rad] Angke horizontal au dessus duquel on peut manipuler librement un cube
+#define ARM_H_ANGLE_MANIP           1.10    // [rad] Angke horizontal au dessus duquel on peut utiniser la pince ouverte
+#define ARM_H_ANGLE_CLOSED_MANIP    0.9     // [rad] Angke horizontal au dessus duquel on peut manipuler un cube (pince fermée)
 #define ARM_HEAD_SCAN_ANGLE         -1.35   // [rad] Angle global permettant de voir le cube à prendre
 #define ARM_HEAD_L_ANGLE_TRANSPORT  4.721   // [rad] Angle local de la tête de bras pour transporter un cube
 #define ARM_HEAD_G_ANGLE_STORAGE    -0.785  // [rad] Angle de premettant la prise et la dépose dans la zone de stockage interne
@@ -37,7 +38,7 @@
 #define ARM_V_ANGLE_STAGE_0_DOWN    -0.13   // [rad] Angle vertical de manipulation de cube sur le sol
 #define ARM_V_ANGLE_STAGE_1_UP      0.20    // [rad] Angle vertical de prise/dépose de cube sur l'étage 1
 #define ARM_V_ANGLE_STAGE_1_DOWN    0.13    // [rad] Angle vertical de manipulation de cube sur l'étage 1
-#define ARM_V_ANGLE_STAGE_2_UP      0.45    // [rad] Angle vertical de prise/dépose de cube sur l'étage 2
+#define ARM_V_ANGLE_STAGE_2_UP      0.50    // [rad] Angle vertical de prise/dépose de cube sur l'étage 2
 #define ARM_V_ANGLE_STAGE_2_DOWN    0.38    // [rad] Angle vertical de manipulation de cube sur l'étage 2
 #define ARM_V_ANGLE_STAGE_3_UP      -0.05   // [rad] Angle vertical de prise/dépose de cube sur l'étage 3
 #define ARM_V_ANGLE_STAGE_3_DOWN    -0.14   // [rad] Angle vertical de manipulation de cube sur l'étage 3
