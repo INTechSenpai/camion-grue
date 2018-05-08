@@ -35,13 +35,13 @@ public:
         headAX12(serialAX, ID_AX12_HEAD),
         plierAX12(serialAX, ID_AX12_PLIER)
     {
-        hMotorBlockingMgr.setTunings(BLOCKING_SENSIBILITY, BLOCKING_DELAY);
+        hMotorBlockingMgr.setTunings(BLOCKING_SENSIBILITY, BLOCKING_DELAY, BLOCKING_SPEED_THRESHOLD);
         hMotorSpeedPID.setTunings(H_SPEED_KP, H_SPEED_KI, H_SPEED_KD);
         hMotorSpeedPID.setOutputLimits(-MAX_PWM, MAX_PWM);
         hMotorPosPID.setTunings(HMOTOR_KP, 0, HMOTOR_KD);
         hMotorPosPID.setOutputLimits(-HMOTOR_MAX_SPEED, HMOTOR_MAX_SPEED);
 
-        vMotorBlockingMgr.setTunings(BLOCKING_SENSIBILITY, BLOCKING_DELAY);
+        vMotorBlockingMgr.setTunings(0, BLOCKING_DELAY, 0);
         vMotorSpeedPID.setTunings(V_SPEED_KP, V_SPEED_KI, V_SPEED_KD);
         vMotorSpeedPID.setOutputLimits(-MAX_PWM, MAX_PWM);
 

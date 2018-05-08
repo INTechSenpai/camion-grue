@@ -17,13 +17,14 @@ public:
 	{
 		sensibility = 0;
 		responseTime = 0;
+        speedThreshold = 0;
 		beginTime = 0;
 		blocked = false;
 	}
 
 	inline void compute()
 	{
-		if (abs(realSpeed) < abs(aimSpeed)*sensibility)
+		if (abs(aimSpeed) > speedThreshold && abs(realSpeed) < abs(aimSpeed)*sensibility)
 		{
 			if (!blocked)
 			{
@@ -37,16 +38,18 @@ public:
 		}
 	}
 
-	void setTunings(float sensibility, uint32_t responseTime)
+	void setTunings(float sensibility, uint32_t responseTime, float speedThreshold)
 	{
 		this->sensibility = sensibility;
 		this->responseTime = responseTime;
+        this->speedThreshold = speedThreshold;
 	}
 
-	void getTunings(float & sensibility, uint32_t & responseTime) const
+	void getTunings(float & sensibility, uint32_t & responseTime, float & speedThreshold) const
 	{
 		sensibility = this->sensibility;
 		responseTime = this->responseTime;
+        speedThreshold = this->speedThreshold;
 	}
 
 	inline bool isBlocked() const
@@ -65,6 +68,7 @@ private:
 
 	float sensibility; // Entre 0 et 1. Le seuil "vitesse insuffisante" vaut aimSpeed*sensibility
 	uint32_t responseTime; // ms
+    float speedThreshold;
 
 	bool blocked;
 	uint32_t beginTime;
