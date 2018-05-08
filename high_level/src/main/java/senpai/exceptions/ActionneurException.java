@@ -25,15 +25,12 @@ public class ActionneurException extends Exception
 {
 
 	private static final long serialVersionUID = -960091158805232282L;
-
-	public ActionneurException()
-	{
-		super();
-	}
-
-	public ActionneurException(String m)
+	public final int code;
+	
+	public ActionneurException(String m, int code)
 	{
 		super(m);
+		this.code = code;
 	}
 
 }

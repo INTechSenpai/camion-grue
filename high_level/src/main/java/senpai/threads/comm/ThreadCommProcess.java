@@ -196,10 +196,11 @@ public class ThreadCommProcess extends Thread
 				else if(paquet.origine == Id.ARM_TAKE_CUBE || paquet.origine == Id.ARM_TAKE_CUBE_S)
 				{
 					int code = data.getInt();
-					if((code & (1 << CommProtocol.ActionneurMask.CUBE_MISSED.ordinal())) == 0)
+					// seul CUBE_MISSED est un cas d'erreur
+					if((code & CommProtocol.ActionneurMask.CUBE_MISSED.masque) == 0)
 						paquet.origine.ticket.set(CommProtocol.State.OK);
 					else
-						paquet.origine.ticket.set(CommProtocol.State.KO, CommProtocol.ActionneurMask.describe(code));
+						paquet.origine.ticket.set(CommProtocol.State.KO, code);
 				}				
 
 				else if(paquet.origine.name().startsWith("ARM_"))
@@ -208,7 +209,7 @@ public class ThreadCommProcess extends Thread
 					if(code == 0)
 						paquet.origine.ticket.set(CommProtocol.State.OK);
 					else
-						paquet.origine.ticket.set(CommProtocol.State.KO, CommProtocol.ActionneurMask.describe(code));
+						paquet.origine.ticket.set(CommProtocol.State.KO, code);
 				}				
 				
 				else if(paquet.origine == Id.GET_ARM_POSITION)

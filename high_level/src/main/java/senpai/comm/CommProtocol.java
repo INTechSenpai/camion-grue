@@ -27,7 +27,9 @@ public class CommProtocol
 	public enum State
 	{
 		OK,
-		KO;
+		KO,
+		DESTROYED_CUBE,
+		NO_CUBE;
 	}
 	
 	public enum Channel
@@ -241,7 +243,7 @@ public class CommProtocol
 		CUBE_MISSED,
 		MOVE_TIMED_OUT;
 
-		private final int masque = 1 << ordinal();
+		public final int masque = 1 << ordinal();
 		
 		public static String describe(int valeur)
 		{

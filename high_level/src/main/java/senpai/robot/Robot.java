@@ -234,11 +234,11 @@ public class Robot extends RobotState
 		catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e)
 		{
 			e.printStackTrace();
-			throw new ActionneurException("Méthode inconnue : " + nom);
+			throw new ActionneurException("Méthode inconnue : " + nom, -1);
 		}
 		DataTicket dt = t.attendStatus();
 		if(dt.status == CommProtocol.State.KO)
-			throw new ActionneurException("Problème pour l'actionneur " + nom+" : "+dt.data);
+			throw new ActionneurException("Problème pour l'actionneur " + nom+" : "+CommProtocol.ActionneurMask.describe((int)dt.data), (int)dt.data);
 
 		log.write("Temps d'exécution de " + nom + " : " + (System.currentTimeMillis() - avant), Subject.SCRIPT);
 	}
@@ -301,34 +301,49 @@ public class Robot extends RobotState
 	public void poseCubes(double angle) throws InterruptedException, ActionneurException
 	{
 		int etage = piles.size();
+		Cube s = null;
+		
 		if(cubeTop != null)
 		{
-			Cube s = cubeTop;
+			s = cubeTop;
 			cubeTop = null;
-			if(etage == 0) // étage 0 : pas de scan
-				execute(Id.ARM_PUT_ON_PILE, angle, etage);
-			else
-				execute(Id.ARM_PUT_ON_PILE_S, angle, etage);
-			piles.add(s);
-			updateScore();
 		}
-		
-		// TODO NO_DETECTION : pas de cube à poser
-		// TODO CUBE_MISSED : pile cassée
-		
-		// si l'étage vaut 4 ici, c'est qu'on a posé le cube 3 avant
-		// et donc qu'on n'est pas en position pour le cube 4
 		else if(cubeInside != null)
 		{
 			execute(Id.ARM_TAKE_FROM_STORAGE);
-			Cube s = cubeInside;
+			s = cubeInside;
 			cubeInside = null;
-			if(etage == 0) // étage 0 : pas de scan
-				execute(Id.ARM_PUT_ON_PILE, angle, etage);
-			else
-				execute(Id.ARM_PUT_ON_PILE_S, angle, etage);
-			piles.add(s);
-			updateScore();
+		}
+		
+		if(s != null)
+		{
+			try {
+				if(etage == 0) // étage 0 : pas de scan
+					execute(Id.ARM_PUT_ON_PILE, angle, etage);
+				else
+					execute(Id.ARM_PUT_ON_PILE_S, angle, etage);
+				piles.add(s);
+				updateScore();
+			}
+			catch(ActionneurException e)
+			{
+				int code = e.code;
+				if((code & CommProtocol.ActionneurMask.NO_DETECTION.masque) != 0)
+					poseCubes(angle);
+				else if((code & CommProtocol.ActionneurMask.CUBE_MISSED.masque) != 0)
+					if(!piles.isEmpty())
+					{
+						// un cube sur deux tombe dans la zone
+						// le cube à la base ne tombe pas, mais celui dans le robot (et pas encore dans la pile) tombe
+						score += piles.size() / 2;
+						Cube first = piles.get(0);
+						piles.clear();
+						piles.add(first);
+						updateScore();
+					}
+				else
+					throw e;
+			}
 		}
 	}
 	
