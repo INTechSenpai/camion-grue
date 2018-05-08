@@ -192,6 +192,16 @@ public class ThreadCommProcess extends Thread
 				/*
 				 * ACTIONNEURS
 				 */				
+
+				else if(paquet.origine == Id.ARM_TAKE_CUBE || paquet.origine == Id.ARM_TAKE_CUBE_S)
+				{
+					int code = data.getInt();
+					if((code & (1 << CommProtocol.ActionneurMask.CUBE_MISSED.ordinal())) == 0)
+						paquet.origine.ticket.set(CommProtocol.State.OK);
+					else
+						paquet.origine.ticket.set(CommProtocol.State.KO, CommProtocol.ActionneurMask.describe(code));
+				}				
+
 				else if(paquet.origine.name().startsWith("ARM_"))
 				{
 					int code = data.getInt();
