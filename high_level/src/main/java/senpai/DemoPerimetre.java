@@ -56,6 +56,7 @@ public class DemoPerimetre
 				System.out.println("Paramètres possible : droite, gauche");
 				return;
 			}
+			robot.updateScore(42);
 			robot.execute(Id.ARM_GO_TO, cote * 80. * Math.PI / 180., 0., 4.974, 25.);
 			robot.execute(Id.ARM_GO_TO, cote * 80. * Math.PI / 180., 0., 4.974 - Math.PI / 2, 25.);
 			while(true)

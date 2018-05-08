@@ -295,7 +295,22 @@ public class Robot extends RobotState
 	
 	public void execute(CommProtocol.Id ordre, Object... param) throws InterruptedException, ActionneurException
 	{
-		bloque(ordre.getMethodName(), param);
+		int nbEssaiMax = 2;
+		boolean retry;
+		do {
+			retry = false;
+			try {
+				bloque(ordre.getMethodName(), param);
+			}
+			catch(ActionneurException e)
+			{
+				nbEssaiMax--;
+				if(nbEssaiMax >= 0 && e.code == CommProtocol.ActionneurMask.MOVE_TIMED_OUT.masque)
+					retry = true;
+				else
+					throw e;
+			}
+		} while(retry);
 	}
 
 	public void poseCubes(double angle) throws InterruptedException, ActionneurException
