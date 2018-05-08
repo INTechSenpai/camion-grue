@@ -56,19 +56,6 @@ public class ScriptDeposeCube extends Script
 	@Override
 	public XYO getPointEntree()
 	{
-		/*
-		 * Cas où on connait le pattern : 2 piles de 3 cubes
-		 * Cas ou on ne connaît pas le pattern : 1 pile de 6 cubes
-		 */
-		
-		/*
-		 * Attention ! Plus on met un cube haut, plus la projection verticale de la grue sera courte. Il faut donc prendre en compte cet effet.
-		 */
-		
-		/*
-		 * Pour déposer le 4e et le 5e cube, l'angle de la grue avec le robot est nul (remplacer le +15 par un +90
-		 */
-		
 		if(coteDroit)
 		{
 			XY_RW position = new XY_RW(longueurGrue, angleDepose, true).plus(positionPile);

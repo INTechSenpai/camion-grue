@@ -317,13 +317,14 @@ public class Robot extends RobotState
 			piles[nbPile].add(cubeTop);
 			etage++;
 			updateScore();
+			nbMaxDepose--;
 		}
 		
 		// si l'étage vaut 4 ici, c'est qu'on a posé le cube 3 avant
 		// et donc qu'on n'est pas en position pour le cube 4
 		
 		// etage 6 : la pile est pleine
-		if(cubeInside != null && etage != 4 && etage != 6 && nbMaxDepose == 2)
+		if(cubeInside != null && etage != 4 && etage != 6 && nbMaxDepose >= 1)
 		{
 			execute(Id.ARM_TAKE_FROM_STORAGE);
 			cubeInside = null;

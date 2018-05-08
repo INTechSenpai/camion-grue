@@ -300,9 +300,15 @@ public class ScriptManager
 	public PriorityQueue<ScriptPriseCube> getFirstPatternColor()
 	{
 		if(usePattern)
-			return getAllPossible(pattern[0], pattern[2], false);
-		else
-			return getAllPossible(false);
+		{
+			log.write("Recherche de scripts pour le premier cube avec pattern. Couleurs cherchées : "+pattern[0]+" et "+pattern[2], Subject.SCRIPT);
+			PriorityQueue<ScriptPriseCube> out = getAllPossible(pattern[0], pattern[2], false); 
+			if(!out.isEmpty())
+				return out;
+			log.write("Couleurs introuvables, pattern désactivé", Subject.SCRIPT);
+			usePattern = false;
+		}
+		return getAllPossible(false);
 	}
 
 	public PriorityQueue<ScriptPriseCube> getSecondPatternColor()
@@ -311,11 +317,20 @@ public class ScriptManager
 		{
 			// on vérifie qu'on a bien le premier cube, sinon on annule
 			if(robot.isThereCubeInside())
-				return getAllPossible(pattern[1], null, false);
+			{
+				log.write("Recherche de scripts pour le second cube avec pattern. Couleur cherchée : "+pattern[1], Subject.SCRIPT);
+				PriorityQueue<ScriptPriseCube> out = getAllPossible(pattern[1], null, false); 
+				if(!out.isEmpty())
+					return out;
+				log.write("Couleur introuvable, pattern désactivé", Subject.SCRIPT);
+				usePattern = false;
+			}
 			else
+			{
+				log.write("Le robot veut un second cube de pattern mais n'a pas le premier.", Subject.SCRIPT);
 				return new PriorityQueue<ScriptPriseCube>();
+			}
 		}
-		else
-			return getAllPossible(false);
+		return getAllPossible(false);
 	}
 }
