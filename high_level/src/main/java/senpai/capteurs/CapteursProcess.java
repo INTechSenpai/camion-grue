@@ -189,6 +189,13 @@ public class CapteursProcess
 				c.isThereObstacle = false;
 				continue;
 			}
+		
+			RectangularObstacle obsPile = table.getObstaclePile();
+			if(obsPile != null && obsPile.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
+			{
+				c.isThereObstacle = false;
+				continue;
+			}
 			
 			if(c.isTourelle)
 				if(positionVue.getY() > (2000 - distanceAuMurMinimumTourelle)

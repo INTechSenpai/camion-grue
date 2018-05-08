@@ -25,8 +25,8 @@ import pfg.graphic.GraphicDisplay;
 import pfg.graphic.GraphicPanel;
 import pfg.graphic.printable.Layer;
 import pfg.graphic.printable.Printable;
-import pfg.kraken.obstacles.CircularObstacle;
 import pfg.kraken.obstacles.Obstacle;
+import pfg.kraken.obstacles.RectangularObstacle;
 import pfg.kraken.utils.XY_RW;
 import pfg.log.Log;
 import senpai.utils.ConfigInfoSenpai;
@@ -48,8 +48,10 @@ public class Table implements Printable
 
 	private HashMap<Cube, Boolean> etat = new HashMap<Cube, Boolean>();
 	private List<Obstacle> currentObstacles = new ArrayList<Obstacle>();
-
-	private Obstacle obstaclePiles;
+	private double pileOrientation;
+	
+	private RectangularObstacle obstaclePilesGrossi;
+	private RectangularObstacle obstaclePiles;
 	private boolean pileActivees;
 	private XY_RW pilePosition;
 	
@@ -63,6 +65,7 @@ public class Table implements Printable
 
 		pileActivees = false;
 		pilePosition = new XY_RW(config.getDouble(ConfigInfoSenpai.PILE_1_X),config.getDouble(ConfigInfoSenpai.PILE_1_Y));
+		pileOrientation = config.getDouble(ConfigInfoSenpai.PILE_1_O);
 		setDone(Cube.GOLDEN_CUBE_1);
 		setDone(Cube.GOLDEN_CUBE_2);
 	}
@@ -76,9 +79,11 @@ public class Table implements Printable
 		if(symetrie)
 		{
 			pilePosition.setX(-pilePosition.getX());
+			pileOrientation = Math.PI - pileOrientation;
 		}
 		
-		obstaclePiles = new CircularObstacle(pilePosition, 80);
+		obstaclePilesGrossi = new RectangularObstacle(pilePosition, 58+30, 58+30, pileOrientation);
+		obstaclePiles = new RectangularObstacle(pilePosition, 58, 58, pileOrientation);
 	}
 	
 	/**
@@ -111,10 +116,15 @@ public class Table implements Printable
 			if(!etat.get(n))
 				currentObstacles.add(n.obstacleGrossi);
 		if(pileActivees)
-			currentObstacles.add(obstaclePiles);
+			currentObstacles.add(obstaclePilesGrossi);
 		return currentObstacles.iterator();
 	}
 
+	public RectangularObstacle getObstaclePile()
+	{
+		return obstaclePiles;
+	}
+	
 	public void enableObstaclePile()
 	{
 		pileActivees = true;
