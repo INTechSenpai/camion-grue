@@ -214,11 +214,18 @@ public class Match
 			}
 		}
 
-		try {
-			doScript(scripts.getScriptDomotique(), 5);
-			robot.printTemps();
-		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-			log.write("Erreur : "+e, Subject.SCRIPT);
+		/*
+		 * Domotique
+		 */
+		
+		for(int i = 0; i < 3; i++)
+		{
+			try {
+				doScript(scripts.getScriptDomotique(), 5);
+				robot.printTemps();
+			} catch (PathfindingException | UnableToMoveException | ScriptException e) {
+				log.write("Erreur : "+e, Subject.SCRIPT);
+			}
 		}
 
 		/*
@@ -255,7 +262,7 @@ public class Match
 			do {
 				retry = false;
 				try {
-					doScript(allPrise.poll(), 5);
+					doScript(allPrise.poll(), 5, false);
 					robot.printTemps();
 					allError = false;
 				} catch (PathfindingException | UnableToMoveException | ScriptException e) {
@@ -268,7 +275,7 @@ public class Match
 			do {
 				retry = false;
 				try {
-					doScript(allPrise.poll(), 5);
+					doScript(allPrise.poll(), 5, false);
 					robot.printTemps();
 					allError = false;
 				} catch (PathfindingException | UnableToMoveException | ScriptException e) {
@@ -282,7 +289,7 @@ public class Match
 			 */
 
 			try {
-				doScript(scripts.getScriptRecalage(), 5);
+				doScript(scripts.getScriptRecalage(), 5, false);
 				robot.printTemps();
 				allError = false;
 			} catch (PathfindingException | UnableToMoveException | ScriptException e) {
@@ -293,13 +300,17 @@ public class Match
 			 * Dépose de cube
 			 */
 			
-			try {
-				doScript(scripts.getDeposeScript(), 5);
-				robot.printTemps();
-				allError = false;
-			} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-				log.write("Erreur : "+e, Subject.SCRIPT);
-			}			
+			for(int i = 0; i < 2; i++)
+			{
+				try {
+					doScript(scripts.getDeposeScript(), 5);
+					robot.printTemps();
+					allError = false;
+				} catch (PathfindingException | UnableToMoveException | ScriptException e) {
+					log.write("Erreur : "+e, Subject.SCRIPT);
+				}			
+			}
+			
 			/*
 			 * Abeille
 			 */
@@ -335,7 +346,7 @@ public class Match
 		}		
 
 		try {
-			doScript(scripts.getScriptRecalage(), 5);
+			doScript(scripts.getScriptRecalage(), 15, false);
 			robot.printTemps();
 			allError = false;
 		} catch (PathfindingException | UnableToMoveException | ScriptException e) {
@@ -345,6 +356,11 @@ public class Match
 	}
 	
 	private void doScript(Script s, int nbEssaiChemin) throws PathfindingException, InterruptedException, UnableToMoveException, ScriptException
+	{
+		doScript(s, nbEssaiChemin, true);
+	}
+	
+	private void doScript(Script s, int nbEssaiChemin, boolean checkFin) throws PathfindingException, InterruptedException, UnableToMoveException, ScriptException
 	{
 		if(Thread.currentThread().isInterrupted())
 			throw new InterruptedException();
@@ -371,10 +387,10 @@ public class Match
 			}
 		} while(restart && nbEssaiChemin > 0);
 		
-		if(Math.abs(XYO.angleDifference(robot.getCinematique().orientationReelle, pointEntree.orientation)) > 5.*Math.PI/180)
+		if(checkFin && Math.abs(XYO.angleDifference(robot.getCinematique().orientationReelle, pointEntree.orientation)) > 5.*Math.PI/180)
 			robot.goTo(pointEntree);
 
-		if(Math.abs(XYO.angleDifference(robot.getCinematique().orientationReelle, pointEntree.orientation)) > 5.*Math.PI/180)
+		if(checkFin && Math.abs(XYO.angleDifference(robot.getCinematique().orientationReelle, pointEntree.orientation)) > 5.*Math.PI/180)
 			throw new ScriptException("On n'a pas réussi à arriver à l'orientation voulue");
 		
 		if(!restart)

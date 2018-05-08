@@ -67,10 +67,18 @@ public class Test_Robot extends JUnit_Test
 				if(couleur != CubeColor.GOLDEN)
 					for(CubeFace face : CubeFace.values())
 					{
-						new ScriptPriseCube(log, robot, table, cp, null, croix, couleur, face, true);
-						new ScriptPriseCube(log, robot, table, cp, null, croix, couleur, face, false);
+						new ScriptPriseCube(log, robot, table, cp, null, croix, couleur, face, true,false);
+						new ScriptPriseCube(log, robot, table, cp, null, croix, couleur, face, false,false);
 					}
 	}
+	
+	@Test
+	public void test_cube3() throws Exception
+	{
+		table.setDone(Cube.CROIX_CENTRE_GAUCHE_CUBE_BAS);
+		System.out.println(scripts.getAllPossible(CubeColor.JAUNE, null, true));
+	}
+
 	
 	@Test
 	public void test_cube2() throws Exception

@@ -78,10 +78,7 @@ public class ScriptDeposeCube extends Script
 			cp.startStaticCorrection(CapteursCorrection.AVANT, CapteursCorrection.ARRIERE);
 			robot.poseCubes(coteDroit ? - Math.PI / 2 + angleGrue : Math.PI / 2 - angleGrue);
 			table.enableObstaclePile();
-			if(coteDroit)
-				robot.rangeBras(LLCote.PAR_LA_GAUCHE);
-			else
-				robot.rangeBras(LLCote.PAR_LA_DROITE);
+			robot.rangeBras(LLCote.AU_PLUS_VITE);
 			cp.endStaticCorrection();
 		} finally {
 			robot.avance(distanceToScript, 0.2);

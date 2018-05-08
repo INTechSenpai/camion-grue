@@ -132,7 +132,7 @@ public class ThreadCommProcess extends Thread
 						if(enableTourelle || !c.isTourelle)
 							sd.mesures[c.ordinal()] = data.getInt();
 						int m = sd.mesures[c.ordinal()];
-						if(m != CommProtocol.EtatCapteur.TROP_LOIN.ordinal() && (!c.isTourelle || m != CommProtocol.EtatCapteur.CAPTEUR_HS_BRULE_NOYE.ordinal()))
+						if(capteursOn && m != CommProtocol.EtatCapteur.TROP_LOIN.ordinal() && (!c.isTourelle || m != CommProtocol.EtatCapteur.CAPTEUR_HS_BRULE_NOYE.ordinal()))
 							log.write("Capteur " + c.name() + " : " + (m < CommProtocol.EtatCapteur.values().length ? CommProtocol.EtatCapteur.values()[m] : m), Subject.CAPTEURS);
 					}
 					double angleTourelleGauche = data.getFloat();
@@ -157,8 +157,8 @@ public class ThreadCommProcess extends Thread
 						sd.cinematique = current;
 						buffer.add(sd);
 					}
-					else
-						log.write("Capteurs désactivés !", Subject.CAPTEURS);
+//					else
+//						log.write("Capteurs désactivés !", Subject.CAPTEURS);
 				}
 
 				/**
@@ -262,7 +262,7 @@ public class ThreadCommProcess extends Thread
 					log.write("Durée de traitement de " + paquet.origine.name() + " : " + duree, duree >= 1000 ? Severity.CRITICAL : Severity.WARNING, Subject.COMM);
 				
 				duree = System.currentTimeMillis() - paquet.timestamp;
-				if(duree >= 5)
+				if(duree >= 20)
 					log.write("Latence de traitement de " + paquet.origine.name() + " : " + duree, duree >= 1000 ? Severity.CRITICAL : Severity.WARNING, Subject.COMM);
 			}
 		}

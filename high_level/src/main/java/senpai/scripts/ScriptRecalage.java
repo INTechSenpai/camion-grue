@@ -33,7 +33,7 @@ import senpai.table.Table;
 
 public class ScriptRecalage extends Script
 {
-	private XY_RW positionEntree = new XY_RW(1300,1700);
+	private XY_RW positionEntree = new XY_RW(1270,1680);
 	private CapteursCorrection[] capteurs = new CapteursCorrection[2];
 	private long dureeRecalage;
 	

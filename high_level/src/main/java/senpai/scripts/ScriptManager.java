@@ -63,7 +63,7 @@ public class ScriptManager
 	private CubeColor[] pattern;
 	private XY_RW pilePosition;
 	private double anglesDepose;
-	private double[] longueurGrue = new double[]{300, 300, 290, 365, 365}; // longueur de la grue en fonction du nombre de cube déjà posés
+	private double[] longueurGrue = new double[]{300, 300, 290}; // longueur de la grue en fonction du nombre de cube déjà posés
 	private boolean coteDroit;
 	private int distanceToScript = 0;
 	
@@ -139,6 +139,8 @@ public class ScriptManager
 	
 	public PriorityQueue<ScriptPriseCube> getAllPossible(CubeColor couleur1, CubeColor couleur2, boolean bourrine)
 	{
+		log.write("Recherche de "+couleur1+(couleur2 == null ? "" : " et de "+couleur2)+(bourrine ? " en bourrinant." : "."), Subject.SCRIPT);
+
 		PriorityQueue<ScriptPriseCube> out = new PriorityQueue<ScriptPriseCube>(new CubeComparator(robot.getCinematique().getXYO()));
 		
 		for(Croix croix : Croix.values())
@@ -149,8 +151,8 @@ public class ScriptManager
 				if(isFacePossible(c, f, bourrine))
 				{
 					log.write("Possible : "+c+" "+f, Subject.SCRIPT);
-					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true));
-					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false));
+					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true,bourrine));
+					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false,bourrine));
 				}
 				if(couleur2 != null)
 				{
@@ -158,8 +160,8 @@ public class ScriptManager
 					if(isFacePossible(c, f, bourrine))
 					{
 						log.write("Possible : "+c+" "+f, Subject.SCRIPT);
-						out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true));
-						out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false));
+						out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true,bourrine));
+						out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false,bourrine));
 					}					
 				}
 			}
@@ -187,8 +189,8 @@ public class ScriptManager
 				if(isFacePossible(c, f, bourrine))
 				{
 					log.write("Possible : "+c+" "+f, Subject.SCRIPT);
-					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true));
-					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false));
+					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true,bourrine));
+					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false,bourrine));
 				}
 //				else
 //					log.write("Impossible : "+c+" "+f, Subject.SCRIPT);
@@ -301,7 +303,7 @@ public class ScriptManager
 			if(robot.isThereCubeInside())
 			{
 				log.write("Recherche de scripts pour le second cube avec pattern. Couleur cherchée : "+pattern[1], Subject.SCRIPT);
-				PriorityQueue<ScriptPriseCube> out = getAllPossible(pattern[1], null, false); 
+				PriorityQueue<ScriptPriseCube> out = getAllPossible(pattern[1], null, true);
 				if(!out.isEmpty())
 					return out;
 				log.write("Couleur introuvable, pattern désactivé", Subject.SCRIPT);

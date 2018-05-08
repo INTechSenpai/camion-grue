@@ -42,21 +42,23 @@ public class ScriptPriseCube extends Script
 	public final CubeFace face;
 	public final Cube cube;
 	public final boolean coteDroit;
+	public final boolean bourrine;
 //	private ObstaclesDynamiques obsDyn;
 //	private RectangularObstacle o;
 	
-	public ScriptPriseCube(Log log, Robot robot, Table table, CapteursProcess cp, ObstaclesDynamiques obsDyn, Cube cube, CubeFace face, boolean coteDroit)
+	public ScriptPriseCube(Log log, Robot robot, Table table, CapteursProcess cp, ObstaclesDynamiques obsDyn, Cube cube, CubeFace face, boolean coteDroit, boolean bourrine)
 	{
 		super(log, robot, table, cp);
 //		this.obsDyn = obsDyn;
 		this.cube = cube;
+		this.bourrine = bourrine;
 		this.face = face;
 		this.coteDroit = coteDroit;
 	}
 	
-	public ScriptPriseCube(Log log, Robot robot, Table table, CapteursProcess cp, ObstaclesDynamiques obsDyn, Croix croix, CubeColor couleur, CubeFace face, boolean coteDroit)
+	public ScriptPriseCube(Log log, Robot robot, Table table, CapteursProcess cp, ObstaclesDynamiques obsDyn, Croix croix, CubeColor couleur, CubeFace face, boolean coteDroit, boolean bourrine)
 	{
-		this(log, robot, table, cp, obsDyn, Cube.getCube(croix, couleur), face, coteDroit);
+		this(log, robot, table, cp, obsDyn, Cube.getCube(croix, couleur), face, coteDroit, bourrine);
 	}
 	
 	@Override
@@ -93,7 +95,7 @@ public class ScriptPriseCube extends Script
 //		if(obsDyn.collisionScript(o))
 //			throw new UnableToMoveException("Obstacle détecté !");
 		table.setDone(cube); // dans tous les cas, le cas n'est plus là (soit il ne l'a jamais été, soit on l'a pris)
-		robot.execute(Id.ARM_TAKE_CUBE, coteDroit ? - Math.PI / 180 * 75 : Math.PI / 180 * 75);
+		robot.execute(bourrine ? Id.ARM_TAKE_CUBE : Id.ARM_TAKE_CUBE_S, coteDroit ? - Math.PI / 180 * 75 : Math.PI / 180 * 75);
 		robot.storeCube(cube);
 	}
 	

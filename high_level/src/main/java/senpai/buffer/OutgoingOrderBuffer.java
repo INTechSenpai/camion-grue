@@ -176,7 +176,7 @@ public class OutgoingOrderBuffer implements Plottable
 	
 	public void setTourellesAngles(double angleTourelleGauche, double angleTourelleDroite)
 	{
-		log.write("Angles tourelles : "+angleTourelleGauche+" "+angleTourelleDroite, Subject.STATUS);
+//		log.write("Angles tourelles : "+angleTourelleGauche+" "+angleTourelleDroite, Subject.STATUS);
 		ByteBuffer data = ByteBuffer.allocate(8);
 		data.order(ByteOrder.LITTLE_ENDIAN);
 		data.putFloat((float) angleTourelleGauche);

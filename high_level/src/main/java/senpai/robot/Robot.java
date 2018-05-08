@@ -301,7 +301,6 @@ public class Robot extends RobotState
 	public void poseCubes(double angle) throws InterruptedException, ActionneurException
 	{
 		int etage = piles.size();
-		boolean firstDone = false;
 		if(cubeTop != null)
 		{
 			Cube s = cubeTop;
@@ -312,21 +311,19 @@ public class Robot extends RobotState
 				execute(Id.ARM_PUT_ON_PILE_S, angle, etage);
 			piles.add(s);
 			updateScore();
-			firstDone = true;
 		}
 		
-		etage = piles.size();
+		// TODO NO_DETECTION : pas de cube à poser
+		// TODO CUBE_MISSED : pile cassée
 		
 		// si l'étage vaut 4 ici, c'est qu'on a posé le cube 3 avant
 		// et donc qu'on n'est pas en position pour le cube 4
-		if(cubeInside != null && etage != 4)
+		else if(cubeInside != null)
 		{
 			execute(Id.ARM_TAKE_FROM_STORAGE);
 			Cube s = cubeInside;
 			cubeInside = null;
-			if(firstDone)
-				execute(Id.ARM_PUT_ON_PILE, angle, etage);
-			else if(etage == 0) // étage 0 : pas de scan
+			if(etage == 0) // étage 0 : pas de scan
 				execute(Id.ARM_PUT_ON_PILE, angle, etage);
 			else
 				execute(Id.ARM_PUT_ON_PILE_S, angle, etage);
