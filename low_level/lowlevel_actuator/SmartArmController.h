@@ -374,7 +374,10 @@ private:
                 {
                     armPosition.setHAngle(-ARM_H_ANGLE_MANIP);
                 }
-                armPosition.setVAngle(ARM_V_ANGLE_ORIGIN);
+                if (armPosition.getVAngle() < ARM_V_ANGLE_ORIGIN)
+                {
+                    armPosition.setVAngle(ARM_V_ANGLE_ORIGIN);
+                }
                 armPosition.setPlierPos(ARM_MAX_PLIER_POS);
                 armControler.setAimPosition(armPosition);
                 currentCommandStep++;
