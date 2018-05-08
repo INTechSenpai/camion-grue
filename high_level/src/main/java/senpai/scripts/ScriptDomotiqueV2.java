@@ -101,9 +101,9 @@ public class ScriptDomotiqueV2 extends Script
 				robot.execute(Id.ARM_PUSH_BUTTON, angle, LLCote.PAR_LA_DROITE);
 			robot.setDomotiqueDone();
 			if(symetrie)
-				robot.rangeBras(LLCote.PAR_LA_DROITE);
-			else
 				robot.rangeBras(LLCote.PAR_LA_GAUCHE);
+			else
+				robot.rangeBras(LLCote.PAR_LA_DROITE);
 			cp.endStaticCorrection();
 		} finally {
 			robot.avance(-100);
