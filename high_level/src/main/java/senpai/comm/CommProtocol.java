@@ -85,7 +85,8 @@ public class CommProtocol
 		ARM_GO_TO(0x2C, "armGoTo"),
 		STOP_ARM(0x2D, "armStop"),
 		ARM_PUSH_BUTTON(0x2E, "armPushButton"),
-		
+		ARM_PUSH_BEE(0x2F, "armPushBee"),
+		ARM_TAKE_FROM_HUMAN(0x30, "armTakeFromHuman"),		
 				
 		// Ordres immédiats (0x80 à 0xFF)
 		PING(0x80, true),

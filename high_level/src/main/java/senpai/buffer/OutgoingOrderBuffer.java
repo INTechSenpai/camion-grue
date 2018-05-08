@@ -190,17 +190,29 @@ public class OutgoingOrderBuffer implements Plottable
 		return Id.GET_ARM_POSITION.ticket;
 	}
 	
-	public Ticket armGoHome(LLCote coteDroit) // TODO
-	{
-		addToBuffer(new Order(Id.ARM_GO_HOME));
-		return Id.ARM_GO_HOME.ticket;
-	}
-	
-	public Ticket armPushButton(Double angleV, LLCote coteDroit) // TODO
+	public Ticket armGoHome(LLCote coteDroit)
 	{
 		ByteBuffer data = ByteBuffer.allocate(4);
 		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.putFloat(coteDroit.code);
+		addToBuffer(new Order(data, Id.ARM_GO_HOME));
+		return Id.ARM_GO_HOME.ticket;
+	}
+	
+	public Ticket armTakeFromHuman(LLCote coteDroit)
+	{
+		ByteBuffer data = ByteBuffer.allocate(4);
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.putFloat(coteDroit.code);
+		addToBuffer(new Order(data, Id.ARM_TAKE_FROM_HUMAN));
+		return Id.ARM_TAKE_FROM_HUMAN.ticket;
+	}	
+	public Ticket armPushButton(Double angleV, LLCote coteDroit)
+	{
+		ByteBuffer data = ByteBuffer.allocate(8);
+		data.order(ByteOrder.LITTLE_ENDIAN);
 		data.putFloat(new Float(angleV));
+		data.putInt(coteDroit.code);
 		addToBuffer(new Order(data, Id.ARM_PUSH_BUTTON));
 		return Id.ARM_PUSH_BUTTON.ticket;
 	}
@@ -229,15 +241,21 @@ public class OutgoingOrderBuffer implements Plottable
 		return Id.ARM_STORE_CUBE_INSIDE.ticket;
 	}
 	
-	public Ticket armStoreCubeTop(LLCote coteDroit) // TODO
+	public Ticket armStoreCubeTop(LLCote coteDroit)
 	{
-		addToBuffer(new Order(Id.ARM_STORE_CUBE_TOP));
+		ByteBuffer data = ByteBuffer.allocate(4);
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.putFloat(coteDroit.code);
+		addToBuffer(new Order(data, Id.ARM_STORE_CUBE_TOP));
 		return Id.ARM_STORE_CUBE_TOP.ticket;
 	}
 	
 	public Ticket armTakeFromStorage()
 	{
-		addToBuffer(new Order(Id.ARM_TAKE_FROM_STORAGE));
+		ByteBuffer data = ByteBuffer.allocate(4);
+		data.order(ByteOrder.LITTLE_ENDIAN);
+		data.putFloat(LLCote.AU_PLUS_VITE.code);
+		addToBuffer(new Order(data, Id.ARM_TAKE_FROM_STORAGE));
 		return Id.ARM_TAKE_FROM_STORAGE.ticket;
 	}
 	
