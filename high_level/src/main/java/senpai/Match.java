@@ -198,7 +198,6 @@ public class Match
 		// etc.
 
 		PriorityQueue<ScriptPriseCube> allPrise;
-		List<ScriptDeposeCube> allDepose;
 		boolean retry;
 		
 		/*
@@ -206,25 +205,12 @@ public class Match
 		 */
 
 		/*
-		 * Le premier golden cube près de la zone de départ
+		 * Le golden cube va près de la zone de départ
 		 */
 		if(robot.canDropCube())
 		{
 			try {
-				doScript(scripts.getDeposeUnCubeScript(0), 5);
-			} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-				log.write("Erreur : "+e, Subject.SCRIPT);
-			}
-		}
-
-		/*
-		 * Le second golden cube près du panneau domotique
-		 * S'il n'y a qu'un seul golden cube dans le robot, ce script n'est pas fait
-		 */
-		if(robot.canDropCube())
-		{
-			try {
-				doScript(scripts.getDeposeUnCubeScript(1), 5);
+				doScript(scripts.getDeposeScript(), 5);
 			} catch (PathfindingException | UnableToMoveException | ScriptException e) {
 				log.write("Erreur : "+e, Subject.SCRIPT);
 			}
@@ -294,30 +280,28 @@ public class Match
 			} while(retry && !allPrise.isEmpty());
 			
 			/*
+			 * Recalage
+			 */
+
+			try {
+				doScript(scripts.getScriptRecalage(), 5);
+				robot.printTemps();
+				allError = false;
+			} catch (PathfindingException | UnableToMoveException | ScriptException e) {
+				log.write("Erreur : "+e, Subject.SCRIPT);
+			}
+
+			/*
 			 * Dépose de cube
 			 */
 			
-			allDepose = scripts.getDeposeScript();
-			
-			if(allDepose.size() >= 1)
-			{
-				try {
-					doScript(allDepose.get(0), 5);
-					allError = false;
-				} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-					log.write("Erreur : "+e, Subject.SCRIPT);
-					if(allDepose.size() >= 2)
-					{
-						try {
-							doScript(allDepose.get(1), 5);
-							allError = false;
-						} catch (PathfindingException | UnableToMoveException | ScriptException e1) {
-							log.write("Erreur : "+e1, Subject.SCRIPT);
-						}
-					}
-				}
-			}
-			
+			try {
+				doScript(scripts.getDeposeScript(), 5);
+				robot.printTemps();
+				allError = false;
+			} catch (PathfindingException | UnableToMoveException | ScriptException e) {
+				log.write("Erreur : "+e, Subject.SCRIPT);
+			}			
 			/*
 			 * Abeille
 			 */
@@ -350,8 +334,7 @@ public class Match
 				log.write("On ne peut ni déposer, ni prendre, ni faire l'abeille, ni poser le panneau domotique !", Severity.WARNING, Subject.SCRIPT);
 				Thread.sleep(1000);
 			}
-		}
-		
+		}		
 
 		try {
 			doScript(scripts.getScriptRecalage(), 5);

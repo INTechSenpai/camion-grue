@@ -49,9 +49,9 @@ public class Table implements Printable
 	private HashMap<Cube, Boolean> etat = new HashMap<Cube, Boolean>();
 	private List<Obstacle> currentObstacles = new ArrayList<Obstacle>();
 
-	private Obstacle[] obstaclePiles;
-	private boolean[] pileActivees;
-	private XY_RW[] pilePosition;
+	private Obstacle obstaclePiles;
+	private boolean pileActivees;
+	private XY_RW pilePosition;
 	
 	public Table(Log log, Config config, GraphicDisplay buffer)
 	{
@@ -61,10 +61,8 @@ public class Table implements Printable
 		for(Cube n : Cube.values())
 			etat.put(n, false);
 
-		pileActivees = new boolean[] {false, false};
-		pilePosition = new XY_RW[] {
-				new XY_RW(config.getDouble(ConfigInfoSenpai.PILE_1_X),config.getDouble(ConfigInfoSenpai.PILE_1_Y)),
-				new XY_RW(config.getDouble(ConfigInfoSenpai.PILE_2_X),config.getDouble(ConfigInfoSenpai.PILE_2_Y))};
+		pileActivees = false;
+		pilePosition = new XY_RW(config.getDouble(ConfigInfoSenpai.PILE_1_X),config.getDouble(ConfigInfoSenpai.PILE_1_Y));
 		setDone(Cube.GOLDEN_CUBE_1);
 		setDone(Cube.GOLDEN_CUBE_2);
 	}
@@ -77,13 +75,10 @@ public class Table implements Printable
 		
 		if(symetrie)
 		{
-			pilePosition[0].setX(-pilePosition[0].getX());
-			pilePosition[1].setX(-pilePosition[1].getX());
+			pilePosition.setX(-pilePosition.getX());
 		}
 		
-		obstaclePiles = new Obstacle[] {
-				new CircularObstacle(pilePosition[0], 80),
-				new CircularObstacle(pilePosition[1], 80)};
+		obstaclePiles = new CircularObstacle(pilePosition, 80);
 	}
 	
 	/**
@@ -115,16 +110,14 @@ public class Table implements Printable
 		for(Cube n : Cube.values())
 			if(!etat.get(n))
 				currentObstacles.add(n.obstacleGrossi);
-		if(pileActivees[0])
-			currentObstacles.add(obstaclePiles[0]);
-		if(pileActivees[1])
-			currentObstacles.add(obstaclePiles[1]);
+		if(pileActivees)
+			currentObstacles.add(obstaclePiles);
 		return currentObstacles.iterator();
 	}
 
-	public void enableObstaclePile(int nbPile)
+	public void enableObstaclePile()
 	{
-		pileActivees[nbPile] = true;
+		pileActivees = true;
 	}
 	
 	@Override

@@ -55,22 +55,19 @@ public class ScriptManager
 		this.couleur = couleur;
 		if(couleur.symmetry)
 		{
-			pilePosition[0].setX(-pilePosition[0].getX());
-			pilePosition[1].setX(-pilePosition[1].getX());
-			anglesDepose[0] = Math.PI - anglesDepose[0];
-			anglesDepose[1] = Math.PI - anglesDepose[1];
-			coteDroits[0] = !coteDroits[0];
-			coteDroits[1] = !coteDroits[1];
+			pilePosition.setX(-pilePosition.getX());
+			anglesDepose = Math.PI - anglesDepose;
+			coteDroit = !coteDroit;
 		}
 	}
 	
 	private boolean usePattern;
 	private CubeColor[] pattern;
-	private XY_RW[] pilePosition;
-	private double anglesDepose[];
+	private XY_RW pilePosition;
+	private double anglesDepose;
 	private double[] longueurGrue = new double[]{300, 300, 290, 365, 365}; // longueur de la grue en fonction du nombre de cube déjà posés
-	private boolean[] coteDroits;
-	private int[] distanceToScript = new int[]{80, 80}; 
+	private boolean coteDroit;
+	private int distanceToScript = 0;
 	
 	public ScriptManager(Log log, Config config, Table table, Robot robot, CapteursProcess cp, ObstaclesDynamiques obsDyn)
 	{
@@ -79,14 +76,10 @@ public class ScriptManager
 		this.table = table;
 		this.robot = robot;
 		this.cp = cp;
-		pilePosition = new XY_RW[] {
-				new XY_RW(config.getDouble(ConfigInfoSenpai.PILE_1_X),config.getDouble(ConfigInfoSenpai.PILE_1_Y)),
-				new XY_RW(config.getDouble(ConfigInfoSenpai.PILE_2_X),config.getDouble(ConfigInfoSenpai.PILE_2_Y))};
-		anglesDepose = new double[] {config.getDouble(ConfigInfoSenpai.PILE_1_O),config.getDouble(ConfigInfoSenpai.PILE_2_O)};
+		pilePosition = new XY_RW(config.getDouble(ConfigInfoSenpai.PILE_1_X),config.getDouble(ConfigInfoSenpai.PILE_1_Y));
+		anglesDepose = config.getDouble(ConfigInfoSenpai.PILE_1_O);
 		usePattern = false;
-		coteDroits = new boolean[] {
-				config.getBoolean(ConfigInfoSenpai.PILE_1_COTE_DROIT),
-				config.getBoolean(ConfigInfoSenpai.PILE_2_COTE_DROIT)};
+		coteDroit = config.getBoolean(ConfigInfoSenpai.PILE_1_COTE_DROIT);
 	}
 
 	public void setPattern(CubeColor[] pattern)
@@ -121,18 +114,9 @@ public class ScriptManager
 		return new ScriptAbeille(log, robot, table, cp, couleur.symmetry);
 	}
 	
-	public ScriptDeposeCube getDeposeUnCubeScript(int nbPile)
+	public ScriptDeposeCube getDeposeScript()
 	{
-		return new ScriptDeposeCube(log, robot, table, cp, robot.getHauteurPile(nbPile), pilePosition[nbPile], anglesDepose[nbPile], coteDroits[nbPile], longueurGrue[robot.getHauteurPile(nbPile)], nbPile, distanceToScript[nbPile], 1);
-	}
-
-	public List<ScriptDeposeCube> getDeposeScript()
-	{
-		List<ScriptDeposeCube> out = new ArrayList<ScriptDeposeCube>();
-		for(int nbPile = 0; nbPile < 2; nbPile++)
-			if(!robot.isPileFull(nbPile))
-				out.add(new ScriptDeposeCube(log, robot, table, cp, robot.getHauteurPile(nbPile), pilePosition[nbPile], anglesDepose[nbPile], coteDroits[nbPile], longueurGrue[robot.getHauteurPile(nbPile)], nbPile, distanceToScript[nbPile], 2));
-		return out;
+		return new ScriptDeposeCube(log, robot, table, cp, robot.getHauteurPile(), pilePosition, anglesDepose, coteDroit, longueurGrue[robot.getHauteurPile()], distanceToScript);
 	}
 
 	public class CubeComparator implements Comparator<ScriptPriseCube>

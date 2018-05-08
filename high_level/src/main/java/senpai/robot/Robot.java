@@ -72,8 +72,7 @@ public class Robot extends RobotState
 	
 	private Cube cubeTop = null;
 	private Cube cubeInside = null;
-	@SuppressWarnings("unchecked")
-	private List<Cube>[] piles = (List<Cube>[]) new List[2];
+	private List<Cube> piles = new ArrayList<Cube>();
 	protected volatile boolean symetrie;
 	protected Log log;
 	private double defaultSpeed;
@@ -109,8 +108,6 @@ public class Robot extends RobotState
 		this.kraken = kraken;
 //		this.known = known;
 		this.obstacle = obstacle;
-		piles[0] = new ArrayList<Cube>();
-		piles[1] = new ArrayList<Cube>();
 
 		jumperOK = config.getBoolean(ConfigInfoSenpai.DISABLE_JUMPER);
 		angleMin = config.getInt(ConfigInfoSenpai.ANGLE_MIN_TOURELLE) * Math.PI / 180;
@@ -155,16 +152,9 @@ public class Robot extends RobotState
 		out.setCurvature(0);
 	}
 	
-	public int getNbPile(boolean usePattern)
+	public int getHauteurPile()
 	{
-		if(usePattern && piles[0].size() >= 3)
-			return 1;
-		return 0;
-	}
-	
-	public int getHauteurPile(int nbPile)
-	{
-		return piles[nbPile].size();
+		return piles.size();
 	}
 	
 	public void setEnMarcheAvance(boolean enMarcheAvant)
@@ -308,9 +298,9 @@ public class Robot extends RobotState
 		bloque(ordre.getMethodName(), param);
 	}
 
-	public void poseCubes(double angle, int nbPile, int nbMaxDepose) throws InterruptedException, ActionneurException
+	public void poseCubes(double angle) throws InterruptedException, ActionneurException
 	{
-		int etage = piles[nbPile].size();
+		int etage = piles.size();
 		boolean firstDone = false;
 		if(cubeTop != null)
 		{
@@ -319,19 +309,16 @@ public class Robot extends RobotState
 				execute(Id.ARM_PUT_ON_PILE, angle, etage);
 			else
 				execute(Id.ARM_PUT_ON_PILE_S, angle, etage);
-			piles[nbPile].add(cubeTop);
+			piles.add(cubeTop);
 			updateScore();
-			nbMaxDepose--;
 			firstDone = true;
 		}
 		
-		etage = piles[nbPile].size();
+		etage = piles.size();
 		
 		// si l'étage vaut 4 ici, c'est qu'on a posé le cube 3 avant
 		// et donc qu'on n'est pas en position pour le cube 4
-		
-		// etage 6 : la pile est pleine
-		if(cubeInside != null && etage != 4 && etage != 6 && nbMaxDepose >= 1)
+		if(cubeInside != null && etage != 4)
 		{
 			execute(Id.ARM_TAKE_FROM_STORAGE);
 			cubeInside = null;
@@ -341,18 +328,14 @@ public class Robot extends RobotState
 				execute(Id.ARM_PUT_ON_PILE, angle, etage);
 			else
 				execute(Id.ARM_PUT_ON_PILE_S, angle, etage);
-			piles[nbPile].add(cubeInside);
+			piles.add(cubeInside);
 			updateScore();
 		}
 	}
 	
 	private int getScorePile()
 	{
-		return getScorePile(piles[0]) + getScorePile(piles[1]);
-	}
-	
-	private int getScorePile(List<Cube> l)
-	{
+		List<Cube> l = piles;
 		// score de hauteur
 		int score = l.size() * (l.size() + 1) / 2;
 		// score de pattern
@@ -832,13 +815,13 @@ public class Robot extends RobotState
 		this.pattern2 = new CubeColor[]{pattern[2], pattern[1], pattern[0]};
 	}
 
-	public boolean isPileFull(int nbPile)
+	public boolean isPileFull()
 	{
-		return piles[nbPile].size() == 3;
+		return piles.size() == 3;
 	}
 
 	public boolean isAllDone()
 	{
-		return isPileFull(0) && isPileFull(1) && domotiqueDone && abeilleDone;
+		return isPileFull() && domotiqueDone && abeilleDone;
 	}
 }

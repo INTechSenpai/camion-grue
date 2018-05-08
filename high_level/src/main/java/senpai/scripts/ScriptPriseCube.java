@@ -101,6 +101,7 @@ public class ScriptPriseCube extends Script
 	public boolean faisable()
 	{
 		// si on peut prendre ET deposer
-		return robot.canTakeCube() && (!robot.isPileFull(0) || !robot.isPileFull(1));
+		return robot.canTakeCube() && !robot.isPileFull();
 	}
+
 }

@@ -25,22 +25,18 @@ public class ScriptDeposeCube extends Script
 	private double angleDepose;
 	private boolean coteDroit;
 	private double longueurGrue;
-	private int nbPile;
 	private int distanceToScript;
 	private double angleGrue;
-	private int nbMaxDepose;
 	
-	public ScriptDeposeCube(Log log, Robot robot, Table table, CapteursProcess cp, int taillePile, XY positionPile, double angleDepose, boolean coteDroit, double longueurGrue, int nbPile, int distanceToScript, int nbMaxDepose)
+	public ScriptDeposeCube(Log log, Robot robot, Table table, CapteursProcess cp, int taillePile, XY positionPile, double angleDepose, boolean coteDroit, double longueurGrue, int distanceToScript)
 	{
 		super(log, robot, table, cp);
-		this.nbMaxDepose = nbMaxDepose;
 		this.distanceToScript = distanceToScript;
 		this.taillePile = taillePile;
 		this.positionPile = positionPile;
 		this.angleDepose = angleDepose;
 		this.coteDroit = coteDroit;
 		this.longueurGrue = longueurGrue;
-		this.nbPile = nbPile;
 		if(taillePile >= 3)
 			angleGrue = Math.PI / 2;
 		else
@@ -80,8 +76,8 @@ public class ScriptDeposeCube extends Script
 		robot.avance(-distanceToScript, 0.2);
 		try {
 			cp.startStaticCorrection(CapteursCorrection.AVANT, CapteursCorrection.ARRIERE);
-			robot.poseCubes(coteDroit ? - Math.PI / 2 + angleGrue : Math.PI / 2 - angleGrue, nbPile, nbMaxDepose);
-			table.enableObstaclePile(nbPile);
+			robot.poseCubes(coteDroit ? - Math.PI / 2 + angleGrue : Math.PI / 2 - angleGrue);
+			table.enableObstaclePile();
 			if(coteDroit)
 				robot.rangeBras(LLCote.PAR_LA_GAUCHE);
 			else
@@ -95,7 +91,7 @@ public class ScriptDeposeCube extends Script
 	@Override
 	public boolean faisable()
 	{
-		return robot.canDropCube() && !robot.isPileFull(nbPile);
+		return robot.canDropCube() && !robot.isPileFull();
 	}
 
 }
