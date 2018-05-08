@@ -217,8 +217,9 @@ public class ScriptManager
 		
 		Cube p1 = f.getVoisin(c); // B
 		boolean voisin1 = p1 == null || table.isDone(p1);
+
 		
-//		log.write("v1 : "+voisin1, Subject.SCRIPT);
+//		log.write("v1 : "+voisin1+" "+p1+" "+table.isDone(p1), Subject.SCRIPT);
 		
 		if(p1 != null) // on vérifie ses voisins
 		{

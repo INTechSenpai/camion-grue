@@ -55,7 +55,7 @@ public enum CubeFace
 	private CubePlace getFaceVoisin(CubePlace c)
 	{
 		if(c == CubePlace.CENTRE)
-			return CubePlace.values()[(c.ordinal() + 2) % 4];
+			return CubePlace.values()[(ordinal() + 2) % 4];
 		else if(c.ordinal() == ordinal())
 			return CubePlace.CENTRE;
 		return null;
