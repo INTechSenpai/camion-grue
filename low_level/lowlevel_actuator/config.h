@@ -65,9 +65,9 @@
 #define HMOTOR_TICK_TO_RAD  0.000865892 // radian/tick
 #define VMOTOR_TICK_TO_MM   0.00489995  // mm/tick
 
-#define BLOCKING_DELAY              300 // ms
-#define BLOCKING_SENSIBILITY        0.1
-#define BLOCKING_SPEED_THRESHOLD    0.1 // rad/s
+#define BLOCKING_DELAY              600 // ms
+#define BLOCKING_SENSIBILITY        0.05
+#define BLOCKING_SPEED_THRESHOLD    0.4 // rad/s
 
 #define H_SPEED_KP    900
 #define H_SPEED_KI    15000

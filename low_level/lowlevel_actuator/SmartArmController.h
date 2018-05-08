@@ -9,12 +9,12 @@
 #include "CommandId.h"
 
 #define ARM_SENSORS_UPDATE_PERIOD   20  // ms
-#define CUBE_DETECT_MIN             60  // mm
-#define CUBE_DETECT_MAX             160 // mm
+#define CUBE_DETECT_MIN             30  // mm
+#define CUBE_DETECT_MAX             90  // mm
 #define CUBE_INSIDE_THRESHOLD_LOW   60  // mm
 #define CUBE_INSIDE_THRESHOLD_HIGH  75  // mm
 
-#define CUBE_MANIPULATION_SPEED     300 // [unité interne d'AX12]
+#define CUBE_MANIPULATION_SPEED     150 // [unité interne d'AX12]
 
 #define FULL_MOVE_TIMEOUT           15000   // ms
 
@@ -25,7 +25,7 @@ public:
     SmartArmControler() :
         armControler(ArmController::Instance()),
         intSensor("int", 42, PIN_EN_TOF_INT, 15, 70),
-        extSensor("ext", 43, PIN_EN_TOF_EXT, 15, 160)
+        extSensor("ext", 43, PIN_EN_TOF_EXT, 15, 200)
     {
         intSensorValue = (SensorValue)SENSOR_DEAD;
         extSensorValue = (SensorValue)SENSOR_DEAD;
@@ -84,12 +84,12 @@ public:
             if (!cubeWasInPlier && isCubeInPlier())
             {
                 Serial.println("CUBE DETECTED IN PLIER");
-                armControler.setHeadSpeed(CUBE_MANIPULATION_SPEED);
+                //armControler.setHeadSpeed(CUBE_MANIPULATION_SPEED);
             }
             else if (cubeWasInPlier && !isCubeInPlier())
             {
                 Serial.println("CUBE LEFT PLIER");
-                armControler.setHeadSpeed(0); // unlimited speed
+                //armControler.setHeadSpeed(0); // unlimited speed
             }
         }
         armControler.controlServos();
@@ -134,6 +134,12 @@ public:
                 break;
             case ACTUATOR_PUSH_BUTTON:
                 push_button();
+                break;
+            case ACTUATOR_PUSH_BEE:
+                push_bee();
+                break;
+            case ACTUATOR_TAKE_CUBE_HUMAN:
+                take_cube_from_human();
                 break;
             default:
                 Serial.println("SmartArmController: unknown command");
@@ -248,6 +254,7 @@ private:
         currentCommandStep = 0;
         commandArgAngle = 0;
         commandArgHeight = 0;
+        armControler.setHeadSpeed(0); // Unlimited speed
     }
 
     void waitForMoveCompletion()
@@ -269,7 +276,18 @@ private:
             float hAngle = armPosition.getHAngle();
             if (abs(hAngle) < ARM_H_ANGLE_MANIP && armPosition.getHeadGlobalAngle() > 0)
             {
-                if (hAngle > 0)
+                if (commandArgAngle == 0)
+                {
+                    if (hAngle > 0)
+                    {
+                        armPosition.setHAngle(ARM_H_ANGLE_MANIP);
+                    }
+                    else
+                    {
+                        armPosition.setHAngle(-ARM_H_ANGLE_MANIP);
+                    }
+                }
+                else if (commandArgAngle > 0)
                 {
                     armPosition.setHAngle(ARM_H_ANGLE_MANIP);
                 }
@@ -292,7 +310,7 @@ private:
         case 2:
             // Repli du bras avec angleH constant
             armControler.getCurrentPositionSpecial(armPosition);
-            armPosition.setVAngle(0);
+            armPosition.setVAngle(ARM_V_ANGLE_ORIGIN);
             armPosition.setHeadLocalAngle(ARM_MAX_HEAD_ANGLE);
             armPosition.setPlierPos(25);
             armControler.setAimPosition(armPosition);
@@ -312,6 +330,16 @@ private:
             waitForMoveCompletion();
             break;
         case 6:
+            // Abaissement du bras pour toucher la cabine
+            armControler.getCurrentPositionSpecial(armPosition);
+            armPosition.setVAngle(0);
+            armControler.setAimPosition(armPosition);
+            currentCommandStep++;
+            break;
+        case 7:
+            waitForMoveCompletion();
+            break;
+        case 8:
             stopCommand();
             break;
         default:
@@ -323,6 +351,9 @@ private:
 
     void take_cube_smart(bool useSensor = true)
     {
+        static uint8_t extSensorMinValue = UINT8_MAX;
+        static float optimalAngle = 0;
+
         switch (currentCommandStep)
         {
         case 0:
@@ -335,114 +366,143 @@ private:
             else
             {
                 armControler.getCurrentPositionSpecial(armPosition);
-                armPosition.setHAngle(commandArgAngle);
-                armPosition.setVAngle(0);
+                if (commandArgAngle > 0)
+                {
+                    armPosition.setHAngle(ARM_H_ANGLE_MANIP);
+                }
+                else
+                {
+                    armPosition.setHAngle(-ARM_H_ANGLE_MANIP);
+                }
+                armPosition.setVAngle(ARM_V_ANGLE_ORIGIN);
                 armPosition.setPlierPos(ARM_MAX_PLIER_POS);
                 armControler.setAimPosition(armPosition);
                 currentCommandStep++;
             }
             break;
         case 1:
+            waitForMoveCompletion();
+            break;
+        case 2:
         {
             armControler.getCurrentPositionSpecial(armPosition);
-            float hAngle = armPosition.getHAngle();
-            if (abs(hAngle) > ARM_H_ANGLE_CABIN)
+            armPosition.setVAngle(ARM_V_ANGLE_STAGE_0_DOWN);
+            armPosition.setHeadGlobalAngle(ARM_HEAD_SCAN_ANGLE);
+            armControler.setAimPosition(armPosition);
+            currentCommandStep++;
+            break;
+        }
+        case 3:
+            waitForMoveCompletion();
+            break;
+        case 4:
+            // Rotation horizontale
+            if (useSensor)
             {
-                float headAngle = armPosition.getHeadGlobalAngle();
-                armControler.getAimPosition(armPosition);
-                armPosition.setHeadGlobalAngle(ARM_HEAD_SCAN_ANGLE);
-                if (headAngle > 0)
+                armControler.getCurrentPositionSpecial(armPosition);
+                if (commandArgAngle > 0)
                 {
-                    armPosition.setHAngle(hAngle);
-                    currentCommandStep++;
+                    armPosition.setHAngle(ARM_MAX_H_ANGLE);
                 }
                 else
                 {
-                    currentCommandStep += 3;
+                    armPosition.setHAngle(-ARM_MAX_H_ANGLE);
                 }
                 armControler.setAimPosition(armPosition);
+                currentCommandStep++;
+            }
+            else
+            {
+                currentCommandStep = 7;
+            }
+            
+            break;
+        case 5:
+            extSensorMinValue = UINT8_MAX;
+            optimalAngle = commandArgAngle;
+            currentCommandStep++;
+            break;
+        case 6:
+            // Ajustement de la rotation horizontale via capteur
+            
+            /* Debug start */
+            {
+            static uint8_t last_sensor_val = 0;
+            if (extSensorValue != last_sensor_val)
+            {
+                Serial.printf("Sensor: %u\n", extSensorValue);
+                last_sensor_val = extSensorValue;
+            }
+            }
+            /* End debug */
+
+            if (extSensorValue == (SensorValue)SENSOR_DEAD)
+            {
+                status |= ARM_STATUS_SENSOR_ERR;
+            }
+            else if (extSensorValue >= CUBE_DETECT_MIN && extSensorValue < extSensorMinValue)
+            {
+                if (extSensorValue <= CUBE_DETECT_MAX)
+                {
+                    armControler.getCurrentPositionSpecial(armPosition);
+                    optimalAngle = armPosition.getHAngle();
+                }
+                extSensorMinValue = extSensorValue;
+            }
+
+            if (!armControler.isMoving())
+            {
+                if (extSensorMinValue <= CUBE_DETECT_MAX)
+                {
+                    commandArgAngle = optimalAngle;
+                    Serial.printf("optimalAngle=%g\n", optimalAngle);
+                }
+                else
+                {
+                    status |= ARM_STATUS_NO_DETECTION;
+                }
+                currentCommandStep++;
             }
             break;
-        }
-        case 2:
-            waitForMoveCompletion();
-            break;
-        case 3:
-            // Rotation horizontale
+        case 7:
             armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHAngle(commandArgAngle);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
             break;
-        case 4:
-            // Ajustement de la rotation horizontale
-            if (!useSensor)
-            {
-                currentCommandStep++;
-            }
-            else if (extSensorValue == (SensorValue)SENSOR_DEAD)
-            {
-                status |= ARM_STATUS_SENSOR_ERR;
-                currentCommandStep++;
-            }
-            else if (extSensorValue > CUBE_DETECT_MIN && extSensorValue < CUBE_DETECT_MAX)
-            {
-                armControler.getCurrentPositionSpecial(armPosition);
-                float hAngle = armPosition.getHAngle();
-                if (hAngle > 0) {
-                    hAngle += 0.1;
-                }
-                else {
-                    hAngle -= 0.1;
-                }
-                armPosition.setHAngle(hAngle);
-                armControler.setAimPosition(armPosition);
-                currentCommandStep++;
-            }
-            else if (!armControler.isMoving())
-            {
-                status |= ARM_STATUS_NO_DETECTION;
-                currentCommandStep += 2;
-            }
-            break;
-        case 5:
-            waitForMoveCompletion();
-            break;
-        case 6:
-            // Abaissement du bras
-            armControler.getCurrentPositionSpecial(armPosition);
-            armPosition.setVAngle(ARM_V_ANGLE_STAGE_0_DOWN);
-            armControler.setAimPosition(armPosition);
-            currentCommandStep++;
-            break;
-        case 7:
-            waitForMoveCompletion();
-            break;
         case 8:
+            waitForMoveCompletion();
+            break;
+        case 9:
             // Positionnement de la tête du bras
+            armControler.setHeadSpeed(CUBE_MANIPULATION_SPEED);
             armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHeadGlobalAngle(0);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
             break;
-        case 9:
-            waitForMoveCompletion();
-            break;
         case 10:
-            // Fermeture de la pince
-            armControler.getCurrentPositionSpecial(armPosition);
-            armPosition.setPlierPos(ARM_MIN_PLIER_POS);
-            armControler.setAimPosition(armPosition);
-            currentCommandStep++;
+            armControler.getCurrentPosition(armPosition);
+            if (useSensor && isCubeInPlier())
+            {
+                float currentGlobalAngle = armPosition.getHeadGlobalAngle();
+                Serial.printf("New head angle: %g\n", currentGlobalAngle + 0.4);
+                armPosition.setHeadGlobalAngle(currentGlobalAngle + 0.4);
+                armControler.setAimPosition(armPosition);
+                currentCommandStep++;
+            }
+            else
+            {
+                waitForMoveCompletion();
+            }
             break;
         case 11:
             waitForMoveCompletion();
             break;
         case 12:
-            // Levée du cube
+            // Fermeture de la pince
             armControler.getCurrentPositionSpecial(armPosition);
-            armPosition.setHeadLocalAngle(ARM_HEAD_L_ANGLE_TRANSPORT);
-            armPosition.setVAngle(0);
+            armPosition.setPlierPos(ARM_MIN_PLIER_POS);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
             break;
@@ -450,6 +510,17 @@ private:
             waitForMoveCompletion();
             break;
         case 14:
+            // Levée du cube
+            armControler.getCurrentPositionSpecial(armPosition);
+            armPosition.setHeadLocalAngle(ARM_HEAD_L_ANGLE_TRANSPORT);
+            armPosition.setVAngle(ARM_V_ANGLE_ORIGIN);
+            armControler.setAimPosition(armPosition);
+            currentCommandStep++;
+            break;
+        case 15:
+            waitForMoveCompletion();
+            break;
+        case 16:
             stopCommand();
             break;
         default:
@@ -466,9 +537,10 @@ private:
         {
         case 0:
             // Levée du cube
+            armControler.setHeadSpeed(CUBE_MANIPULATION_SPEED);
             armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHeadLocalAngle(ARM_HEAD_L_ANGLE_TRANSPORT);
-            armPosition.setVAngle(ARM_V_ANGLE_STORAGE);
+            armPosition.setVAngle(ARM_V_ANGLE_STORAGE_UP);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
             break;
@@ -488,8 +560,8 @@ private:
         case 4:
             // Dépose du cube
             armControler.getCurrentPositionSpecial(armPosition);
+            armPosition.setVAngle(ARM_V_ANGLE_STORAGE_DOWN);
             armPosition.setHeadGlobalAngle(ARM_HEAD_G_ANGLE_STORAGE);
-            armPosition.setPlierPos(25);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
             break;
@@ -497,10 +569,9 @@ private:
             waitForMoveCompletion();
             break;
         case 6:
-            // Rangement du bras
+            // Lacher du cube
             armControler.getCurrentPositionSpecial(armPosition);
-            armPosition.setHeadLocalAngle(ARM_MAX_HEAD_ANGLE);
-            //armPosition.setVAngle(0); On va taper le cube en descendant si on fait ça
+            armPosition.setPlierPos(25);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
             break;
@@ -508,6 +579,16 @@ private:
             waitForMoveCompletion();
             break;
         case 8:
+            // Rangement du bras
+            armControler.getCurrentPositionSpecial(armPosition);
+            armPosition.setHeadLocalAngle(ARM_MAX_HEAD_ANGLE);
+            armControler.setAimPosition(armPosition);
+            currentCommandStep++;
+            break;
+        case 9:
+            waitForMoveCompletion();
+            break;
+        case 10:
             stopCommand();
             break;
         default:
@@ -523,14 +604,33 @@ private:
         {
         case 0:
             // Position initiale
+            armControler.setHeadSpeed(CUBE_MANIPULATION_SPEED);
             armControler.getCurrentPositionSpecial(armPosition);
-            if (armPosition.getHAngle() >= 0)
+            if (armPosition.getHeadGlobalAngle() < 0.79 || abs(armPosition.getHAngle()) > ARM_H_ANGLE_CABIN)
             {
-                armPosition.setHAngle(ARM_H_ANGLE_MANIP);
+                if (commandArgAngle == 0)
+                {
+                    if (armPosition.getHAngle() >= 0)
+                    {
+                        armPosition.setHAngle(ARM_H_ANGLE_MANIP);
+                    }
+                    else
+                    {
+                        armPosition.setHAngle(-ARM_H_ANGLE_MANIP);
+                    }
+                }
+                else if (commandArgAngle > 0)
+                {
+                    armPosition.setHAngle(ARM_H_ANGLE_MANIP);
+                }
+                else
+                {
+                    armPosition.setHAngle(-ARM_H_ANGLE_MANIP);
+                }
             }
-            else
+            if (armPosition.getVAngle() < ARM_V_ANGLE_ORIGIN)
             {
-                armPosition.setHAngle(-ARM_H_ANGLE_MANIP);
+                armPosition.setVAngle(ARM_V_ANGLE_ORIGIN);
             }
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
@@ -541,8 +641,9 @@ private:
         case 2:
             // Levée du cube
             armControler.getCurrentPositionSpecial(armPosition);
+            armPosition.setVAngle(ARM_V_ANGLE_ORIGIN);
             armPosition.setHeadLocalAngle(ARM_MIN_HEAD_ANGLE);
-            armPosition.setVAngle(0);
+            armPosition.setPlierPos(ARM_MIN_PLIER_POS);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
             break;
@@ -574,11 +675,30 @@ private:
         switch (currentCommandStep)
         {
         case 0:
-            // Levée du bras
+            // Dégagement du bras sur le côté si besoin
             armControler.getCurrentPositionSpecial(armPosition);
-            armPosition.setHeadLocalAngle(ARM_MAX_HEAD_ANGLE);
-            armPosition.setPlierPos(ARM_MAX_PLIER_POS);
-            armPosition.setVAngle(ARM_V_ANGLE_STORAGE);
+            if (abs(armPosition.getHAngle()) < ARM_H_ANGLE_MANIP && armPosition.getHeadGlobalAngle() > -0.1)
+            {
+                if (commandArgAngle == 0)
+                {
+                    if (armPosition.getHAngle() >= 0)
+                    {
+                        armPosition.setHAngle(ARM_H_ANGLE_MANIP);
+                    }
+                    else
+                    {
+                        armPosition.setHAngle(-ARM_H_ANGLE_MANIP);
+                    }
+                }
+                else if (commandArgAngle > 0)
+                {
+                    armPosition.setHAngle(ARM_H_ANGLE_MANIP);
+                }
+                else
+                {
+                    armPosition.setHAngle(-ARM_H_ANGLE_MANIP);
+                }
+            }
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
             break;
@@ -586,9 +706,11 @@ private:
             waitForMoveCompletion();
             break;
         case 2:
-            // Alignement du bras
+            // Levée du bras
             armControler.getCurrentPositionSpecial(armPosition);
-            armPosition.setHAngle(0);
+            armPosition.setHeadLocalAngle(ARM_MAX_HEAD_ANGLE);
+            armPosition.setPlierPos(ARM_MAX_PLIER_POS);
+            armPosition.setVAngle(ARM_V_ANGLE_STORAGE_DOWN);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
             break;
@@ -596,9 +718,9 @@ private:
             waitForMoveCompletion();
             break;
         case 4:
-            // Abaissement de la tête du bras
+            // Alignement du bras
             armControler.getCurrentPositionSpecial(armPosition);
-            armPosition.setHeadGlobalAngle(ARM_HEAD_G_ANGLE_STORAGE);
+            armPosition.setHAngle(0);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
             break;
@@ -606,9 +728,9 @@ private:
             waitForMoveCompletion();
             break;
         case 6:
-            // Préhension du cube
+            // Abaissement de la tête du bras
             armControler.getCurrentPositionSpecial(armPosition);
-            armPosition.setPlierPos(ARM_MIN_PLIER_POS);
+            armPosition.setHeadGlobalAngle(ARM_HEAD_G_ANGLE_STORAGE);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
             break;
@@ -616,8 +738,9 @@ private:
             waitForMoveCompletion();
             break;
         case 8:
+            // Préhension du cube
             armControler.getCurrentPositionSpecial(armPosition);
-            armPosition.setHeadLocalAngle(ARM_HEAD_L_ANGLE_TRANSPORT);
+            armPosition.setPlierPos(ARM_MIN_PLIER_POS);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
             break;
@@ -625,6 +748,18 @@ private:
             waitForMoveCompletion();
             break;
         case 10:
+            // Levée du cube
+            armControler.setHeadSpeed(CUBE_MANIPULATION_SPEED);
+            armControler.getCurrentPositionSpecial(armPosition);
+            armPosition.setVAngle(ARM_V_ANGLE_STORAGE_UP);
+            armPosition.setHeadLocalAngle(ARM_HEAD_L_ANGLE_TRANSPORT);
+            armControler.setAimPosition(armPosition);
+            currentCommandStep++;
+            break;
+        case 11:
+            waitForMoveCompletion();
+            break;
+        case 12:
             stopCommand();
             break;
         default:
@@ -648,6 +783,7 @@ private:
                 stopCommand();
                 return;
             }
+            armControler.setHeadSpeed(CUBE_MANIPULATION_SPEED);
             armControler.getCurrentPositionSpecial(armPosition);
             if (abs(commandArgAngle) > ARM_H_ANGLE_MANIP)
             {
@@ -873,8 +1009,26 @@ private:
         case 0:
             // Décalage du bras sur le côté
             armControler.getCurrentPositionSpecial(armPosition);
-            armPosition.setHAngle(ARM_H_ANGLE_MANIP);
-            armPosition.setVAngle(commandArgAngle);
+            if (commandArgHeight == 0)
+            {
+                if (armPosition.getHAngle() >= 0)
+                {
+                    armPosition.setHAngle(ARM_H_ANGLE_MANIP);
+                }
+                else
+                {
+                    armPosition.setHAngle(-ARM_H_ANGLE_MANIP);
+                }
+            }
+            else if (commandArgHeight > 0)
+            {
+                armPosition.setHAngle(ARM_H_ANGLE_MANIP);
+            }
+            else
+            {
+                armPosition.setHAngle(-ARM_H_ANGLE_MANIP);
+            }
+            armPosition.setVAngle(max(commandArgAngle, ARM_V_ANGLE_ORIGIN));
             armPosition.setPlierPos(ARM_MIN_PLIER_POS);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
@@ -903,9 +1057,9 @@ private:
             waitForMoveCompletion();
             break;
         case 6:
-            // Appui sur le bouton
+            // Descente du bras si besoin
             armControler.getCurrentPositionSpecial(armPosition);
-            armPosition.setHeadGlobalAngle(0.8);
+            armPosition.setVAngle(max(commandArgAngle, 0));
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
             break;
@@ -913,9 +1067,9 @@ private:
             waitForMoveCompletion();
             break;
         case 8:
-            // Rétractation de la pince
+            // Appui sur le bouton
             armControler.getCurrentPositionSpecial(armPosition);
-            armPosition.setHeadGlobalAngle(0.2);
+            armPosition.setHeadGlobalAngle(0.8);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
             break;
@@ -923,6 +1077,17 @@ private:
             waitForMoveCompletion();
             break;
         case 10:
+            // Relache du bouton
+            armControler.getCurrentPositionSpecial(armPosition);
+            armPosition.setHeadGlobalAngle(0.2);
+            armPosition.setVAngle(ARM_V_ANGLE_ORIGIN);
+            armControler.setAimPosition(armPosition);
+            currentCommandStep++;
+            break;
+        case 11:
+            waitForMoveCompletion();
+            break;
+        case 12:
             stopCommand();
             break;
         default:
@@ -931,6 +1096,43 @@ private:
             break;
         }
     }
+
+    /* TODO */
+    void push_bee()
+    {
+        switch (currentCommandStep)
+        {
+        case 0:
+            waitForMoveCompletion();
+            break;
+        case 1:
+            stopCommand();
+            break;
+        default:
+            Serial.println("Err unhandled command step");
+            stopCommand();
+            break;
+        }
+    }
+
+    /* TODO */
+    void take_cube_from_human()
+    {
+        switch (currentCommandStep)
+        {
+        case 0:
+            waitForMoveCompletion();
+            break;
+        case 1:
+            stopCommand();
+            break;
+        default:
+            Serial.println("Err unhandled command step");
+            stopCommand();
+            break;
+        }
+    }
+
 
     ArmController & armControler;
     ToF_shortRange intSensor;

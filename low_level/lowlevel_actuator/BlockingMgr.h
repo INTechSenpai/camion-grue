@@ -54,7 +54,12 @@ public:
 
 	inline bool isBlocked() const
 	{
-		return blocked && (millis() - beginTime > responseTime);
+        bool ret = blocked && (millis() - beginTime > responseTime);
+        if (ret)
+        {
+            Serial.printf("aimS=%g realS=%g\n", aimSpeed, realSpeed);
+        }
+        return ret;
 	}
 
 	size_t printTo(Print& p) const

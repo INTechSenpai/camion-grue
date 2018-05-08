@@ -19,6 +19,8 @@ enum CommandId
     ACTUATOR_SET_SCORE          = 0x0E,
     ACTUATOR_STOP               = 0x0F,
     ACTUATOR_PUSH_BUTTON        = 0x10,
+    ACTUATOR_PUSH_BEE           = 0x11,
+    ACTUATOR_TAKE_CUBE_HUMAN    = 0x12,
 
     ACTUATOR_NO_COMMAND         = 0xFF
 };

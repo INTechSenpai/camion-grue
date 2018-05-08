@@ -83,6 +83,8 @@ public:
         longOrderList[0x0C] = &ActGoToPosition::Instance();
         longOrderList[0x0D] = &ActStop::Instance();
         longOrderList[0x0E] = &ActPushButton::Instance();
+        longOrderList[0x0F] = &ActPushBee::Instance();
+        longOrderList[0x10] = &ActTakeCubeFromHuman::Instance();
     }
 
     void execute()

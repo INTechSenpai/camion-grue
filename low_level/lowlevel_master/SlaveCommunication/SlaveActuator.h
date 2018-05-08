@@ -22,6 +22,8 @@
 #define ID_FRAME_ACTUATOR_SET_SCORE             0x0E
 #define ID_FRAME_ACTUATOR_STOP                  0x0F
 #define ID_FRAME_ACTUATOR_PUSH_BUTTON           0x10
+#define ID_FRAME_ACTUATOR_PUSH_BEE              0x11
+#define ID_FRAME_ACTUATOR_TAKE_CUBE_HUMAN       0x12
 
 #define ACTUATOR_STATUS_OK                      0x0000
 #define ACTUATOR_STATUS_COM_ERR                 0x0100
@@ -132,9 +134,10 @@ public:
         return cubeInPlier;
     }
 
-    void goToHome()
+    void goToHome(float deploySide)
     {
         std::vector<uint8_t> payload;
+        Serializer::writeFloat(deploySide, payload);
         sendMoveCommand(ID_FRAME_ACTUATOR_GO_TO_HOME, payload);
     }
 
@@ -158,15 +161,17 @@ public:
         sendMoveCommand(ID_FRAME_ACTUATOR_STORE_CUBE_INSIDE, payload);
     }
 
-    void storeCubeOnTop()
+    void storeCubeOnTop(float deploySide)
     {
         std::vector<uint8_t> payload;
+        Serializer::writeFloat(deploySide, payload);
         sendMoveCommand(ID_FRAME_ACTUATOR_STORE_CUBE_TOP, payload);
     }
 
-    void takeCubeFromStorage()
+    void takeCubeFromStorage(float deploySide)
     {
         std::vector<uint8_t> payload;
+        Serializer::writeFloat(deploySide, payload);
         sendMoveCommand(ID_FRAME_ACTUATOR_TAKE_CUBE_STORAGE, payload);
     }
 
@@ -217,11 +222,26 @@ public:
         sendCommand(ID_FRAME_ACTUATOR_STOP, payload);
     }
 
-    void pushButton(float angle)
+    void pushButton(float angle, int32_t deploySide)
     {
         std::vector<uint8_t> payload;
         Serializer::writeFloat(angle, payload);
+        Serializer::writeInt(deploySide, payload);
         sendMoveCommand(ID_FRAME_ACTUATOR_PUSH_BUTTON, payload);
+    }
+
+    void pushBee(float angle)
+    {
+        std::vector<uint8_t> payload;
+        Serializer::writeFloat(angle, payload);
+        sendMoveCommand(ID_FRAME_ACTUATOR_PUSH_BEE, payload);
+    }
+
+    void takeCubeFromHuman(float deploySide)
+    {
+        std::vector<uint8_t> payload;
+        Serializer::writeFloat(deploySide, payload);
+        sendMoveCommand(ID_FRAME_ACTUATOR_TAKE_CUBE_HUMAN, payload);
     }
 
 private:

@@ -45,9 +45,10 @@ public:
                 Serial.println("Error: received actuator report");
                 break;
             case ACTUATOR_GO_TO_HOME:
-                if (message.size() == 0)
+                if (message.size() == 4)
                 {
-                    smartArmControler.executeCommand(ACTUATOR_GO_TO_HOME);
+                    float angle = Serializer::readFloat(message.getPayload(), index);
+                    smartArmControler.executeCommand(ACTUATOR_GO_TO_HOME, angle);
                     sendAck();
                 }
                 else
@@ -91,9 +92,10 @@ public:
                 }
                 break;
             case ACTUATOR_STORE_CUBE_TOP:
-                if (message.size() == 0)
+                if (message.size() == 4)
                 {
-                    smartArmControler.executeCommand(ACTUATOR_STORE_CUBE_TOP);
+                    float angle = Serializer::readFloat(message.getPayload(), index);
+                    smartArmControler.executeCommand(ACTUATOR_STORE_CUBE_TOP, angle);
                     sendAck();
                 }
                 else
@@ -102,9 +104,10 @@ public:
                 }
                 break;
             case ACTUATOR_TAKE_CUBE_STORAGE:
-                if (message.size() == 0)
+                if (message.size() == 4)
                 {
-                    smartArmControler.executeCommand(ACTUATOR_TAKE_CUBE_STORAGE);
+                    float angle = Serializer::readFloat(message.getPayload(), index);
+                    smartArmControler.executeCommand(ACTUATOR_TAKE_CUBE_STORAGE, angle);
                     sendAck();
                 }
                 else
@@ -188,15 +191,40 @@ public:
                 smartArmControler.emergencyStop();
                 break;
             case ACTUATOR_PUSH_BUTTON:
-                if (message.size() == 4)
+                if (message.size() == 8)
                 {
                     float angle = Serializer::readFloat(message.getPayload(), index);
-                    smartArmControler.executeCommand(ACTUATOR_PUSH_BUTTON, angle);
+                    int32_t side = Serializer::readInt(message.getPayload(), index);
+                    smartArmControler.executeCommand(ACTUATOR_PUSH_BUTTON, angle, side);
                     sendAck();
                 }
                 else
                 {
                     Serial.println("ACTUATOR_PUSH_BUTTON wrong args size");
+                }
+                break;
+            case ACTUATOR_PUSH_BEE:
+                if (message.size() == 4)
+                {
+                    float angle = Serializer::readFloat(message.getPayload(), index);
+                    smartArmControler.executeCommand(ACTUATOR_PUSH_BEE, angle);
+                    sendAck();
+                }
+                else
+                {
+                    Serial.println("ACTUATOR_PUSH_BEE wrong args size");
+                }
+                break;
+            case ACTUATOR_TAKE_CUBE_HUMAN:
+                if (message.size() == 4)
+                {
+                    float angle = Serializer::readFloat(message.getPayload(), index);
+                    smartArmControler.executeCommand(ACTUATOR_TAKE_CUBE_HUMAN, angle);
+                    sendAck();
+                }
+                else
+                {
+                    Serial.println("ACTUATOR_TAKE_CUBE_HUMAN wrong args size");
                 }
                 break;
             default:
