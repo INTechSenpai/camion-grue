@@ -76,7 +76,7 @@ public class ScriptDeposeCube extends Script
 		if(distanceToScript != 0)
 			robot.avance(-distanceToScript, 0.2);
 		try {
-			cp.startStaticCorrection(CapteursCorrection.AVANT, CapteursCorrection.ARRIERE);
+			cp.startStaticCorrection(CapteursCorrection.ARRIERE);
 			int nbEssaiMax = 3;
 			boolean retry = true;
 			while(nbEssaiMax > 0 && retry)

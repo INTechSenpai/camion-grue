@@ -207,12 +207,11 @@ public class OutgoingOrderBuffer implements Plottable
 		addToBuffer(new Order(data, Id.ARM_TAKE_FROM_HUMAN));
 		return Id.ARM_TAKE_FROM_HUMAN.ticket;
 	}	
-	public Ticket armPushButton(Double angleV, LLCote coteDroit)
+	public Ticket armPushButton(Double angleV)
 	{
-		ByteBuffer data = ByteBuffer.allocate(8);
+		ByteBuffer data = ByteBuffer.allocate(4);
 		data.order(ByteOrder.LITTLE_ENDIAN);
 		data.putFloat(new Float(angleV));
-		data.putInt(coteDroit.code);
 		addToBuffer(new Order(data, Id.ARM_PUSH_BUTTON));
 		return Id.ARM_PUSH_BUTTON.ticket;
 	}

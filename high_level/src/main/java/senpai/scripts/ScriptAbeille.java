@@ -35,23 +35,23 @@ import senpai.table.Table;
 public class ScriptAbeille extends Script
 {
 	private XY_RW positionEntree = new XY_RW(1200,180);
-	private CapteursCorrection[] capteurs = new CapteursCorrection[2];
+	private CapteursCorrection[] capteurs = new CapteursCorrection[1];
 	private double angle = 0;
+	private boolean coteDroit;
 	
 	public ScriptAbeille(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie)
 	{
 		super(log, robot, table, cp);
+		this.coteDroit = !symetrie;
 		if(symetrie)
 		{
 			capteurs[0] = CapteursCorrection.GAUCHE;
-			capteurs[1] = CapteursCorrection.AVANT;
 			positionEntree.setX(- positionEntree.getX());
 			angle = Math.PI - angle;
 		}
 		else
 		{
 			capteurs[0] = CapteursCorrection.DROITE;
-			capteurs[1] = CapteursCorrection.AVANT;
 		}
 	}
 
@@ -70,20 +70,26 @@ public class ScriptAbeille extends Script
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException
 	{
-		robot.avance(200, 0.2);
 		try {
-			cp.startStaticCorrection(CapteursCorrection.AVANT, CapteursCorrection.GAUCHE);
-			robot.execute(Id.ARM_PUSH_BEE, 0); // TODO angle
-			robot.rangeBras(LLCote.AU_PLUS_VITE);
+			robot.avance(100, 0.2);
+		} catch(UnableToMoveException e)
+		{
+			// OK
+		}
+		try {
+			cp.startStaticCorrection(capteurs);
+			robot.execute(Id.ARM_PUSH_BEE, coteDroit ? -10 : 10);
 			cp.endStaticCorrection();
 		} finally {
 			robot.avance(-200, 0.2);
+			robot.avance(100, 0.2);
+			robot.rangeBras(LLCote.AU_PLUS_VITE);
 		}
 	}
 
 	@Override
 	public boolean faisable()
 	{
-		return !robot.isAbeilleDone();
+		return !robot.isAbeilleDone() && !robot.isThereCubeTop();
 	}
 }
