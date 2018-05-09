@@ -72,6 +72,7 @@ public class CapteursProcess
 	private volatile Integer[] last;
 	private final int margeIgnoreTourelle;
 	private final boolean ignoreTropProche;
+	private RectangularObstacle departD, departG;
 	
 //	private List<SensorsData> mesuresScan = new ArrayList<SensorsData>();
 
@@ -110,6 +111,10 @@ public class CapteursProcess
 		if(config.getBoolean(ConfigInfoSenpai.GRAPHIC_ROBOT_AND_SENSORS))
 			for(Capteur c : capteurs)
 				buffer.addPrintable(c, c.type.couleur, Layer.FOREGROUND.layer);
+		
+		departG = new RectangularObstacle(new XY(1300, 1675), 400, 650);
+		departD = new RectangularObstacle(new XY(-1300, 1675), 400, 650);
+
 	}
 
 	/**
@@ -170,9 +175,16 @@ public class CapteursProcess
 				c.isThereObstacle = false;
 				continue;
 			}
+	
+			if(departG.isInObstacle(positionVue) || departD.isInObstacle(positionVue))
+			{
+				log.write("Obstacle dans zone de départ ignoré", Subject.CAPTEURS);				
+				c.isThereObstacle = false;
+				continue;
+			}
 
 			boolean stop = false;
-
+			
 			if(c.isTourelle && robot.isProcheRobot(positionVue, margeIgnoreTourelle))
 			{
 				log.write("Une tourelle voit quelque chose dans le robot", Subject.CAPTEURS);
