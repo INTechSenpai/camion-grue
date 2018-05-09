@@ -336,7 +336,10 @@ public class Match
 			}
 			
 			if(robot.isAllDone())
+			{
+				log.write("Le robot a tout fini et va se ranger.", Subject.SCRIPT);
 				break;
+			}
 			
 			if(allError)
 			{

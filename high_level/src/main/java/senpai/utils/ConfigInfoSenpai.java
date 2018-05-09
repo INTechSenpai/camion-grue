@@ -40,6 +40,8 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	MARGE_IGNORE_TOURELLE(100), // distance en mm autour du robot où sont ignorés les obstacles vus par les tourelles
 	ENABLE_TOURELLE(true),
 	
+	CAN_DO_DOMOTIQUE(true),
+	CAN_DO_ABEILLE(true),
 	DOMOTIQUE_THERE(true),
 	ABEILLE_THERE(true),
 	NB_GOLDEN_LOADED(2),

@@ -141,12 +141,14 @@ public class Robot extends RobotState
 		if(config.getBoolean(ConfigInfoSenpai.DOMOTIQUE_THERE))
 		{
 			score += 5;
-			domotiqueDone = false;
+			if(config.getBoolean(ConfigInfoSenpai.CAN_DO_DOMOTIQUE))
+				domotiqueDone = false;
 		}
 		if(config.getBoolean(ConfigInfoSenpai.ABEILLE_THERE))
 		{
 			score += 5;
-			abeilleDone = false;
+			if(config.getBoolean(ConfigInfoSenpai.CAN_DO_ABEILLE))
+				abeilleDone = false;
 		}
 		updateScore();
 		out.setCurvature(0);
@@ -343,7 +345,7 @@ public class Robot extends RobotState
 			catch(ActionneurException e)
 			{
 				int code = e.code;
-				if((code & CommProtocol.ActionneurMask.NO_DETECTION.masque) != 0)
+				if((code & CommProtocol.ActionneurMask.NO_DETECTION.masque) != 0) // pas de cube dans la pince en fait
 					poseCubes(angle);
 				else if((code & CommProtocol.ActionneurMask.CUBE_MISSED.masque) != 0)
 					if(!piles.isEmpty())
