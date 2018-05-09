@@ -73,7 +73,8 @@ public class ScriptDeposeCube extends Script
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException
 	{
-		robot.avance(-distanceToScript, 0.2);
+		if(distanceToScript != 0)
+			robot.avance(-distanceToScript, 0.2);
 		try {
 			cp.startStaticCorrection(CapteursCorrection.AVANT, CapteursCorrection.ARRIERE);
 			robot.poseCubes(coteDroit ? - Math.PI / 2 + angleGrue : Math.PI / 2 - angleGrue);
@@ -81,7 +82,8 @@ public class ScriptDeposeCube extends Script
 			robot.rangeBras(LLCote.AU_PLUS_VITE);
 			cp.endStaticCorrection();
 		} finally {
-			robot.avance(distanceToScript, 0.2);
+			if(distanceToScript != 0)
+				robot.avance(distanceToScript, 0.2);
 		}
 	}
 	

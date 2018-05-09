@@ -97,7 +97,7 @@ public class ScriptDomotiqueV2 extends Script
 			
 			double angle;
 			if(interrupteurRehausse)
-				angle = -0.0025*distance+0.35;	
+				angle = -0.0025*distance+0.3;
 			else
 				angle = -0.0025*distance+0.25;
 			
