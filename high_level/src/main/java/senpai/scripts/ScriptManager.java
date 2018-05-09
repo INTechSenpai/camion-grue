@@ -128,11 +128,7 @@ public class ScriptManager
 		
 		@Override
 		public int compare(ScriptPriseCube arg0, ScriptPriseCube arg1) {
-			XYO s1 = arg0.getPointEntree();
-			XYO s2 = arg1.getPointEntree();
-			
-			return (int) (s1.position.squaredDistance(position.position) + Math.abs(XYO.angleDifference(s1.orientation, position.orientation))
-					- s2.position.squaredDistance(position.position) - Math.abs(XYO.angleDifference(s2.orientation, position.orientation)));
+			return arg0.getDistance(position) - arg1.getDistance(position);
 		}
 		
 	}
@@ -201,8 +197,12 @@ public class ScriptManager
 				if(isFacePossible(c, f, bourrine))
 				{
 					log.write("Possible : "+c+" "+f, Subject.SCRIPT);
-					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true,bourrine));
-					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false,bourrine));
+					ScriptPriseCube s1 = new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true,bourrine);
+//					System.out.println(robot.getCinematique().getXYO()+" "+s1.getPointEntree()+" "+s1.getDistance(robot.getCinematique().getXYO())+" "+s1);
+					out.add(s1);
+					ScriptPriseCube s2 = new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false,bourrine);
+//					System.out.println(robot.getCinematique().getXYO()+" "+s1.getPointEntree()+" "+s2.getDistance(robot.getCinematique().getXYO())+" "+s2);
+					out.add(s2);
 				}
 //				else
 //					log.write("Impossible : "+c+" "+f, Subject.SCRIPT);

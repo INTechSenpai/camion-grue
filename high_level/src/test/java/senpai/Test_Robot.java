@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import org.junit.Before;
 import org.junit.Test;
+
+import pfg.kraken.robot.Cinematique;
+import pfg.kraken.utils.XYO;
 import senpai.buffer.OutgoingOrderBuffer;
 import senpai.capteurs.CapteursProcess;
 import senpai.comm.CommProtocol.Id;
@@ -79,7 +82,6 @@ public class Test_Robot extends JUnit_Test
 		System.out.println(scripts.getAllPossible(CubeColor.JAUNE, null, true));
 	}
 
-	
 	@Test
 	public void test_cube2() throws Exception
 	{
@@ -90,6 +92,16 @@ public class Test_Robot extends JUnit_Test
 		scripts.getAllPossible(false);
 	}
 	
+	@Test
+	public void test_cube4() throws Exception
+	{
+		robot.setCinematique(new Cinematique(new XYO(0, 1500, -Math.PI / 2)));
+		scripts.setCouleur(RobotColor.ORANGE);
+		table.updateCote(RobotColor.ORANGE.symmetry);
+		System.out.println(scripts.getAllPossible(false));
+	}
+	
+
 	/**
 	 * Génère un fichier qui présente les tests
 	 * 

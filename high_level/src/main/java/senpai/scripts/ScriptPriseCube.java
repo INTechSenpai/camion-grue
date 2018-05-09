@@ -85,7 +85,7 @@ public class ScriptPriseCube extends Script
 	@Override
 	public String toString()
 	{
-		return getClass().getSimpleName()+" du cube "+cube+", face "+face;
+		return getClass().getSimpleName()+" du cube "+cube+", face "+face+", entrée : "+getPointEntree();
 	}
 
 	@Override
@@ -104,6 +104,12 @@ public class ScriptPriseCube extends Script
 	{
 		// si on peut prendre ET deposer
 		return robot.canTakeCube() && !robot.isPileFull();
+	}
+	
+	public int getDistance(XYO position)
+	{
+		XYO s1 = getPointEntree();
+		return (int) Math.round(s1.position.distance(position.position) + 100*Math.abs(XYO.angleDifference(s1.orientation, position.orientation)));
 	}
 
 }
