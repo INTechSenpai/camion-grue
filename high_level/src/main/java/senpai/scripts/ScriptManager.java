@@ -66,9 +66,11 @@ public class ScriptManager
 	private double[] longueurGrue = new double[]{300, 300, 290}; // longueur de la grue en fonction du nombre de cube déjà posés
 	private boolean coteDroit;
 	private int distanceToScript = 0;
+	private boolean interrupteurRehausse;
 	
 	public ScriptManager(Log log, Config config, Table table, Robot robot, CapteursProcess cp, ObstaclesDynamiques obsDyn)
 	{
+		interrupteurRehausse = config.getBoolean(ConfigInfoSenpai.INTERRUPTEUR_REHAUSSE);
 		this.obsDyn = obsDyn;
 		this.log = log;
 		this.table = table;
@@ -99,7 +101,7 @@ public class ScriptManager
 	
 	public ScriptDomotiqueV2 getScriptDomotique()
 	{
-		return new ScriptDomotiqueV2(log, robot, table, cp, couleur.symmetry);
+		return new ScriptDomotiqueV2(log, robot, table, interrupteurRehausse, cp, couleur.symmetry);
 	}
 
 	public ScriptDomotique getScriptDomotiqueVieux()

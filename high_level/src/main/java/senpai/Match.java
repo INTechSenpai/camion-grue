@@ -259,7 +259,9 @@ public class Match
 			 * Prise de cube
 			 */
 			allPrise = scripts.getFirstPatternColor();
-			do {
+			retry = true;
+			while(retry && !allPrise.isEmpty())
+			{
 				retry = false;
 				try {
 					doScript(allPrise.poll(), 5, false);
@@ -269,10 +271,12 @@ public class Match
 					log.write("Erreur : "+e+", on tente le script suivant", Subject.SCRIPT);				
 					retry = true;
 				}
-			} while(retry && !allPrise.isEmpty());	
+			}
 	
 			allPrise = scripts.getSecondPatternColor();
-			do {
+			retry = true;
+			while(retry && !allPrise.isEmpty())
+			{
 				retry = false;
 				try {
 					doScript(allPrise.poll(), 5, false);
@@ -282,7 +286,7 @@ public class Match
 					log.write("Erreur : "+e+", on tente le script suivant", Subject.SCRIPT);				
 					retry = true;
 				}
-			} while(retry && !allPrise.isEmpty());
+			}
 			
 			/*
 			 * Recalage

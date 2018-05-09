@@ -39,10 +39,12 @@ public class ScriptDomotiqueV2 extends Script
 {
 	private XY_RW positionEntree = new XY_RW(370,1920-260);
 	private boolean symetrie;
+	private boolean interrupteurRehausse;
 	
-	public ScriptDomotiqueV2(Log log, Robot robot, Table table, CapteursProcess cp, boolean symetrie)
+	public ScriptDomotiqueV2(Log log, Robot robot, Table table, boolean interrupteurRehausse, CapteursProcess cp, boolean symetrie)
 	{
 		super(log, robot, table, cp);
+		this.interrupteurRehausse = interrupteurRehausse;
 		this.symetrie = symetrie;
 		if(symetrie)
 			positionEntree.setX(- positionEntree.getX());
@@ -91,8 +93,14 @@ public class ScriptDomotiqueV2 extends Script
 			}
 			if(distance > 100 || distance < 60)
 				throw new ScriptException("Mauvaise distance pour panneau domotique : "+distance);
+		
 			
-			double angle = -0.0025*distance+0.25;
+			double angle;
+			if(interrupteurRehausse)
+				angle = -0.0025*distance+0.35;	
+			else
+				angle = -0.0025*distance+0.25;
+			
 			log.write("Angle domotique : "+angle, Subject.SCRIPT);
 			cp.startStaticCorrection(CapteursCorrection.AVANT);
 			if(symetrie)

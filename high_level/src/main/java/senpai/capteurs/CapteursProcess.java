@@ -71,6 +71,7 @@ public class CapteursProcess
 	private volatile boolean needLast = false;
 	private volatile Integer[] last;
 	private final int margeIgnoreTourelle;
+	private final boolean ignoreTropProche;
 	
 //	private List<SensorsData> mesuresScan = new ArrayList<SensorsData>();
 
@@ -84,6 +85,7 @@ public class CapteursProcess
 		distanceApproximation = config.getInt(ConfigInfoSenpai.DISTANCE_MAX_ENTRE_MESURE_ET_OBJET);
 		nbCapteurs = CapteursRobot.values().length;
 		margeIgnoreTourelle = config.getInt(ConfigInfoSenpai.MARGE_IGNORE_TOURELLE);
+		ignoreTropProche = config.getBoolean(ConfigInfoSenpai.IGNORE_TROP_PROCHE);
 		last = new Integer[nbCapteurs];
 		
 		this.obstacleRobot = obstacleRobot;
@@ -153,6 +155,12 @@ public class CapteursProcess
 			CapteursRobot c = CapteursRobot.values[i];
 
 			int mesure = data.mesures[i];
+			if(mesure == CommProtocol.EtatCapteur.TROP_PROCHE.ordinal() && ignoreTropProche)
+			{
+				c.isThereObstacle = false;
+				continue;
+			}
+			
 			if(mesure == CommProtocol.EtatCapteur.TROP_PROCHE.ordinal() || (mesure >= CommProtocol.EtatCapteur.values().length && mesure < 30))
 				mesure = 30;
 
