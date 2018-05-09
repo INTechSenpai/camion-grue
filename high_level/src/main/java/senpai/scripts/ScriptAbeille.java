@@ -34,7 +34,7 @@ import senpai.table.Table;
 
 public class ScriptAbeille extends Script
 {
-	private XY_RW positionEntree = new XY_RW(1200,180);
+	private XY_RW positionEntree = new XY_RW(1200,200);
 	private CapteursCorrection[] capteurs = new CapteursCorrection[1];
 	private double angle = 0;
 	private boolean coteDroit;
@@ -72,6 +72,7 @@ public class ScriptAbeille extends Script
 	{
 		try {
 			robot.avance(100, 0.2);
+			// on se cale contre le mur en face
 		} catch(UnableToMoveException e)
 		{
 			// OK
