@@ -39,14 +39,14 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	ANTICIPATION_TOURELLE(300), // distance où vise la tourelle sur la trajectoire, en mm
 	MARGE_IGNORE_TOURELLE(100), // distance en mm autour du robot où sont ignorés les obstacles vus par les tourelles
 	ENABLE_TOURELLE(true),
-	IGNORE_TROP_PROCHE(false),
+	IGNORE_TROP_PROCHE(true),
 	
 	CAN_DO_DOMOTIQUE(true),
 	CAN_DO_ABEILLE(true),
 	DOMOTIQUE_THERE(true),
 	ABEILLE_THERE(true),
-	NB_GOLDEN_LOADED(2),
-	INTERRUPTEUR_REHAUSSE(false),
+	NB_GOLDEN_LOADED(1),
+	INTERRUPTEUR_REHAUSSE(true),
 	
 	
 	/**
@@ -136,7 +136,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 								// est-elle activée ?
 	WARM_UP_DURATION(5000), // durée du warm-up
 
-	ENABLE_KNOWN_PATHS(true), // active les chemins enregistrés ?
+	ENABLE_KNOWN_PATHS(false), // active les chemins enregistrés ?
 	/**
 	 * Log
 	 */
