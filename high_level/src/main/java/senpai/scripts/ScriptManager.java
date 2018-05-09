@@ -148,21 +148,33 @@ public class ScriptManager
 			for(CubeFace f : CubeFace.values())
 			{
 				Cube c = Cube.getCube(croix, couleur1);
-				if(isFacePossible(c, f, bourrine))
+				if(isFacePossible(c, f, false))
 				{
 					log.write("Possible : "+c+" "+f, Subject.SCRIPT);
-					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true,bourrine));
-					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false,bourrine));
+					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true,false));
+					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false,false));
+				}
+				else if(bourrine && isFacePossible(c, f, true))
+				{
+					log.write("Possible : "+c+" "+f, Subject.SCRIPT);
+					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true,true));
+					out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false,true));					
 				}
 				if(couleur2 != null)
 				{
 					c = Cube.getCube(croix, couleur2);
-					if(isFacePossible(c, f, bourrine))
+					if(isFacePossible(c, f, false))
 					{
 						log.write("Possible : "+c+" "+f, Subject.SCRIPT);
-						out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true,bourrine));
-						out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false,bourrine));
+						out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true,false));
+						out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false,false));
 					}					
+					else if(bourrine && isFacePossible(c, f, true))
+					{
+						log.write("Possible : "+c+" "+f, Subject.SCRIPT);
+						out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,true,true));
+						out.add(new ScriptPriseCube(log,robot, table, cp, obsDyn, c,f,false,true));
+					}
 				}
 			}
 		}
