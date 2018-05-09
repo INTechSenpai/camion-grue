@@ -145,6 +145,7 @@ public class Ethernet implements CommMedium
 					Thread.sleep(delayBetweenTries/2);
 				}
 			} while(socket == null);
+			log.write("Connexion avec le LL réussie", Subject.STATUS);
 		}
 	}
 	

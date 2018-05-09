@@ -98,6 +98,7 @@ public class Robot extends RobotState
 	private boolean domotiqueDone = true;
 	private boolean abeilleDone = true;
 	private int score;
+	private boolean disableCubes;
 	private CubeColor[] pattern1 = null, pattern2 = null;
 	
 	public Robot(Log log, OutgoingOrderBuffer out, Config config, GraphicDisplay buffer, Kraken kraken, /*DynamicPath dpath,*/ KnownPathManager known, RectangularObstacle obstacle)
@@ -136,6 +137,7 @@ public class Robot extends RobotState
 		if(nbGolden >= 2)
 			cubeTop = Cube.GOLDEN_CUBE_2;
 		
+		disableCubes = config.getBoolean(ConfigInfoSenpai.DISABLE_CUBES);
 		simuleLL = config.getBoolean(ConfigInfoSenpai.SIMULE_COMM);
 		score = 0;
 		if(config.getBoolean(ConfigInfoSenpai.DOMOTIQUE_THERE))
@@ -854,7 +856,7 @@ public class Robot extends RobotState
 
 	public boolean isPileFull()
 	{
-		return piles.size() == 3;
+		return piles.size() == 3 || disableCubes;
 	}
 
 	public boolean isAllDone()

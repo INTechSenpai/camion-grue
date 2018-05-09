@@ -1,6 +1,7 @@
 package senpai;
 
 import senpai.Senpai.ErrorCode;
+import senpai.buffer.OutgoingOrderBuffer;
 import senpai.robot.Robot;
 import senpai.robot.RobotColor;
 import senpai.threads.comm.ThreadCommProcess;
@@ -38,12 +39,17 @@ public class TestSleep
 		{			
 			senpai = new Senpai();
 			senpai.initialize(configfile, "default", "graphic");
-//			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
+			OutgoingOrderBuffer data = senpai.getService(OutgoingOrderBuffer.class);
 			Robot robot = senpai.getService(Robot.class);
 			senpai.getService(ThreadCommProcess.class).capteursOn = true;
 			robot.updateColorAndSendPosition(RobotColor.ORANGE, true);
 			robot.setEnMarcheAvance(false);
-			Thread.sleep(100000);
+			while(true)
+			{
+				double[] d = (double[]) data.getArmPosition().attendStatus().data;
+				System.out.println("angleH : "+d[0]+", angleV : "+d[1]+", angleTete : "+d[2]+", posPlier");
+				Thread.sleep(50);
+			}
 		}
 		catch(Exception e)
 		{

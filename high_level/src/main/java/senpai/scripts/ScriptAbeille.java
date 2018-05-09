@@ -79,7 +79,7 @@ public class ScriptAbeille extends Script
 		}
 		try {
 			cp.startStaticCorrection(capteurs);
-			robot.execute(Id.ARM_PUSH_BEE, coteDroit ? -10 : 10);
+			robot.execute(Id.ARM_PUSH_BEE, coteDroit ? -1.3 : 1.3); // TODO
 			cp.endStaticCorrection();
 		} finally {
 			robot.avance(-200, 0.2);

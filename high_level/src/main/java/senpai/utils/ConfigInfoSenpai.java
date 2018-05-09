@@ -46,6 +46,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	DOMOTIQUE_THERE(true),
 	ABEILLE_THERE(true),
 	NB_GOLDEN_LOADED(1),
+	DISABLE_CUBES(false),
 	INTERRUPTEUR_REHAUSSE(true),
 	
 	
