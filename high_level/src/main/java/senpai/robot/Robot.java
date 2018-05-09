@@ -82,7 +82,7 @@ public class Robot extends RobotState
 	private double angleMin, angleMax;
 	private List<ItineraryPoint> path = null;
 	private double angleTourelleGaucheOld = Double.MAX_VALUE, angleTourelleDroiteOld = Double.MAX_VALUE;
-	private long dateDebutMatch;
+	private long dateDebutMatch, dateFinMatch = Long.MAX_VALUE;
 	
 	private boolean jumperOK = false;
 	private volatile State etat = State.STANDBY;
@@ -809,9 +809,15 @@ public class Robot extends RobotState
 		log.write("Temps depuis le début du match : "+(System.currentTimeMillis() - dateDebutMatch), Subject.STATUS);
 	}
 	
+	public long getTempsRestant()
+	{
+		return dateFinMatch - System.currentTimeMillis();
+	}
+	
 	public void setDateDebutMatch()
 	{
 		dateDebutMatch = System.currentTimeMillis();
+		dateFinMatch = dateDebutMatch + 100000;
 	}
 
 	public void correctPosition(XY_RW position, double orientation)

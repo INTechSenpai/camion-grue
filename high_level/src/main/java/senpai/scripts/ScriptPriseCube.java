@@ -103,7 +103,8 @@ public class ScriptPriseCube extends Script
 	public boolean faisable()
 	{
 		// si on peut prendre ET deposer
-		return robot.canTakeCube() && !robot.isPileFull();
+		// sauf si on a déjà un cube et qu'on n'a pas le temps d'en prendre un autre
+		return robot.canTakeCube() && !robot.isPileFull() && (!robot.isThereCubeInside() || robot.getTempsRestant() > 20000);
 	}
 	
 	public int getDistance(XYO position)
