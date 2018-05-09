@@ -56,6 +56,7 @@ public:
         plierOverloadStarted = false;
         headOverloadTimer = 0;
         headOverloadStarted = false;
+        headOverloadTimerEnabled = false;
 
         serialAX.begin(SERIAL_AX12_BAUDRATE);
     }
@@ -258,8 +259,11 @@ public:
                 torque &= 1023;
                 if (!headOverloadStarted && torque > PLIER_MAX_TORQUE)
                 {
-                    headOverloadStarted = true;
-                    headOverloadTimer = millis();
+                    if (headOverloadTimerEnabled)
+                    {
+                        headOverloadStarted = true;
+                        headOverloadTimer = millis();
+                    }
                 }
                 else if (headOverloadStarted && torque <= PLIER_MAX_TORQUE)
                 {
@@ -267,15 +271,19 @@ public:
                 }
                 else if (headOverloadStarted && millis() - headOverloadTimer > HEAD_OVERLOAD_TIMEOUT)
                 {
-                    headOverloadStarted = false;
-                    noInterrupts();
-                    aimPosition.setHeadLocalAngle(currentPosition.getHeadLocalAngle());
-                    uint16_t p = (uint16_t)aimPosition.getHeadLocalAngleDeg();
-                    interrupts();
-                    lastStatus = headAX12.goalPositionDegree(p);
+                    if (headOverloadTimerEnabled)
+                    {
+                        headOverloadStarted = false;
+                        noInterrupts();
+                        aimPosition.setHeadLocalAngle(currentPosition.getHeadLocalAngle());
+                        uint16_t p = (uint16_t)aimPosition.getHeadLocalAngleDeg();
+                        interrupts();
+                        lastStatus = headAX12.goalPositionDegree(p);
 
-                    Serial.println("STOPPED HEAD ON POSITION");
+                        Serial.println("STOPPED HEAD ON POSITION");
+                    }
                 }
+
                 counter = 0;
             }
 
@@ -306,8 +314,14 @@ public:
         moving = true;
         moveTimer = millis();
         status = ARM_STATUS_OK;
+        headOverloadTimerEnabled = false;
         interrupts();
         Serial.println("Start moving");
+    }
+
+    void enableHeadOverheadTimer()
+    {
+        headOverloadTimerEnabled = true;
     }
 
     void getAimPosition(ArmPosition & position) const
@@ -490,6 +504,7 @@ private:
     bool plierOverloadStarted;
     uint32_t headOverloadTimer;
     bool headOverloadStarted;
+    bool headOverloadTimerEnabled;
 
 };
 

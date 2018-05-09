@@ -1057,6 +1057,7 @@ private:
             armControler.getCurrentPositionSpecial(armPosition);
             armPosition.setHeadGlobalAngle(0.8);
             armControler.setAimPosition(armPosition);
+            armControler.enableHeadOverheadTimer();
             currentCommandStep++;
             break;
         case 9:
