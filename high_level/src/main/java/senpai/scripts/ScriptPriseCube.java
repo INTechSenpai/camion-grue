@@ -110,7 +110,10 @@ public class ScriptPriseCube extends Script
 	public int getDistance(XYO position)
 	{
 		XYO s1 = getPointEntree();
-		return (int) Math.round(s1.position.distance(position.position) + 100*Math.abs(XYO.angleDifference(s1.orientation, position.orientation)));
+		int malus = 0;
+		if(cube.couleur == CubeColor.NOIR)
+			malus = 1000;
+		return malus + (int) Math.round(s1.position.distance(position.position) + 100*Math.abs(XYO.angleDifference(s1.orientation, position.orientation)));
 	}
 
 }
