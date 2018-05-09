@@ -22,6 +22,7 @@ import senpai.capteurs.CapteursProcess;
 import senpai.comm.CommProtocol.Id;
 import senpai.comm.CommProtocol.LLCote;
 import senpai.exceptions.ActionneurException;
+import senpai.exceptions.ScriptException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.table.Table;
@@ -34,8 +35,8 @@ import senpai.table.Table;
 
 public class ScriptAbeille extends Script
 {
-	private XY_RW positionEntree = new XY_RW(1200,200);
-	private CapteursCorrection[] capteurs = new CapteursCorrection[1];
+	private XY_RW positionEntree = new XY_RW(1200,210);
+	private CapteursCorrection capteurs;
 	private double angle = 0;
 	private boolean coteDroit;
 	
@@ -45,13 +46,13 @@ public class ScriptAbeille extends Script
 		this.coteDroit = !symetrie;
 		if(symetrie)
 		{
-			capteurs[0] = CapteursCorrection.GAUCHE;
+			capteurs = CapteursCorrection.GAUCHE;
 			positionEntree.setX(- positionEntree.getX());
 			angle = Math.PI - angle;
 		}
 		else
 		{
-			capteurs[0] = CapteursCorrection.DROITE;
+			capteurs = CapteursCorrection.DROITE;
 		}
 	}
 
@@ -68,23 +69,34 @@ public class ScriptAbeille extends Script
 	}
 
 	@Override
-	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException
+	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{
 		try {
-			robot.avance(100, 0.2);
+			robot.avance(200, 0.2);
 			// on se cale contre le mur en face
 		} catch(UnableToMoveException e)
 		{
 			// OK
 		}
 		try {
+			Integer distanceBrute = cp.getLast()[capteurs.c1.ordinal()];
+			if(distanceBrute == null)
+				throw new ScriptException("Pas de mesure du capteur latéral !");
+			if(distanceBrute < 200)
+				distanceBrute = 200;
+			else if(distanceBrute > 230)
+				distanceBrute = 230;
+			angle = ((distanceBrute-200)*0.81 + (230-distanceBrute)*0.70) / 30;
 			cp.startStaticCorrection(capteurs);
-			robot.execute(Id.ARM_PUSH_BEE, coteDroit ? -1.3 : 1.3); // TODO
+			robot.execute(Id.ARM_PUSH_BEE, coteDroit ? -angle : angle);
 			cp.endStaticCorrection();
 		} finally {
 			robot.avance(-200, 0.2);
 			robot.avance(100, 0.2);
-			robot.rangeBras(LLCote.AU_PLUS_VITE);
+			if(coteDroit)
+				robot.rangeBras(LLCote.PAR_LA_GAUCHE);
+			else
+				robot.rangeBras(LLCote.PAR_LA_DROITE);
 		}
 	}
 

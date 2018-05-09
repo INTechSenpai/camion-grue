@@ -47,7 +47,7 @@ public class TestSleep
 			while(true)
 			{
 				double[] d = (double[]) data.getArmPosition().attendStatus().data;
-				System.out.println("angleH : "+d[0]+", angleV : "+d[1]+", angleTete : "+d[2]+", posPlier");
+				System.out.println("angleH : "+d[0]+", angleV : "+d[1]+", angleTete : "+d[2]+", posPlier "+d[3]);
 				Thread.sleep(50);
 			}
 		}
