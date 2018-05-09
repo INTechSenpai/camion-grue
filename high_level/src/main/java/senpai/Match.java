@@ -63,13 +63,13 @@ public class Match
 		ErrorCode error = ErrorCode.NO_ERROR;
 		try {
 			CubeColor[] pattern = null;
-			if(args.length == 3)
+			if(args.length == 4)
 			{
 				pattern = CubeColor.parsePattern(args);
 				if(pattern != null)
 					System.out.println("Pattern lu : "+pattern[0]+" "+pattern[1]+" "+pattern[2]);
 			}
-			new Match().exec(pattern);
+			new Match().exec(pattern, args[0]);
 		}
 		catch(Exception e)
 		{
@@ -90,9 +90,9 @@ public class Match
 		}
 	}
 	
-	public void exec(CubeColor[] pattern) throws InterruptedException
+	public void exec(CubeColor[] pattern, String configFile) throws InterruptedException
 	{
-		String configfile = "match.conf";
+		String configfile = configFile;
 		
 		senpai = new Senpai();
 		senpai.initialize(configfile, "default", "graphic");

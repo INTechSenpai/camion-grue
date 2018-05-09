@@ -62,7 +62,7 @@ public enum CubeColor
 			{
 				if(c == GOLDEN) // cas à part
 					continue;
-				if(c.name().toLowerCase().startsWith(pattern[i].toLowerCase()))
+				if(c.name().toLowerCase().startsWith(pattern[i+1].toLowerCase()))
 				{
 					couleurs[i] = c;
 					break;
@@ -70,7 +70,7 @@ public enum CubeColor
 			}
 			if(couleurs[i] == null)
 			{
-				System.out.println("Couleur non reconnue : "+pattern[i]);
+				System.out.println("Couleur non reconnue : "+pattern[i+1]);
 				return null;
 			}
 		}		
