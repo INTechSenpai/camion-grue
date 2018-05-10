@@ -26,6 +26,7 @@ import senpai.exceptions.ScriptException;
 import senpai.exceptions.UnableToMoveException;
 import senpai.robot.Robot;
 import senpai.table.Table;
+import senpai.utils.Subject;
 
 /**
  * Script de l'abeille
@@ -77,6 +78,7 @@ public class ScriptAbeille extends Script
 
 			// on prend la distance du capteur latéral avant
 			Integer distanceBrute = cp.getLast()[capteurs.c1.ordinal()];
+			log.write("Distance brute du capteur : "+distanceBrute, Subject.SCRIPT);
 			if(distanceBrute == null)
 				throw new ScriptException("Pas de mesure du capteur latéral !");
 			if(distanceBrute < 200)
