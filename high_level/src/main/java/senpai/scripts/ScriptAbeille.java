@@ -71,6 +71,7 @@ public class ScriptAbeille extends Script
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{
+		boolean repli = false;
 		try {
 			robot.avance(200, 0.2);
 			// on se cale contre le mur en face
@@ -90,12 +91,14 @@ public class ScriptAbeille extends Script
 			angle = ((distanceBrute-200)*0.81 + (230-distanceBrute)*0.70) / 30;
 			cp.startStaticCorrection(capteurs);
 			robot.execute(Id.ARM_PUSH_BEE, coteDroit ? -angle : angle);
+			repli = true;
 			robot.setAbeilleDone();
 			cp.endStaticCorrection();
 		} finally {
 			robot.avance(-200, 0.2);
 			robot.avance(100, 0.2);
-			robot.execute(Id.ARM_GO_TO, 0., 0.2, 2., 8.);
+			if(repli)
+				robot.execute(Id.ARM_GO_TO, 0., 0.2, 2., 8.);
 			if(coteDroit)
 				robot.rangeBras(LLCote.PAR_LA_GAUCHE);
 			else
