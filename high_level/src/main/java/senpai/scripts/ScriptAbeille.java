@@ -101,8 +101,8 @@ public class ScriptAbeille extends Script
 			robot.setAbeilleDone();
 			cp.endStaticCorrection();
 		} finally {
-			robot.avance(-200, 0.2);
-			robot.avance(100, 0.2);
+			robot.avance(-220, 0.2);
+			robot.avance(120, 0.2);
 			if(repli)
 				robot.execute(Id.ARM_GO_TO, 0., 0.2, 2., 8.);
 			if(coteDroit)
