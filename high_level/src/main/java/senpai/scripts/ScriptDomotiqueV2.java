@@ -103,20 +103,25 @@ public class ScriptDomotiqueV2 extends Script
 			
 			log.write("Angle domotique : "+angle, Subject.SCRIPT);
 			cp.startStaticCorrection(CapteursCorrection.AVANT);
-			try {
-				if(symetrie)
-					robot.execute(Id.ARM_PUSH_BUTTON, angle, LLCote.PAR_LA_GAUCHE);
-				else
-					robot.execute(Id.ARM_PUSH_BUTTON, angle, LLCote.PAR_LA_DROITE);
-			}
-			finally
-			{
-				if(symetrie)
-					robot.execute(Id.ARM_PUSH_BUTTON, angle, LLCote.PAR_LA_GAUCHE);
-				else
-					robot.execute(Id.ARM_PUSH_BUTTON, angle, LLCote.PAR_LA_DROITE);
-			}
-			robot.setDomotiqueDone();
+			int nbEssai = 2;
+			boolean reussi = false;
+			do {
+				nbEssai--;
+				try {
+					if(symetrie)
+						robot.execute(Id.ARM_PUSH_BUTTON, angle, LLCote.PAR_LA_GAUCHE);
+					else
+						robot.execute(Id.ARM_PUSH_BUTTON, angle, LLCote.PAR_LA_DROITE);
+					reussi = true;
+				} catch(ActionneurException e)
+				{
+					log.write("Erreur lors du poussage de bouton : "+e.getMessage(), Subject.SCRIPT);
+				}
+			} while(nbEssai > 0);
+
+			if(reussi)
+				robot.setDomotiqueDone();
+			
 			if(symetrie)
 				robot.rangeBras(LLCote.PAR_LA_GAUCHE);
 			else

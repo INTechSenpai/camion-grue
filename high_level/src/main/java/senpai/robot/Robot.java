@@ -308,6 +308,14 @@ public class Robot extends RobotState
 			}
 			catch(ActionneurException e)
 			{
+				int code = e.code;
+				// erreurs à ignorer
+				if(code == CommProtocol.ActionneurMask.AX12_ERR.masque)
+				{
+					log.write("AX12_ERR ignoré ! "+e, Subject.SCRIPT);
+					break;
+				}
+				
 				nbEssaiMax--;
 				if(nbEssaiMax >= 0 && e.code == CommProtocol.ActionneurMask.MOVE_TIMED_OUT.masque)
 					retry = true;
