@@ -268,8 +268,7 @@ public class Match
 					robot.printTemps();
 					allError = false;
 				} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-					log.write("Erreur : "+e+", on tente le script suivant", Subject.SCRIPT);				
-					allPrise = scripts.getFirstPatternColor();
+					log.write("Erreur : "+e+", on tente le script suivant", Subject.SCRIPT);
 					retry = true;
 				}
 			}
@@ -285,7 +284,6 @@ public class Match
 					allError = false;
 				} catch (PathfindingException | UnableToMoveException | ScriptException e) {
 					log.write("Erreur : "+e+", on tente le script suivant", Subject.SCRIPT);				
-					allPrise = scripts.getSecondPatternColor();
 					retry = true;
 				}
 			}
