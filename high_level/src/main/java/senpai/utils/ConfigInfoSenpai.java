@@ -36,7 +36,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	 */
 	ANGLE_MIN_TOURELLE(10), // en degré
 	ANGLE_MAX_TOURELLE(160),
-	ANTICIPATION_TOURELLE(300), // distance où vise la tourelle sur la trajectoire, en mm
+	ANTICIPATION_TOURELLE(300), // distance où vise la tourelle sur la trajectoire, en mm	
 	MARGE_IGNORE_TOURELLE(100), // distance en mm autour du robot où sont ignorés les obstacles vus par les tourelles
 	ENABLE_TOURELLE(true),
 	IGNORE_TROP_PROCHE(true),
@@ -82,7 +82,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	LARGEUR_NON_DEPLOYE(182), // distance entre le bord gauche et le bord droit
 								// du robot non-déployé
 	MARGE_PATHFINDING(20), // marge sur la dimension du robot
-	DILATATION_OBSTACLE_ROBOT(30), // la dilatation du robot dans l'A*. S'ajoute
+//	DILATATION_OBSTACLE_ROBOT(30), // la dilatation du robot dans l'A*. S'ajoute
 									// à gauche et à droite
 
 	/**
@@ -95,7 +95,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	/**
 	 * Paramètres du pathfinding
 	 */
-	ALLOW_PRECOMPUTED_PATH(true), // autorise-t-on l'utilisation de chemins
+	ALLOW_PRECOMPUTED_PATH(false), // autorise-t-on l'utilisation de chemins
 									// précalculés
 //	SAVE_FOUND_PATH(true), // sauvegarde tous les trajets calculés en match
 
@@ -123,6 +123,7 @@ public enum ConfigInfoSenpai implements ConfigInfo
 	DISTANCE_MAX_ENTRE_MESURE_ET_OBJET(50), // quelle marge d'erreur
 											// autorise-t-on entre un objet et
 											// sa détection
+	DISTANCE_MAX_BORDURE(150), // distance max où on peut voir un objet près du bord
 	IMPRECISION_MAX_POSITION(50.), // quelle imprecision maximale sur la
 									// position du robot peut-on attendre (en
 									// mm)

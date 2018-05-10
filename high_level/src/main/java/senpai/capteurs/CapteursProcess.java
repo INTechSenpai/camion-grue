@@ -52,6 +52,7 @@ public class CapteursProcess
 
 	private int nbCapteurs;
 	private int distanceApproximation;
+	private int distanceBordure;
 	private RectangularObstacle obstacleRobot;
 	private Capteur[] capteurs;
 //	private final double imprecisionMaxPos;
@@ -85,6 +86,7 @@ public class CapteursProcess
 		this.robot = robot;
 
 		distanceApproximation = config.getInt(ConfigInfoSenpai.DISTANCE_MAX_ENTRE_MESURE_ET_OBJET);
+		distanceBordure = config.getInt(ConfigInfoSenpai.DISTANCE_MAX_BORDURE);
 		nbCapteurs = CapteursRobot.values().length;
 		margeIgnoreTourelle = config.getInt(ConfigInfoSenpai.MARGE_IGNORE_TOURELLE);
 		ignoreTropProche = config.getBoolean(ConfigInfoSenpai.IGNORE_TROP_PROCHE);
@@ -178,6 +180,23 @@ public class CapteursProcess
 				continue;
 			}
 	
+			if(positionVue.getX() > 1500 - distanceBordure ||
+					positionVue.getX() < -1500 + distanceBordure ||
+					positionVue.getY() > 2000 - distanceBordure ||
+					positionVue.getY() < distanceBordure)
+			{
+				log.write("Obstacle hors table", Subject.CAPTEURS);				
+				c.isThereObstacle = false;
+				continue;
+			}
+			
+			RectangularObstacle obsPile = table.getObstaclePile();
+			if(obsPile != null && obsPile.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
+			{
+				c.isThereObstacle = false;
+				continue;
+			}
+
 			if(departG.isInObstacle(positionVue) || departD.isInObstacle(positionVue))
 			{
 				log.write("Obstacle dans zone de départ ignoré", Subject.CAPTEURS);				
@@ -214,13 +233,6 @@ public class CapteursProcess
 				}
 
 			if(stop)
-			{
-				c.isThereObstacle = false;
-				continue;
-			}
-		
-			RectangularObstacle obsPile = table.getObstaclePile();
-			if(obsPile != null && obsPile.squaredDistance(positionVue) < distanceApproximation * distanceApproximation)
 			{
 				c.isThereObstacle = false;
 				continue;
