@@ -73,21 +73,25 @@ public class ScriptAbeille extends Script
 	{
 		boolean repli = false;
 		try {
-			robot.avance(200, 0.2);
-			// on se cale contre le mur en face
-		} catch(UnableToMoveException e)
-		{
-			// OK
-		}
-		try {
+			cp.doStaticCorrection(500, capteurs);
+
 			// on prend la distance du capteur latéral avant
 			Integer distanceBrute = cp.getLast()[capteurs.c1.ordinal()];
 			if(distanceBrute == null)
 				throw new ScriptException("Pas de mesure du capteur latéral !");
 			if(distanceBrute < 200)
-				distanceBrute = 200;
+				throw new ScriptException("Le robot est trop proche du bord pour l'abeille !");
 			else if(distanceBrute > 230)
-				distanceBrute = 230;
+				throw new ScriptException("Le robot est trop loin du bord pour l'abeille !");
+
+			try {
+				robot.avance(200, 0.2);
+				// on se cale contre le mur en face
+			} catch(UnableToMoveException e)
+			{
+				// OK
+			}
+
 			angle = ((distanceBrute-200)*0.81 + (230-distanceBrute)*0.70) / 30;
 			cp.startStaticCorrection(capteurs);
 			robot.execute(Id.ARM_PUSH_BEE, coteDroit ? -angle : angle);

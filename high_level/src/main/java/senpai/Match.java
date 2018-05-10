@@ -319,12 +319,15 @@ public class Match
 			 * Abeille
 			 */
 
-			try {
-				doScript(scripts.getScriptAbeille(), 5);
-				robot.printTemps();
-				allError = false;
-			} catch (PathfindingException | UnableToMoveException | ScriptException e) {
-				log.write("Erreur : "+e, Subject.SCRIPT);
+			for(int i = 0; i < 2; i++)
+			{
+				try {
+					doScript(scripts.getScriptAbeille(), 5);
+					robot.printTemps();
+					allError = false;
+				} catch (PathfindingException | UnableToMoveException | ScriptException e) {
+					log.write("Erreur : "+e, Subject.SCRIPT);
+				}
 			}
 
 			/*
