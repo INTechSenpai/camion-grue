@@ -79,6 +79,7 @@ public class ScriptAbeille extends Script
 			// OK
 		}
 		try {
+			// on prend la distance du capteur latéral avant
 			Integer distanceBrute = cp.getLast()[capteurs.c1.ordinal()];
 			if(distanceBrute == null)
 				throw new ScriptException("Pas de mesure du capteur latéral !");
@@ -89,10 +90,12 @@ public class ScriptAbeille extends Script
 			angle = ((distanceBrute-200)*0.81 + (230-distanceBrute)*0.70) / 30;
 			cp.startStaticCorrection(capteurs);
 			robot.execute(Id.ARM_PUSH_BEE, coteDroit ? -angle : angle);
+			robot.setAbeilleDone();
 			cp.endStaticCorrection();
 		} finally {
 			robot.avance(-200, 0.2);
 			robot.avance(100, 0.2);
+			robot.execute(Id.ARM_GO_TO, 0., 0.2, 2., 8.);
 			if(coteDroit)
 				robot.rangeBras(LLCote.PAR_LA_GAUCHE);
 			else
