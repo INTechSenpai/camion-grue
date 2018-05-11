@@ -61,11 +61,6 @@ def check_connectivity():
             last_check_time = time.time()
 
 while True:
-    print "Launching Java server"
-    DEVNULL = open(os.devnull, 'wb')
-    javaServer = subprocess.Popen(["./../pc/run_easy.sh", "RemoteControl"], cwd="../pc/", stdout=DEVNULL)
-    print "Java server launched"
-
     # Connect to the Wii Remote. If it times out then quit.
     wii = None
     while wii is None:
@@ -106,7 +101,7 @@ while True:
 
     connected = False
     while not connected:
-        print "Connecting to the java server.."
+        print "Connecting to the teensy server.."
         try:
             init()
             connected = True
@@ -119,6 +114,7 @@ while True:
     # thread.start_new_thread(check_connectivity, ())
 
     try:
+        start_manual_mode()
         while True:
             buttons = wii.state['buttons']
 
@@ -361,14 +357,14 @@ while True:
                         elif direction < 0:
                             direction += 3
                         set_direction(direction)
+        robot_stop()
         close()
         print "Connection closed by user"
     except:
         print "Connection closed by server"
         traceback.print_tb(sys.exc_info()[2])
+        robot_stop()
         close()
-    javaServer.kill()
-    javaServer.wait()
 
     print "Terminated. Restarting in 3s"
     time.sleep(3)
