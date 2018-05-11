@@ -72,20 +72,20 @@ public class ScriptAbeille extends Script
 	@Override
 	protected void run() throws InterruptedException, UnableToMoveException, ActionneurException, ScriptException
 	{
-		boolean repli = false;
+		cp.doStaticCorrection(500, capteurs);
+
+		// on prend la distance du capteur latéral avant
+		Integer distanceBrute = cp.getLast()[capteurs.c1.ordinal()];
+		log.write("Distance brute du capteur : "+distanceBrute, Subject.SCRIPT);
+		if(distanceBrute == null)
+			throw new ScriptException("Pas de mesure du capteur latéral !");
+		if(distanceBrute < 200)
+			throw new ScriptException("Le robot est trop proche du bord pour l'abeille !");
+		else if(distanceBrute > 230)
+			throw new ScriptException("Le robot est trop loin du bord pour l'abeille !");
+
+		boolean brasOK = false;
 		try {
-			cp.doStaticCorrection(500, capteurs);
-
-			// on prend la distance du capteur latéral avant
-			Integer distanceBrute = cp.getLast()[capteurs.c1.ordinal()];
-			log.write("Distance brute du capteur : "+distanceBrute, Subject.SCRIPT);
-			if(distanceBrute == null)
-				throw new ScriptException("Pas de mesure du capteur latéral !");
-			if(distanceBrute < 200)
-				throw new ScriptException("Le robot est trop proche du bord pour l'abeille !");
-			else if(distanceBrute > 230)
-				throw new ScriptException("Le robot est trop loin du bord pour l'abeille !");
-
 			try {
 				robot.avance(200, 0.2);
 				// on se cale contre le mur en face
@@ -94,21 +94,32 @@ public class ScriptAbeille extends Script
 				// OK
 			}
 
+			Integer distanceBrute2 = cp.getLast()[capteurs.c1.ordinal()];
+			log.write("Distance brute du capteur après avoir avancé : "+distanceBrute2, Subject.SCRIPT);
+			if(distanceBrute2 != null)
+			{
+				distanceBrute = distanceBrute2;
+				if(distanceBrute < 200)
+					distanceBrute = 200;
+				else if(distanceBrute > 230)
+					distanceBrute = 230;
+			}
+			
 			angle = ((distanceBrute-200)*0.81 + (230-distanceBrute)*0.70) / 30;
-			cp.startStaticCorrection(capteurs);
 			robot.execute(Id.ARM_PUSH_BEE, coteDroit ? -angle : angle);
-			repli = true;
-			robot.setAbeilleDone();
-			cp.endStaticCorrection();
+			brasOK = true;
 		} finally {
 			robot.avance(-220, 0.2);
+			if(brasOK)
+				robot.setAbeilleDone();
 			robot.avance(120, 0.2);
-			if(repli)
-				robot.execute(Id.ARM_GO_TO, 0., 0.2, 2., 8.);
+			cp.startStaticCorrection(CapteursCorrection.AVANT, capteurs);
+			robot.execute(Id.ARM_GO_TO, 0., 0.2, 2., 8.);
 			if(coteDroit)
 				robot.rangeBras(LLCote.PAR_LA_GAUCHE);
 			else
 				robot.rangeBras(LLCote.PAR_LA_DROITE);
+			cp.endStaticCorrection();
 		}
 	}
 
