@@ -79,7 +79,7 @@ while True:
     control_mode = 'wiimote_std'
     wii.led = cwiid.LED1_ON
     absolute_speed = 0
-    speed_list = [300, 500, 750, 1000]
+    speed_list = [200, 350, 500, 750, 1000]
 
     net_open = False
     left_ejector_armed = True
@@ -114,7 +114,7 @@ while True:
     # thread.start_new_thread(check_connectivity, ())
 
     try:
-        start_manual_mode()
+        set_control_level()
         while True:
             buttons = wii.state['buttons']
 

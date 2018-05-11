@@ -68,11 +68,18 @@ class LowLevelCommands:
     def robot_stop(self):
         sendOrder(0x21, [])
 
+    def set_control_level(self):
+        sendOrder(0x95, ["<B"], 2)
+
     def start_manual_mode(self):
         sendOrder(0x97, [])
 
     def set_speed(self, speed):
-        sendOrder(0x21, ["<f"], speed)
+        sendOrder(0x99, ["<f"], speed)
+        if speed == 0:
+            robot_stop()
+        else:
+            start_manual_mode()
 
     def set_direction(self, direction):
         sendOrder(0x9B, ["<f"], direction)
