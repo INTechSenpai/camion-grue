@@ -79,6 +79,7 @@ public class ScriptAbeille extends Script
 		log.write("Distance brute du capteur : "+distanceBrute, Subject.SCRIPT);
 		if(distanceBrute == null)
 			throw new ScriptException("Pas de mesure du capteur latéral !");
+		distanceBrute += 90;
 		if(distanceBrute < 200)
 			throw new ScriptException("Le robot est trop proche du bord pour l'abeille !");
 		else if(distanceBrute > 230)
@@ -98,6 +99,7 @@ public class ScriptAbeille extends Script
 			log.write("Distance brute du capteur après avoir avancé : "+distanceBrute2, Subject.SCRIPT);
 			if(distanceBrute2 != null)
 			{
+				distanceBrute2 += 90;
 				distanceBrute = distanceBrute2;
 				if(distanceBrute < 200)
 					distanceBrute = 200;
