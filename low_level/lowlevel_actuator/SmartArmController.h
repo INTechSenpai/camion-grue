@@ -369,17 +369,17 @@ private:
                 armControler.getCurrentPositionSpecial(armPosition);
                 if (commandArgAngle > 0)
                 {
-                    armPosition.setHAngle(ARM_H_ANGLE_MANIP);
+                    armPosition.setHAngle(ARM_H_ANGLE_CLOSED_MANIP);
                 }
                 else
                 {
-                    armPosition.setHAngle(-ARM_H_ANGLE_MANIP);
+                    armPosition.setHAngle(-ARM_H_ANGLE_CLOSED_MANIP);
                 }
                 if (armPosition.getVAngle() < ARM_V_ANGLE_ORIGIN)
                 {
                     armPosition.setVAngle(ARM_V_ANGLE_ORIGIN);
                 }
-                armPosition.setPlierPos(ARM_MAX_PLIER_POS);
+                armPosition.setPlierPos(ARM_MIN_PLIER_POS);
                 armControler.setAimPosition(armPosition);
                 currentCommandStep++;
             }
@@ -390,7 +390,6 @@ private:
         case 2:
         {
             armControler.getCurrentPositionSpecial(armPosition);
-            armPosition.setVAngle(ARM_V_ANGLE_STAGE_0_DOWN);
             armPosition.setHeadGlobalAngle(ARM_HEAD_SCAN_ANGLE);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
@@ -400,6 +399,15 @@ private:
             waitForMoveCompletion();
             break;
         case 4:
+            armControler.getCurrentPositionSpecial(armPosition);
+            armPosition.setVAngle(ARM_V_ANGLE_STAGE_0_DOWN);
+            armControler.setAimPosition(armPosition);
+            currentCommandStep++;
+            break;
+        case 5:
+            waitForMoveCompletion();
+            break;
+        case 6:
             // Rotation horizontale
             if (useSensor)
             {
@@ -421,12 +429,12 @@ private:
             }
             
             break;
-        case 5:
+        case 7:
             extSensorMinValue = UINT8_MAX;
             optimalAngle = commandArgAngle;
             currentCommandStep++;
             break;
-        case 6:
+        case 8:
             // Ajustement de la rotation horizontale via capteur
             
             /* Debug start */
@@ -468,16 +476,17 @@ private:
                 currentCommandStep++;
             }
             break;
-        case 7:
+        case 9:
             armControler.getCurrentPositionSpecial(armPosition);
+            armPosition.setPlierPos(ARM_MAX_PLIER_POS);
             armPosition.setHAngle(commandArgAngle);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
             break;
-        case 8:
+        case 10:
             waitForMoveCompletion();
             break;
-        case 9:
+        case 11:
             // Positionnement de la tête du bras
             armControler.setHeadSpeed(CUBE_MANIPULATION_SPEED);
             armControler.getCurrentPositionSpecial(armPosition);
@@ -485,7 +494,7 @@ private:
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
             break;
-        case 10:
+        case 12:
             armControler.getCurrentPosition(armPosition);
             if (useSensor && isCubeInPlier())
             {
@@ -500,24 +509,13 @@ private:
                 waitForMoveCompletion();
             }
             break;
-        case 11:
-            waitForMoveCompletion();
-            break;
-        case 12:
-            // Fermeture de la pince
-            armControler.getCurrentPositionSpecial(armPosition);
-            armPosition.setPlierPos(ARM_MIN_PLIER_POS);
-            armControler.setAimPosition(armPosition);
-            currentCommandStep++;
-            break;
         case 13:
             waitForMoveCompletion();
             break;
         case 14:
-            // Levée du cube
+            // Fermeture de la pince
             armControler.getCurrentPositionSpecial(armPosition);
-            armPosition.setHeadLocalAngle(ARM_HEAD_L_ANGLE_TRANSPORT);
-            armPosition.setVAngle(ARM_V_ANGLE_ORIGIN);
+            armPosition.setPlierPos(ARM_MIN_PLIER_POS);
             armControler.setAimPosition(armPosition);
             currentCommandStep++;
             break;
@@ -525,6 +523,17 @@ private:
             waitForMoveCompletion();
             break;
         case 16:
+            // Levée du cube
+            armControler.getCurrentPositionSpecial(armPosition);
+            armPosition.setHeadLocalAngle(ARM_HEAD_L_ANGLE_TRANSPORT);
+            armPosition.setVAngle(ARM_V_ANGLE_ORIGIN);
+            armControler.setAimPosition(armPosition);
+            currentCommandStep++;
+            break;
+        case 17:
+            waitForMoveCompletion();
+            break;
+        case 18:
             stopCommand();
             break;
         default:
@@ -987,6 +996,9 @@ private:
         100     0
         80      0.05
         60      0.10
+
+        version réhaussée
+        angle = -0.0025 * distance + 0.35
     */
     void push_button()
     {
@@ -1084,15 +1096,52 @@ private:
         }
     }
 
-    /* TODO */
     void push_bee()
     {
         switch (currentCommandStep)
         {
         case 0:
-            waitForMoveCompletion();
+            // dégagement du bras sur le côté opposé
+            armControler.getCurrentPositionSpecial(armPosition);
+            if (commandArgAngle > 0)
+            {
+                armPosition.setHAngle(-ARM_H_ANGLE_CLOSED_MANIP);
+            }
+            else
+            {
+                armPosition.setHAngle(ARM_H_ANGLE_CLOSED_MANIP);
+            }
+            armPosition.setPlierPos(ARM_MIN_PLIER_POS);
+            if (armPosition.getVAngle() < ARM_V_ANGLE_ORIGIN)
+            {
+                armPosition.setVAngle(ARM_V_ANGLE_ORIGIN);
+            }
+            armControler.setAimPosition(armPosition);
+            currentCommandStep++;
             break;
         case 1:
+            waitForMoveCompletion();
+            break;
+        case 2:
+            armControler.getCurrentPositionSpecial(armPosition);
+            armPosition.setVAngle(ARM_V_ANGLE_ORIGIN);
+            armPosition.setHeadGlobalAngle(1.18);
+            armControler.setAimPosition(armPosition);
+            currentCommandStep++;
+            break;
+        case 3:
+            waitForMoveCompletion();
+            break;
+        case 4:
+            armControler.getCurrentPositionSpecial(armPosition);
+            armPosition.setHAngle(commandArgAngle);
+            armControler.setAimPosition(armPosition);
+            currentCommandStep++;
+            break;
+        case 5:
+            waitForMoveCompletion();
+            break;
+        case 6:
             stopCommand();
             break;
         default:

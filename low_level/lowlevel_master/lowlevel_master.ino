@@ -48,11 +48,13 @@ void loop()
     std::vector<uint8_t> longRangeSensorsValues;
 
     // Attente du démarrage de la grue
+    digitalWrite(PIN_DEL_STATUS_2, HIGH);
     while (!slaveActuator.sensorDataAvailable())
     {
         slaveActuator.listen();
     }
     slaveActuator.getSensorsValues(longRangeSensorsValues);
+    digitalWrite(PIN_DEL_STATUS_2, LOW);
 
     // Lancement de la carte capteurs
     slaveSensorLed.setLightningMode((uint8_t)SlaveSensorLed::ALL_OFF);

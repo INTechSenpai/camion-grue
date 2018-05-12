@@ -211,7 +211,7 @@ public:
     }
     void onExecute()
     {
-        if (millis() - chrono > 97000)
+        if (millis() - chrono > 100000)
         {
             finished = true;
         }

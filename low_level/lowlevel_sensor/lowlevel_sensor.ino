@@ -16,12 +16,14 @@ void setup()
 {
     pinMode(PIN_DEL_ON_BOARD, OUTPUT);
     digitalWrite(PIN_DEL_ON_BOARD, HIGH);
+    Serial.println("Startup");
     Wire.begin();
     uint32_t beginWait = millis();
     while (!commMgr.available() || millis() - beginWait < 500)
     {
         commMgr.listen();
     }
+    Serial.println("Booting up");
     lightsMgr.infoSignalOn();
     int ret = sensorsMgr.init();
     lightsMgr.infoSignalOff();
@@ -37,6 +39,7 @@ void setup()
     }
 
     digitalWrite(PIN_DEL_ON_BOARD, LOW);
+    Serial.println("End of startup");
 }
 
 

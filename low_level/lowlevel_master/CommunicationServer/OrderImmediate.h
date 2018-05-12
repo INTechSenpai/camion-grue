@@ -849,4 +849,29 @@ public:
 };
 
 
+//class SetSwagg : public OrderImmediate, public Singleton<SetSwagg>
+//{
+//public:
+//    SetSwagg() {}
+//    virtual void execute(std::vector<uint8_t> & io)
+//    {
+//        if (io.size() == 16)
+//        {
+//            size_t index = 0;
+//            int32_t avg = Serializer::readInt(io, index);
+//            int32_t avd = Serializer::readInt(io, index);
+//            int32_t arg = Serializer::readInt(io, index);
+//            int32_t ard = Serializer::readInt(io, index);
+//            //todo
+//            io.clear();
+//        }
+//        else
+//        {
+//            Server.printf_err("Rien: wrong number of arguments\n");
+//            io.clear();
+//        }
+//    }
+//};
+
+
 #endif
